@@ -1,0 +1,10 @@
+@import 'src/variables';
+
+.header-bar {
+  height: 2rem;
+  background-color: map-get($custom-colors, color4);
+}
+
+.header-text {
+  color: theme-color("light");
+}

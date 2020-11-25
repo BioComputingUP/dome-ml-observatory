@@ -1,0 +1,18 @@
+@import 'src/variables';
+
+.custom1 {
+  background-color: map-get($custom-colors, color1);
+}
+
+.custom2 {
+  background-color: map-get($custom-colors, color2);
+}
+
+.custom3 {
+  background-color: map-get($custom-colors, color3);
+}
+
+.custom4 {
+  background-color: map-get($custom-colors, color4);
+  color: white;
+}

@@ -1,0 +1,72 @@
+@import "../node_modules/bootstrap/scss/functions";
+@import "../node_modules/bootstrap/scss/variables";
+
+$theme-colors: (
+  primary: #05527b,
+  secondary: #ac5900,
+  tertiary: #34055b,
+  quaternary: #693c15,
+  quinary: #fff9e3,
+  success: $green,
+  info: $cyan,
+  warning: $yellow,
+  danger: $red,
+  light: $gray-100,
+  dark: #505050
+);
+$custom-colors: (
+  color1: #f669a3,
+  color2: #1faf19,
+  color3: #d2782a,
+  color4: #505050,
+  color5: #0ba4f6,
+);
+//background-color: map-get($custom-colors, color2);
+
+html {
+  height: 100%;
+  //overflow: -moz-scrollbars-vertical;
+  //overflow-y: scroll;
+}
+
+body {
+  height: 100%;
+  background: theme-color("quinary") !important;
+  font-family: 'Open Sans', sans-serif;
+}
+
+a {
+  color: theme-color("primary");
+}
+
+a:focus {
+  outline: none;
+}
+
+a:hover {
+  text-decoration: none;
+}
+//strong {
+//  //color: theme-color("primary");
+//  color: theme-color("secondary");
+//  //color: theme-color("tertiary");
+//
+//}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Abel', sans-serif;
+}
+
+.container-wide {
+  max-width: 1000px;
+}
+
+.flex-grow {
+  flex: 1 0 auto;
+}
+
+.hf {
+  font-family: 'Abel', sans-serif;
+}
+
+@import '../node_modules/bootstrap/scss/bootstrap';
