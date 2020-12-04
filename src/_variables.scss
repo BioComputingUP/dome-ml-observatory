@@ -2,9 +2,9 @@
 @import "../node_modules/bootstrap/scss/variables";
 
 $theme-colors: (
-  primary: #05527b,
-  secondary: #ac5900,
-  tertiary: #34055b,
+  primary: #23a6d5,
+  secondary: #23d5ab,
+  tertiary: #606c71,
   quaternary: #693c15,
   quinary: #fff9e3,
   success: $green,
@@ -21,7 +21,6 @@ $custom-colors: (
   color4: #505050,
   color5: #0ba4f6,
 );
-//background-color: map-get($custom-colors, color2);
 
 html {
   height: 100%;
@@ -30,8 +29,8 @@ html {
 }
 
 body {
+  font-size: 1.1rem !important;
   height: 100%;
-  background: theme-color("quinary") !important;
   font-family: 'Open Sans', sans-serif;
 }
 
@@ -46,15 +45,10 @@ a:focus {
 a:hover {
   text-decoration: none;
 }
-//strong {
-//  //color: theme-color("primary");
-//  color: theme-color("secondary");
-//  //color: theme-color("tertiary");
-//
-//}
+
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Abel', sans-serif;
+  //font-family: 'Abel', sans-serif;
 }
 
 .container-wide {
@@ -69,4 +63,3 @@ h1, h2, h3, h4, h5, h6 {
   font-family: 'Abel', sans-serif;
 }
 
-@import '../node_modules/bootstrap/scss/bootstrap';

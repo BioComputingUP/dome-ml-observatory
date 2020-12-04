@@ -1,15 +1,29 @@
-<div class="d-flex flex-column h-100">
-  <div class="container-fluid">
-<!--    <app-header></app-header>-->
-    <app-navbar></app-navbar>
+
+  <div class="d-flex flex-column h-100">
+
+    <section class="page-header">
+
+      <div class="container-fluid">
+        <!--    <app-header></app-header>-->
+        <div class="h1 text-center">
+          <img src="assets/img/dome-white.svg" class="d-inline-block brand-img" alt="">
+          <h1 class="project-title">DOME-ML</h1>
+          <h2 class="project-subtitle">The website of the DOME guidelines</h2>
+        </div>
+        <div>
+
+        </div>
+        <app-navbar></app-navbar>
+      </div>
+    </section>
+    <div class="container-fluid flex-grow pt-4">
+      <router-outlet></router-outlet>
+    </div>
+    <!--  <div class="container-fluid">-->
+    <!--    <app-footer></app-footer>-->
+    <!--  </div>-->
+    <!--  <div class="container-fluid">-->
+    <!--    <app-bssamples></app-bssamples>-->
+    <!--  </div>-->
   </div>
-  <div class="container-fluid flex-grow p-0">
-    <router-outlet></router-outlet>
-  </div>
-<!--  <div class="container-fluid">-->
-<!--    <app-footer></app-footer>-->
-<!--  </div>-->
-<!--  <div class="container-fluid">-->
-<!--    <app-bssamples></app-bssamples>-->
-<!--  </div>-->
-</div>
+

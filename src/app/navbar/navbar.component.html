@@ -1,31 +1,33 @@
-  <div class="row justify-content-center">
-<!--  <div class="row">-->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <a class="navbar-brand nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-         routerLink="">Navbar
-        <img src="assets/img/logos/EU_logo.svg" class="d-inline-block brand-img" alt="">
-      </a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-              aria-controls="navbarSupportedContent" aria-label="Toggle navigation" [attr.aria-expanded]="!isCollapsed"
-              (click)="isCollapsed = !isCollapsed">
-        <span class="navbar-toggler-icon"></span>
-      </button>
 
-      <div class="collapse navbar-collapse" id="navbarSupportedContent"
-           [ngClass]="{'show': !isCollapsed}">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" routerLink=""
-               title="Home">Home <span
-              class="sr-only">(current)</span></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-item nav-link" routerLinkActive="active" routerLink="about" title="About">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-  </div>
+<div class="row justify-content-center pt-3">
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <a class="navbar-brand nav-item d-lg-none" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" routerLink="">Navbar</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-label="Toggle navigation" [attr.aria-expanded]="!isCollapsed"
+            (click)="isCollapsed = !isCollapsed">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent"
+         [ngClass]="{'show': !isCollapsed}">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link btn-navbar" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" routerLink=""
+             title="Home">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-item nav-link btn-navbar" routerLinkActive="active" routerLink="news" title="News">News</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-item nav-link btn-navbar" routerLinkActive="active" routerLink="dome" title="Dome">DOME</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-item nav-link btn-navbar" routerLinkActive="active" routerLink="guidelines" title="Guidelines">Guidelines</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-item nav-link btn-navbar" routerLinkActive="active" routerLink="cite" title="Cite">Cite</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</div>

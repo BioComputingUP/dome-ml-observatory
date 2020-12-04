@@ -1,1 +1,41 @@
 @import 'variables';
+@import '../node_modules/bootstrap/scss/bootstrap';
+
+body {
+  font-family: "Open Sans", sans-serif  !important;
+}
+
+.page-header {
+  padding: 5rem 6rem;
+  background-size: 400% 400%;
+  background: linear-gradient(90deg, map-get($theme-colors, 'primary'), map-get($theme-colors, 'secondary'));
+}
+
+.project-title {
+  font-size: 3.25rem !important;
+  font-weight: bolder !important;
+  color: rgba(255, 255, 255);
+}
+
+.project-subtitle {
+  color: rgba(255, 255, 255);
+  padding-top: 1rem;
+  font-size: 1.3rem !important;
+  //font-weight: lighter !important;
+}
+
+.section-title {
+  color: map-get($theme-colors, 'primary');
+  font-weight: lighter;
+  font-size: 1.6rem !important;
+  padding-top: 1.5rem;
+  padding-bottom: 1rem;
+}
+
+.li-txt {
+ color: map-get($theme-colors, 'tertiary') !important;
+}
+
+
+
+

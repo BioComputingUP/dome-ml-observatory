@@ -15,6 +15,9 @@ import {AlertModule} from 'ngx-bootstrap/alert';
 import {NgLoggerModule, Level} from '@nsalaun/ng-logger';
 import {ButtonsModule} from 'ngx-bootstrap/buttons';
 import {FormsModule} from '@angular/forms';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { NewsComponent } from './news/news.component';
+import { GuidelinesComponent } from './guidelines/guidelines.component';
 
 
 let LOG_LEVEL = Level.OFF;
@@ -31,12 +34,15 @@ if (environment.enableLogger) {
     HomePageComponent,
     AboutPageComponent,
     NotFoundPageComponent,
-    NavbarComponent
+    NavbarComponent,
+    NewsComponent,
+    GuidelinesComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    TooltipModule.forRoot(),
     AlertModule.forRoot(),
     ButtonsModule.forRoot(),
     NgLoggerModule.forRoot(LOG_LEVEL),

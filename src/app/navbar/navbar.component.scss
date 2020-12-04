@@ -1,5 +1,6 @@
 @import 'src/variables';
 
+
 .brand-img {
   height: 3rem;
 }
@@ -8,6 +9,24 @@
   height: 2rem;
 }
 
-.bg-col {
-  background-color: palegoldenrod;
+.btn-navbar {
+  color: white !important;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+  background-color: rgb(255, 255, 255, 0.12);
+  border: 1px solid rgb(255, 255, 255, 0.23);
+  border-radius: 5px 5px;
+  transition: background-color 0.2s ease;
+
+}
+
+.btn-navbar:hover {
+  background-color: rgb(255, 255, 255, 0.23);
+}
+
+.active {
+  @extend .active;
+  background-color: rgb(255, 255, 255, 0.23);
 }

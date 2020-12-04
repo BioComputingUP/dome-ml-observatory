@@ -5,10 +5,15 @@ import {RouterModule, Routes} from '@angular/router';
 import {HomePageComponent} from './home-page/home-page.component';
 import {AboutPageComponent} from './about-page/about-page.component';
 import {NotFoundPageComponent} from './not-found-page/not-found-page.component';
+import {NewsComponent} from './news/news.component';
+import {GuidelinesComponent} from './guidelines/guidelines.component';
 
 const appRoutes: Routes = [
   {path: '', component: HomePageComponent},
-  {path: 'about', component: AboutPageComponent},
+  {path: 'news', component: NewsComponent},
+  {path: 'guidelines', component: GuidelinesComponent},
+  {path: 'dome', component: AboutPageComponent},
+  {path: 'cite', component: AboutPageComponent},
   {path: '**', component: NotFoundPageComponent}
 ];
 
