@@ -6,18 +6,20 @@ import {BssamplesComponent} from './bssamples/bssamples.component';
 import {HeaderComponent} from './header/header.component';
 import {FooterComponent} from './footer/footer.component';
 import {HomePageComponent} from './home-page/home-page.component';
-import {AboutPageComponent} from './about-page/about-page.component';
 import {AppRoutingModule} from './app-routing.module';
 import {NotFoundPageComponent} from './not-found-page/not-found-page.component';
 import {NavbarComponent} from './navbar/navbar.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {AlertModule} from 'ngx-bootstrap/alert';
+import { CollapseModule } from 'ngx-bootstrap/collapse';
 import {NgLoggerModule, Level} from '@nsalaun/ng-logger';
 import {ButtonsModule} from 'ngx-bootstrap/buttons';
 import {FormsModule} from '@angular/forms';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { NewsComponent } from './news/news.component';
 import { GuidelinesComponent } from './guidelines/guidelines.component';
+import { CiteusComponent } from './citeus/citeus.component';
+import { DomeComponent } from './dome/dome.component';
 
 
 let LOG_LEVEL = Level.OFF;
@@ -32,11 +34,12 @@ if (environment.enableLogger) {
     HeaderComponent,
     FooterComponent,
     HomePageComponent,
-    AboutPageComponent,
     NotFoundPageComponent,
     NavbarComponent,
     NewsComponent,
-    GuidelinesComponent
+    GuidelinesComponent,
+    CiteusComponent,
+    DomeComponent
   ],
   imports: [
     BrowserModule,
@@ -46,6 +49,7 @@ if (environment.enableLogger) {
     AlertModule.forRoot(),
     ButtonsModule.forRoot(),
     NgLoggerModule.forRoot(LOG_LEVEL),
+    CollapseModule.forRoot(),
     FormsModule
   ],
   providers: [],

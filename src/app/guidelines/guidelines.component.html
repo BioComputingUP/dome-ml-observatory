@@ -10,7 +10,7 @@
     <tr>
       <th class="align-middle">Data</th>
       <td class="align-middle">
-        <ul>
+        <ul class="li-txt">
           <li>Data size &amp; quality</li>
           <li>Appropriate partitioning, dependence between train and test data.</li>
           <li>Class imbalance</li>
@@ -18,13 +18,13 @@
         </ul>
       </td>
       <td class="align-middle">
-        <ul>
+        <ul class="li-txt">
           <li>Data not representative of domain application.</li>
           <li>Unreliable or biased performance evaluation.</li>
           <li>Cannot check data credibility.</li>
         </ul>
       </td>
-      <td colspan="2"><p>Data size &amp; distribution is representative of the domain. <span class="badge badge-primary">Requirement</span></p>
+      <td colspan="2" class="li-txt"><p>Data size &amp; distribution is representative of the domain. <span class="badge badge-primary">Requirement</span></p>
         <p>Independence of optimization (training)
           and evaluation (testing) sets. <span class="badge badge-primary">Requirement</span>
         </p>
@@ -36,19 +36,19 @@
     <tr>
       <th class="align-middle">Optimization</th>
       <td class="align-middle">
-        <ul>
+        <ul class="li-txt">
           <li>Overfitting, underfitting and illegal parameter tuning</li>
           <li>Imprecise parameters and protocols given.</li>
         </ul>
       </td>
       <td class="align-middle">
-        <ul>
+        <ul class="li-txt">
           <li>Over/under optimistic performance reported.</li>
           <li>Models noise or miss relevant relationships.</li>
           <li>Results are not reproducible.</li>
         </ul>
       </td>
-      <td colspan="2">
+      <td colspan="2" class="li-txt">
         <p>Clear statement that evaluation sets were not used for feature selection, pre-processing steps
         or parameter tuning. <span class="badge badge-primary">Requirement</span></p>
         <p>Appropriate metrics to prove no over/under fitting, i.e. comparison of training and testing error.
@@ -61,20 +61,20 @@
     <tr>
       <th class="align-middle">Model</th>
       <td class="align-middle">
-        <ul>
+        <ul class="li-txt">
           <li>Unclear if black box or transparent model</li>
           <li>No access to: resulting source code, trained models &amp; data</li>
           <li>Execution time is impractical</li>
         </ul>
       </td>
       <td class="align-middle">
-        <ul class=" lst-kix_nhx1l4fuk60c-0 start">
+        <ul class="li-txt">
           <li>A transparent model shows no explainable behaviour</li>
           <li>Cannot cross compare methods, reproducibility, &amp; check data credibility.</li>
           <li>Model takes too much time to produce results</li>
         </ul>
       </td>
-      <td colspan="2"><p>Describe the choice of black box / interpretable model. If interpretable show examples of it
+      <td colspan="2" class="li-txt"><p>Describe the choice of black box / interpretable model. If interpretable show examples of it
         doing so. <span class="badge badge-primary">Requirement</span>. </p>
         <p>Release of: documented source code + models + executable + UI/webserver + software containers.
           <span class="badge badge-tertiary">Recommendation</span></p>
@@ -84,20 +84,20 @@
     <tr>
       <th class="align-middle">Evaluation</th>
       <td class="align-middle">
-        <ul>
+        <ul class="li-txt">
           <li>Performance measures inadequate</li>
           <li>No comparisons to baselines or other methods</li>
           <li>Highly variable performance.</li>
         </ul>
       </td>
       <td class="align-middle">
-        <ul>
+        <ul class="li-txt">
           <li>Biased performance measures reported. </li>
           <li>The method is falsely claimed as state-of-the-art.</li>
           <li>Unpredictable performance in production.</li>
         </ul>
       </td>
-      <td colspan="2"><p>Compare with public methods &amp; simple models (baselines). <span class="badge badge-primary">Requirement</span> </p>
+      <td colspan="2" class="li-txt"><p>Compare with public methods &amp; simple models (baselines). <span class="badge badge-primary">Requirement</span> </p>
         <p>Adoption of community validated measures and benchmark datasets for evaluation. <span class="badge badge-primary">Requirement</span></p>
         <p>Comparison of related methods and alternatives on the same dataset. <span class="badge badge-tertiary">Recommendation</span></p>
         <p>Evaluate performance on a final independent hold-out set. <span class="badge badge-tertiary">Recommendation</span></p>
