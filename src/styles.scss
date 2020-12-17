@@ -9,7 +9,7 @@ body {
 .page-header {
   padding: 5rem 6rem;
   background-size: 400% 400%;
-  background: linear-gradient(90deg, darken(map-get($theme-colors, 'primary'), 5%), lighten(map-get($theme-colors, 'primary'), 5%));
+  background: linear-gradient(90deg, darken(map-get($theme-colors, 'primary'), 7.5%), lighten(map-get($theme-colors, 'primary'), 7.5%));
 }
 
 .project-title {
