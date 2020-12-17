@@ -3,13 +3,13 @@
 @import url("https://ebi.emblstatic.net/web_guidelines/EBI-Icon-fonts/v1.3/fonts.css");
 
 body {
-  font-family: "Open Sans", sans-serif  !important;
+  font-family: "Lato", sans-serif !important;
 }
 
 .page-header {
   padding: 5rem 6rem;
   background-size: 400% 400%;
-  background: linear-gradient(90deg, map-get($theme-colors, 'primary'), map-get($theme-colors, 'secondary'));
+  background: linear-gradient(90deg, darken(map-get($theme-colors, 'primary'), 5%), lighten(map-get($theme-colors, 'primary'), 5%));
 }
 
 .project-title {
@@ -34,7 +34,7 @@ body {
 }
 
 .li-txt {
- color: map-get($theme-colors, 'tertiary') !important;
+  color: map-get($theme-colors, 'tertiary') !important;
 }
 
 

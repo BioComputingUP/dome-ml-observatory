@@ -2,7 +2,7 @@
 @import "../node_modules/bootstrap/scss/variables";
 
 $theme-colors: (
-  primary: #23a6d5,
+  primary: #0a2942,
   secondary: #23d5ab,
   tertiary: #606c71,
   quaternary: #693c15,
@@ -31,7 +31,7 @@ html {
 body {
   font-size: 1.1rem !important;
   height: 100%;
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Lato', sans-serif;
 }
 
 a {
@@ -48,7 +48,7 @@ a:hover {
 
 
 h1, h2, h3, h4, h5, h6 {
-  //font-family: 'Abel', sans-serif;
+  font-family: 'Lato', sans-serif;
 }
 
 .container-wide {
@@ -60,6 +60,6 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .hf {
-  font-family: 'Abel', sans-serif;
+  font-family: 'Lato', sans-serif;
 }
 
