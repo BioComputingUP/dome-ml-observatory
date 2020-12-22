@@ -1,6 +1,6 @@
 @import 'src/variables';
 
-p {
+td > p {
   padding: 1rem;
   //border: 2px solid rgba(map-get($theme-colors, 'primary'), .2);
   //border-radius: 5px;
@@ -8,10 +8,22 @@ p {
   transition: all 0.2s ease;
 }
 
-p:hover {
+td > p:hover {
   -moz-transform: translate(5px, 0);
   -ms-transform: translate(5px, 0);
   -o-transform: translate(5px, 0);
   -webkit-transform: translate(5px, 0);
   transform: translate(5px, 0)
+}
+
+img {
+  transition: all 0.2s ease;
+}
+
+img:hover {
+  -moz-transform: translate(0, -5px);
+  -ms-transform: translate(0, -5px);
+  -o-transform: translate(0, -5px);
+  -webkit-transform: translate(0, -5px);
+  transform: translate(0, -5px)
 }

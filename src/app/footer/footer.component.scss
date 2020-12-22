@@ -1,11 +1,12 @@
 @import 'src/variables';
 
 .footer-bar {
-  background-color: theme-color("info");
+  background-color: theme-color("primary");
+  color: white !important;
 }
 
 .img-logo {
-  height: 2rem;
+  height: 3rem;
 }
 
 .footer-text {
