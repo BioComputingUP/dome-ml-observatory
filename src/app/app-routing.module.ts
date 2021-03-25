@@ -6,15 +6,13 @@ import {HomePageComponent} from './home-page/home-page.component';
 import {NotFoundPageComponent} from './not-found-page/not-found-page.component';
 import {NewsComponent} from './news/news.component';
 import {GuidelinesComponent} from './guidelines/guidelines.component';
-import {CiteusComponent} from './citeus/citeus.component';
-import {DomeComponent} from './dome/dome.component';
+import {AboutComponent} from './about/about.component';
 
 const appRoutes: Routes = [
   {path: '', component: HomePageComponent},
   {path: 'news', component: NewsComponent},
   {path: 'guidelines', component: GuidelinesComponent},
-  {path: 'dome', component: DomeComponent},
-  {path: 'cite', component: CiteusComponent},
+  {path: 'about', component: AboutComponent},
   {path: '**', component: NotFoundPageComponent}
 ];
 

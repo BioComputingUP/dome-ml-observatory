@@ -1,26 +1,15 @@
-<div class="d-flex flex-column h-100">
+<div class="d-flex flex-column h-100" xmlns="http://www.w3.org/1999/html">
 
   <section class="page-header">
-
-    <div class="container-fluid">
-      <!--    <app-header></app-header>-->
-      <div class="h1 text-center">
-        <img src="assets/img/DOME_image_web_transparent.png" class="d-inline-block brand-img img-fluid" alt="">
-        <h1 class="project-title text-break">DOME-ML</h1>
-        <h2 class="project-subtitle">The website of the DOME guidelines</h2>
-      </div>
-      <div>
-
-      </div>
-      <app-navbar></app-navbar>
-    </div>
+    <app-navbar></app-navbar>
   </section>
+
   <div class="container-fluid flex-grow pt-4">
     <router-outlet></router-outlet>
   </div>
-    <div class="container-fluid mt-5">
-      <app-footer></app-footer>
-    </div>
+  <div class="container-fluid mt-5">
+    <app-footer></app-footer>
+  </div>
   <!--  <div class="container-fluid">-->
   <!--    <app-bssamples></app-bssamples>-->
   <!--  </div>-->

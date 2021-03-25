@@ -1,8 +1,8 @@
 <div class="container-fluid container-wide">
   <section>
-    <h2 class="section-title">Welcome to DOME-ML!</h2>
-    <ul>
-      <li class="li-txt">
+<!--    <h2 class="section-title">Welcome to DOME-ML!</h2>-->
+
+      <div class="li-txt">
         <p><strong>What is DOME-ML?</strong></p>
         <p> DOME-ML (or simply DOME) is an acronym standing for Data, Optimization, Model and Evaluation in Machine
           Learning. DOME is a set of community-wide guidelines, recommendations and checklists spanning these four
@@ -10,51 +10,177 @@
           recommendations are formulated as questions to anyone wishing to pursue implementation of a machine learning
           algorithm. Answers to these questions can be easily included in the supplementary material of published
           papers. </p>
-      </li>
-      <li class="li-txt">
+      </div>
+      <div class="li-txt">
         <p><strong>What is the scope of the recommendations?</strong></p>
         <p>The recommendations cover four separate aspects covering the major areas of ML:</p>
-        <table class="table li-txt">
-          <tr>
-            <th>Data</th>
-            <td>Preprocessing data properly, and using it in a knowledgeable manner is the only
-              way to obtain good generalization
-            </td>
-          </tr>
-          <tr>
-            <th>Optimization</th>
-            <td>Problems associated with a poor choice of optimization strategy.</td>
-          </tr>
-          <tr>
-            <th>Model</th>
-            <td>Fallacies of important aspects of the ML models (black-box models where interpretability is required,
-              dissemination level of the model components, computational requirements to execute trained models)
-            </td>
-          </tr>
-          <tr>
-            <th>Evaluation</th>
-            <td>Valid assessment methodology for any final model with adequate and comprehensive measures.</td>
-          </tr>
-        </table>
-
-      </li>
-      <li class="li-txt">
-        <p><strong>How did DOME come to be?</strong></p>
-        <p>DOME guidelines were initially formulated through the
-          <a href="https://elixir-europe.org/"
-             tooltip="ELIXIR, initially established in 2014, is now a mature intergovernmental European infrastructure
-             for biological data and represents over 220 research organizations in 22 countries across many aspects of
-             bioinformatics">ELIXIR</a>&nbsp;<a href="https://elixir-europe.org/focus-groups/machine-learning"
-          tooltip="The ELIXIR Machine Learning Focus Group was initiated in October 2019, in order to capture the
-          emerging need in Machine Learning expertise across the network.">ML focus group</a> after the
-          publication of a comment calling for the establishment of standards for ML in biology [<a
-            href="https://pubmed.ncbi.nlm.nih.gov/31548714/">PMID: 31548714</a>]. Over 700
-          national experts participate in the development and operation of national services that contribute to data
-          access, integration, training and analysis for the research community. Over 50 of these experts involved in
-          the field of ML have established an ELIXIR ML focus group which held a number of meetings to develop and
-          refine the recommendations based on a
-          broad consensus among them. </p>
-      </li>
-    </ul>
+<!--        <div class="d-flex justify-content-end mb-2">
+          <button type="button" class="btn btn-sm btn-primary mr-1" (click)="expandAll()">Expand All</button>
+          <button type="button" class="btn btn-sm btn-primary ml-1" (click)="collapseAll()">Collapse All</button>
+        </div>-->
+        <div class="row">
+          <div class="col-2" [@openClose]="!dataCollapsed ? 'open' : 'closed'" >
+            <h3 class="section-title"><b>D</b>ata</h3>
+          </div>
+          <div class="col-9">
+            <p [hidden]="!dataCollapsed">Preprocessing data properly, and using it in a knowledgeable manner is the
+              only way to obtain good generalization</p>
+          </div>
+          <div class="p-2 col-1 text-center">
+            <button type="button" class="btn btn-sm btn-primary" (click)="dataCollapsed = !dataCollapsed"
+                    [attr.aria-expanded]="!dataCollapsed" aria-controls="collapseData">
+              <i class="icon icon-common"
+                 [class.icon-chevron-up]="!dataCollapsed"
+                 [class.icon-chevron-down]="dataCollapsed"></i>
+            </button>
+          </div>
+        </div>
+        <div id="collapseData" [collapse]="dataCollapsed" [isAnimated]="true" class="li-txt">
+          <p>Machine learning models analyse experimental biological data by extracting patterns. The extracted patterns
+            can
+            then be used to give biological insights on similar data that were not previously seen by the model. The
+            degree to
+            which a model retains its performance on new data is called generalization power. Building ML models that
+            generalize
+            well is the main challenge of these methodologies, otherwise the trained models cannot be reused.
+            Preprocessing
+            data
+            properly, and using it in a knowledgeable manner is the only way to obtain good generalization. Some basic
+            concerns
+            to consider are:</p>
+          <ul>
+            <li>Training, test and validation datasets are partially or completely overlapping. This includes both
+              sequence/structure similarities and a set of experiments obtained in different conditions or batches (e.g.
+              for
+              next-generation sequencing data);
+            </li>
+            <li>Training dataset is too small to capture the full complexity of the underlying distribution;</li>
+            <li>Validation and test datasets are too small to provide a stable estimate of the model’s generalization
+              power;
+            </li>
+            <li>Training, validation and test sets are not representative of the problem domain due to e.g. presence of
+              high
+              noise levels, imbalanced classes, large chunks of similar (redundant) data points;
+            </li>
+            <li>Data is not released to the public.</li>
+          </ul>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-2" [@openClose]="!optimizationCollapsed ? 'open' : 'closed'">
+            <h3 class="section-title"><b>O</b>ptimization</h3>
+          </div>
+          <div class="col-9">
+            <p [hidden]="!optimizationCollapsed">Problems associated with a poor choice of optimization strategy.</p>
+          </div>
+          <div class="p-2 col-1 text-center">
+            <button type="button" class="btn btn-sm btn-primary"
+                    (click)="optimizationCollapsed = !optimizationCollapsed"
+                    [attr.aria-expanded]="!optimizationCollapsed" aria-controls="collapseOptimization">
+              <i class="icon icon-common"
+                 [class.icon-chevron-up]="!optimizationCollapsed"
+                 [class.icon-chevron-down]="optimizationCollapsed"></i>
+            </button>
+          </div>
+        </div>
+        <div id="collapseOptimization" [collapse]="optimizationCollapsed" [isAnimated]="true" class="li-txt">
+          <p>Optimization, also known as model training, refers to the process of changing values that constitute the
+            model
+            (parameters and hyper-parameters of the model) in a way that maximizes the model’s ability to solve a given
+            problem.
+            In this section, we will focus on problems associated with a poor choice of optimization strategy. Such
+            problems
+            may
+            include:</p>
+          <ul>
+            <li>Selecting a too powerful model, that may over-fit (known as high-variance <a
+              href="https://arxiv.org/abs/1803.08823">[arXiv:1803.08823]</a>);
+            </li>
+            <li>Selecting a too simple model, that may under-fit (known as high-bias <a
+              href="https://arxiv.org/abs/1803.08823">[arXiv:1803.08823]</a>);
+            </li>
+            <li>Parameters are optimized and/or features are selected on hold-out data used to evaluate performance
+              only. This
+              may be particularly hard to spot for meta-predictors;
+            </li>
+            <li>Parameters, hyper-parameters and optimization protocol are not specified and/or files supporting their
+              specification are not open-access or follow a standard widely adopted by the community (if any).
+            </li>
+          </ul>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-2" [@openClose]="!modelCollapsed ? 'open' : 'closed'">
+            <h3 class="section-title"><b>M</b>odel</h3>
+          </div>
+          <div class="col-9">
+            <p [hidden]="!modelCollapsed">Fallacies of important aspects of the ML models (black-box models where
+              interpretability is required,
+              dissemination level of the model components, computational requirements to execute trained models)</p>
+          </div>
+          <div class="p-2 col-1 text-center">
+            <button type="button" class="btn btn-sm btn-primary" (click)="modelCollapsed = !modelCollapsed"
+                    [attr.aria-expanded]="!modelCollapsed" aria-controls="collapseModel">
+              <i class="icon icon-common"
+                 [class.icon-chevron-up]="!modelCollapsed"
+                 [class.icon-chevron-down]="modelCollapsed"></i>
+            </button>
+          </div>
+        </div>
+        <div id="collapseModel" [collapse]="modelCollapsed" [isAnimated]="true" class="li-txt">
+          <p>
+            Good overall performance of the trained model and its ability to generalize well to unseen data are
+            important
+            factors that undoubtedly affect the applicability of any proposed ML research. However, a few other
+            important
+            aspects related to ML models must be kept in mind. These include the following fallacies:
+          </p>
+          <ul>
+            <li>Employing unexplainable models (blackbox) for areas where interpretability is required;</li>
+            <li>The various components of a model (source code, model files, parameter configurations, executables) are
+              not
+              made available to the public;
+            </li>
+            <li>Computational requirements to execute the trained models (generate prediction based on new data) are
+              impractical.
+            </li>
+          </ul>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-2" [@openClose]="!evaluationCollapsed ? 'open' : 'closed'">
+            <h3 class="section-title"><b>E</b>valuation</h3>
+          </div>
+          <div class="col-9">
+            <p [hidden]="!evaluationCollapsed">Valid assessment methodology for any final model with adequate and
+              comprehensive measures.</p>
+          </div>
+          <div class="p-2 col-1 text-center">
+            <button type="button" class="btn btn-sm btn-primary" (click)="evaluationCollapsed = !evaluationCollapsed"
+                    [attr.aria-expanded]="!evaluationCollapsed" aria-controls="collapseEvaluation">
+              <i class="icon icon-common"
+                 [class.icon-chevron-up]="!evaluationCollapsed"
+                 [class.icon-chevron-down]="evaluationCollapsed"></i>
+            </button>
+          </div>
+        </div>
+        <div id="collapseEvaluation" [collapse]="evaluationCollapsed" [isAnimated]="true" class="li-txt">
+          <p>In the implementation of a robust and trustworthy ML method, a comprehensive data description, a correct
+            optimization
+            protocol, and a clearly defined (and open-access) model are critical first steps; however, equally important
+            is a
+            valid assessment methodology for any final model. Here are a few possible risks related to model assessment
+            and
+            evaluation:</p>
+          <ul>
+            <li>The selected performance measures are not adequate or comprehensive for the problem at hand;</li>
+            <li>Reported performances are highly unstable;</li>
+            <li>Obtained performances are not compared to similar studies, methods and community-agreed datasets;
+              obtained
+              performances are not compared to simpler baseline methods.
+            </li>
+          </ul>
+        </div>
+      </div>
   </section>
 </div>

@@ -7,7 +7,7 @@ body {
 }
 
 .page-header {
-  padding: 5rem 6rem;
+  padding: 1rem 1rem;
   background-size: 400% 400%;
   background: linear-gradient(90deg, darken(map-get($theme-colors, 'primary'), 7.5%), lighten(map-get($theme-colors, 'primary'), 7.5%));
 }
@@ -27,10 +27,7 @@ body {
 
 .section-title {
   color: map-get($theme-colors, 'primary');
-  font-weight: lighter;
-  font-size: 1.6rem !important;
-  padding-top: 1.5rem;
-  padding-bottom: 1rem;
+  font-size: 1.4rem !important;
 }
 
 .li-txt {

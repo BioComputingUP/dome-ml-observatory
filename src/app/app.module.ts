@@ -18,9 +18,7 @@ import {FormsModule} from '@angular/forms';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { NewsComponent } from './news/news.component';
 import { GuidelinesComponent } from './guidelines/guidelines.component';
-import { CiteusComponent } from './citeus/citeus.component';
-import { DomeComponent } from './dome/dome.component';
-
+import { AboutComponent } from './about/about.component';
 
 let LOG_LEVEL = Level.OFF;
 if (environment.enableLogger) {
@@ -38,8 +36,7 @@ if (environment.enableLogger) {
     NavbarComponent,
     NewsComponent,
     GuidelinesComponent,
-    CiteusComponent,
-    DomeComponent
+    AboutComponent,
   ],
   imports: [
     BrowserModule,
@@ -55,5 +52,4 @@ if (environment.enableLogger) {
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule {
-}
+export class AppModule {}
