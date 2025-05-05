@@ -1,0 +1,102 @@
+[
+  {
+    "Type": "AI/ML Library",
+    "Name": "Scikit-learn",
+    "Description": "Foundational Python library for traditional machine learning algorithms (classification, regression, clustering, etc.).",
+    "Recommendation": null,
+    "Recommendation relevance": "Essential library/tool (R8) providing standard ML algorithm implementations (support R3).",
+    "URL": "https://github.com/scikit-learn/scikit-learn",
+    "Bio.tools URL": null,
+    "Access model": "Free (Open Source)"
+  },
+  {
+    "Type": "AI/ML Library",
+    "Name": "spaCy",
+    "Description": "Popular Python library for advanced Natural Language Processing tasks (NER, POS tagging, dependency parsing).",
+    "Recommendation": null,
+    "Recommendation relevance": "Library/tool (R8) for advanced NLP tasks (R9).",
+    "URL": "https://github.com/explosion/spaCy",
+    "Bio.tools URL": null,
+    "Access model": "Free (Open Source)"
+  },
+  {
+    "Type": "AI/ML Library",
+    "Name": "NLTK (Natural Language Toolkit)",
+    "Description": "Foundational Python library providing tools and corpora for NLP research and development.",
+    "Recommendation": null,
+    "Recommendation relevance": "Foundational library/tool (R8) for NLP (R9).",
+    "URL": "https://github.com/nltk/nltk",
+    "Bio.tools URL": null,
+    "Access model": "Free (Open Source)"
+  },
+  {
+    "Type": "AI/ML Library",
+    "Name": "Transformers (Hugging Face)",
+    "Description": "Core Hugging Face library providing access to thousands of pre-trained transformer models for NLP, CV, and audio.",
+    "Recommendation": null,
+    "Recommendation relevance": "Core library (R8) providing access to pre-trained models (R2).",
+    "URL": "https://github.com/huggingface/transformers",
+    "Bio.tools URL": null,
+    "Access model": "Free (Open Source)"
+  },
+  {
+    "Type": "AI/ML Library",
+    "Name": "PyTorch Lightning",
+    "Description": "High-level interface for PyTorch, organizing code and simplifying boilerplate for training deep learning models.",
+    "Recommendation": null,
+    "Recommendation relevance": "Library/tool (R8) simplifying PyTorch code structure, aiding reproducibility (R3).",
+    "URL": "https://github.com/Lightning-AI/lightning",
+    "Bio.tools URL": null,
+    "Access model": "Free (Open Source)"
+  },
+  {
+    "Type": "AI/ML Library",
+    "Name": "Fastai",
+    "Description": "High-level deep learning library built on PyTorch, emphasizing ease of use and practical application.",
+    "Recommendation": null,
+    "Recommendation relevance": "Library/tool (R8) implementing best practices (R5) for easier DL application.",
+    "URL": "https://github.com/fastai/fastai",
+    "Bio.tools URL": null,
+    "Access model": "Free (Open Source)"
+  },
+  {
+    "Type": "AI/ML Library",
+    "Name": "XGBoost",
+    "Description": "Optimized distributed gradient boosting library designed for speed and performance.",
+    "Recommendation": null,
+    "Recommendation relevance": "Library/tool (R8) providing efficient gradient boosting implementation (R7).",
+    "URL": "https://github.com/dmlc/xgboost",
+    "Bio.tools URL": null,
+    "Access model": "Free (Open Source)"
+  },
+  {
+    "Type": "AI/ML Library",
+    "Name": "LightGBM",
+    "Description": "Gradient boosting framework by Microsoft known for its speed and efficiency, especially with large datasets.",
+    "Recommendation": null,
+    "Recommendation relevance": "Library/tool (R8) providing efficient gradient boosting implementation (R7).",
+    "URL": "https://github.com/microsoft/LightGBM",
+    "Bio.tools URL": null,
+    "Access model": "Free (Open Source)"
+  },
+  {
+    "Type": "AI/ML Library",
+    "Name": "Dask",
+    "Description": "Flexible library for parallel computing in Python, often used for scaling Pandas, Numpy, and Scikit-learn.",
+    "Recommendation": null,
+    "Recommendation relevance": "Library/tool (R8) for parallel computing, scaling analysis of large data (R1, R7).",
+    "URL": "https://github.com/dask/dask",
+    "Bio.tools URL": null,
+    "Access model": "Free (Open Source)"
+  },
+  {
+    "Type": "Analysis platform",
+    "Name": "Replicate",
+    "Description": "Platform for running ML models via APIs, hosting a large collection of discoverable models (especially generative).",
+    "Recommendation": null,
+    "Recommendation relevance": "Platform (R8) for running and discovering models (R2).",
+    "URL": null,
+    "Bio.tools URL": null,
+    "Access model": "Free Tier + Paid (API Usage)"
+  }
+]
