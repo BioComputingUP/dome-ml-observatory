@@ -7,12 +7,14 @@ import {NotFoundPageComponent} from './not-found-page/not-found-page.component';
 import {NewsComponent} from './news/news.component';
 import {GuidelinesComponent} from './guidelines/guidelines.component';
 import {AboutComponent} from './about/about.component';
+import {DomeRegistryComponent} from './dome_registry/dome_registry';
 
 const appRoutes: Routes = [
   {path: '', component: HomePageComponent},
   {path: 'news', component: NewsComponent},
   {path: 'guidelines', component: GuidelinesComponent},
   {path: 'about', component: AboutComponent},
+    {path: 'dome_registry', component: DomeRegistryComponent},
   {path: '**', component: NotFoundPageComponent}
 ];
 
