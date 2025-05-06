@@ -33,29 +33,22 @@ export class AiEcosystemComponent implements OnInit {
   availableRecommendations: string[] = ['All']; // Initialize with 'All'
 
   // Inject data service if needed
-  // constructor(private dataService: DataService) {}
-  constructor() {} // Placeholder constructor
+  constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
     this.loadData(); // Load data when the component initializes
   }
 
   loadData(): void {
-    // Placeholder for fetching data. Replace with actual data fetching logic.
-    // Example: this.dataService.getEcosystemData().subscribe(data => { ... });
-    this.originalData = [
-      // Sample Data (replace with your actual data source)
-      { Name: 'Tool A', Description: 'Does analysis A', Type: 'Software', Recommendation: 'Recommended', 'Recommendation relevance': 'High', URL: 'http://example.com/a', 'Bio.tools URL': 'http://bio.tools/a', 'Access model': 'Open Source' },
-      { Name: 'Platform B', Description: 'Platform for B tasks', Type: 'Platform', Recommendation: 'Consider', 'Recommendation relevance': 'Medium', URL: 'http://example.com/b', 'Bio.tools URL': null, 'Access model': 'Commercial' },
-      { Name: 'Service C', Description: 'Provides service C', Type: 'Service', Recommendation: 'Recommended', 'Recommendation relevance': 'High', URL: null, 'Bio.tools URL': 'http://bio.tools/c', 'Access model': 'Free' },
-      { Name: 'Tool D', Description: 'Another analysis tool', Type: 'Software', Recommendation: 'Not Recommended', 'Recommendation relevance': 'Low', URL: 'http://example.com/d', 'Bio.tools URL': 'http://bio.tools/d', 'Access model': 'Open Source' },
-    ];
+    this.http.get<any[]>('assets/truncated_ai_registry.json').subscribe(data => {
+      this.originalData = data;
 
-    // Populate filter dropdowns dynamically
-    this.availableTypes = ['All', ...new Set(this.originalData.map(item => item.Type).filter(Boolean))];
-    this.availableRecommendations = ['All', ...new Set(this.originalData.map(item => item.Recommendation).filter(Boolean))];
+      // Populate filter dropdowns dynamically
+      this.availableTypes = ['All', ...new Set(this.originalData.map(item => item.Type).filter(Boolean))];
+      this.availableRecommendations = ['All', ...new Set(this.originalData.map(item => item.Recommendation).filter(Boolean))];
 
-    this.applyFilters(); // Apply initial filters (which might be 'All')
+      this.applyFilters(); // Apply initial filters (which might be 'All')
+    });
   }
 
   applyFilters(): void {

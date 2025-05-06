@@ -21,6 +21,7 @@ import { GuidelinesComponent } from './guidelines/guidelines.component';
 import { AboutComponent } from './about/about.component';
 import { DomeRegistryComponent } from './dome_registry/dome_registry';
 import { AiEcosystemComponent } from './ai_ecosystem/ai_ecosystem.component'; // Import the new component
+import { HttpClientModule } from '@angular/common/http';
 
 let LOG_LEVEL = Level.OFF;
 if (environment.enableLogger) {
@@ -51,7 +52,8 @@ if (environment.enableLogger) {
     ButtonsModule.forRoot(),
     NgLoggerModule.forRoot(LOG_LEVEL),
     CollapseModule.forRoot(),
-    FormsModule
+    FormsModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
