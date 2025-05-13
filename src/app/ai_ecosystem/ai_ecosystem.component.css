@@ -1,1 +1,12 @@
 /* Add any specific styles for the AI Ecosystem component here */
+
+.table-header-custom th {
+  background-color: #002244; /* Slightly lighter dark blue */
+  color: white;
+  border-color: #00172d; /* Optional: adjusted darker border for header cells */
+}
+
+/* Optional: Ensure links in header are also white if any were to be added */
+.table-header-custom th a {
+  color: white;
+}

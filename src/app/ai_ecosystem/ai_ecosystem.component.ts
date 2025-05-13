@@ -20,8 +20,7 @@ interface RegistryItem {
 @Component({
   selector: 'app-ai-ecosystem',
   templateUrl: './ai_ecosystem.html',
-  // Add styleUrls if you have specific styles
-  // styleUrls: ['./ai_ecosystem.component.css'] 
+  styleUrls: ['./ai_ecosystem.component.css'] // Added styleUrls
 })
 export class AiEcosystemComponent implements OnInit {
   
