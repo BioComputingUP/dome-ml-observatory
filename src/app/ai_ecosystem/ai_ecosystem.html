@@ -23,7 +23,13 @@
       placeholder=" ..."
     />
   </div>
-  <!-- Type Filter Removed -->
+  <!-- Add Type Filter Dropdown -->
+  <div>
+    <label for="typeFilter">Type: </label>
+    <select id="typeFilter" [(ngModel)]="selectedType" (ngModelChange)="applyFilters()">
+      <option *ngFor="let type of availableTypes" [value]="type">{{ type }}</option>
+    </select>
+  </div>
   <!-- Add Recommendation Filter Dropdown -->
   <div>
     <label for="recommendationFilter">Recommendation: </label>
@@ -37,37 +43,35 @@
 <table class="table table-striped table-bordered">
   <thead>
     <tr>
+      <th>Type</th> <!-- Added Type column header -->
       <th>Name</th>
       <th>Description</th>
-      <!-- Type Column Removed -->
       <th>Recommendation</th>
       <th>Relevance</th>
-      <!-- URL Column Header Removed -->
       <th>Bio.tools</th>
-      <!-- Access Column Removed -->
+      <th>Access Model</th> <!-- Added Access Model column header -->
     </tr>
   </thead>
   <tbody>
     <!-- Add a message if no data matches -->
     <tr *ngIf="filteredData.length === 0">
-      <td colspan="5" style="text-align: center;">No items match the current filters.</td> <!-- Colspan updated to 5 -->
+      <td colspan="7" style="text-align: center;">No items match the current filters.</td> <!-- Colspan updated to 7 -->
     </tr>
     <!-- Loop through filtered data -->
     <tr *ngFor="let item of filteredData">
+      <td>{{ item.type || 'N/A' }}</td> <!-- Added Type data cell -->
       <td>
         <a *ngIf="item.url" [href]="item.url" target="_blank" rel="noopener noreferrer">{{ item.name || 'N/A' }}</a>
         <span *ngIf="!item.url">{{ item.name || 'N/A' }}</span>
       </td>
       <td>{{ item.description || 'N/A' }}</td>
-      <!-- Type Cell Removed -->
       <td>{{ item['osai-recommendation'] || 'N/A' }}</td>
       <td>{{ item['osai-explanation'] || 'N/A' }}</td>
-      <!-- URL Cell Removed -->
       <td>
         <a *ngIf="item['biotools-url']" [href]="item['biotools-url']" target="_blank" rel="noopener noreferrer">Bio.tools</a>
         <span *ngIf="!item['biotools-url']">N/A</span>
       </td>
-      <!-- Access Cell Removed -->
+      <td>{{ item['access-model'] || 'N/A' }}</td> <!-- Added Access Model data cell -->
     </tr>
   </tbody>
 </table>

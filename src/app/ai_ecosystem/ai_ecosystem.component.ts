@@ -13,6 +13,8 @@ interface RegistryItem {
   'osai-recommendation': string | null;
   'osai-explanation': string | null;
   id: string | null;
+  type: string | null; // Added type
+  'access-model': string | null; // Added access-model
 }
 
 @Component({
@@ -24,11 +26,13 @@ interface RegistryItem {
 export class AiEcosystemComponent implements OnInit {
   
   searchTerm: string = '';
-  selectedRecommendation: string = 'All'; // Default value
+  selectedType: string = 'All'; // Added for Type filter
+  selectedRecommendation: string = 'All'; 
   
   originalData: RegistryItem[] = []; 
   filteredData: RegistryItem[] = []; 
   
+  availableTypes: string[] = ['All']; // Added for Type filter
   availableRecommendations: string[] = ['All', 'R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8', 'R9']; // Hardcoded list
 
   // Inject data service if needed
@@ -57,6 +61,12 @@ export class AiEcosystemComponent implements OnInit {
             this.originalData = [];
           }
 
+          // Populate type filter dropdown dynamically
+          this.availableTypes = ['All', ...new Set(this.originalData.map(item => item.type).filter(Boolean) as string[])].sort((a, b) => {
+            if (a === 'All') return -1;
+            if (b === 'All') return 1;
+            return a.localeCompare(b);
+          });
           // Dynamic population of availableRecommendations removed as it's now hardcoded.
 
           this.applyFilters(); // Apply initial filters (which might be 'All')
@@ -75,13 +85,19 @@ export class AiEcosystemComponent implements OnInit {
   applyFilters(): void {
     let data = [...this.originalData]; // Start with the original data
 
-    // Filter by search term (case-insensitive) using available fields: name and description
+    // Filter by search term (case-insensitive) using available fields: name, description, and type
     if (this.searchTerm) {
       const lowerSearchTerm = this.searchTerm.toLowerCase();
       data = data.filter(item => 
         (item.name && item.name.toLowerCase().includes(lowerSearchTerm)) ||
-        (item.description && item.description.toLowerCase().includes(lowerSearchTerm))
+        (item.description && item.description.toLowerCase().includes(lowerSearchTerm)) ||
+        (item.type && item.type.toLowerCase().includes(lowerSearchTerm)) // Added type to search
       );
+    }
+
+    // Filter by type
+    if (this.selectedType && this.selectedType !== 'All') {
+      data = data.filter(item => item.type === this.selectedType);
     }
 
     // Filter by recommendation using 'osai-recommendation'
