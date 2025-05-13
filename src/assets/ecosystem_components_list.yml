@@ -1,0 +1,2507 @@
+- description: Foundational Python library for traditional machine learning algorithms
+    (classification, regression, clustering, dimensionality reduction, model selection,
+    and preprocessing).
+  id: ''
+  name: Scikit-learn
+  url: https://github.com/scikit-learn/scikit-learn
+  biotools-url: https://bio.tools/scikit-learn
+  fairsharing-url: ''
+  osai-recommendation: R5
+  osai-explanation: As a library, it provides code that can be made portable.
+- description: Python library for advanced Natural Language Processing (NLP) tasks,
+    designed for production use. Features include NER, POS tagging, dependency parsing,
+    and word vectors.
+  id: ''
+  name: spaCy
+  url: https://github.com/explosion/spaCy
+  biotools-url: https://bio.tools/spacy
+  fairsharing-url: ''
+  osai-recommendation: R5
+  osai-explanation: As a library, it provides code that can be made portable.
+- description: Widely-used Python library providing tools and corpora for Natural
+    Language Processing research and development, including tokenization, stemming,
+    tagging, parsing, and classification.
+  id: ''
+  name: NLTK (Natural Language Toolkit)
+  url: https://github.com/nltk/nltk
+  biotools-url: https://bio.tools/nltk
+  fairsharing-url: ''
+  osai-recommendation: R5
+  osai-explanation: As a library, it provides code that can be made portable.
+- description: Hugging Face library providing thousands of pre-trained models for
+    Natural Language Processing (NLP), Computer Vision (CV), and audio tasks. Enables
+    easy download and use of state-of-the-art transformer models.
+  id: ''
+  name: Transformers (Hugging Face)
+  url: https://github.com/huggingface/transformers
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R5
+  osai-explanation: Provides access to models (R2) and is a library for portable code
+    (R5).
+- description: A lightweight PyTorch wrapper for high-performance AI research. Scales
+    models and training loops with minimal code changes.
+  id: ''
+  name: PyTorch Lightning
+  url: https://github.com/Lightning-AI/lightning
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R5
+  osai-explanation: Focuses on code structure for models, contributing to portability.
+- description: High-level deep learning library built on PyTorch, simplifying the
+    training of fast and accurate neural nets using modern best practices.
+  id: ''
+  name: Fastai
+  url: https://github.com/fastai/fastai
+  biotools-url: https://bio.tools/fastai
+  fairsharing-url: ''
+  osai-recommendation: R5, R3
+  osai-explanation: Offers training/courses on best practices (R3) and is a library
+    for portable code (R5).
+- description: Optimized distributed gradient boosting library designed for speed,
+    performance, and flexibility. Widely used for structured/tabular data.
+  id: ''
+  name: XGBoost
+  url: https://github.com/dmlc/xgboost
+  biotools-url: https://bio.tools/xgboost
+  fairsharing-url: ''
+  osai-recommendation: R5, R7
+  osai-explanation: Library for portable code (R5); efficiency can be a green AI technique
+    (R7).
+- description: Gradient boosting framework by Microsoft that uses tree-based learning
+    algorithms. Known for its speed, efficiency, and performance, especially with
+    large datasets.
+  id: ''
+  name: LightGBM
+  url: https://github.com/microsoft/LightGBM
+  biotools-url: https://bio.tools/lightgbm
+  fairsharing-url: ''
+  osai-recommendation: R5, R7
+  osai-explanation: Library for portable code (R5); efficiency can be a green AI technique
+    (R7).
+- description: Flexible parallel computing library for Python that scales existing
+    Python libraries like NumPy, Pandas, and Scikit-learn to larger-than-memory datasets
+    or distributed environments.
+  id: ''
+  name: Dask
+  url: https://github.com/dask/dask
+  biotools-url: https://bio.tools/dask
+  fairsharing-url: ''
+  osai-recommendation: R5
+  osai-explanation: Facilitates portable and scalable code.
+- description: Platform for running and sharing machine learning models via APIs.
+    Users can run models hosted by others or deploy their own.
+  id: ''
+  name: Replicate
+  url: https://replicate.com/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2
+  osai-explanation: Acts as a registry/platform to share models.
+- description: Unified data analytics platform that combines data lakes with data
+    warehouses to provide a single source for data engineering, machine learning,
+    and business analytics.
+  id: ''
+  name: Databricks Lakehouse Platform
+  url: https://www.databricks.com/product/data-lakehouse
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2
+  osai-explanation: Can host models and datasets for AI.
+- description: MLOps platform for model lifecycle management, including model deployment,
+    monitoring, versioning, and governance.
+  id: ''
+  name: Verta.ai
+  url: https://www.verta.ai/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R4
+  osai-explanation: Manages models (R2) and supports versioning/governance for info
+    disclosure (R4).
+- description: Experiment tracking and model management platform that allows ML practitioners
+    to track, compare, explain, and optimize experiments and models.
+  id: ''
+  name: Comet ML
+  url: https://www.comet.com/site/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R4, R9
+  osai-explanation: Tracks experiments (R4) and can monitor resource usage (R9).
+- description: Open-source data labeling tool supporting various data types (images,
+    text, audio, video, time series) for machine learning.
+  id: ''
+  name: Label Studio
+  url: https://github.com/heartexlabs/label-studio
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R6
+  osai-explanation: Aids in standardizing datasets through labeling.
+- description: Hub providing access to GPU-optimized AI software containers, pre-trained
+    models, SDKs, and Helm charts for AI and HPC.
+  id: ''
+  name: NVIDIA GPU Cloud (NGC)
+  url: https://www.nvidia.com/en-us/gpu-cloud/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R8
+  osai-explanation: Hosts models/datasets (R2) and focuses on specific (NVIDIA) hardware
+    (R8).
+- description: Open-source project providing web-based interactive computational environments
+    (Notebook, Lab) supporting code, equations, visualizations, and narrative text
+    across many programming languages.
+  id: ''
+  name: Jupyter
+  url: https://jupyter.org/
+  biotools-url: https://bio.tools/jupyter
+  fairsharing-url: ''
+  osai-recommendation: R5
+  osai-explanation: Notebooks facilitate portable code and documentation.
+- description: Unified analytics engine for large-scale data processing, with MLlib
+    library for distributed machine learning.
+  id: ''
+  name: Apache Spark
+  url: https://spark.apache.org/
+  biotools-url: https://bio.tools/spark
+  fairsharing-url: ''
+  osai-recommendation: R5
+  osai-explanation: Provides a framework for scalable and potentially portable ML
+    code.
+- description: Community-driven challenges for benchmarking computational methods,
+    including ML, in biology and medicine.
+  id: ''
+  name: DREAM (Dialogue for Reverse Engineering Assessments and Methods) Challenges
+  url: https://dreamchallenges.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R6
+  osai-explanation: Defines evaluation protocols and uses standardized datasets.
+- description: Industry-standard benchmarks for measuring the performance of machine
+    learning hardware, software, and services. Developed by MLCommons.
+  id: ''
+  name: MLPerf
+  url: https://mlcommons.org/en/benchmarks/mlperf/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R6, R8, R9
+  osai-explanation: Standardizes evaluation (R6), hardware performance (R8), and energy
+    (R9).
+- description: Benchmark challenges for biomedical semantic indexing, question answering,
+    and summarization.
+  id: ''
+  name: BioASQ (Biomedical Semantic Question Answering)
+  url: http://bioasq.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R6
+  osai-explanation: Defines evaluation protocols and uses standardized datasets.
+- description: Community experiment to evaluate methods for predicting intrinsically
+    disordered proteins.
+  id: ''
+  name: CAID (Critical Assessment of Intrinsic Disorder prediction)
+  url: https://www.idpcentral.org/caid
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R6
+  osai-explanation: Defines evaluation protocols and uses standardized datasets.
+- description: Community-wide experiment for protein structure prediction, assessing
+    methods including AI/ML.
+  id: ''
+  name: CASP (Critical Assessment of protein Structure Prediction)
+  url: https://predictioncenter.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R6
+  osai-explanation: Defines evaluation protocols and uses standardized datasets.
+- description: Community experiment to assess computational methods for predicting
+    the functional, phenotypic, and clinical impact of genomic variation.
+  id: ''
+  name: CAGI (Critical Assessment of Genome Interpretation)
+  url: https://genomeinterpretation.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R6
+  osai-explanation: Defines evaluation protocols and uses standardized datasets.
+- description: Guidelines by ESIP to evaluate if environmental datasets are prepared
+    for AI/ML applications, emphasizing FAIR principles.
+  id: ''
+  name: Checklist to Examine AI-readiness for Open Environmental Datasets. Version
+    1.0. Earth Science Information Partners.
+  url: https://github.com/ESIPFed/data-readiness
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R4, R6
+  osai-explanation: Promotes metadata (R1), info disclosure (R4), and dataset standardization
+    (R6).
+- description: Consensus-based recommendations for improving the rigor, reproducibility,
+    and reporting of machine learning-based scientific research.
+  id: ''
+  name: REFORMS (Recommendations for Machine-learning-based Science)
+  url: https://reforms.cs.princeton.edu/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R4
+  osai-explanation: Focuses on disclosing relevant model and dataset information.
+- description: Checklists and guidelines from QUAREP-LiMi for publishing images and
+    image analyses, including specific considerations for machine learning workflows.
+  id: ''
+  name: Community-developed checklists for publishing images and image analyses
+  url: https://quarep-limi.github.io/WG12_checklists_for_image_publishing/analysis_workflows/3_machine_learning_workflows.html
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R4
+  osai-explanation: Provides guidelines for disclosing information.
+- description: Framework or matrix organizing design patterns for creating more environmentally
+    sustainable and energy-efficient machine learning systems. Specific public URL
+    not readily found, concept exists in green AI literature.
+  id: ''
+  name: Sustainable ML Design Pattern Matrix (SML-DPM)
+  url: ''
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R7
+  osai-explanation: Directly relates to implementing green AI/ML techniques.
+- description: Collection of design patterns by the Green Software Foundation to build
+    more energy-efficient and environmentally sustainable software, applicable to
+    ML systems.
+  id: ''
+  name: Green Software Patterns
+  url: https://patterns.greensoftware.foundation/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R7
+  osai-explanation: Directly relates to implementing green AI/ML techniques.
+- description: A project and tool for estimating the carbon footprint of computational
+    research, particularly AI/ML model training.
+  id: ''
+  name: Green Algorithms
+  url: http://www.green-algorithms.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R9
+  osai-explanation: Measures and monitors environmental impact.
+- description: Cloud-based platform for computational reproducibility, allowing researchers
+    to share and run code, data, and environments in 'Compute Capsules'.
+  id: ''
+  name: Code Ocean
+  url: https://codeocean.com/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R5
+  osai-explanation: Platform to share models/datasets (R2) and ensure portable code
+    via capsules (R5).
+- description: Free cloud-based Jupyter Notebook service by Google offering access
+    to computing resources (GPUs/TPUs) for ML development and education.
+  id: ''
+  name: Google Colab (Colaboratory)
+  url: https://colab.research.google.com/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R5, R8
+  osai-explanation: Platform for sharing (R2), using notebooks for portable code (R5),
+    and providing hardware access (R8).
+- description: Non-profit, community-driven Git hosting service based on Gitea, focusing
+    on Free and Open Source Software.
+  id: ''
+  name: CodeBerg
+  url: https://codeberg.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R5
+  osai-explanation: Platform for sharing models/datasets (R2) and code (R5).
+- description: Widely used platform for hosting code repositories, version control,
+    and collaboration, essential for open-source ML projects.
+  id: ''
+  name: GitHub
+  url: https://github.com/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R5
+  osai-explanation: Platform for sharing models/datasets (R2) and code (R5).
+- description: EMBL-EBI repository for storing, sharing, and simulating quantitative
+    models of biological processes, including systems biology and ML-based models.
+  id: ''
+  name: BioModels
+  url: https://www.ebi.ac.uk/biomodels/
+  biotools-url: https://bio.tools/biomodels_database
+  fairsharing-url: https://fairsharing.org/FAIRsharing.jpt2xj
+  osai-recommendation: R2
+  osai-explanation: Database for sharing models.
+- description: Open-source web application for creating data repositories to share,
+    preserve, cite, explore, and analyze research data.
+  id: ''
+  name: Dataverse
+  url: https://dataverse.org/
+  biotools-url: https://bio.tools/dataverse
+  fairsharing-url: https://fairsharing.org/FAIRsharing.60ftv5
+  osai-recommendation: R2
+  osai-explanation: Database for sharing datasets.
+- description: Online digital repository for researchers to preserve and share research
+    outputs like datasets, figures, software, and papers.
+  id: ''
+  name: Figshare
+  url: https://figshare.com/
+  biotools-url: ''
+  fairsharing-url: https://fairsharing.org/FAIRsharing.j9m7kj
+  osai-recommendation: R2
+  osai-explanation: Repository for sharing models and datasets.
+- description: Preprint server for research papers in physics, mathematics, computer
+    science (including AI/ML), quantitative biology, and other fields.
+  id: ''
+  name: arXiv
+  url: https://arxiv.org/
+  biotools-url: ''
+  fairsharing-url: https://fairsharing.org/FAIRsharing.832g2x
+  osai-recommendation: R2, R4
+  osai-explanation: Shares papers often describing models/datasets (R2) and disclosing
+    info (R4).
+- description: Repository of freely-available physiological signals (e.g., ECG, EEG)
+    and related open-source software, widely used for ML in healthcare.
+  id: ''
+  name: PhysioNet
+  url: https://physionet.org/
+  biotools-url: https://bio.tools/physionet
+  fairsharing-url: https://fairsharing.org/FAIRsharing.kfrh1n
+  osai-recommendation: R2
+  osai-explanation: Database for sharing datasets.
+- description: Git extension for versioning large files, crucial for managing large
+    datasets or model weights within Git repositories.
+  id: ''
+  name: Git LFS (Large File Storage)
+  url: https://git-lfs.com/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R5
+  osai-explanation: Facilitates sharing large model/dataset files (R2) alongside code
+    (R5).
+- description: A metadata format for ML-ready datasets developed by MLCommons, designed
+    to make datasets easily findable, loadable, and usable across tools.
+  id: ''
+  name: Croissant
+  url: https://mlcommons.org/working-groups/data/croissant/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1
+  osai-explanation: AI-specific metadata format.
+- description: A metadata schema by the RDA FAIR4ML WG to apply FAIR principles (Findable,
+    Accessible, Interoperable, Reusable) to machine learning models.
+  id: ''
+  name: FAIR4ML (FAIR for Machine Learning) Schema
+  url: https://github.com/RDA-FAIR4ML/FAIR4ML-schema
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1
+  osai-explanation: AI-specific metadata schema.
+- description: An extension to the Croissant metadata standard for describing geospatial
+    datasets used in AI/ML.
+  id: ''
+  name: Geo-croissant
+  url: https://www.earthdata.nasa.gov/news/blog/introducing-croissant-format-machine-learning-datasets
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1
+  osai-explanation: AI-specific metadata extension.
+- description: A specification for a common language to describe geospatial information,
+    enabling easy indexing, discovery, and analysis of spatiotemporal assets.
+  id: ''
+  name: STAC (SpatioTemporal Asset Catalog)
+  url: https://stacspec.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1
+  osai-explanation: Metadata standard relevant to AI datasets.
+- description: An open standard format for representing machine learning models, enabling
+    interoperability between different ML frameworks.
+  id: ''
+  name: ONNX (Open Neural Network Exchange)
+  url: https://onnx.ai/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R5
+  osai-explanation: AI-specific metadata format (R1) that also ensures model portability
+    (R5).
+- description: An ontology of well-defined terms for bioinformatics concepts, including
+    data types, operations, topics, and formats relevant to ML in life sciences.
+  id: ''
+  name: EDAM ontology
+  url: https://edamontology.org/
+  biotools-url: https://bio.tools/edam
+  fairsharing-url: https://fairsharing.org/FAIRsharing.wsfyg2
+  osai-recommendation: R1
+  osai-explanation: Ontology for standardizing metadata terms.
+- description: Framework for documenting machine learning models, providing standardized
+    information about their intended use, performance, limitations, and ethical considerations.
+  id: ''
+  name: Model cards
+  url: https://modelcards.withgoogle.com/about
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R4
+  osai-explanation: Framework for AI-specific metadata (R1) and disclosing model info
+    (R4).
+- description: An ontology that standardizes descriptions of ML workflows, datasets,
+    models, and experiments for better discoverability, reproducibility, and interoperability.
+  id: ''
+  name: Machine Learning Sailor Ontology (MLSO)
+  url: https://w3id.org/mlso/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1
+  osai-explanation: AI-specific metadata ontology.
+- description: Documentation framework, similar to Model Cards, for describing datasets
+    used in ML, detailing provenance, composition, and potential biases.
+  id: ''
+  name: Dataset cards
+  url: https://huggingface.co/docs/hub/en/datasets-cards
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R4
+  osai-explanation: Framework for AI-specific metadata (R1) and disclosing dataset
+    info (R4).
+- description: An open engineering consortium focused on accelerating machine learning
+    innovation through benchmarks, public datasets, and best practices.
+  id: ''
+  name: MLCommons
+  url: https://mlcommons.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R2, R3, R6
+  osai-explanation: Develops metadata standards (R1), hosts datasets/benchmarks (R2,
+    R6), promotes best practices (R3).
+- description: Research Data Alliance Interest Group developing guidelines and practices
+    for making Machine Learning models and related artifacts FAIR.
+  id: ''
+  name: RDA (Research Data Alliance) - FAIR4ML (FAIR for Machine Learning) Interest
+    Group
+  url: https://www.rd-alliance.org/groups/fair-machine-learning-fair4ml-ig
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R3, R4
+  osai-explanation: Focuses on AI metadata (R1), best practices (R3), and info disclosure
+    (R4).
+- description: Focus group within ELIXIR addressing challenges and opportunities of
+    ML in life sciences, fostering collaboration and best practices.
+  id: ''
+  name: ELIXIR Machine Learning Focus Group
+  url: https://elixir-europe.org/focus-groups/machine-learning
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R3
+  osai-explanation: Promotes training and best practices.
+- description: Organization providing an open-source platform with pre-trained AI/ML
+    models for drug discovery and infectious disease research, especially for low-resource
+    settings.
+  id: ''
+  name: Ersilia Open Source Initiative
+  url: https://www.ersilia.io/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R3
+  osai-explanation: Provides models (R2) and promotes their use/best practices (R3).
+- description: UK-based research centre specializing in text mining and NLP, applying
+    ML techniques in fields like bioinformatics.
+  id: ''
+  name: National Centre for Text Mining (NaCTeM)
+  url: https://www.nactem.ac.uk/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: International community of developers, researchers, and adopters promoting
+    open, safe, and responsible AI. Launched by IBM and Meta.
+  id: ''
+  name: The AI Alliance
+  url: https://thealliance.ai/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: Organization focused on establishing, promoting, and potentially certifying
+    best practices in machine learning development and deployment.
+  id: ''
+  name: The Foundation for Best Practices in Machine Learning
+  url: https://www.fbpml.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R3, R4
+  osai-explanation: Promotes best practices (R3) including info disclosure (R4).
+- description: Non-profit organization focused on developing standards, tools, and
+    best practices for building environmentally sustainable software, including AI/ML
+    applications.
+  id: ''
+  name: Green Software Foundation
+  url: https://greensoftware.foundation/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R7, R9
+  osai-explanation: Focuses on green techniques (R7) and impact measurement (R9).
+- description: European initiative aiming to strengthen European excellence in AI
+    research and innovation, with a network of research groups and labs.
+  id: ''
+  name: Confederation of Laboratories for Artificial Intelligence Research in Europe
+    (CLAIRE)
+  url: https://claire-ai.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: US activities of the GO FAIR initiative, focusing on implementing FAIR
+    data principles to support Artificial Intelligence research and applications.
+  id: ''
+  name: GO FAIR US - AI
+  url: https://www.gofair.us/gofair-and-ai-ml/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R3, R4
+  osai-explanation: Promotes AI metadata (R1), best practices (R3), and info disclosure
+    (R4).
+- description: Training programs or courses focused on educating about Fairness, Accountability,
+    Confidentiality, and Transparency (FACT) principles in AI systems. This link refers
+    to a specific course outcome.
+  id: ''
+  name: FACT-AI (Fairness, Accountability, Confidentiality, and Transparency in AI)
+    training
+  url: https://ivi.uva.nl/content/news/2022/06/successful-fact-ai-course-leads-to-student-awards.html
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R3
+  osai-explanation: Directly provides training on best practices.
+- description: Represents Google's AI research efforts, including DeepMind, focused
+    on advancing AI for scientific discovery and societal benefit.
+  id: ''
+  name: Google AI / DeepMind
+  url: https://ai.google/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: Meta's AI research lab (FAIR) contributing significantly to open-source
+    AI/ML advancements in areas like computer vision, NLP, and reinforcement learning.
+  id: ''
+  name: Meta AI (Fundamental AI Research)
+  url: https://ai.meta.com/research/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: Microsoft's AI research division working across various AI domains,
+    integrating AI into products and advancing fundamental research.
+  id: ''
+  name: Microsoft Research AI
+  url: https://www.microsoft.com/en-us/research/research-area/artificial-intelligence/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: AI research and deployment company known for models like GPT, DALL-E,
+    and ChatGPT, aiming to ensure artificial general intelligence benefits all of
+    humanity.
+  id: ''
+  name: OpenAI
+  url: https://openai.com/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: Non-profit research institute focused on AI research and engineering
+    for the common good, with projects in NLP, computer vision, and reasoning.
+  id: ''
+  name: Allen Institute for AI (AI2)
+  url: https://allenai.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: Grassroots research collective focused on open-source large language
+    models, interpretability, and AI alignment.
+  id: ''
+  name: EleutherAI
+  url: https://www.eleuther.ai/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: Multi-stakeholder non-profit organization focused on responsible AI
+    development and practices, bringing together industry, academia, and civil society.
+  id: ''
+  name: Partnership on AI
+  url: https://partnershiponai.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: Canadian AI research institute based in Toronto, focusing on deep learning
+    and machine learning research, training, and application.
+  id: ''
+  name: Vector Institute
+  url: https://vectorinstitute.ai/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: Leading academic AI research institute based in Montreal, specializing
+    in deep learning, reinforcement learning, and their applications.
+  id: ''
+  name: Mila - Quebec AI Institute
+  url: https://mila.quebec/en/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: Network promoting European AI research excellence through research
+    programs, units, and PhD programs.
+  id: ''
+  name: ELLIS (European Laboratory for Learning and Intelligent Systems)
+  url: https://ellis.eu/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: Vendor-led consortium that develops and promotes data mining standards,
+    most notably PMML (Predictive Model Markup Language).
+  id: ''
+  name: Data Mining Group (DMG)
+  url: https://www.dmg.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1
+  osai-explanation: Develops AI-specific metadata standards (PMML).
+- description: Focus group within ELIXIR addressing challenges and opportunities of
+    ML in life sciences.
+  id: ''
+  name: ELIXIR Europe ML Focus Group
+  url: https://elixir-europe.org/focus-groups/machine-learning
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R3
+  osai-explanation: Promotes training and best practices.
+- description: Nature Methods paper presenting community-developed checklists (QUAREP-LiMi)
+    for publishing images and image analyses, including ML aspects.
+  id: ''
+  name: Community-developed checklists for publishing images and image analyses
+  url: https://www.nature.com/articles/s41592-023-01987-9
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R4
+  osai-explanation: Guideline on disclosing information.
+- description: Research paper proposing principles and assessment metrics for making
+    machine learning models FAIR.
+  id: ''
+  name: 'FAIR for Machine Learning Model: Principles and Assessment Metrics'
+  url: https://zenodo.org/records/13835105
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R4
+  osai-explanation: Proposes AI-specific metadata/principles (R1) and info disclosure
+    (R4).
+- description: Preprint describing the development of an AI ontology using LLMs to
+    structure AI concepts.
+  id: ''
+  name: 'The Artificial Intelligence Ontology: LLM-assisted construction of AI concept
+    hierarchies'
+  url: https://arxiv.org/abs/2404.03044
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1
+  osai-explanation: Focuses on AI-specific metadata (ontology).
+- description: Scientific Data paper on a knowledge graph for AI tasks and benchmarks,
+    using ontologies.
+  id: ''
+  name: A curated, ontology-based, large-scale knowledge graph of artificial intelligence
+    tasks and benchmarks
+  url: https://www.nature.com/articles/s41597-022-01435-x
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R2, R6
+  osai-explanation: Uses AI metadata (R1), acts as a model/dataset DB (R2), standardizes
+    tasks/benchmarks (R6).
+- description: Nature Methods primer on the use of language models in biological research.
+  id: ''
+  name: 'Language models for biological research: a primer'
+  url: https://www.nature.com/articles/s41592-024-02354-y
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: Nature Methods perspective on data leakage in machine learning and
+    how to avoid it.
+  id: ''
+  name: Data leakage
+  url: https://www.nature.com/articles/s41592-024-02362-y
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R4, R6
+  osai-explanation: Addresses info disclosure (R4) and dataset/protocol integrity
+    (R6).
+- description: Nature Reviews Molecular Cell Biology paper providing an introductory
+    guide to ML for biologists.
+  id: ''
+  name: A guide to machine learning for biologists
+  url: https://www.nature.com/articles/s41580-021-00407-0
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R3
+  osai-explanation: Training material.
+- description: Nature Methods paper proposing standards for reproducibility in ML
+    for life sciences.
+  id: ''
+  name: Reproducibility standards for machine learning in the life sciences
+  url: https://www.nature.com/articles/s41592-021-01256-7
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R4, R5, R6
+  osai-explanation: Proposes info disclosure (R4), portable code practices (R5), and
+    dataset/eval standards (R6).
+- description: Nature Methods comment on the importance of continuous monitoring and
+    validation of ML models.
+  id: ''
+  name: Keeping checks on machine learning
+  url: https://www.nature.com/articles/s41592-021-01300-6
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R4
+  osai-explanation: Advocates for info disclosure and model validation.
+- description: Nature Methods perspective on integrating AI into biological research.
+  id: ''
+  name: Embedding AI in biology
+  url: https://www.nature.com/articles/s41592-024-02391-7
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: Nature Methods comment advocating for community governance in the application
+    of AI in biology.
+  id: ''
+  name: 'AI meets biology: a call for community governance'
+  url: https://www.nature.com/articles/s41592-024-02332-4
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: Nature Methods editorial discussing the importance of AI literacy for
+    researchers and the public.
+  id: ''
+  name: Quest for AI literacy
+  url: https://www.nature.com/articles/s41592-024-02369-5
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R3
+  osai-explanation: Discusses training and education.
+- description: Frontiers in Systems Biology paper on combining mechanistic models
+    with ML for systems biology.
+  id: ''
+  name: 'The rise of scientific machine learning: a perspective on combining mechanistic
+    modelling with machine learning for systems biology'
+  url: https://www.frontiersin.org/journals/systems-biology/articles/10.3389/fsysb.2024.1407994/full
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: Scientific Data paper assessing the FAIRness and transparency of data
+    in scientific papers for ML use. Future publication date, URL might be for accepted
+    manuscript or similar.
+  id: ''
+  name: On the Readiness of Scientific Data Papers for a Fair and Transparent Use
+    in Machine Learning
+  url: https://www.nature.com/articles/s41597-025-04402-4
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R4
+  osai-explanation: Focuses on info disclosure for datasets.
+- description: Nature Machine Intelligence paper on an audit of dataset licensing
+    and attribution in AI.
+  id: ''
+  name: A large-scale audit of dataset licensing and attribution in AI
+  url: https://www.nature.com/articles/s42256-024-00878-8
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R4
+  osai-explanation: Concerns disclosure of dataset information.
+- description: Patterns journal paper on a DSL for describing ML datasets.
+  id: ''
+  name: A domain-specific language for describing machine learning datasets
+  url: https://www.sciencedirect.com/science/article/pii/S2590118423000199
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1
+  osai-explanation: Proposes an AI-specific metadata language.
+- description: Research paper proposing principles and assessment metrics for making
+    machine learning models FAIR.
+  id: ''
+  name: 'FAIR for Machine Learning Model: Principles and Assessment Metrics'
+  url: https://zenodo.org/records/13835105
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R4
+  osai-explanation: Proposes AI-specific metadata/principles (R1) and info disclosure
+    (R4).
+- description: Journal article discussing concepts, methods (like Explainable AI -
+    XAI), and the importance of transparency in AI systems.
+  id: ''
+  name: Transparent AI
+  url: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8144864/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R4
+  osai-explanation: Focuses on disclosing model information (explainability).
+- description: Preprint proposing Scientific Model Development (SMD) Cards as a framework
+    for documenting scientific models, including ML models.
+  id: ''
+  name: SMD (Scientific Model Development) Card
+  url: https://arxiv.org/abs/2406.11143
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R4
+  osai-explanation: Framework for AI-specific metadata (R1) and disclosing model info
+    (R4).
+- description: Science Advances paper detailing the REFORMS recommendations for ML-based
+    science.
+  id: ''
+  name: 'REFORMS: Consensus-based Recommendations for Machine-learning-based Science'
+  url: https://www.science.org/doi/10.1126/sciadv.adk3452
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R4
+  osai-explanation: Focuses on disclosing relevant model and dataset information.
+- description: Placeholder to extract resources from literature discussing FAIR principles
+    for AI artifacts (models, data, software).
+  id: ''
+  name: 'FAIR4AI Paper (Action: Extract Resources)'
+  url: ''
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: Placeholder to extract MLOps tools from the provided image/link. The
+    link itself is a blog post listing MLOps tools.
+  id: ''
+  name: 'MLOps Tools Image (Action: Extract Resources)'
+  url: https://research.aimultiple.com/mlops-tools/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: Refers to the ML-Schema initiative and repository for developing a
+    common schema for describing machine learning models, datasets, and experiments,
+    often as an extension of Schema.org.
+  id: ''
+  name: ML Schema
+  url: https://github.com/ML-Schema/core
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1
+  osai-explanation: AI-specific metadata schema.
+- description: Refers to the Machine Learning EXchange (MEX) format and related projects
+    from AKSW group for exchanging ML experiments.
+  id: ''
+  name: MEX
+  url: https://aksw.org/Projects/MEX.html
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R2
+  osai-explanation: Format for metadata (R1) and sharing experiments/models (R2).
+- description: Discusses the use of SKOS for creating formal classifications (taxonomies)
+    for machine learning concepts. This link is a blog post explaining SKOS taxonomies.
+  id: ''
+  name: SKOS (Simple Knowledge Organization System) based ML taxonomies (e.g., scikit-learn,
+    OpenML)
+  url: https://www.hedden-information.com/skos-taxonomies/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1
+  osai-explanation: Use of SKOS is a form of AI-specific metadata.
+- description: Refers to a conceptual Nature paper discussing the application of FAIR
+    principles to AI models. Specific paper URL not provided, but general topic.
+  id: ''
+  name: FAIR principles for AI models (Nature paper)
+  url: ''
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R4
+  osai-explanation: Discusses AI-specific metadata/principles (R1) and info disclosure
+    (R4).
+- description: Informal term, likely referring to research that extends FAIR principles,
+    possibly incorporating concepts like Reproducibility or Responsibility. No specific
+    paper identified by this term alone.
+  id: ''
+  name: FAIR2 squared
+  url: ''
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: Research paper on using data mining (including ML) for modeling green
+    innovation in businesses.
+  id: ''
+  name: Application of Data Mining Technology in Enterprise Green Innovation Model
+    Construction and Path Analysis
+  url: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9300339/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R7
+  osai-explanation: Application of ML for green innovation implies green ML techniques.
+- description: Placeholder. Could refer to papers published as part of the CAID benchmark
+    results. Search on PubMed for "CAID prediction".
+  id: ''
+  name: CAID (Critical Assessment of Intrinsic Disorder prediction)
+  url: ''
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R6
+  osai-explanation: Benchmarking implies standardized evaluation.
+- description: 'Placeholder. Could refer to overview papers published after each CASP
+    experiment, often in the journal Proteins: Structure, Function, and Bioinformatics.'
+  id: ''
+  name: CASP (Critical Assessment of protein Structure Prediction)
+  url: ''
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R6
+  osai-explanation: Benchmarking implies standardized evaluation.
+- description: This specific link is to a paper "CAGI, the Critical Assessment of
+    Genome Interpretation, establishes benchmarks for computational genomics".
+  id: ''
+  name: CAGI (Critical Assessment of Genome Interpretation)
+  url: https://pubmed.ncbi.nlm.nih.gov/38389099/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R6
+  osai-explanation: Benchmarking implies standardized evaluation.
+- description: Placeholder instruction to identify and add more benchmarking resources
+    to this list.
+  id: ''
+  name: Pull in more benchmarking (Action Item)
+  url: ''
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: A channel for the Conda package manager specializing in bioinformatics
+    software, facilitating reproducible environments for computational biology, including
+    many AI/ML tools.
+  id: ''
+  name: Bioconda
+  url: https://bioconda.github.io/
+  biotools-url: https://bio.tools/bioconda
+  fairsharing-url: ''
+  osai-recommendation: R5
+  osai-explanation: Ensures portable code through environment management.
+- description: Refers to the concept or platforms for sharing ML models. Could also
+    be a specific project/paper. See also ModelShare.org.
+  id: ''
+  name: Model Share AI
+  url: ''
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2
+  osai-explanation: Concept directly relates to sharing models in registries/databases.
+- description: Refers to publications and outputs from the AI4EOSC project, which
+    aims to integrate AI/ML/DL tools into the European Open Science Cloud.
+  id: ''
+  name: AI4EOSC (AI for European Open Science Cloud)
+  url: https://ai4eosc.eu/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R3
+  osai-explanation: Project aims to share models/datasets (R2) and likely promotes
+    best practices (R3).
+- description: EU-funded project and platform for privacy-preserving federated machine
+    learning, allowing analysis on distributed datasets.
+  id: ''
+  name: Feature Cloud
+  url: https://featurecloud.ai/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R5
+  osai-explanation: Platform for models (R2) and provides code/tools for portability
+    (R5).
+- description: EU initiative (AI Research, Innovation & Software Engineering) focused
+    on advancing trustworthy AI research, innovation, and software engineering.
+  id: ''
+  name: AIRISE (AI Research, Innovation and Skills Ecosystem) EU
+  url: https://airise.eu/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R3
+  osai-explanation: Focuses on skills, implying training on best practices.
+- description: European project developing and providing AI-powered tools and services
+    for life scientists, particularly for bioimage analysis, leveraging Euro-BioImaging.
+  id: ''
+  name: AI4Life
+  url: https://ai4life.eurobioimaging.eu/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R3
+  osai-explanation: Provides models/services (R2) and likely training (R3).
+- description: IHI-funded project using AI/ML to generate synthetic healthcare data
+    for research while preserving privacy.
+  id: ''
+  name: Synthia IHI (Innovative Health Initiative)
+  url: https://www.ihi.europa.eu/projects-results/project-factsheets/synthia
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2
+  osai-explanation: Focuses on creating and sharing datasets.
+- description: Initiative developing frameworks and tools to assess and improve the
+    FAIRness and reproducibility of AI systems.
+  id: ''
+  name: FAIR AI Readiness & Reproducibility (FARR)
+  url: https://www.farr-rcn.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R3, R4
+  osai-explanation: Focuses on metadata (R1), best practices (R3), and info disclosure
+    (R4).
+- description: Preprint detailing recommendations from the NIH Bridge2AI program for
+    making biomedical datasets AI-ready.
+  id: ''
+  name: 'AI-readiness for biomedical data: Bridge2AI recommendations'
+  url: https://www.biorxiv.org/content/10.1101/2024.10.23.619844v1
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R3, R4, R6
+  osai-explanation: Covers metadata (R1), best practices (R3), info disclosure (R4),
+    and dataset standards (R6).
+- description: Project developing methodologies for capturing metadata and provenance
+    at scale to ensure reproducibility in complex scientific workflows.
+  id: ''
+  name: 'RECUP: scalable metadata and provenance for reproducible hybrid workflow'
+  url: https://sites.google.com/view/recup-reproducibility/home
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R4
+  osai-explanation: Focuses on metadata (R1) and disclosing provenance info (R4).
+- description: Virtual center of excellence advancing research in secure and safe
+    AI, focusing on technical robustness, privacy, and human oversight.
+  id: ''
+  name: 'ELSA: European Lighthouse on Secure and Safe AI'
+  url: https://elsa-ai.eu/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: European project focused on research and development for sustainable
+    (e.g., energy-efficient) and trustworthy AI/ML systems.
+  id: ''
+  name: SustAInML EU project
+  url: https://sustainml.eu/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R7, R9
+  osai-explanation: Directly targets green AI techniques (R7) and likely impact measurement
+    (R9).
+- description: EU project aiming to accelerate the health data economy using AI and
+    distributed technologies for federated health data analysis.
+  id: ''
+  name: AHEAD (Accelerating the Health Data Economy via AI and Distributed Technologies)
+  url: https://cordis.europa.eu/project/id/101183031
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2
+  osai-explanation: Focuses on datasets for AI.
+- description: Collaborative project to develop open-source Large Language Models
+    tailored to European languages and contexts.
+  id: ''
+  name: OpenEuroLLM (Open European Large Language Model)
+  url: https://openeurollm.eu/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2
+  osai-explanation: Aims to share models.
+- description: NIH program creating flagship biomedical datasets that are ethically
+    sourced, trustworthy, FAIR, and AI-ready.
+  id: ''
+  name: Bridge2AI
+  url: https://commonfund.nih.gov/bridge2ai
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R2, R3, R6
+  osai-explanation: Focuses on metadata (R1), datasets (R2), best practices (R3),
+    and standardization (R6).
+- description: Registry of pre-trained AI/ML models from the Ersilia Open Source Initiative,
+    focused on drug discovery and infectious disease research.
+  id: ''
+  name: Ersilia Model Hub
+  url: https://ersilia.io/model-hub
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2
+  osai-explanation: Directly a model registry.
+- description: Platform for discovering and using federated learning apps (algorithms)
+    developed within the FeatureCloud ecosystem.
+  id: ''
+  name: Feature Cloud App Store
+  url: https://featurecloud.ai/app-store/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2
+  osai-explanation: Platform to share models/apps.
+- description: Major platform and community hub for sharing and discovering open-source
+    pre-trained models, datasets, and tools for MLOps.
+  id: ''
+  name: Hugging Face
+  url: https://huggingface.co/models
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R1, R4
+  osai-explanation: Provides metadata (R1), is a model/dataset registry (R2), and
+    model cards disclose info (R4).
+- description: Platform for data science and machine learning, hosting competitions,
+    datasets, code notebooks, and a growing model registry.
+  id: ''
+  name: Kaggle
+  url: https://www.kaggle.com/models
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R6
+  osai-explanation: Hosts models/datasets (R2) and competitions define evaluation
+    (R6).
+- description: Online collaborative science platform for machine learning, allowing
+    sharing of datasets, tasks, flows (algorithms/code), and runs (experimental results).
+  id: ''
+  name: OpenML
+  url: https://www.openml.org/search?type=task
+  biotools-url: https://bio.tools/openml
+  fairsharing-url: ''
+  osai-recommendation: R2, R4, R6
+  osai-explanation: Uses metadata (R1), shares models/datasets (R2), shares experiment
+    info (R4), and standardizes tasks (R6).
+- description: A curated collection of pre-trained AI models for bioimage analysis,
+    part of the BioImage.IO community and supported by projects like AI4Life.
+  id: ''
+  name: AI4Life BioImage Model Zoo
+  url: https://bioimage.io/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2
+  osai-explanation: Directly a model registry.
+- description: Repository by Google offering reusable pre-trained machine learning
+    model components (modules, embeddings, full models) for TensorFlow.
+  id: ''
+  name: TensorFlow Hub
+  url: https://tfhub.dev/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2
+  osai-explanation: Directly a model registry.
+- description: Curated collection of foundation models and task-specific models available
+    on Google Cloud's Vertex AI platform.
+  id: ''
+  name: Google Cloud Model Garden
+  url: https://cloud.google.com/vertex-ai/docs/start/explore-models
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2
+  osai-explanation: Registry of models.
+- description: Platform for sharing, discovering, versioning, and deploying machine
+    learning models.
+  id: ''
+  name: Model Share AI
+  url: https://www.modelshare.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2
+  osai-explanation: Directly a model sharing platform.
+- description: Platform for AI model validation, offering tools to test model performance,
+    robustness, and fairness before deployment.
+  id: ''
+  name: Aircheck AI
+  url: https://aircheck.ai/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R4, R6
+  osai-explanation: Validates models (disclosing info R4) against evaluation protocols
+    (R6).
+- description: Repository for sharing pre-trained machine learning models used in
+    genomics, emphasizing model reproducibility.
+  id: ''
+  name: Kipoi model registry
+  url: http://kipoi.org/
+  biotools-url: https://bio.tools/kipoi
+  fairsharing-url: https://fairsharing.org/FAIRsharing.x7q20k
+  osai-recommendation: R2, R4
+  osai-explanation: Model registry (R2) with an emphasis on reproducibility/info disclosure
+    (R4).
+- description: ELIXIR platform for technical monitoring and scientific benchmarking
+    of bioinformatics tools and services, including ML-based ones.
+  id: ''
+  name: OpenEBench
+  url: https://openebench.bsc.es/
+  biotools-url: https://bio.tools/openebench
+  fairsharing-url: https://fairsharing.org/FAIRsharing.5wf1a7
+  osai-recommendation: R6
+  osai-explanation: Platform for benchmarking and standardizing evaluation.
+- description: Collection of pre-trained AI models by NVIDIA, optimized for GPU acceleration,
+    available via NGC and other platforms.
+  id: ''
+  name: NVIDIA AI Foundation Models
+  url: https://build.nvidia.com/explore/discover
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R8
+  osai-explanation: Registry of models (R2) focused on specific hardware (R8).
+- description: Could not find a specific, widely recognized ML registry with this
+    exact name. May be a niche or new platform.
+  id: ''
+  name: MLentory
+  url: ''
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: AWS SageMaker services for managing, versioning (Registry), and discovering/deploying
+    pre-trained models (JumpStart).
+  id: ''
+  name: AWS (Amazon Web Services) SageMaker Model Registry / JumpStart
+  url: https://aws.amazon.com/sagemaker/model-registry/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2
+  osai-explanation: Provides model registry functionality.
+- description: Microsoft Azure services for model management (Registry) and discovering
+    pre-built models and components (Catalog/Studio).
+  id: ''
+  name: Azure Machine Learning Model Registry / Catalog
+  url: https://learn.microsoft.com/en-us/azure/machine-learning/concept-model-management?view=azureml-api-2
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2
+  osai-explanation: Provides model registry functionality.
+- description: MLOps platform where public reports and artifacts are often used to
+    share models, results, and datasets. The "Fully Connected" section features community
+    reports.
+  id: ''
+  name: Weights & Biases (Public Hub / Reports)
+  url: https://wandb.ai/fully-connected
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R4
+  osai-explanation: Platform for sharing models/datasets (R2) and experiment results
+    (R4).
+- description: Large community hub for sharing models (especially for generative AI
+    like Stable Diffusion), LoRAs, prompts, and images.
+  id: ''
+  name: Civitai
+  url: https://civitai.com/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2
+  osai-explanation: Community for sharing models.
+- description: The Machine Learning Toolkit for Kubernetes, providing components for
+    deploying, managing, and scaling ML workloads. Not a model registry itself but
+    facilitates model deployment.
+  id: ''
+  name: Kubeflow
+  url: https://github.com/kubeflow/kubeflow
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R5
+  osai-explanation: Facilitates model deployment (R2) and uses containerized, portable
+    code (R5).
+- description: Classic and influential repository of datasets used for empirical analysis
+    of machine learning algorithms.
+  id: ''
+  name: UCI (University of California, Irvine) Machine Learning Repository
+  url: https://archive.ics.uci.edu/ml/index.php
+  biotools-url: ''
+  fairsharing-url: https://fairsharing.org/FAIRsharing.tf17a3
+  osai-recommendation: R2, R6
+  osai-explanation: Dataset repository (R2) used for standardized evaluation (R6).
+- description: Search engine for finding datasets hosted across the web.
+  id: ''
+  name: Google Dataset Search
+  url: https://datasetsearch.research.google.com/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2
+  osai-explanation: Helps find datasets for AI.
+- description: Platform and library by Hugging Face for easily accessing, processing,
+    and sharing datasets for ML.
+  id: ''
+  name: Hugging Face Datasets
+  url: https://huggingface.co/datasets
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2
+  osai-explanation: Platform for sharing datasets.
+- description: Community initiative and format standard for sharing and reusing AI
+    models in bioimaging, including a model zoo.
+  id: ''
+  name: BioImage.IO
+  url: https://bioimage.io/
+  biotools-url: https://bio.tools/bioimage.io
+  fairsharing-url: https://fairsharing.org/FAIRsharing.d5p4x7
+  osai-recommendation: R1, R2
+  osai-explanation: Defines AI metadata format (R1) and is a model zoo (R2).
+- description: Conda is an open-source package and environment management system.
+    Anaconda is a distribution of Conda, Python, and many scientific packages.
+  id: ''
+  name: Conda / Anaconda
+  url: https://conda.io/en/latest/
+  biotools-url: https://bio.tools/conda
+  fairsharing-url: ''
+  osai-recommendation: R5
+  osai-explanation: Ensures portable code through environment management.
+- description: Model publication and serving platform for scientific machine learning
+    models, aiming to make them FAIR and easier to run.
+  id: ''
+  name: DLHub (Data and Learning Hub for Science)
+  url: https://dlhub.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2
+  osai-explanation: Platform for sharing models.
+- description: ML platform for discovering, using, and managing ML models and associated
+    data, often for scientific or industrial applications.
+  id: ''
+  name: Foundry ML
+  url: https://foundry-ml.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2
+  osai-explanation: Platform for model management and sharing.
+- description: Online collaborative platform for sharing hydrological data and models,
+    supporting FAIR principles for water science.
+  id: ''
+  name: HydroShare
+  url: https://www.hydroshare.org/
+  biotools-url: ''
+  fairsharing-url: https://fairsharing.org/FAIRsharing.3xwbz8
+  osai-recommendation: R2
+  osai-explanation: Platform for sharing data and models.
+- description: General-purpose open-access repository (CERN) for sharing research
+    outputs, including datasets, software (ML models), publications, with persistent
+    DOIs.
+  id: ''
+  name: Zenodo
+  url: https://zenodo.org/
+  biotools-url: https://bio.tools/zenodo
+  fairsharing-url: https://fairsharing.org/FAIRsharing.dpwfg6
+  osai-recommendation: R2
+  osai-explanation: General repository used to share AI models and datasets.
+- description: 'This Nature Methods paper introduces "AIME: an AI model development
+    and evaluation methodology for medical imaging". Not a registry itself, but a
+    methodology.'
+  id: ''
+  name: AIMe (AI Methodology) registry
+  url: https://www.nature.com/articles/s41592-021-01241-0
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R4, R6
+  osai-explanation: Methodology for model development and evaluation (info disclosure
+    R4, eval protocols R6).
+- description: Free, open-source web platform by the Center for Open Science supporting
+    research project management, collaboration, and sharing of data, code, and papers.
+  id: ''
+  name: Open Science Framework (OSF)
+  url: https://osf.io/
+  biotools-url: https://bio.tools/osf
+  fairsharing-url: https://fairsharing.org/FAIRsharing.v42s2p
+  osai-recommendation: R2, R5
+  osai-explanation: Platform for sharing data/code (R2, R5).
+- description: Open-source platform by Databricks to manage the ML lifecycle, including
+    experiment tracking, code packaging, model deployment, and a model registry.
+  id: ''
+  name: MLflow
+  url: https://mlflow.org/
+  biotools-url: https://bio.tools/mlflow
+  fairsharing-url: ''
+  osai-recommendation: R1, R2, R4, R5
+  osai-explanation: Uses metadata (R1), has model registry (R2), tracks experiments
+    (R4), packages code (R5).
+- description: AI company developing large language models and related AI technologies.
+  id: ''
+  name: DeepSeek
+  url: https://www.deepseek.com/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: Repository for the "EfficientBioAI" project, likely focusing on computationally
+    efficient AI methods for bioinformatics.
+  id: ''
+  name: EfficientBioAI
+  url: https://github.com/MMV-Lab/EfficientBioAI
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R7
+  osai-explanation: Focuses on efficient (green) AI techniques.
+- description: Website linking ML research papers (often from arXiv) to their code
+    implementations, datasets, and benchmark results.
+  id: ''
+  name: Papers with Code
+  url: https://paperswithcode.com/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R4, R5
+  osai-explanation: Links papers to models/datasets (R2), discloses info (R4), shares
+    code (R5).
+- description: Open-source toolkit by IBM providing metrics to detect bias in datasets
+    and ML models, and algorithms to mitigate such bias.
+  id: ''
+  name: AIF360 (AI Fairness 360)
+  url: https://aif360.mybluemix.net/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: Toolkit and resources within TensorFlow for building responsible AI
+    systems, focusing on fairness, explainability, privacy, and security.
+  id: ''
+  name: TensorFlow Responsible AI
+  url: https://www.tensorflow.org/responsible_ai
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R4
+  osai-explanation: Tools for explainability contribute to info disclosure.
+- description: Open-source bias and fairness audit toolkit from UChicago's Center
+    for Data Science and Public Policy to assess fairness metrics for ML models.
+  id: ''
+  name: Aequitas
+  url: http://aequitas.dssg.io/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: Leaderboards hosted by the Allen Institute for AI (AI2) tracking performance
+    of models on various NLP tasks (e.g., ARC, TQA).
+  id: ''
+  name: Allen AI Leaderboards
+  url: https://leaderboard.allenai.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R6
+  osai-explanation: Provides standardized evaluation.
+- description: Part of the Green Algorithms project, IrEne LCA focuses on Life Cycle
+    Assessment for computational research to provide more holistic environmental impact
+    assessments.
+  id: ''
+  name: IrEne
+  url: https://www.green-algorithms.org/irene-lca
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R9
+  osai-explanation: Focuses on measuring environmental impact.
+- description: A leaderboard focusing on the energy consumption and computational
+    efficiency of Reinforcement Learning algorithms.
+  id: ''
+  name: RL (Reinforcement Learning) Energy Leaderboard
+  url: https://breakend.github.io/RL-Energy-Leaderboard/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R9, R6
+  osai-explanation: Standardized evaluation (R6) focusing on energy/environmental
+    impact (R9).
+- description: Conversational AI system using LLMs to query biomedical knowledge graphs
+    and databases via natural language.
+  id: ''
+  name: BioChatter
+  url: https://biochatter.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: A checklist provided by the European Commission's High-Level Expert
+    Group on AI for self-assessing the trustworthiness of AI systems based on 7 key
+    requirements.
+  id: ''
+  name: ALTAI (Assessment List for Trustworthy Artificial Intelligence)
+  url: https://digital-strategy.ec.europa.eu/en/library/assessment-list-trustworthy-artificial-intelligence-altai-self-assessment
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R4
+  osai-explanation: Checklist for disclosing model information.
+- description: Repository for DescribeML, a tool or methodology for describing machine
+    learning models or datasets.
+  id: ''
+  name: DescribeML
+  url: https://github.com/SOM-Research/DescribeML
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R4
+  osai-explanation: Tool/methodology for AI metadata (R1) and info disclosure (R4).
+- description: Programming paradigm and library by Microsoft for controlling large
+    language models (LLMs) with more precision and efficiency than traditional prompting.
+  id: ''
+  name: guidance
+  url: https://github.com/guidance-ai/guidance
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R5
+  osai-explanation: Library enabling more controlled, potentially portable code.
+- description: Open-source tool to download, set up, and run open-source large language
+    models (LLMs) locally.
+  id: ''
+  name: Ollama
+  url: https://ollama.com/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R5
+  osai-explanation: Facilitates local use of shared models (R2) and portable setup
+    (R5).
+- description: Web-based version control repository hosting service by Atlassian,
+    supporting Git and previously Mercurial.
+  id: ''
+  name: BitBucket
+  url: https://bitbucket.org/product/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R5
+  osai-explanation: Platform for sharing models/datasets (R2) and code (R5).
+- description: Distributed version control system (DVCS) for tracking changes in source
+    code.
+  id: ''
+  name: Mercurial
+  url: https://www.mercurial-scm.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R5
+  osai-explanation: Version control system for portable code.
+- description: Open-source platform for managing data science and ML projects by bundling
+    code, data, parameters, and environment for reproducibility and collaboration.
+  id: ''
+  name: Gigantum
+  url: https://gigantum.com/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R5
+  osai-explanation: Ensures portable code through environment bundling.
+- description: Platform for hosting, sharing, discovering, versioning, and deploying
+    machine learning models.
+  id: ''
+  name: ModelDepot
+  url: https://modeldepot.io/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2
+  osai-explanation: Directly a model registry.
+- description: Deep learning framework developed by BAIR, known for speed and computer
+    vision tasks.
+  id: ''
+  name: Caffe
+  url: https://caffe.berkeleyvision.org/
+  biotools-url: https://bio.tools/caffe
+  fairsharing-url: ''
+  osai-recommendation: R5
+  osai-explanation: As a library, it provides code that can be made portable.
+- description: Repository of QSAR datasets and models, primarily for cheminformatics
+    and drug discovery.
+  id: ''
+  name: QSAR (Quantitative Structure-Activity Relationship) DataBase
+  url: https://qsardb.org/repository/
+  biotools-url: ''
+  fairsharing-url: https://fairsharing.org/FAIRsharing.ywpcp1
+  osai-recommendation: R2
+  osai-explanation: Database for sharing models and datasets.
+- description: Platform for AI creators, providing tools and a community for building,
+    sharing, and discovering AI models and applications.
+  id: ''
+  name: The Garden (thegardens.ai)
+  url: https://thegardens.ai/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2
+  osai-explanation: Platform for sharing models.
+- description: MLOps platform providing experiment tracking, model registry, and monitoring
+    for machine learning projects.
+  id: ''
+  name: Neptune AI
+  url: https://neptune.ai/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R4, R9
+  osai-explanation: Model registry (R2), experiment tracking (R4), and potentially
+    monitoring resource usage (R9).
+- description: Open-source system from MIT for managing machine learning models, including
+    versioning, metadata tracking, and experiment results. Original system, Verta.ai
+    commercialized similar concepts.
+  id: ''
+  name: ModelDB
+  url: https://modeldb.science/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R2, R4
+  osai-explanation: Supports metadata (R1), is a model DB (R2), and tracks experiment
+    info (R4).
+- description: A benchmark suite for evaluating time series prediction methods.
+  id: ''
+  name: TPBench (Time Series Prediction Benchmark)
+  url: https://tpbench.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R6
+  osai-explanation: Standardized evaluation protocol.
+- description: Refers to the practice of packaging ML models, dependencies, and environments
+    into Docker containers for portability and reproducibility.
+  id: ''
+  name: Docker models
+  url: https://www.docker.com/
+  biotools-url: https://bio.tools/docker
+  fairsharing-url: ''
+  osai-recommendation: R5
+  osai-explanation: Ensures portable code through containerization.
+- description: Refers to ML platforms or resources provided by Argentina's National
+    High-Performance Computing System (SNCAD - Sinc).
+  id: ''
+  name: Sinc ML platform (Argentina)
+  url: https://www.sinc.gob.ar/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R8
+  osai-explanation: Platform can host models (R2) and provides hardware resources
+    (R8).
+- description: Company providing tools and platforms related to data management and
+    MLOps, including solutions for data versioning and pipelining.
+  id: ''
+  name: Datachain
+  url: https://datachain.ai/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R4
+  osai-explanation: Tools for data versioning (R2) and MLOps (R4).
+- description: OGC standard specifying a markup language for describing training datasets
+    for AI/ML applications with geospatial components.
+  id: ''
+  name: OGC (Open Geospatial Consortium) TrainingDML-AI (Training Data Markup Language
+    for AI)
+  url: https://www.ogc.org/standards/trainingdml-ai
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R6
+  osai-explanation: AI-specific metadata standard (R1) for standardizing datasets
+    (R6).
+- description: XML-based standard by the Data Mining Group for representing predictive
+    models, enabling interoperability.
+  id: ''
+  name: Predictive Model Markup Language (PMML)
+  url: http://dmg.org/pmml/v4-4-1/GeneralStructure.html
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R5
+  osai-explanation: AI-specific metadata format (R1) that ensures model portability
+    (R5).
+- description: XML-based markup language for creating chatbots and conversational
+    AI agents.
+  id: ''
+  name: Artificial Intelligence Markup Language (AIML)
+  url: http://www.aiml.foundation/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1
+  osai-explanation: AI-specific metadata language.
+- description: ISO/IEC standard providing a framework and common terminology for AI
+    systems using ML.
+  id: ''
+  name: ISO/IEC 23053:2022 Framework for Artificial Intelligence (AI) Systems Using
+    Machine Learning (ML)
+  url: https://www.iso.org/standard/74438.html
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R4
+  osai-explanation: Standard for AI metadata/terminology (R1) and disclosing information
+    (R4).
+- description: ISO/IEC standard specifying requirements for an Artificial Intelligence
+    Management System (AIMS).
+  id: ''
+  name: ISO/IEC 42001:2023 AI management systems
+  url: https://www.iso.org/standard/81230.html
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R4
+  osai-explanation: Management system implies disclosure and documentation.
+- description: ISO/IEC standard providing guidelines for risk management in AI systems.
+  id: ''
+  name: ISO/IEC 23894:2023 AI — Guidance on risk management
+  url: https://www.iso.org/standard/77304.html
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R4
+  osai-explanation: Risk management guidance involves disclosing information.
+- description: Initiative and resource library for critically evaluating and standardizing
+    metrics for ML model performance assessment, particularly in biomedical image
+    analysis.
+  id: ''
+  name: Metrics Reloaded
+  url: https://metrics-reloaded.dkfz.de/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R6
+  osai-explanation: Focuses on standardizing evaluation protocols/metrics.
+- description: Game theory-based method and software for explaining machine learning
+    model outputs by attributing contribution scores to features.
+  id: ''
+  name: SHAP (SHapley Additive exPlanations)
+  url: https://shap.readthedocs.io/en/latest/
+  biotools-url: https://bio.tools/shap
+  fairsharing-url: ''
+  osai-recommendation: R4
+  osai-explanation: Tool for disclosing model information (explainability).
+- description: Technique and software for explaining individual predictions of ML
+    models by approximating them locally with simpler models.
+  id: ''
+  name: LIME (Local Interpretable Model-agnostic Explanations)
+  url: https://github.com/marcotcr/lime
+  biotools-url: https://bio.tools/lime
+  fairsharing-url: ''
+  osai-recommendation: R4
+  osai-explanation: Tool for disclosing model information (explainability).
+- description: Explainability method for deep learning models that assigns contribution
+    scores to input features based on comparing activation patterns to a reference.
+  id: ''
+  name: DeepLift (Deep Learning Important FeaTures)
+  url: https://github.com/kundajelab/deeplift
+  biotools-url: https://bio.tools/deeplift
+  fairsharing-url: ''
+  osai-recommendation: R4
+  osai-explanation: Tool for disclosing model information (explainability).
+- description: Green Software Foundation standard for calculating the rate of carbon
+    emissions per unit of software operation.
+  id: ''
+  name: Software Carbon Intensity (SCI) Specification
+  url: https://sci.greensoftware.foundation/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R9
+  osai-explanation: Standard for measuring environmental impact.
+- description: A proposed or developing ontology for formal, structured representation
+    of AI/ML concepts. Specific widely adopted AIMLO URL not found, general concept.
+  id: ''
+  name: Artificial Intelligence and Machine Learning Ontology (AIMLO)
+  url: ''
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1
+  osai-explanation: AI-specific metadata (ontology).
+- description: ISO 13584-32:2017, a standard for representing ontology data in XML
+    format. Not specific to ML, but can be used for ML ontologies.
+  id: ''
+  name: OntoML
+  url: https://www.iso.org/standard/50639.html
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1
+  osai-explanation: Standard for representing ontology metadata.
+- description: Collaborative initiative providing a shared vocabulary of structured
+    data markup for websites, including types relevant to datasets, software, and
+    potentially ML models.
+  id: ''
+  name: Schema.org
+  url: https://schema.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1
+  osai-explanation: General metadata standard applicable to AI.
+- description: Repository for the Artificial Intelligence Ontology developed by Berkeley
+    BOP.
+  id: ''
+  name: AIO (Artificial Intelligence Ontology)
+  url: https://github.com/berkeleybop/artificial-intelligence-ontology
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1
+  osai-explanation: AI-specific metadata (ontology).
+- description: Organization related to research and development of Machine Learning
+    Ontologies (MLO).
+  id: ''
+  name: Machine Learning Ontology Research
+  url: https://github.com/MLOntology/MLO
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1
+  osai-explanation: Focuses on AI-specific metadata.
+- description: Protocol proposed by Anthropic for providing structured contextual
+    information about LLMs to users.
+  id: ''
+  name: Model Context Protocol (MCP)
+  url: https://www.anthropic.com/news/model-context-protocol
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R4
+  osai-explanation: Protocol for AI metadata (R1) and disclosing model context (R4).
+- description: Template or outputs from the RDA working group on AI and Data Visitation,
+    focusing on AI interactions with research data.
+  id: ''
+  name: AIDV (Artificial Intelligence and Data Visitation) RDA (Research Data Alliance)
+    template
+  url: https://www.rd-alliance.org/groups/artificial-intelligence-and-data-visitation-aidv-wg.html
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R4
+  osai-explanation: Template for AI metadata (R1) and data disclosure (R4).
+- description: Open-source machine learning framework known for its flexibility, Pythonic
+    interface, and strong support in deep learning research.
+  id: ''
+  name: PyTorch
+  url: https://pytorch.org/
+  biotools-url: https://bio.tools/pytorch
+  fairsharing-url: ''
+  osai-recommendation: R5
+  osai-explanation: As a library, it provides code that can be made portable.
+- description: Open-source machine learning framework by Google with a comprehensive
+    ecosystem for building, training, and deploying ML models.
+  id: ''
+  name: TensorFlow
+  url: https://www.tensorflow.org/
+  biotools-url: https://bio.tools/tensorflow
+  fairsharing-url: ''
+  osai-recommendation: R5
+  osai-explanation: As a library, it provides code that can be made portable.
+- description: High-level API for building and training neural networks, supporting
+    multiple backends like TensorFlow, JAX, and PyTorch.
+  id: ''
+  name: Keras
+  url: https://keras.io/
+  biotools-url: https://bio.tools/keras
+  fairsharing-url: ''
+  osai-recommendation: R5
+  osai-explanation: API for building models, contributes to portable code.
+- description: 'Refers to general tools for estimating CO2 emissions from computations.
+    This specific OpenEBench link may refer to a planned integration. Other tools:
+    CodeCarbon, ML CO2 Impact.'
+  id: ''
+  name: Carbon tracker
+  url: https://openebench.bsc.es/benchmarking
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R9
+  osai-explanation: Tool for measuring environmental impact.
+- description: Automated Machine Learning; field and tools that automate ML pipeline
+    development. AutoML.org is a community resource.
+  id: ''
+  name: AutoML
+  url: https://www.automl.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R7
+  osai-explanation: Automated techniques can be part of green AI development.
+- description: Open-source Python package to track and estimate CO2 emissions from
+    running computer code, especially ML training.
+  id: ''
+  name: CodeCarbon
+  url: https://codecarbon.io/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R9
+  osai-explanation: Tool for measuring environmental impact.
+- description: Online calculator and research project for estimating the CO2 footprint
+    of ML model training. Related to CodeCarbon.
+  id: ''
+  name: Machine Learning Emissions Calculator
+  url: https://mlco2.github.io/impact/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R9
+  osai-explanation: Tool for measuring environmental impact.
+- description: Open-source AutoML toolkit in Python, built on scikit-learn, automating
+    algorithm selection and hyperparameter tuning.
+  id: ''
+  name: Auto-sklearn
+  url: https://automl.github.io/auto-sklearn/master/
+  biotools-url: https://bio.tools/auto-sklearn
+  fairsharing-url: ''
+  osai-recommendation: R7
+  osai-explanation: Automated techniques can be part of green AI development.
+- description: Software tool to track computational resource usage and estimate associated
+    environmental impact (carbon emissions) of experiments.
+  id: ''
+  name: Experiment Impact Tracker
+  url: https://github.com/Breakend/experiment-impact-tracker
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R9
+  osai-explanation: Tool for measuring environmental impact.
+- description: Showcase for experimental tools, prototypes, and research projects
+    from Google's various labs, often featuring new AI/ML capabilities.
+  id: ''
+  name: Google Labs
+  url: https://labs.google/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: Tool within Microsoft Cloud for Sustainability (and Azure) to help
+    customers measure and track carbon emissions from their cloud usage.
+  id: ''
+  name: Microsoft Emissions Dashboard
+  url: https://learn.microsoft.com/en-us/industry/sustainability/solutions/emissions-impact-dashboard-overview
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R9
+  osai-explanation: Dashboard for measuring environmental impact.
+- description: Tool in Google Cloud Platform for customers to measure, report, and
+    reduce carbon emissions associated with their Google Cloud services.
+  id: ''
+  name: Google Carbon Footprint
+  url: https://cloud.google.com/carbon-footprint
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R9
+  osai-explanation: Tool for measuring environmental impact.
+- description: Tool in AWS Billing console for customers to estimate and visualize
+    the carbon footprint of their AWS service usage.
+  id: ''
+  name: AWS (Amazon Web Services) Carbon Footprint Tool
+  url: https://aws.amazon.com/aws-cost-management/aws-customer-carbon-footprint-tool/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R9
+  osai-explanation: Tool for measuring environmental impact.
+- description: Organization providing data and APIs on the real-time marginal carbon
+    intensity of electricity grids, used by carbon tracking tools.
+  id: ''
+  name: WattTime
+  url: https://www.watttime.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R9
+  osai-explanation: Provides data for measuring environmental impact.
+- description: Gradient boosting on decision trees library by Yandex, excelling with
+    categorical features and good performance.
+  id: ''
+  name: CatBoost
+  url: https://catboost.ai/
+  biotools-url: https://bio.tools/catboost
+  fairsharing-url: ''
+  osai-recommendation: R5, R7
+  osai-explanation: Library for portable code (R5); efficiency can be a green AI technique
+    (R7).
+- description: Python package to assess and improve fairness of machine learning models,
+    with algorithms for bias mitigation.
+  id: ''
+  name: Fairlearn
+  url: https://fairlearn.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: Open-source Python package for training interpretable models (glass-box)
+    and explaining black-box systems (Explainable AI).
+  id: ''
+  name: InterpretML
+  url: https://interpret.ml/
+  biotools-url: https://bio.tools/interpretml
+  fairsharing-url: ''
+  osai-recommendation: R4
+  osai-explanation: Focuses on disclosing model information (interpretability).
+- description: Model interpretability and understanding library for PyTorch models,
+    providing various algorithms for feature attribution and layer/neuron importance.
+  id: ''
+  name: Captum
+  url: https://captum.ai/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R4
+  osai-explanation: Focuses on disclosing model information (interpretability).
+- description: Training data platform for data labeling, data management, model diagnostics,
+    and human-in-the-loop workflows.
+  id: ''
+  name: Labelbox
+  url: https://labelbox.com/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R6
+  osai-explanation: Aids in standardizing datasets through labeling.
+- description: MRS Communications paper describing a data infrastructure to facilitate
+    ML in materials science. This is a paper, not a training resource itself.
+  id: ''
+  name: A data ecosystem to support machine learning in materials science
+  url: https://link.springer.com/article/10.1557/mrc.2019.118
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R3
+  osai-explanation: Describes an ecosystem for sharing data (R2) and implies best
+    practices (R3).
+- description: The ELIXIR Slovenia e-Learning Platform (ELSI), providing bioinformatics
+    training resources.
+  id: ''
+  name: ELIXIR Slovenia e-Learning Platform
+  url: https://elsi.training/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R3
+  osai-explanation: Directly a training platform.
+- description: ELIXIR's training portal, aggregating bioinformatics training materials
+    and events from various providers.
+  id: ''
+  name: Training e-Support System (TeSS)
+  url: https://tess.elixir-europe.org/
+  biotools-url: https://bio.tools/tess
+  fairsharing-url: https://fairsharing.org/FAIRsharing.d06wfr
+  osai-recommendation: R3
+  osai-explanation: Directly a training portal.
+- description: Online learning platform offering numerous courses, Specializations,
+    and degrees in AI/ML from universities and companies.
+  id: ''
+  name: Coursera
+  url: https://www.coursera.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R3
+  osai-explanation: Directly a training platform.
+- description: Organization offering practical, code-first deep learning courses and
+    a software library.
+  id: ''
+  name: fast.ai
+  url: https://www.fast.ai/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R3
+  osai-explanation: Directly offers training.
+- description: AI education company founded by Andrew Ng, offering courses and specializations
+    in deep learning and AI, often via Coursera.
+  id: ''
+  name: DeepLearning.AI
+  url: https://www.deeplearning.ai/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R3
+  osai-explanation: Directly offers training.
+- description: TensorFlow's visualization toolkit for inspecting and understanding
+    ML experiments, models, and data.
+  id: ''
+  name: TensorBoard
+  url: https://www.tensorflow.org/tensorboard
+  biotools-url: https://bio.tools/tensorboard
+  fairsharing-url: ''
+  osai-recommendation: R4
+  osai-explanation: Helps disclose model and experiment information.
+- description: Comprehensive Python library for creating static, animated, and interactive
+    visualizations in a variety of formats.
+  id: ''
+  name: Matplotlib
+  url: https://matplotlib.org/
+  biotools-url: https://bio.tools/matplotlib
+  fairsharing-url: ''
+  osai-recommendation: R4
+  osai-explanation: Used for disclosing/visualizing model/data info.
+- description: Python data visualization library based on Matplotlib, providing a
+    high-level interface for drawing attractive and informative statistical graphics.
+  id: ''
+  name: Seaborn
+  url: https://seaborn.pydata.org/
+  biotools-url: https://bio.tools/seaborn
+  fairsharing-url: ''
+  osai-recommendation: R4
+  osai-explanation: Used for disclosing/visualizing model/data info.
+- description: Company providing interactive graphing libraries (Plotly for Python,
+    R, JS) and a framework (Dash) for building analytical web applications.
+  id: ''
+  name: Plotly / Dash
+  url: https://plotly.com/
+  biotools-url: https://bio.tools/plotly
+  fairsharing-url: ''
+  osai-recommendation: R4
+  osai-explanation: Used for disclosing/visualizing model/data info.
+- description: Declarative statistical visualization library for Python, based on
+    Vega and Vega-Lite, enabling concise and expressive chart creation.
+  id: ''
+  name: Altair
+  url: https://altair-viz.github.io/
+  biotools-url: https://bio.tools/altair
+  fairsharing-url: ''
+  osai-recommendation: R4
+  osai-explanation: Used for disclosing/visualizing model/data info.
+- description: Company providing an open-source and enterprise platform for AI/ML,
+    including tools for automated machine learning (H2O AutoML).
+  id: ''
+  name: H2O.ai
+  url: https://h2o.ai/
+  biotools-url: https://bio.tools/h2o
+  fairsharing-url: ''
+  osai-recommendation: R7
+  osai-explanation: AutoML features can be part of green AI techniques.
+- description: Open-source MLOps platform for experiment tracking, orchestration,
+    data management, and model deployment.
+  id: ''
+  name: ClearML
+  url: https://clear.ml/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R2, R4, R5
+  osai-explanation: Manages metadata (R1), models (R2), experiment info (R4), and
+    code (R5).
+- description: Data versioning and pipeline platform for MLOps, built on Kubernetes,
+    enabling reproducible data science workflows.
+  id: ''
+  name: Pachyderm
+  url: https://www.pachyderm.com/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R2, R4, R5
+  osai-explanation: Manages data/model versions (R1, R2), pipeline info (R4), and
+    ensures portable workflows (R5).
+- description: Registry making it easier to find and use datasets publicly available
+    via AWS services.
+  id: ''
+  name: Registry of Open Data on AWS (RODA)
+  url: https://registry.opendata.aws/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2
+  osai-explanation: Registry for datasets.
+- description: Open-source library for computer vision and machine learning software,
+    with a wide array of algorithms for image and video processing.
+  id: ''
+  name: OpenCV (Open Source Computer Vision Library)
+  url: https://opencv.org/
+  biotools-url: https://bio.tools/opencv
+  fairsharing-url: ''
+  osai-recommendation: R5
+  osai-explanation: As a library, it provides code that can be made portable.
+- description: Set of reliable implementations of reinforcement learning algorithms
+    in PyTorch.
+  id: ''
+  name: Stable Baselines3
+  url: https://stable-baselines3.readthedocs.io/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R5
+  osai-explanation: Library of algorithms, implies portable code.
+- description: Ray is a framework for scaling Python applications. RLlib is its scalable
+    reinforcement learning library.
+  id: ''
+  name: Ray / RLlib (Reinforcement Learning Library)
+  url: https://www.ray.io/
+  biotools-url: https://bio.tools/ray
+  fairsharing-url: ''
+  osai-recommendation: R5
+  osai-explanation: Framework and library for portable code.
+- description: Open-source tool for versioning data and ML models alongside code,
+    Git-compatible, enabling reproducible ML pipelines.
+  id: ''
+  name: DVC (Data Version Control)
+  url: https://dvc.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R2, R4, R5
+  osai-explanation: Versions models/data (R2), discloses pipeline info (R4), integrates
+    with code (R5).
+- description: Toolkits (Gymnasium is the maintained fork of Gym) for developing and
+    comparing reinforcement learning algorithms.
+  id: ''
+  name: OpenAI Gym / Gymnasium
+  url: https://gymnasium.farama.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R6
+  osai-explanation: Provides standardized environments for evaluation.
+- description: Open-source NLP research library from AI2, built on PyTorch, for developing
+    state-of-the-art models.
+  id: ''
+  name: AllenNLP
+  url: https://allennlp.org/
+  biotools-url: https://bio.tools/allennlp
+  fairsharing-url: ''
+  osai-recommendation: R5
+  osai-explanation: As a library, it provides code that can be made portable.
+- description: Simple framework for state-of-the-art NLP, focusing on embeddings and
+    sequence tagging tasks.
+  id: ''
+  name: Flair
+  url: https://flairnlp.github.io/
+  biotools-url: https://bio.tools/flair
+  fairsharing-url: ''
+  osai-recommendation: R5
+  osai-explanation: As a library, it provides code that can be made portable.
+- description: Automatic hyperparameter optimization framework designed for flexibility,
+    scalability, and ease of use.
+  id: ''
+  name: Optuna
+  url: https://optuna.org/
+  biotools-url: https://bio.tools/optuna
+  fairsharing-url: ''
+  osai-recommendation: R7
+  osai-explanation: Hyperparameter optimization is a green AI technique.
+- description: Distributed asynchronous hyperparameter optimization library in Python.
+  id: ''
+  name: Hyperopt
+  url: http://hyperopt.github.io/hyperopt/
+  biotools-url: https://bio.tools/hyperopt
+  fairsharing-url: ''
+  osai-recommendation: R7
+  osai-explanation: Hyperparameter optimization is a green AI technique.
+- description: Suite of open-source GPU-accelerated data science libraries (cuDF,
+    cuML, cuGraph, etc.) for end-to-end GPU pipelines.
+  id: ''
+  name: RAPIDS
+  url: https://rapids.ai/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R5, R8
+  osai-explanation: Libraries for portable code (R5) targeted at specific (GPU) hardware
+    (R8).
+- description: Online academic journal focused on clear, interactive explanations
+    of machine learning research and concepts.
+  id: ''
+  name: Distill.pub
+  url: https://distill.pub/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R3, R4
+  osai-explanation: Publishes explanations (R4) and serves as training material (R3).
+- description: Open-source cheminformatics software toolkit, widely used for molecular
+    processing, QSAR, and ML in chemistry.
+  id: ''
+  name: RDKit
+  url: https://www.rdkit.org/
+  biotools-url: https://bio.tools/rdkit
+  fairsharing-url: https://fairsharing.org/FAIRsharing.r3xwd2
+  osai-recommendation: R5
+  osai-explanation: Toolkit providing portable code components.
+- description: Workflow management system for creating scalable and reproducible scientific
+    pipelines using software containers.
+  id: ''
+  name: Nextflow
+  url: https://www.nextflow.io/
+  biotools-url: https://bio.tools/nextflow
+  fairsharing-url: https://fairsharing.org/FAIRsharing.k0qgjs
+  osai-recommendation: R5
+  osai-explanation: Ensures portable code/workflows.
+- description: Workflow management system that provides a Python-based language for
+    defining data analysis pipelines.
+  id: ''
+  name: Snakemake
+  url: https://snakemake.readthedocs.io/
+  biotools-url: https://bio.tools/snakemake
+  fairsharing-url: https://fairsharing.org/FAIRsharing.wyza9j
+  osai-recommendation: R5
+  osai-explanation: Ensures portable code/workflows.
+- description: Open, web-based platform for accessible, reproducible, and transparent
+    computational biological research, including ML tools.
+  id: ''
+  name: Galaxy
+  url: https://galaxyproject.org/
+  biotools-url: https://bio.tools/galaxy
+  fairsharing-url: https://fairsharing.org/FAIRsharing.97mq6w
+  osai-recommendation: R5
+  osai-explanation: Platform for portable workflows.
+- description: Open standard for describing analysis workflows and tools in a way
+    that makes them portable and scalable across different software and hardware environments.
+  id: ''
+  name: CWL (Common Workflow Language)
+  url: https://www.commonwl.org/
+  biotools-url: https://bio.tools/cwl
+  fairsharing-url: https://fairsharing.org/FAIRsharing.v67nfw
+  osai-recommendation: R5
+  osai-explanation: Standard for ensuring portable code/workflows.
+- description: Registry for sharing and discovering scientific workflows, supporting
+    multiple formats like CWL, Nextflow, Galaxy.
+  id: ''
+  name: WorkflowHub
+  url: https://workflowhub.eu/
+  biotools-url: https://bio.tools/workflowhub
+  fairsharing-url: https://fairsharing.org/FAIRsharing.s9x592
+  osai-recommendation: R2, R5
+  osai-explanation: Registry for workflows (R2) which are a form of portable code
+    (R5).
+- description: Community-driven project providing standardized software containers
+    (Docker, Singularity) for bioinformatics tools.
+  id: ''
+  name: Biocontainers
+  url: https://biocontainers.pro/
+  biotools-url: https://bio.tools/biocontainers
+  fairsharing-url: ''
+  osai-recommendation: R5
+  osai-explanation: Ensures portable code through containerization.
+- description: ELIXIR's Tools and Data Services Registry, a comprehensive catalog
+    of bioinformatics software, databases, and services.
+  id: ''
+  name: Bio.tools
+  url: https://bio.tools/
+  biotools-url: https://bio.tools/bio.tools
+  fairsharing-url: https://fairsharing.org/FAIRsharing.k59g1g
+  osai-recommendation: R2
+  osai-explanation: Registry for tools, which can include AI models/datasets.
+- description: Curated, searchable portal of data and metadata standards, inter-related
+    to databases and data policies, to promote FAIR data.
+  id: ''
+  name: FAIRsharing
+  url: https://fairsharing.org/
+  biotools-url: https://bio.tools/fairsharing
+  fairsharing-url: https://fairsharing.org/FAIRsharing.mjs971
+  osai-recommendation: R1, R2
+  osai-explanation: Registry for metadata standards (R1) and databases (R2).
+- description: A project and label design for concisely summarizing key information
+    about a dataset’s ingredients, provenance, and potential for bias.
+  id: ''
+  name: The Dataset Nutrition Label
+  url: https://datanutrition.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R4
+  osai-explanation: Framework for AI-specific metadata (R1) and disclosing dataset
+    info (R4).
+- description: A resource from Google's People + AI Research (PAIR) initiative providing
+    guidance and templates for creating Data Cards to document datasets.
+  id: ''
+  name: The Data Cards Playbook
+  url: https://pair.withgoogle.com/explorables/data-cards/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1, R4
+  osai-explanation: Guidance on AI-specific metadata (R1) and disclosing dataset info
+    (R4).
+- description: Documentation on how Kaggle datasets are structured and what metadata
+    fields are used.
+  id: ''
+  name: Kaggle dataset metadata
+  url: https://www.kaggle.com/docs/datasets
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1
+  osai-explanation: Example of AI-specific dataset metadata.
+- description: Platform hosting machine learning competitions with datasets, evaluation
+    metrics, and leaderboards.
+  id: ''
+  name: Kaggle competitions
+  url: https://www.kaggle.com/competitions
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R6
+  osai-explanation: Defines evaluation protocols and uses standardized datasets.
+- description: ELIXIR toolkit providing guidance on research data management across
+    the lifecycle of a research project.
+  id: ''
+  name: RDMkit (Research Data Management Toolkit)
+  url: https://rdmkit.elixir-europe.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R3
+  osai-explanation: Training on best practices for data.
+- description: ELIXIR toolkit offering guidance and best practices for improving the
+    quality and sustainability of research software.
+  id: ''
+  name: RSQkit (Research Software Quality Toolkit)
+  url: https://rsqkit.elixir-europe.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R3, R5
+  osai-explanation: Training on best practices (R3) for portable code (R5).
+- description: A component or deliverable of the AI4EOSC project, focused on using
+    AI to generate or enhance metadata for scientific datasets within the European
+    Open Science Cloud.
+  id: ''
+  name: AI4metadata (from AI4EOSC)
+  url: https://ai4eosc.eu/ai4metadata/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1
+  osai-explanation: Focuses on AI-specific metadata.
+- description: A research paper/concept proposing a semantic layer to improve the
+    discoverability of ML artifacts. This links to a KDD 2023 paper.
+  id: ''
+  name: 'MLSea: A Semantic Layer for Discoverable Machine Learning'
+  url: https://dl.acm.org/doi/10.1145/3580305.3599801
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R1
+  osai-explanation: Proposes AI-specific metadata layer.
+- description: Leaderboard focused on tracking and comparing the energy consumption
+    of machine learning models and hardware.
+  id: ''
+  name: Machine Learning Energy Leaderboard
+  url: https://ml.energy/leaderboard/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R9, R6
+  osai-explanation: Standardized evaluation (R6) of environmental impact (R9).
+- description: German National Research Data Infrastructure consortium for Data Science
+    and Artificial Intelligence.
+  id: ''
+  name: NFDI4DataScience (National Research Data Infrastructure for Data Science)
+  url: https://www.nfdi4datascience.de/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R3
+  osai-explanation: Promotes training and best practices.
+- description: European project aiming to upskill researchers and data professionals
+    for the European Open Science Cloud, including FAIR data & ML practices.
+  id: ''
+  name: Skills4EOSC (Skills for European Open Science Cloud) (FAIR4ML related)
+  url: https://www.skills4eosc.eu/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R3
+  osai-explanation: Focuses on training.
+- description: An open-source community-driven guide to reproducible, ethical, inclusive
+    and collaborative data science.
+  id: ''
+  name: The Turing Way
+  url: https://the-turing-way.netlify.app/welcome.html
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R3, R4, R5
+  osai-explanation: Guide on best practices (R3), info disclosure (R4), and portable
+    code (R5).
+- description: Nature Medicine paper presenting the CONSORT-AI extension, a reporting
+    guideline for clinical trials evaluating interventions with AI.
+  id: ''
+  name: CONSORT-AI (Extension for AI Trials)
+  url: https://www.nature.com/articles/s41591-020-1034-x
+  biotools-url: ''
+  fairsharing-url: https://fairsharing.org/FAIRsharing.w7x21x
+  osai-recommendation: R4
+  osai-explanation: Reporting guideline for disclosing model/trial info.
+- description: Reporting guideline for studies developing, validating, or updating
+    a multivariable prediction model for diagnosis or prognosis.
+  id: ''
+  name: TRIPOD (Transparent Reporting of a multivariable prediction model for Individual
+    Prognosis Or Diagnosis)
+  url: https://www.tripod-statement.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R4
+  osai-explanation: Reporting guideline for disclosing model info.
+- description: International consensus framework providing best practices for developing,
+    deploying, and managing trustworthy AI tools in healthcare.
+  id: ''
+  name: FUTURE-AI (Framework for Unified Triage and Upguidance Recommendations for
+    Evaluation of Artificial Intelligence)
+  url: https://www.bmj.com/content/388/bmj-2024-081554
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: R4
+  osai-explanation: Framework promoting disclosure of model information.
+- description: Platform for sharing Docker-based tools and workflows described with
+    CWL, WDL, or Nextflow, primarily for bioinformatics.
+  id: ''
+  name: Dockstore
+  url: https://dockstore.org/
+  biotools-url: https://bio.tools/dockstore
+  fairsharing-url: https://fairsharing.org/FAIRsharing.t7njb7
+  osai-recommendation: R2, R5
+  osai-explanation: Registry for tools/workflows (R2) that are containerized for portability
+    (R5).
+- description: Global archive of software source code, aiming to preserve all publicly
+    available software for future generations.
+  id: ''
+  name: Software Heritage
+  url: https://www.softwareheritage.org/
+  biotools-url: https://bio.tools/software_heritage
+  fairsharing-url: https://fairsharing.org/FAIRsharing.z3x2g4
+  osai-recommendation: R2, R5
+  osai-explanation: Archive for code (R5) and can include AI models (R2).
+- description: Open-source container platform (formerly Singularity) designed for
+    secure, portable, and reproducible application execution, especially in HPC environments.
+  id: ''
+  name: Apptainer
+  url: https://apptainer.org/
+  biotools-url: https://bio.tools/apptainer
+  fairsharing-url: ''
+  osai-recommendation: R5
+  osai-explanation: Ensures portable code through containerization.
+- description: ''
+  id: ''
+  name: DOME
+  url: ''
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
+- description: ''
+  id: ''
+  name: ELIXIR ML FG
+  url: ''
+  biotools-url: ''
+  fairsharing-url: ''
+  osai-recommendation: ''
+  osai-explanation: ''
