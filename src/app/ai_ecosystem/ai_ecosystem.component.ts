@@ -30,6 +30,10 @@ export class AiEcosystemComponent implements OnInit {
   
   originalData: RegistryItem[] = []; 
   filteredData: RegistryItem[] = []; 
+  paginatedData: RegistryItem[] = []; // Data for the current page
+
+  currentPage: number = 1;
+  itemsPerPage: number = 10; // Number of items per page
   
   availableTypes: string[] = ['All']; // Added for Type filter
   availableRecommendations: string[] = ['All', 'R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8', 'R9']; // Hardcoded list
@@ -77,16 +81,16 @@ export class AiEcosystemComponent implements OnInit {
           });
           // Dynamic population of availableRecommendations removed as it's now hardcoded.
 
-          this.applyFilters(); // Apply initial filters (which might be 'All')
+          this.applyFilters(); // Apply initial filters (which will also update paginated data)
         } catch (e) {
           console.error('Error parsing YAML:', e);
           this.originalData = []; // Set to empty array on error
-          this.applyFilters();
+          this.applyFilters(); // Ensure paginatedData is also updated (to empty)
         }
       }, error => {
         console.error('Error loading YAML file:', error);
         this.originalData = []; // Set to empty array on error
-        this.applyFilters();
+        this.applyFilters(); // Ensure paginatedData is also updated (to empty)
       });
   }
 
@@ -121,6 +125,45 @@ export class AiEcosystemComponent implements OnInit {
       });
     }
 
-    this.filteredData = data; // Update the data bound to the table
+    this.filteredData = data; // Update the filtered data
+    this.currentPage = 1; // Reset to the first page whenever filters change
+    this.updatePageData(); // Update the data for the current page
+  }
+
+  updatePageData(): void {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedData = this.filteredData.slice(startIndex, endIndex);
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.filteredData.length / this.itemsPerPage);
+  }
+
+  get pageNumbers(): number[] {
+    // Generates an array of page numbers, e.g., [1, 2, 3, ..., totalPages]
+    // For a large number of pages, a more sophisticated pagination UI might be needed in the template
+    return Array(this.totalPages).fill(0).map((x, i) => i + 1);
+  }
+
+  goToPage(pageNumber: number): void {
+    if (pageNumber >= 1 && pageNumber <= this.totalPages) {
+      this.currentPage = pageNumber;
+      this.updatePageData();
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePageData();
+    }
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePageData();
+    }
   }
 }

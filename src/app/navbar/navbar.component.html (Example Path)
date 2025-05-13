@@ -1,0 +1,7 @@
+<!-- ...existing navbar code... -->
+
+<li class="nav-item">
+  <a class="nav-link" routerLink="/dome-registry" routerLinkActive="active">DOME Registry</a> <!-- Changed from /dome_registry -->
+</li>
+
+<!-- ...existing navbar code... -->

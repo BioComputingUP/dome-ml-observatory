@@ -57,8 +57,8 @@
     <tr *ngIf="filteredData.length === 0">
       <td colspan="7" style="text-align: center;">No items match the current filters.</td> <!-- Colspan updated to 7 -->
     </tr>
-    <!-- Loop through filtered data -->
-    <tr *ngFor="let item of filteredData">
+    <!-- Loop through paginated data -->
+    <tr *ngFor="let item of paginatedData">
       <td>{{ item.type || 'N/A' }}</td> <!-- Added Type data cell -->
       <td>
         <a *ngIf="item.url" [href]="item.url" target="_blank" rel="noopener noreferrer">{{ item.name || 'N/A' }}</a>
@@ -75,3 +75,50 @@
     </tr>
   </tbody>
 </table>
+
+<!-- Pagination Controls -->
+<div *ngIf="filteredData.length > 0" class="pagination-controls" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+  
+  <!-- Items per page selector -->
+  <div style="display: flex; align-items: center;">
+    <label for="itemsPerPage" style="margin-right: 10px;">Items per page:</label>
+    <select id="itemsPerPage" [(ngModel)]="itemsPerPage" (ngModelChange)="applyFilters()" style="padding: 5px; border-radius: 4px;">
+      <option [ngValue]="10">10</option>
+      <option [ngValue]="25">25</option>
+      <option [ngValue]="50">50</option>
+      <option [ngValue]="100">100</option>
+    </select>
+  </div>
+
+  <!-- Page Information -->
+  <div *ngIf="totalPages > 0" style="font-size: 0.9em;">
+    Showing {{ (currentPage - 1) * itemsPerPage + 1 }} - {{ currentPage * itemsPerPage > filteredData.length ? filteredData.length : currentPage * itemsPerPage }} of {{ filteredData.length }} items
+  </div>
+  
+  <!-- Page Navigation -->
+  <div *ngIf="totalPages > 0" style="display: flex; align-items: center;">
+    <button class="btn btn-sm btn-outline-secondary" (click)="previousPage()" [disabled]="currentPage === 1" style="margin-right: 5px;">
+      Previous
+    </button>
+    
+    <!-- Page numbers (simplified for brevity, consider a more robust solution for many pages) -->
+    <ng-container *ngFor="let pageNum of pageNumbers">
+      <!-- Show first page, last page, and pages around current page -->
+      <button *ngIf="pageNum === 1 || pageNum === totalPages || (pageNum >= currentPage - 2 && pageNum <= currentPage + 2)"
+              class="btn btn-sm"
+              [class.btn-primary]="pageNum === currentPage"
+              [class.btn-outline-secondary]="pageNum !== currentPage"
+              (click)="goToPage(pageNum)"
+              style="margin: 0 2px; min-width: 35px;">
+        {{ pageNum }}
+      </button>
+      <!-- Ellipsis for skipped pages -->
+      <span *ngIf="(pageNum === currentPage - 3 && currentPage > 4) || (pageNum === currentPage + 3 && currentPage < totalPages - 3)" style="margin: 0 2px;">...</span>
+    </ng-container>
+    
+    <button class="btn btn-sm btn-outline-secondary" (click)="nextPage()" [disabled]="currentPage === totalPages" style="margin-left: 5px;">
+      Next
+    </button>
+  </div>
+
+</div>
