@@ -97,7 +97,7 @@
   
   <!-- Page Navigation -->
   <div *ngIf="totalPages > 0" style="display: flex; align-items: center;">
-    <button class="btn btn-sm btn-outline-secondary" (click)="previousPage()" [disabled]="currentPage === 1" style="margin-right: 5px;">
+    <button class="btn btn-sm btn-primary" (click)="previousPage()" [disabled]="currentPage === 1" style="margin-right: 5px;">
       Previous
     </button>
     
@@ -107,7 +107,7 @@
       <button *ngIf="pageNum === 1 || pageNum === totalPages || (pageNum >= currentPage - 2 && pageNum <= currentPage + 2)"
               class="btn btn-sm"
               [class.btn-primary]="pageNum === currentPage"
-              [class.btn-outline-secondary]="pageNum !== currentPage"
+              [class.btn-outline-primary]="pageNum !== currentPage"
               (click)="goToPage(pageNum)"
               style="margin: 0 2px; min-width: 35px;">
         {{ pageNum }}
@@ -116,7 +116,7 @@
       <span *ngIf="(pageNum === currentPage - 3 && currentPage > 4) || (pageNum === currentPage + 3 && currentPage < totalPages - 3)" style="margin: 0 2px;">...</span>
     </ng-container>
     
-    <button class="btn btn-sm btn-outline-secondary" (click)="nextPage()" [disabled]="currentPage === totalPages" style="margin-left: 5px;">
+    <button class="btn btn-sm btn-primary" (click)="nextPage()" [disabled]="currentPage === totalPages" style="margin-left: 5px;">
       Next
     </button>
   </div>
