@@ -1,3 +1,9 @@
+<style>
+  .dome-registry-img-container:hover img {
+    filter: brightness(1.25); /* Lightens the image by 25% */
+    transition: filter 0.2s ease-in-out; /* Smooth transition for the brightness effect */
+  }
+</style>
 <div class="container-fluid container-wide">
 
   <div class="card mt-5">
@@ -17,8 +23,8 @@
 
       <!-- Add the hyperlinked button here -->
       <div class="text-center"> <!-- Add this div for centering -->
-        <a href="https://registry.dome-ml.org/intro" target="_blank" rel="noopener noreferrer" class="btn">
-          <img src="assets/img/DOME_Registry_Rounded-cropped.svg" alt="Go to DOME Registry" style="height: 180px;"> <!-- Adjust height as needed -->
+        <a href="https://registry.dome-ml.org/intro" target="_blank" rel="noopener noreferrer" class="btn dome-registry-img-container">
+          <img src="assets/img/DOME_Registry_Rounded-cropped.svg" alt="Go to DOME Registry" style="height: 107px;"> <!-- Adjust height as needed -->
         </a>
       </div> <!-- Close the centering div -->
     </div>
