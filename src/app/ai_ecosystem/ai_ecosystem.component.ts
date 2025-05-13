@@ -60,6 +60,15 @@ export class AiEcosystemComponent implements OnInit {
             this.originalData = [];
           }
 
+          // Sort originalData by name alphabetically
+          this.originalData.sort((a, b) => {
+            const nameA = a.name ? a.name.toLowerCase() : '';
+            const nameB = b.name ? b.name.toLowerCase() : '';
+            if (nameA < nameB) return -1;
+            if (nameA > nameB) return 1;
+            return 0;
+          });
+
           // Populate type filter dropdown dynamically
           this.availableTypes = ['All', ...new Set(this.originalData.map(item => item.type).filter(Boolean) as string[])].sort((a, b) => {
             if (a === 'All') return -1;
