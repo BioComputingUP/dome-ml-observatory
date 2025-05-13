@@ -1,4 +1,13 @@
-<h2>AI Ecosystem</h2>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+  <h2>OSAI: Open and Sustainable AI Ecosystem Components</h2>
+  <!-- Add Contribute on GitHub Button -->
+  <div>
+    <a href="https://github.com/gavinf97/OSAI_ecosystem" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="display: inline-flex; align-items: center;">
+      <img src="https://cdnjs.cloudflare.com/ajax/libs/octicons/8.5.0/svg/mark-github.svg" alt="GitHub logo" style="height: 1.2em; margin-right: 0.5em; filter: invert(1) brightness(2);"> <!-- Added GitHub logo -->
+      Contribute on GitHub
+    </a>
+  </div>
+</div>
 
 <!-- Filters -->
 <div class="filters" style="margin-bottom: 25px; display: flex; gap: 25px;">
@@ -31,7 +40,7 @@
       <!-- Type Column Removed -->
       <th>Recommendation</th>
       <th>Relevance</th>
-      <th>URL</th>
+      <!-- URL Column Header Removed -->
       <th>Bio.tools</th>
       <!-- Access Column Removed -->
     </tr>
@@ -39,19 +48,19 @@
   <tbody>
     <!-- Add a message if no data matches -->
     <tr *ngIf="filteredData.length === 0">
-      <td colspan="6" style="text-align: center;">No items match the current filters.</td> <!-- Colspan updated to 6 -->
+      <td colspan="5" style="text-align: center;">No items match the current filters.</td> <!-- Colspan updated to 5 -->
     </tr>
     <!-- Loop through filtered data -->
     <tr *ngFor="let item of filteredData">
-      <td>{{ item.name || 'N/A' }}</td>
+      <td>
+        <a *ngIf="item.url" [href]="item.url" target="_blank" rel="noopener noreferrer">{{ item.name || 'N/A' }}</a>
+        <span *ngIf="!item.url">{{ item.name || 'N/A' }}</span>
+      </td>
       <td>{{ item.description || 'N/A' }}</td>
       <!-- Type Cell Removed -->
       <td>{{ item['osai-recommendation'] || 'N/A' }}</td>
       <td>{{ item['osai-explanation'] || 'N/A' }}</td>
-      <td>
-        <a *ngIf="item.url" [href]="item.url" target="_blank" rel="noopener noreferrer">Link</a>
-        <span *ngIf="!item.url">N/A</span>
-      </td>
+      <!-- URL Cell Removed -->
       <td>
         <a *ngIf="item['biotools-url']" [href]="item['biotools-url']" target="_blank" rel="noopener noreferrer">Bio.tools</a>
         <span *ngIf="!item['biotools-url']">N/A</span>

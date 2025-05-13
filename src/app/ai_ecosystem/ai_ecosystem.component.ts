@@ -26,10 +26,10 @@ export class AiEcosystemComponent implements OnInit {
   searchTerm: string = '';
   selectedRecommendation: string = 'All'; // Default value
   
-  originalData: RegistryItem[] = []; // Holds the raw data, now typed with updated RegistryItem
-  filteredData: RegistryItem[] = []; // Holds the data displayed in the table
+  originalData: RegistryItem[] = []; 
+  filteredData: RegistryItem[] = []; 
   
-  availableRecommendations: string[] = ['All']; // Initialize with 'All'
+  availableRecommendations: string[] = ['All', 'R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8', 'R9']; // Hardcoded list
 
   // Inject data service if needed
   constructor(private http: HttpClient) {}
@@ -57,8 +57,7 @@ export class AiEcosystemComponent implements OnInit {
             this.originalData = [];
           }
 
-          // Populate recommendation filter dropdown dynamically
-          this.availableRecommendations = ['All', ...new Set(this.originalData.map(item => item['osai-recommendation']).filter(Boolean) as string[])];
+          // Dynamic population of availableRecommendations removed as it's now hardcoded.
 
           this.applyFilters(); // Apply initial filters (which might be 'All')
         } catch (e) {
@@ -87,7 +86,15 @@ export class AiEcosystemComponent implements OnInit {
 
     // Filter by recommendation using 'osai-recommendation'
     if (this.selectedRecommendation && this.selectedRecommendation !== 'All') {
-      data = data.filter(item => item['osai-recommendation'] === this.selectedRecommendation);
+      data = data.filter(item => {
+        if (item['osai-recommendation']) {
+          // Check if the item's recommendation string contains the selected recommendation as a whole word/token.
+          // This handles cases like "R2" in "R2, R5" or "R12" not matching "R1" or "R2".
+          const itemRecs = item['osai-recommendation'].split(',').map(rec => rec.trim());
+          return itemRecs.includes(this.selectedRecommendation);
+        }
+        return false; // If item has no recommendation, it doesn't match a specific one
+      });
     }
 
     this.filteredData = data; // Update the data bound to the table
