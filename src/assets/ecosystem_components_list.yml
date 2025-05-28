@@ -566,7 +566,7 @@
 
 - id: physionet
   name: PhysioNet
-  type: Database
+  type: Registry
   description: >-
     Repository of freely-available physiological signals (e.g., ECG, EEG)
     and related open-source software, widely used for ML in healthcare.
@@ -1951,7 +1951,7 @@
 
 - id: osf
   name: Open Science Framework (OSF)
-  type: Resource
+  type: Registry
   description: >-
     Free, open-source web platform by the Center for Open Science supporting
     research project management, collaboration, and sharing of data, code, and papers.
@@ -2103,7 +2103,7 @@
 
 - id: altai
   name: ALTAI (Assessment List for Trustworthy Artificial Intelligence)
-  type: Resource
+  type: Best practice
   description: >-
     A checklist provided by the European Commission's High-Level Expert
     Group on AI for self-assessing the trustworthiness of AI systems based on 7 key
