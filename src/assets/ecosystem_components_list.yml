@@ -3405,7 +3405,7 @@
   description: >-
     Community-wide recommendations for reporting supervised machine learning-based
     analyses applied to biological studies, aiming to improve validation and reproducibility.
-  url: 
+  url: https://dome-ml.org/guidelines
   biotools-url: ''
   fairsharing-url: https://fairsharing.org/FAIRsharing.cf62c2
   access-model: Free
@@ -3645,7 +3645,7 @@
   type: Tool
   description: >-
     A catalogue of tools and metrics for trustworthy AI.
-  url: ''
+  url: https://oecd.ai/en/catalogue/overview
   biotools-url: ''
   fairsharing-url: ''
   access-model: Free
