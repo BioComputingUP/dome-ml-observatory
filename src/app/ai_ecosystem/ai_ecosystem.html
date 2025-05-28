@@ -34,7 +34,9 @@
   <div>
     <label for="recommendationFilter">Recommendation: </label>
     <select id="recommendationFilter" [(ngModel)]="selectedRecommendation" (ngModelChange)="applyFilters()">
-      <option *ngFor="let rec of availableRecommendations" [value]="rec">{{ rec }}</option>
+      <option *ngFor="let rec of availableRecommendations" [value]="rec.value">
+        {{ rec.displayName }}
+      </option>
     </select>
   </div>
 </div>

@@ -17,6 +17,11 @@ interface RegistryItem {
   'access-model': string | null; // Added access-model
 }
 
+interface RecommendationOption {
+  value: string;
+  displayName: string;
+}
+
 @Component({
   selector: 'app-ai-ecosystem',
   templateUrl: './ai_ecosystem.html',
@@ -36,7 +41,19 @@ export class AiEcosystemComponent implements OnInit {
   itemsPerPage: number = 10; // Number of items per page
   
   availableTypes: string[] = ['All']; // Added for Type filter
-  availableRecommendations: string[] = ['All', 'R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8', 'R9']; // Hardcoded list
+  
+  availableRecommendations: RecommendationOption[] = [
+    { value: 'All', displayName: 'All' },
+    { value: 'R1', displayName: 'R1 - Metadata' }, // Sample change
+    { value: 'R2', displayName: 'R2 - Registries' },
+    { value: 'R3', displayName: 'R3 - Training' },
+    { value: 'R4', displayName: 'R4 - Disclosure' },
+    { value: 'R5', displayName: 'R5 - Portability' },
+    { value: 'R6', displayName: 'R6 - Standardisation' },
+    { value: 'R7', displayName: 'R7 - Technique' },
+    { value: 'R8', displayName: 'R8 - Hardware' },
+    { value: 'R9', displayName: 'R9 - Impact' }
+  ];
 
   // Inject data service if needed
   constructor(private http: HttpClient) {}
