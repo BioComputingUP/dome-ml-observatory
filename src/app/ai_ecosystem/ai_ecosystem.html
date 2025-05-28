@@ -1,8 +1,45 @@
+<style>
+  .btn-contribute-github-custom {
+    background-color: #0f3a62; /* lighten(#0a2942, 5%) */
+    border-color: #0f3a62;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+  }
+
+  .btn-contribute-github-custom:hover {
+    background-color: #134779; /* lighten(#0a2942, 7.5%) */
+    border-color: #134779;
+    color: white;
+  }
+
+  .osai-recommendations-details {
+    margin-bottom: 20px;
+    background-color: #0a2942; /* base primary color */
+    border: 1px solid #134779; /* lighten(#0a2942, 7.5%) */
+    border-radius: 4px;
+    padding: 10px;
+    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+  }
+
+  .osai-recommendations-details:hover {
+    background-color: #0f3a62; /* lighten(#0a2942, 5%) */
+    border-color: #18588F; /* lighten(#0a2942, 10%) */
+  }
+
+  .osai-recommendations-details summary {
+    cursor: pointer; 
+    font-weight: bold; 
+    margin-bottom: 5px; 
+    color: white;
+  }
+</style>
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
   <h2>OSAI: Open and Sustainable AI Ecosystem Components</h2>
   <!-- Add Contribute on GitHub Button -->
   <div>
-    <a href="https://github.com/gavinf97/OSAI_ecosystem" target="_blank" rel="noopener noreferrer" class="btn" style="display: inline-flex; align-items: center; background-color: #0f3a62; border-color: #0f3a62; color: white;">
+    <a href="https://github.com/gavinf97/OSAI_ecosystem" target="_blank" rel="noopener noreferrer" class="btn btn-contribute-github-custom">
       <img src="https://cdnjs.cloudflare.com/ajax/libs/octicons/8.5.0/svg/mark-github.svg" alt="GitHub logo" style="height: 1.2em; margin-right: 0.5em; filter: invert(1) brightness(2);"> <!-- Added GitHub logo -->
       Contribute on GitHub
     </a>
@@ -10,8 +47,8 @@
 </div>
 
 <!-- OSAI Recommendations Expandable Section -->
-<details style="margin-bottom: 20px; background-color: #0a2942; border: 1px solid #134779; border-radius: 4px; padding: 10px;">
-  <summary style="cursor: pointer; font-weight: bold; margin-bottom: 5px; color: white;">OSAI Recommendations</summary>
+<details class="osai-recommendations-details">
+  <summary>OSAI Recommendations</summary>
   <p style="color: white;">
     This section provides further details and insights into the OSAI recommendations. 
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
