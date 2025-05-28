@@ -32,6 +32,7 @@ export class AiEcosystemComponent implements OnInit {
   searchTerm: string = '';
   selectedType: string = 'All'; // Added for Type filter
   selectedRecommendation: string = 'All'; 
+  selectedAccessModel: string = 'All'; // Added for Access Model filter
   
   originalData: RegistryItem[] = []; 
   filteredData: RegistryItem[] = []; 
@@ -41,6 +42,7 @@ export class AiEcosystemComponent implements OnInit {
   itemsPerPage: number = 10; // Number of items per page
   
   availableTypes: string[] = ['All']; // Added for Type filter
+  availableAccessModels: string[] = ['All']; // Added for Access Model filter
   
   availableRecommendations: RecommendationOption[] = [
     { value: 'All', displayName: 'All' },
@@ -96,6 +98,13 @@ export class AiEcosystemComponent implements OnInit {
             if (b === 'All') return 1;
             return a.localeCompare(b);
           });
+
+          // Populate access model filter dropdown dynamically
+          this.availableAccessModels = ['All', ...new Set(this.originalData.map(item => item['access-model']).filter(Boolean) as string[])].sort((a, b) => {
+            if (a === 'All') return -1;
+            if (b === 'All') return 1;
+            return a.localeCompare(b);
+          });
           // Dynamic population of availableRecommendations removed as it's now hardcoded.
 
           this.applyFilters(); // Apply initial filters (which will also update paginated data)
@@ -127,6 +136,11 @@ export class AiEcosystemComponent implements OnInit {
     // Filter by type
     if (this.selectedType && this.selectedType !== 'All') {
       data = data.filter(item => item.type === this.selectedType);
+    }
+
+    // Filter by access model
+    if (this.selectedAccessModel && this.selectedAccessModel !== 'All') {
+      data = data.filter(item => item['access-model'] === this.selectedAccessModel);
     }
 
     // Filter by recommendation using 'osai-recommendation'

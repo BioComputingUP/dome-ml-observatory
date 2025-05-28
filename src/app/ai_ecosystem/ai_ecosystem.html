@@ -14,29 +14,27 @@
 <!-- Filters -->
 <div class="filters" style="margin-bottom: 25px; display: flex; gap: 25px;">
   <div>
-    <label for="search">Search:  </label>
-    <input
-      type="text"
-      id="search"
-      [(ngModel)]="searchTerm"
-      (ngModelChange)="applyFilters()"
-      placeholder=" ..."
-    />
+    <label for="searchTerm" style="margin-right: 10px;">Search:</label>
+    <input type="text" id="searchTerm" [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()" placeholder="Enter search term..." style="width: 200px;">
   </div>
-  <!-- Add Type Filter Dropdown -->
   <div>
-    <label for="typeFilter">Type: </label>
-    <select id="typeFilter" [(ngModel)]="selectedType" (ngModelChange)="applyFilters()">
+    <label for="typeFilter" style="margin-right: 10px;">Type:</label>
+    <select id="typeFilter" [(ngModel)]="selectedType" (ngModelChange)="applyFilters()" style="width: 150px;">
       <option *ngFor="let type of availableTypes" [value]="type">{{ type }}</option>
     </select>
   </div>
-  <!-- Add Recommendation Filter Dropdown -->
   <div>
-    <label for="recommendationFilter">Recommendation: </label>
+    <label for="recommendationFilter" style="margin-right: 10px;">OSAI Recommendation:</label>
     <select id="recommendationFilter" [(ngModel)]="selectedRecommendation" (ngModelChange)="applyFilters()">
       <option *ngFor="let rec of availableRecommendations" [value]="rec.value">
         {{ rec.displayName }}
       </option>
+    </select>
+  </div>
+  <div>
+    <label for="accessModelFilter" style="margin-right: 10px;">Access Model:</label>
+    <select id="accessModelFilter" [(ngModel)]="selectedAccessModel" (ngModelChange)="applyFilters()" style="width: 150px;">
+      <option *ngFor="let model of availableAccessModels" [value]="model">{{ model }}</option>
     </select>
   </div>
 </div>
