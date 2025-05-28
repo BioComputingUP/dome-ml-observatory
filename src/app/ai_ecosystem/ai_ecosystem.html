@@ -70,8 +70,12 @@
       <td>{{ item['osai-recommendation'] || 'N/A' }}</td>
       <td>{{ item['osai-explanation'] || 'N/A' }}</td>
       <td>
-        <a *ngIf="item['biotools-url']" [href]="item['biotools-url']" target="_blank" rel="noopener noreferrer">bio.tools</a>
-        <span *ngIf="!item['biotools-url']">N/A</span>
+        <ng-container *ngIf="item['biotools-url'] || item['fairsharing-url']">
+          <a *ngIf="item['biotools-url']" [href]="item['biotools-url']" target="_blank" rel="noopener noreferrer">bio.tools</a>
+          <br *ngIf="item['biotools-url'] && item['fairsharing-url']">
+          <a *ngIf="item['fairsharing-url']" [href]="item['fairsharing-url']" target="_blank" rel="noopener noreferrer">FAIRsharing</a>
+        </ng-container>
+        <span *ngIf="!item['biotools-url'] && !item['fairsharing-url']">N/A</span>
       </td>
       <td>{{ item['access-model'] || 'N/A' }}</td> <!-- Added Access Model data cell -->
     </tr>
