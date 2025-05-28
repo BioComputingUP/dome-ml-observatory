@@ -66,16 +66,14 @@ export class AiEcosystemComponent implements OnInit {
 
   loadData(): void {
     this.http.get('assets/ecosystem_components_list.yml', { responseType: 'text' })
-      .subscribe(yamlText => {
+      .subscribe(yamlData => {
         try {
-          const data: any = yaml.load(yamlText);
+          const data: any = yaml.load(yamlData);
           
-          if (Array.isArray(data)) {
+          if (data && Array.isArray(data)) {
             this.originalData = data as RegistryItem[];
-          } else if (data && typeof data === 'object' && data.hasOwnProperty('items') && Array.isArray(data.items)) {
-            this.originalData = data.items as RegistryItem[];
           } else {
-            let warningMessage = 'YAML data is not in the expected format. Expected an array or an object with an "items" array.';
+            let warningMessage = 'YAML data is not an array or is malformed.';
             if (data === null || data === undefined) {
               warningMessage = 'Parsed YAML data is null or undefined. Check YAML file content.';
             }
@@ -96,6 +94,8 @@ export class AiEcosystemComponent implements OnInit {
           this.availableTypes = ['All', ...new Set(this.originalData.map(item => item.type).filter(Boolean) as string[])].sort((a, b) => {
             if (a === 'All') return -1;
             if (b === 'All') return 1;
+            if (a === 'Other') return 1; // 'Other' should be at the end (before 'All' is handled)
+            if (b === 'Other') return -1; // 'Other' should be at the end
             return a.localeCompare(b);
           });
 
