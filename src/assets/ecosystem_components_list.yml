@@ -3825,7 +3825,7 @@
   type: Reproducibility tool
   description: >-
     A curated list of awesome open source workflow management systems.
-  url: ''
+  url: https://github.com/meirwah/awesome-workflow-engines
   biotools-url: ''
   fairsharing-url: ''
   access-model: Free
