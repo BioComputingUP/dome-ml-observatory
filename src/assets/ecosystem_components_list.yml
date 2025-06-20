@@ -110,20 +110,6 @@
   osai-recommendation: ''
   osai-explanation: ''
 
-- id: fastai
-  name: Fastai
-  type: AI/ML Library
-  description: >-
-    High-level deep learning library built on PyTorch, simplifying the
-    training of fast and accurate neural nets using modern best practices.
-  url: https://www.fast.ai/
-  biotools-url: ''
-  fairsharing-url: ''
-  access-model: Open Source
-  domain: domain-agnostic
-  osai-recommendation: ''
-  osai-explanation: ''
-
 - id: xgboost
   name: XGBoost
   type: AI/ML Library
@@ -324,50 +310,8 @@
   osai-recommendation: R6
   osai-explanation: Defines evaluation protocols and uses standardized datasets.
 
-- id: caid
-  name: CAID (Critical Assessment of Intrinsic Disorder prediction)
-  type: Benchmarking
-  description: >-
-    Community experiment to evaluate methods for predicting intrinsically
-    disordered proteins.
-  url: https://www.idpcentral.org/caid
-  biotools-url: ''
-  fairsharing-url: ''
-  access-model: Free
-  domain: life science
-  osai-recommendation: R6
-  osai-explanation: Defines intrinsically disordered proteins (IDP) prediction evaluation protocols and uses standardized datasets (R6).
-
-- id: casp
-  name: CASP (Critical Assessment of protein Structure Prediction)
-  type: Benchmarking
-  description: >-
-    Community-wide experiment for protein structure prediction, assessing
-    methods including AI/ML.
-  url: https://predictioncenter.org/
-  biotools-url: ''
-  fairsharing-url: ''
-  access-model: Free
-  domain: life science
-  osai-recommendation: R6
-  osai-explanation: Defines protein structure prediction evaluation protocols and uses standardized datasets (R6).
-
-- id: cagi
-  name: CAGI (Critical Assessment of Genome Interpretation)
-  type: Benchmarking
-  description: >-
-    Community experiment to assess computational methods for predicting
-    the functional, phenotypic, and clinical impact of genomic variation.
-  url: https://genomeinterpretation.org/
-  biotools-url: ''
-  fairsharing-url: ''
-  access-model: Free
-  domain: life science
-  osai-recommendation: R6
-  osai-explanation: Defines genomic interpretation prediction evaluation protocols and uses standardized datasets (R6).
-
 - id: esipaireadinesschecklist
-  name: Checklist to Examine AI-readiness for Open Environmental Datasets. 
+  name: Checklist to Examine AI-readiness for Open Environmental Datasets
   type: Best practice
   description: >-
     Guidelines by ESIP to evaluate if environmental datasets are prepared
@@ -580,7 +524,7 @@
 
 - id: gitlfs
   name: Git LFS (Large File Storage)
-  type: Registry  
+  type: Registry
   description: >-
     Git extension for versioning large files, crucial for managing large
     datasets or model weights within Git repositories.
@@ -737,7 +681,10 @@
   type: Organisation
   description: >-
     Focus group within ELIXIR addressing challenges and opportunities of
-    ML in life sciences, fostering collaboration and best practices.
+    ML in life sciences, fostering collaboration and best practices. Brings together interested parties to
+    address emerging areas of interest in ML, aiming to increase the
+    reproducibility and transparency of ML methods in the life sciences and responsible
+    for developing the DOME Recommendations and Registry.
   url: https://elixir-europe.org/focus-groups/machine-learning
   biotools-url: ''
   fairsharing-url: '' 
@@ -1001,7 +948,7 @@
   osai-recommendation: R1
   osai-explanation: Develops AI-specific metadata standards (PMML) (R1). #to add in PMML
 
-- id: quareplimipaper  
+- id: quareplimipaper
   name: Quality Assessment and Reproducibility for Instruments & Images in Light Microscopy
   type: Best practice
   description: >-
@@ -1011,11 +958,11 @@
   biotools-url: ''
   fairsharing-url: ''
   access-model: Free
-  domain: life science  
+  domain: life science
   osai-recommendation: R4
   osai-explanation: Guideline on disclosing AI/ML light microscopy information (R4).
 
-- id: fairformlpaper_zenodo  
+- id: fairformlpaper_zenodo
   name: FAIR for Machine Learning Model - Principles and Assessment Metrics
   type: Paper
   description: >-
@@ -1365,7 +1312,7 @@
   name: CASP (Critical Assessment of protein Structure Prediction)
   type: Benchmarking
   description: >-
-    . The Critical Assessment of protein Structure Prediction (CASP) experiments aim at establishing the 
+    The Critical Assessment of protein Structure Prediction (CASP) experiments aim at establishing the 
     current state of the art in protein structure prediction, 
     identifying what progress has been made, and highlighting where future effort may be most productively focused through standardised benchmarking of AI/ML methods.
   url: https://predictioncenter.org/
@@ -1762,7 +1709,7 @@
   biotools-url: ''
   fairsharing-url: ''
   access-model: ''
-  domain: domain-agnostic 
+  domain: domain-agnostic
   osai-recommendation: ''
   osai-explanation: ''
 
@@ -2984,8 +2931,7 @@
   name: OpenAI Gym
   type: Benchmarking
   description: >-
-    Toolkit  for developing and
-    comparing reinforcement learning algorithms. 
+    Toolkit  for developing and comparing reinforcement learning algorithms.
   url: https://github.com/openai/gym
   biotools-url: ''
   fairsharing-url: ''
@@ -3428,22 +3374,6 @@
   osai-recommendation: R2, R4
   osai-explanation: Registry for AI/ML studies (R2) and facilitates reporting/disclosure of model information via publication annotations (R4).
 
-- id: elixirmlfocusgroup
-  name: ELIXIR Machine Learning Focus Group
-  type: Organisation
-  description: >-
-    An ELIXIR agile structure that brings together interested parties to
-    address emerging areas of interest in Machine Learning, aiming to increase the
-    reproducibility and transparency of ML methods in the life sciences and responsible
-    for developing the DOME Recommendations and Registry.
-  url: https://elixir-europe.org/focus-groups/machine-learning
-  biotools-url: ''
-  fairsharing-url: ''
-  access-model: Free
-  domain: life science
-  osai-recommendation: ''
-  osai-explanation: ''
-
 - id: moframework
   name: Model Openness Framework (MOF)
   type: Best practice
@@ -3704,3 +3634,677 @@
   domain: domain-agnostic
   osai-recommendation: ''
   osai-explanation: ''
+
+- id: prov-o
+  name: PROV-O
+  type: Metadata
+  description: >-
+    PROV Ontology (PROV-O) expresses the PROV Data Model using the OWL2 Web Ontology Language (OWL2). 
+    It provides a set of classes, properties, and restrictions that can be used to represent and interchange provenance information generated in different systems and under different contexts. 
+  url: https://www.w3.org/TR/prov-o/
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R1
+  osai-explanation: Ontology useful for ensuring accurate provenance metadata is used for data. Work ongoing in 2025 to integrate with Croissant ML datasets metadata (R1).
+
+- id: choosealicense
+  name: Choose an open source license
+  type: Metadata
+  description: >-
+    Website to support choice of open source software license.
+  url: https://choosealicense.com/
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R1
+  osai-explanation: Useful website to support license choice for model licensing and ensure reuse compatible licensing (R1).
+  
+- id: turwaylicense
+  name: Licensing Machine Learning models (Turing Way)
+  type: Metadata
+  description: >-
+    Dedicated machine learning models licensing info webpage on the Turing Way resource.
+  url: ''
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R1
+  osai-explanation: Dedicated information to guide ML model licensing metadata choice to enable reuse (R1).
+
+- id: venv
+  name: venv (Python)
+  type: Reproducibility tool
+  description: >-
+    The venv module supports creating lightweight “virtual environments”, each with their own independent set of Python packages installed in their site directories. 
+    A virtual environment is created on top of an existing Python installation, known as the virtual environment’s “base” 
+    Python, and may optionally be isolated from the packages in the base environment, so only those explicitly installed in the virtual environment are available.
+  url: https://docs.python.org/3/library/venv.html
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R5
+  osai-explanation: Python specifc virtual software environment creator to support portable and reproducible python code, applicable to AI/ML models that are python based (R5).
+
+- id: renv
+  name: renv (R)
+  type: Reproducibility tool
+  description: >-
+    The renv package helps create reproducible environments for R software projects. renv can make R projects more isolated, portable and reproducible.
+  url: https://rstudio.github.io/renv/index.html
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R5
+  osai-explanation: Specifc virtual software environment creator to support portable and reproducible R code, applicable to AI/ML models that are R based (R5).
+
+- id: nixos
+  name: NixOS
+  type: Reproducibility tool
+  description: >-
+    Nix is a tool that facilitates package management and system configuration. Useful to make reproducible, declarative and reliable systems.
+  url: https://nixos.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R5
+  osai-explanation: Can be used to ensure reproducible environments with declarative package management, tracking all system dependencies and configurations useful for ensuring reproducible AI/ML models (R5)
+
+- id: ansible
+  name: Ansible
+  type: Reproducibility tool
+  description: >-
+    Ansible is an automation tool used for system configuration, software deployment, and orchestration.
+  url: https://docs.ansible.com/ansible/latest/getting_started/index.html
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R5
+  osai-explanation: Ansible supports reproducible environments and ensure consistent states across systems, useful for reproducibility of AI/ML models (R5). 
+
+- id: greenaipaper
+  name: Green AI
+  type: Paper
+  description: >-
+    Arxiv paper from 2019 on Green AI by members of the Allen Institute for AI.
+  url: https://doi.org/10.48550/arXiv.1907.10597
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: ''
+  osai-explanation: ''
+
+- id: neptuneaireproduceblog
+  name: Neptune.ai Reproducibility Guide
+  type: Paper
+  description: >-
+    Blog post from neputune.ai offering guiding information on developing reproducible AI/ML models. 
+  url: https://neptune.ai/blog/how-to-solve-reproducibility-in-ml
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: ''
+  osai-explanation: ''
+
+- id: cloudcarbonfootprint
+  name: Cloud Carbon Footprint
+  type: Tool
+  description: >-
+    Cloud carbon emissions measurement and analysis tool.
+  url: https://www.cloudcarbonfootprint.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R9
+  osai-explanation: Resource to support measurment of AI/ML model emissions (R9)
+
+- id: googlecarbonfreeguide
+  name: Carbon free energy for Google Cloud regions
+  type: Tool
+  description: >-
+    Guide for choosing low carbon Google cloud computing datacentres.
+  url: https://cloud.google.com/sustainability/region-carbon
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R8
+  osai-explanation: Resource for informing choice of low carbon emission datacentre choice when using Google cloud, useful for reducing AI/ML model development carbon emissions (R8).
+
+- id: podman
+  name: Podman
+  type: Reproducibility tool
+  description: >-
+    Podman is open source tool to manage containers, regardless of container engine.
+  url: https://podman.io/
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R5
+  osai-explanation: Conatainer management resource, useful to support reproducible software environments for AI/ML models (R5).
+
+- id: kubernetes
+  name: Kubernetes
+  type: Reproducibility tool
+  description: >-
+    Kubernetes, also known as K8s, is an open source system for automating deployment, scaling, and management of containerized applications.
+  url: https://kubernetes.io/
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R5
+  osai-explanation: Conatainer management resource, useful to support reproducible software environments for AI/ML models (R5).
+
+- id: cromwell
+  name: Cromwell
+  type: Reproducibility tool
+  description: >-
+    Cromwell is a Workflow Management System geared towards scientific workflows.
+  url: https://cromwell.readthedocs.io/en/latest/
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R5
+  osai-explanation: Workflow management system that can be used to support reproducible re-orchestration of AI/ML model across systems (R5).
+
+- id: awesomeworkflowengines
+  name: awesome-workflow-engines
+  type: Reproducibility tool
+  description: >-
+    A curated list of awesome open source workflow management systems.
+  url: ''
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R5
+  osai-explanation: Curated list of workflow management systems applicable to support reproducible AI/ML model orchestration (R5). 
+
+- id: systreportingenandcarbonml
+  name: Towards the Systematic Reporting of the Energy and Carbon Footprints of Machine Learning
+  type: Paper
+  description: >-
+    Paper introduces a framework that makes it easier to track AI/ML carbon footprints by providing a simple interface for tracking realtime energy consumption and carbon emissions.
+  url: https://arxiv.org/pdf/2002.05651
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: ''
+  osai-explanation: ''
+
+- id: poetry
+  name: Poetry (Python)
+  type: Reproducibility tool
+  description: >-
+    Python packaging and dependency management resource. Poetry offers a lockfile to ensure repeatable installs, and can build your project for distribution.
+  url: https://python-poetry.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R5
+  osai-explanation: Resource to support reproducibility of Python packages, applicable to python based AI/ML models (R5).
+
+- id: miniforge
+  name: Miniforge
+  type: Reproducibility tool
+  description: >-
+    Miniforge is a minimal installer for Conda specific to conda-forge. Miniforge allows users to install the conda package manager with the following features pre-configured conda-forge set as the default.
+  url: https://github.com/conda-forge/miniforge
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R5
+  osai-explanation: Software environment control support, applicable to aid reproducible AI/ML model developments via conda and mamba (R5).
+
+- id: mamba
+  name: Mamba
+  type: Reproducibility tool
+  description: >-
+    Mamba is a fast, C++ re-implementation of the Conda package manager. Its designed to address one of the main pain points of using Conda - speed. 
+  url: https://mamba.readthedocs.io/en/latest/
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R5
+  osai-explanation: Package dependencies and software environment management tool like conda, applicable for reproducible AI/ML models (R5).
+
+- id: questfororthologs
+  name: Quest for Orthologs consortium
+  type: Benchmarking
+  description: >-
+    Joint effort to benchmark, improve and standardize orthology predictions through collaboration.
+  url: https://questfororthologs.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R6
+  osai-explanation: Benchmarking challenge standardising assessment of AI/ML models for ortholog prediction (R6).
+
+- id: cameo
+  name: Continuous Automated Model EvaluatiOn (CAMEO)
+  type: Benchmarking
+  description: >-
+    CAMEO provides weekly, automated, and independent benchmarking of structure prediction servers, serving as a continuous complement to the CASP experiments. 
+    By delivering continuous, blind, and objective evaluations, 
+    CAMEO supports the ongoing development and refinement of next-generation structure prediction methodologies.
+  url: https://cameo3d.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R6
+  osai-explanation: Benchmarking challenge reporting website standardising assessment of AI/ML models for protein structure prediction (R6).
+
+- id: lrgasp
+  name: Long-read RNA-seq Genome Annotation Assessment Project (LRGASP) 
+  type: Benchmarking
+  description: >-
+    Consortium organizing a systematic evaluation of different methods for transcript computational identification 
+    and quantification using long-read sequencing technologies such as PacBio and Oxford Nanopore. 
+  url: https://www.gencodegenes.org/pages/LRGASP/
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R6
+  osai-explanation: Benchmarking challenge standardising assessment of AI/ML models for data generating annotations of expressed genes and transcripts level prediction (R6).
+
+- id: greenaiinst
+  name: Green AI Institute
+  type: Organisation
+  description: >-
+     Collective of researchers, academics, and professionals dedicated to advancing the integration of artificial intelligence and environmental sustainability.
+  url: https://www.greenai.institute/home
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: ''
+  osai-explanation: ''
+
+- id: greencomputeuk
+  name: Green Compute UK
+  type: Tool
+  description: >-
+    Green Compute UK hosts the repository for Green Software Engineering. This repository covers best practises and current research into all elements of Green Software Engineering.
+  url: https://greencompute.uk/
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R7, R8, R9
+  osai-explanation: Information repository covering all aspects of green software engineering applicable for Green AI model development (R7, R8, R9)
+
+- id: natscireportsgreenai
+  name: Nature Scientific Reports - Publication collection of Green AI content.
+  type: Paper
+  description: >-
+    This publication collection hosts original research on AI-based environmental clean and sustainable solutions, 
+    including AI systems carbon footprint and strategies to develop more efficient systems and algorithms.
+  url: https://www.nature.com/collections/gaidcjdfhj
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: ''
+  osai-explanation: ''
+
+- id: galaxymltraining
+  name: Artificial Intelligence and Machine Learning in Life Sciences using Python (Galaxy)
+  type: Training
+  description: >-
+    In depth AI/ML training by Galaxy Training Network.
+  url: https://training.galaxyproject.org/training-material/learning-pathways/ml-using-python.html
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: life science
+  osai-recommendation: ''
+  osai-explanation: ''
+
+- id: galaxytrainingmaterials
+  name: Galaxy Training Materials
+  type: Training
+  description: >-
+    Collection of tutorials developed and maintained by the worldwide Galaxy community, hosting some life science and AI/ML relevant materials with a focus on reproducibility.
+  url: https://training.galaxyproject.org/training-material/
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: life science
+  osai-recommendation: ''
+  osai-explanation: ''
+
+- id: sibstatmltraining
+  name: SIB Statistics and Machine Learning training
+  type: Training
+  description: >-
+    Github repository for the statistics and machine learning for life science hosted in April 2025 by SIB.
+  url: https://github.com/sib-swiss/statistics-and-machine-learning-training
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: life science
+  osai-recommendation: ''
+  osai-explanation: ''
+
+- id: sibelearning
+  name: SIB E-learning
+  type: Training
+  description: >-
+    SIB hosted E-learning resources covering bioinformatics topics. Some courses relevant to improve AI/ML development such as vocabularies, identifiers and metadata.
+  url: https://www.sib.swiss/training/e-learning
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: life science
+  osai-recommendation: ''
+  osai-explanation: ''
+
+- id: microsoftaiforbeginners
+  name: Microsofts AI-For-Beginners Course
+  type: Training
+  description: >-
+    Microsofts 2-week, 24-lesson curriculum on AI. It includes practical lessons, quizzes, and labs. The curriculum is beginner-friendly and covers tools like TensorFlow and PyTorch, as well as ethics in AI.
+  url: https://github.com/microsoft/AI-For-Beginners
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: ''
+  osai-explanation: ''
+
+- id: awesomemlcourse
+  name: awesome-ml-courses
+  type: Training
+  description: >-
+    A curated list of awesome, free machine learning and artificial intelligence 
+    courses with video lectures. All courses are available as high-quality video lectures 
+    by some of the best AI researchers and teachers on this planet.
+  url: https://github.com/luspr/awesome-ml-courses
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: ''
+  osai-explanation: ''
+
+- id: kagglecuratedlistmlopstools
+  name: Kaggle hosted curated lists of MLOPS tools
+  type: Tool
+  description: >-
+    Extensive list of AI/ML resources hosted in a Kaggle blog post from 2022. Covers AutoML, CI/CD, interpretability tools, and many more categories. 
+  url: https://www.kaggle.com/discussions/general/405593
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: ''
+  osai-explanation: ''
+
+- id: fair2016paper
+  name: The FAIR Guiding Principles for scientific data management and stewardship
+  type: Paper
+  description: >-
+    Original 2016 paper on the FAIR Data Principles. General scientific data focused but AI/ML dataset relevant. 
+  url: https://www.nature.com/articles/sdata201618
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: life science
+  osai-recommendation: ''
+  osai-explanation: ''
+
+- id: greendisc
+  name: Green DiSC - a Digital Sustainability Certification
+  type: Tool
+  description: >-
+    Green DiSC is a new certification scheme which provides a roadmap for research groups and 
+    institutions who want to tackle the environmental impacts of their computing activities.
+  url: https://www.software.ac.uk/GreenDiSC
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R7, R8, R9
+  osai-explanation: Certfication of digital sustainability, may be of interest to AI/ML research groups and service prvoiders (R7,R8,R9). 
+
+- id: sofwtaresustinstitute
+  name: Software Sustainability Institute
+  type: Organisation
+  description: >-
+    An organisation that helps people build better software and more sustainable research software to enable world-class research. Covering areas such as green software, of relevance to Green AI.
+  url: https://www.software.ac.uk/about
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: ''
+  osai-explanation: ''
+
+- id: graimatterdareuk
+  name: GRAIMATTER
+  type: Best practice
+  description: >-
+    Guidelines and Resources for Artificial Intelligence Model Access from Trusted Research Environments.
+  url: https://dareuk.org.uk/how-we-work/previous-activities/dare-uk-phase-1-sprint-exemplar-projects/graimatter-guidelines-and-resources-for-artificial-intelligence-model-access-from-trusted-research-environments/
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: life science
+  osai-recommendation: ''
+  osai-explanation: ''
+
+- id: deepseekr1
+  name: DeepSeek-R1
+  type: LLM
+  description: >-
+    DeepSeek reasoning large language models.
+  url: https://huggingface.co/deepseek-ai/DeepSeek-R1
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: ''
+  osai-explanation: ''
+
+- id: llamafamilyhuggingface
+  name: Llama LLM Family
+  type: LLM
+  description: >-
+    Official Hugging Face organization containing inforamtion on Llama, Llama Guard, and Prompt Guard models from Meta.
+  url: https://huggingface.co/meta-llama
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: ''
+  osai-explanation: ''
+
+- id: responsibleaivirginiapaper
+  name: Responsible Artificial Intelligence -- from Principles to Practice
+  type: Paper
+  description: >-
+    Paper covering responsible AI.
+  url: https://arxiv.org/abs/2205.10785
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: ''
+  osai-explanation: ''
+
+- id: mistralaihuggingface
+  name: Mistral AI LLMs
+  type: LLM
+  description: >-
+    Mistral AI large language models information on Hugging Face.
+  url: https://huggingface.co/mistralai
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: ''
+  osai-explanation: ''
+
+- id: copilot
+  name: GitHub Copilot
+  type: LLM
+  description: >-
+    GitHub Copilot offers integration of LLMs into coding IDEs such as VS Code to facilitate generative AI coding.
+  url: https://huggingface.co/mistralai
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Commercial
+  domain: domain-agnostic
+  osai-recommendation: ''
+  osai-explanation: ''
+
+- id: ogb
+  name: OGB (Open Graph Benchmark)
+  type: Benchmarking
+  description: >-
+    A collection of large-scale and diverse benchmark datasets
+    for machine learning on graphs.
+  url: https://ogb.stanford.edu/
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R6
+  osai-explanation: >-
+    Provides standardized datasets for benchmarking ML on graph
+    data, defining evaluation protocols (R6).
+
+- id: helm
+  name: HELM (Holistic Evaluation of Language Models)
+  type: Benchmarking
+  description: >-
+    A benchmarking suite from Stanford CRFM for language models that is broad,
+    scenario-diverse, and multimetric, designed to make evaluations more
+    comprehensive and reproducible.
+  url: https://crfm.stanford.edu/helm/latest/
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R6
+  osai-explanation: >-
+    A benchmarking suite that standardizes the evaluation protocols
+    for language models to improve transparency and rigor (R6).
+
+- id: lmevalharness
+  name: Language Model Evaluation Harness (lm-eval)
+  type: Tool
+  description: >-
+    A toolkit and framework from EleutherAI designed for conducting standardized
+    and reproducible evaluations of language models across hundreds of tasks.
+  url: https://github.com/EleutherAI/lm-evaluation-harness
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Open Source
+  domain: domain-agnostic
+  osai-recommendation: R6
+  osai-explanation: >-
+    A tool for implementing standardized evaluation protocols for language
+    models, supporting benchmarking efforts (R6).
+
+- id: topguidelines
+  name: TOP (Transparency and Openness Promotion) Guidelines
+  type: Best practice
+  description: >-
+    A framework of eight modular standards to promote open science practices,
+    encouraging journals to adopt more transparent and open policies for reporting.
+  url: https://www.cos.io/top
+  biotools-url: ''
+  fairsharing-url: https://fairsharing.org/FAIRsharing.yvmb9y
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R3, R4
+  osai-explanation: >-
+    A framework of best practices (R3) for transparent reporting, directly supporting
+    information disclosure (R4) at the publication level.
+
+- id: probast
+  name: PROBAST (Prediction model Risk Of Bias ASsessment Tool)
+  type: Best practice
+  description: >-
+    A checklist and guideline for assessing the risk of bias and applicability of
+    multivariable prediction model studies for diagnosis or prognosis.
+  url: https://www.probast.org/
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: life science
+  osai-recommendation: R4, R6
+  osai-explanation: >-
+    A reporting guideline that supports information disclosure (R4) by assessing risk
+    of bias, which is crucial for model evaluation and benchmarking (R6).
+
+- id: robustmlchecklist
+  name: ROBUST-ML Checklist
+  type: Best practice
+  description: >-
+    A reporting checklist for clinically developed machine learning models, designed
+    to ensure transparency, minimize the effects of bias, and improve reproducibility.
+  url: https://academic.oup.com/ehjdh/article/3/2/125/6567505
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: life science
+  osai-recommendation: R4
+  osai-explanation: >-
+    A reporting checklist for disclosing information about clinical ML models to
+    improve transparency and reduce bias (R4).
+
+- id: modelinfosheets
+  name: Model Info Sheets
+  type: Metadata
+  description: >-
+    Documentation sheets designed to detect and prevent data leakage in machine
+    learning models, published alongside research to help others verify data validity.
+  url: https://reproducible.cs.princeton.edu/
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R1, R4, R5
+  osai-explanation: >-
+    A metadata framework (R1) for documenting data usage to prevent and disclose
+    information about potential data leakage (R4) and address reprodcubility (R5).
+
+- id: reproducibilitymlwileypaper
+  name: 'Reproducibility in machine-learning-based research: Overview, barriers, and drivers'
+  type: Paper
+  description: >-
+    A comprehensive overview paper analyzing the key barriers and drivers to
+    reproducibility in machine learning research, proposing a drivers-barriers
+    matrix to guide researchers.
+  url: https://onlinelibrary.wiley.com/doi/10.1002/aaai.70002
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R3, R4, R5, R6
+  osai-explanation: >-
+    This overview paper discusses numerous drivers for reproducibility, including
+    best practices (R3), information disclosure via checklists/model cards (R4),
+    portable code (R5), and standardized evaluation (R6).
