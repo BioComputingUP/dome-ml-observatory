@@ -1451,7 +1451,7 @@
 
 - id: aireadinessbiomedicaldata_bridge2ai
   name: AI-readiness for biomedical data - Bridge2AI recommendations
-  type: Project
+  type: Paper
   description: >-
     Preprint detailing recommendations from the NIH Bridge2AI program for
     making biomedical datasets AI-ready.
