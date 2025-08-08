@@ -8,8 +8,7 @@
     "start-public": "ng serve --host 0.0.0.0 --disable-host-check",
     "build-dev": "ng build",
     "build-prod": "ng build --prod --build-optimizer",
-    "deploy-dev-quick": "(colC='\\033[0;36m';colN='\\033[0m'; echo ${colC}Running npm build-dev ...${colN} && npm run build-dev && echo ${colC}Rsyncing dist ...${colN} && rsync -avh --delete dist/* REDACTED-DEPLOY-TARGET:/var/www/dome-ml-dev/dist/ && echo ${colC}Done with deploy-dev-quick!${colC})",
-    "deploy-prod-quick": "(colC='\\033[0;36m';colN='\\033[0m'; echo ${colC}Running npm build-prod ...${colN} && npm run build-prod && echo ${colC}Rsyncing dist ...${colN} && rsync -avh --delete dist/* REDACTED-DEPLOY-TARGET:/var/www/dome-ml/dist/ && echo ${colC}Done with deploy-prod-quick!${colC})",
+    "deploy-prod-quick": "(colC='\\033[0;36m';colN='\\033[0m'; echo ${colC}Running npm build-prod ...${colN} && npm run build-prod && echo ${colC}Rsyncing dist ...${colN} && rsync -avh --delete dist/* REDACTED-DEPLOY-TARGET:/var/www/dome-ml-osai/dist/ && echo ${colC}Done with deploy-prod-quick!${colC})",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

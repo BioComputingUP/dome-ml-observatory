@@ -1,4 +1,4 @@
-# DOME-ML (UI)
+# DOME-ML (UI) - OSAI
 
 ## Install node
 Install node and modules. Don't use `npm install` since it will upgrade and break packages.
