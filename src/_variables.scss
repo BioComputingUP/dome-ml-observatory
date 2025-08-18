@@ -2,7 +2,7 @@
 @import "../node_modules/bootstrap/scss/variables";
 
 $theme-colors: (
-  primary: #0a2942,
+  primary: #103444,
   secondary: #23d5ab,
   tertiary: #606c71,
   quaternary: #693c15,
@@ -44,11 +44,6 @@ a:focus {
 
 a:hover {
   text-decoration: none;
-}
-
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Lato', sans-serif;
 }
 
 .container-wide {

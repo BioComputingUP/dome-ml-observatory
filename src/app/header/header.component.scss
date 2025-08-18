@@ -2,7 +2,8 @@
 
 .header-bar {
   height: 2rem;
-  background-color: map-get($custom-colors, color4);
+  // Remove background-color to prevent the second colored box
+  // background-color: map-get($custom-colors, color4);
 }
 
 .header-text {

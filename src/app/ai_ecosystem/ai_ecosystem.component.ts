@@ -61,6 +61,20 @@ export class AiEcosystemComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
+    // Check if we're on the old domain and redirect to new domain
+    if (window.location.hostname === 'dome-ml.org' || 
+        window.location.hostname === 'www.dome-ml.org' ||
+        window.location.hostname === 'localhost') {
+      
+      // Log for testing purposes
+      if (window.location.hostname === 'localhost') {
+        console.log('Testing redirect functionality - redirecting to osai.dome-ml.org');
+      }
+      
+      window.location.href = 'https://osai.dome-ml.org/ai-ecosystem';
+      return; // Don't continue with component initialization
+    }
+    
     this.loadData(); // Load data when the component initializes
   }
 

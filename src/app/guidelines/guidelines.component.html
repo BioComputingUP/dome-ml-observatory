@@ -1,125 +1,434 @@
-<div class="container-fluid container-wide">
-  <p class="text-center">Find the complete set of guidelines in the GitHub repository or use the DOME Registry service</p>
-  <div class="d-flex flex-row justify-content-center m-5">
-    <a href="https://github.com/MachineLearning-ELIXIR/dome-ml">
-      <div class="d-flex flex-column text-center mr-3">
-        <div><img alt="github" src="assets/img/GitHub-Mark-64px.png" class="logo-small"></div>
-        <div><small>GitHub repository</small></div>
-      </div>
-    </a>
-    <a href="https://registry.dome-ml.org/intro">
-      <div class="d-flex flex-column text-center ml-3">
-        <div><img alt="DOME Registry logo white" src="assets/img/logo-blue-static.svg" class="logo-small"></div>
-        <div><small>DOME Registry</small></div>
-      </div>
-    </a>
-  </div>
+<div class="container-fluid container-wide" style="background-color: white;">
+  <!-- Custom styles to match home page -->
+  <style>
+    .section-heading {
+      color: #103344;
+      margin-bottom: 2rem;
+      font-weight: 600;
+    }
+    .accent-text {
+      color: #F66729;
+    }
+    .content-card {
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+      transition: transform 0.3s ease;
+      background-color: white;
+    }
+    .content-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    .section-divider {
+      height: 3px;
+      background-color: #003958;
+      margin: 3rem 0;
+      width: 100%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .cta-button {
+      background-color: white;
+      color: #F66729;
+      border: 2px solid #F66729;
+      padding: 0.75rem 2rem;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-decoration: none !important;
+    }
+    .cta-button:hover {
+      background-color: #F66729;
+      color: white;
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(246, 103, 41, 0.3);
+      text-decoration: none !important;
+    }
+    .guideline-item {
+      margin-bottom: 2.5rem;
+    }
+    .guideline-item h4 {
+      color: #103344;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+    .guideline-item p {
+      margin-bottom: 0.5rem;
+    }
+    .guideline-icon {
+      font-size: 3rem;
+      color: #F66729;
+      margin-bottom: 1rem;
+    }
+    .badge-requirement {
+      background-color: #F66729;
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-recommendation {
+      background-color: #103344;
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .why-it-matters {
+      background-color: rgba(246, 103, 41, 0.05);
+      border-left: 3px solid #F66729;
+      padding: 1rem;
+      margin: 1rem 0;
+      font-style: italic;
+      font-size: 0.9rem;
+    }
+    .pillar-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .pillar-header h3 {
+      margin-left: 1rem;
+      margin-bottom: 0;
+      color: #103344;
+      font-weight: 600;
+    }
+    
+    /* Fixed Position Navigation */
+    .fixed-nav {
+      position: fixed;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 100;
+      background-color: white;
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+      padding: 1rem 0.75rem;
+      width: auto;
+      min-width: 120px;
+    }
+    
+    .fixed-nav-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .fixed-nav-item {
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+    
+    .fixed-nav-link {
+      display: flex;
+      align-items: center;
+      color: #103344;
+      padding: 0.5rem;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
+    }
+    
+    .fixed-nav-link:hover {
+      background-color: rgba(246, 103, 41, 0.1);
+      color: #F66729;
+    }
+    
+    .fixed-nav-icon {
+      font-size: 1.25rem;
+      margin-right: 0.5rem;
+      color: #F66729;
+    }
+  </style>
 
-  <table class="table">
-    <tbody>
-    <tr class="text-center">
-      <th>Broad topic</th>
-      <th>Be on the lookout for</th>
-      <th>Consequences</th>
-      <th colspan="2">Recommendation(s)</th>
-    </tr>
-    <tr>
-      <th class="align-middle">Data</th>
-      <td class="align-middle">
-        <ul class="li-txt">
-          <li>Data size &amp; quality</li>
-          <li>Appropriate partitioning, dependence between train and test data.</li>
-          <li>Class imbalance</li>
-          <li>No access to data</li>
-        </ul>
-      </td>
-      <td class="align-middle">
-        <ul class="li-txt">
-          <li>Data not representative of domain application.</li>
-          <li>Unreliable or biased performance evaluation.</li>
-          <li>Cannot check data credibility.</li>
-        </ul>
-      </td>
-      <td colspan="2" class="li-txt"><p>Data size &amp; distribution is representative of the domain. <span class="badge badge-primary">Requirement</span></p>
-        <p>Independence of optimization (training)
-          and evaluation (testing) sets. <span class="badge badge-primary">Requirement</span>
+  <!-- Fixed Side Navigation -->
+  <nav class="fixed-nav">
+    <ul class="fixed-nav-list">
+      <li class="fixed-nav-item">
+        <a href="/guidelines#intro-section" class="fixed-nav-link" title="Introduction">
+          <i class="icon icon-common icon-lightbulb fixed-nav-icon"></i>
+          <span>Introduction</span>
+        </a>
+      </li>
+      <li class="fixed-nav-item">
+        <a href="/guidelines#data-section" class="fixed-nav-link" title="Data">
+          <i class="icon icon-common icon-database fixed-nav-icon"></i>
+          <span>Data</span>
+        </a>
+      </li>
+      <li class="fixed-nav-item">
+        <a href="/guidelines#optimization-section" class="fixed-nav-link" title="Optimization">
+          <i class="icon icon-common icon-cogs fixed-nav-icon"></i>
+          <span>Optimization</span>
+        </a>
+      </li>
+      <li class="fixed-nav-item">
+        <a href="/guidelines#model-section" class="fixed-nav-link" title="Model">
+          <i class="icon icon-common icon-sitemap fixed-nav-icon"></i>
+          <span>Model</span>
+        </a>
+      </li>
+      <li class="fixed-nav-item">
+        <a href="/guidelines#evaluation-section" class="fixed-nav-link" title="Evaluation">
+          <i class="icon icon-common icon-chart-line fixed-nav-icon"></i>
+          <span>Evaluation</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Action Hub Section -->
+  <section class="text-center pt-5 pb-4">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <h1 class="display-4 mb-4" style="color: #103344; font-weight: bold; font-size: 2.8rem;">Put the Guidelines into Practice</h1>
+        <p class="lead mb-5">Use our online registry to easily document your model's compliance or access the complete checklist resource on our public repository.</p>
+        
+        <a href="https://registry.dome-ml.org/review" target="_blank" class="cta-button mx-2 mb-3">Use the DOME Registry</a>
+        <a href="https://github.com/MachineLearning-ELIXIR/dome-ml" target="_blank" class="cta-button mx-2 mb-3">Access Checklist on GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- Introduction Section -->
+  <section class="py-4" id="intro-section">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <h2 class="section-heading">How to Use These Guidelines</h2>
+        <p class="mb-4">
+          These guidelines are structured around the four pillars of machine learning validation: Data, Optimization, Model, and Evaluation. 
+          Each recommendation is designed to address common pitfalls that can lead to unreliable results and a lack of reproducibility.
         </p>
-        <p>This is especially important for meta algorithms, where independence of multiple training sets must be shown
-          to be independent from the evaluation (testing) sets.</p>
-        <p>Release data preferably using appropriate long-term repositories, including exact splits
-          <span class="badge badge-primary">Requirement</span></p></td>
-    </tr>
-    <tr>
-      <th class="align-middle">Optimization</th>
-      <td class="align-middle">
-        <ul class="li-txt">
-          <li>Overfitting, underfitting and illegal parameter tuning</li>
-          <li>Imprecise parameters and protocols given.</li>
-        </ul>
-      </td>
-      <td class="align-middle">
-        <ul class="li-txt">
-          <li>Over/under optimistic performance reported.</li>
-          <li>Models noise or miss relevant relationships.</li>
-          <li>Results are not reproducible.</li>
-        </ul>
-      </td>
-      <td colspan="2" class="li-txt">
-        <p>Clear statement that evaluation sets were not used for feature selection, pre-processing steps
-        or parameter tuning. <span class="badge badge-primary">Requirement</span></p>
-        <p>Appropriate metrics to prove no over/under fitting, i.e. comparison of training and testing error.
-          <span class="badge badge-primary">Requirement</span></p>
-        <p> Release definitions of all algorithmic hyper-parameters, parameters and optimization protocol.
-          <span class="badge badge-primary">Requirement</span></p>
-        <p>For neural networks, release definitions of train and learning curves. <span class="badge badge-tertiary">Recommendation</span></p>
-        <p>Include explicit model validation techniques, such as N-fold Cross validation. <span class="badge badge-tertiary">Recommendation</span> </p></td>
-    </tr>
-    <tr>
-      <th class="align-middle">Model</th>
-      <td class="align-middle">
-        <ul class="li-txt">
-          <li>Unclear if black box or transparent model</li>
-          <li>No access to: resulting source code, trained models &amp; data</li>
-          <li>Execution time is impractical</li>
-        </ul>
-      </td>
-      <td class="align-middle">
-        <ul class="li-txt">
-          <li>A transparent model shows no explainable behaviour</li>
-          <li>Cannot cross compare methods, reproducibility, &amp; check data credibility.</li>
-          <li>Model takes too much time to produce results</li>
-        </ul>
-      </td>
-      <td colspan="2" class="li-txt"><p>Describe the choice of black box / interpretable model. If interpretable show examples of it
-        doing so. <span class="badge badge-primary">Requirement</span>. </p>
-        <p>Release of: documented source code + models + executable + UI/webserver + software containers.
-          <span class="badge badge-tertiary">Recommendation</span></p>
-        <p>Report execution time averaged across many repeats. If computationally tough compare to similar methods
-          <span class="badge badge-tertiary">Recommendation</span></p></td>
-    </tr>
-    <tr>
-      <th class="align-middle">Evaluation</th>
-      <td class="align-middle">
-        <ul class="li-txt">
-          <li>Performance measures inadequate</li>
-          <li>No comparisons to baselines or other methods</li>
-          <li>Highly variable performance.</li>
-        </ul>
-      </td>
-      <td class="align-middle">
-        <ul class="li-txt">
-          <li>Biased performance measures reported. </li>
-          <li>The method is falsely claimed as state-of-the-art.</li>
-          <li>Unpredictable performance in production.</li>
-        </ul>
-      </td>
-      <td colspan="2" class="li-txt"><p>Compare with public methods &amp; simple models (baselines). <span class="badge badge-primary">Requirement</span> </p>
-        <p>Adoption of community validated measures and benchmark datasets for evaluation. <span class="badge badge-primary">Requirement</span></p>
-        <p>Comparison of related methods and alternatives on the same dataset. <span class="badge badge-tertiary">Recommendation</span></p>
-        <p>Evaluate performance on a final independent hold-out set. <span class="badge badge-tertiary">Recommendation</span></p>
-        <p>Confidence intervals/error intervals to gauge prediction robustness. <span class="badge badge-primary">Requirement</span></p>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+        <p class="mb-4">
+          Pay close attention to the labels, as they distinguish between two levels of importance:
+        </p>
+        
+        <div class="row mb-4">
+          <div class="col-md-6 mb-3">
+            <div class="content-card p-4 h-100">
+              <span class="badge-requirement">REQUIREMENT</span>
+              <p class="mt-3">A critical step considered essential for transparent and reproducible ML.</p>
+            </div>
+          </div>
+          
+          <div class="col-md-6 mb-3">
+            <div class="content-card p-4 h-100">
+              <span class="badge-recommendation">RECOMMENDATION</span>
+              <p class="mt-3">A highly advised best practice that further enhances the quality and rigor of the work.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- Data Section -->
+  <section class="py-4" id="data-section">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <div class="pillar-header">
+          <i class="icon icon-common icon-database guideline-icon"></i>
+          <h3>Part 1: Data</h3>
+        </div>
+        <p class="mb-4">Guiding principles for ensuring the integrity and utility of the data used for training and evaluation.</p>
+        
+        <div class="guideline-item">
+          <h4>1.1 Ensure Data is Representative</h4>
+          <p>The dataset's size, scope, and distribution must be representative of the biological domain and the problem being addressed. Address any significant class imbalances.</p>
+          <div class="why-it-matters">
+            <strong>Why it matters:</strong> Using data that is too small, biased, or not representative of the real-world application can lead to models with unreliable or misleading performance.
+          </div>
+          <span class="badge-requirement">REQUIREMENT</span>
+        </div>
+        
+        <div class="guideline-item">
+          <h4>1.2 Guarantee Independent Datasets</h4>
+          <p>The data must be partitioned into strictly independent sets for training, validation, and testing. There must be no leakage of information from the test set into the training or model selection process.</p>
+          <div class="why-it-matters">
+            <strong>Why it matters:</strong> If the test set influences model training (even indirectly), the final performance evaluation will be over-optimistic and will not reflect how the model will perform on new, unseen data. This is one of the most critical errors in machine learning.
+          </div>
+          <span class="badge-requirement">REQUIREMENT</span>
+        </div>
+        
+        <div class="guideline-item">
+          <h4>1.3 Publish All Data and Splits</h4>
+          <p>Whenever possible, release all datasets used for training, validation, and testing through a suitable long-term public repository. The exact data splits used must be provided.</p>
+          <div class="why-it-matters">
+            <strong>Why it matters:</strong> Data availability is the foundation of reproducibility. It allows other researchers to verify your results, check data credibility, and accurately compare their own methods against yours.
+          </div>
+          <span class="badge-requirement">REQUIREMENT</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- Optimization Section -->
+  <section class="py-4" id="optimization-section">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <div class="pillar-header">
+          <i class="icon icon-common icon-cogs guideline-icon"></i>
+          <h3>Part 2: Optimization</h3>
+        </div>
+        <p class="mb-4">Guiding principles for the transparent and robust training of the model.</p>
+        
+        <div class="guideline-item">
+          <h4>2.1 Isolate the Test Set from All Tuning</h4>
+          <p>There must be a clear statement confirming that the evaluation (test) set was not used for any part of model development, including feature selection, preprocessing choices, or hyperparameter tuning.</p>
+          <div class="why-it-matters">
+            <strong>Why it matters:</strong> Using the test set to tune parameters is a form of data leakage that leads to an over-optimistic performance report. The test set must only be used once for the final evaluation of the final model.
+          </div>
+          <span class="badge-requirement">REQUIREMENT</span>
+        </div>
+        
+        <div class="guideline-item">
+          <h4>2.2 Report All Hyperparameters and Protocols</h4>
+          <p>Fully disclose the optimization protocol, all algorithmic hyperparameters, and the final parameters of the selected model. For neural networks, releasing training and learning curves is also advised.</p>
+          <div class="why-it-matters">
+            <strong>Why it matters:</strong> Without these details, the results are not reproducible. Other researchers cannot understand how the model was trained or attempt to replicate the process.
+          </div>
+          <span class="badge-requirement">REQUIREMENT</span>
+        </div>
+        
+        <div class="guideline-item">
+          <h4>2.3 Demonstrate No Over/Underfitting</h4>
+          <p>Provide evidence that the model is not overfitting to the training data or underfitting (failing to capture relevant patterns). This is typically done by comparing the error/performance on the training set versus the validation/test set.</p>
+          <div class="why-it-matters">
+            <strong>Why it matters:</strong> An overfit model has learned noise instead of the true signal and will perform poorly on new data. An underfit model has failed to learn the signal and is not useful.
+          </div>
+          <span class="badge-requirement">REQUIREMENT</span>
+        </div>
+        
+        <div class="guideline-item">
+          <h4>2.4 Use Explicit Model Validation Techniques</h4>
+          <p>Where appropriate, include explicit model validation techniques such as N-fold cross-validation during the model tuning phase to ensure robust hyperparameter selection.</p>
+          <div class="why-it-matters">
+            <strong>Why it matters:</strong> Cross-validation provides a more reliable estimate of model performance and helps prevent selecting hyperparameters that are only optimal for one specific train/validation split.
+          </div>
+          <span class="badge-recommendation">RECOMMENDATION</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- Model Section -->
+  <section class="py-4" id="model-section">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <div class="pillar-header">
+          <i class="icon icon-common icon-sitemap guideline-icon"></i>
+          <h3>Part 3: Model</h3>
+        </div>
+        <p class="mb-4">Guiding principles for the description and dissemination of the final model.</p>
+        
+        <div class="guideline-item">
+          <h4>3.1 Justify and Describe Model Choice</h4>
+          <p>Clearly state the model architecture and justify the choice of model type (e.g., "black box" vs. an interpretable model). If an interpretable model is used, provide examples that demonstrate its explanatory behavior.</p>
+          <div class="why-it-matters">
+            <strong>Why it matters:</strong> The choice of model impacts everything from performance to our ability to trust its predictions. The rationale helps others understand if the model is appropriate for the scientific question at hand.
+          </div>
+          <span class="badge-requirement">REQUIREMENT</span>
+        </div>
+        
+        <div class="guideline-item">
+          <h4>3.2 Ensure Model Accessibility</h4>
+          <p>Provide access to the final trained model and the documented source code required to run it. Using software containers (e.g., Docker, Singularity) is highly encouraged.</p>
+          <div class="why-it-matters">
+            <strong>Why it matters:</strong> Releasing the model and code is essential for true reproducibility and allows other researchers to apply your model to their own data or use it for comparison.
+          </div>
+          <span class="badge-recommendation">RECOMMENDATION</span>
+        </div>
+        
+        <div class="guideline-item">
+          <h4>3.3 Report Computational Performance</h4>
+          <p>Report the model's execution time (for both training and inference), ideally averaged across multiple repeats. If the model is computationally intensive, compare its performance to similar methods.</p>
+          <div class="why-it-matters">
+            <strong>Why it matters:</strong> A model with impractical execution times may have limited real-world utility. This information is crucial for others who may want to use or build upon your work.
+          </div>
+          <span class="badge-recommendation">RECOMMENDATION</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- Evaluation Section -->
+  <section class="py-4 mb-5" id="evaluation-section">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <div class="pillar-header">
+          <i class="icon icon-common icon-chart-line guideline-icon"></i>
+          <h3>Part 4: Evaluation</h3>
+        </div>
+        <p class="mb-4">Guiding principles for the fair and comprehensive assessment of model performance.</p>
+        
+        <div class="guideline-item">
+          <h4>4.1 Use Appropriate Performance Measures</h4>
+          <p>Select evaluation metrics that are appropriate for the specific task and data characteristics (e.g., using Precision-Recall curves for imbalanced datasets). Use community-validated measures where they exist.</p>
+          <div class="why-it-matters">
+            <strong>Why it matters:</strong> Using inadequate metrics can hide a model's weaknesses. For example, high accuracy on an imbalanced dataset can be meaningless if the model simply ignores the minority class.
+          </div>
+          <span class="badge-requirement">REQUIREMENT</span>
+        </div>
+        
+        <div class="guideline-item">
+          <h4>4.2 Compare Against Meaningful Baselines</h4>
+          <p>The model's performance must be compared against relevant public methods and simpler baseline models (e.g., logistic regression, a random classifier).</p>
+          <div class="why-it-matters">
+            <strong>Why it matters:</strong> Without baselines, performance is meaningless. A complex model is only useful if it significantly outperforms simpler, established alternatives.
+          </div>
+          <span class="badge-requirement">REQUIREMENT</span>
+        </div>
+        
+        <div class="guideline-item">
+          <h4>4.3 Report Performance with Confidence Intervals</h4>
+          <p>Provide confidence intervals or error bars for all reported performance metrics to gauge the robustness and variability of the predictions.</p>
+          <div class="why-it-matters">
+            <strong>Why it matters:</strong> A single performance number can be misleading. Confidence intervals show the range in which the true performance likely falls, giving a much clearer picture of the model's reliability.
+          </div>
+          <span class="badge-requirement">REQUIREMENT</span>
+        </div>
+        
+        <div class="guideline-item">
+          <h4>4.4 Compare Methods on Identical Datasets</h4>
+          <p>When comparing to related or alternative methods, the comparison should be performed on the exact same dataset and data splits to ensure a fair and direct evaluation.</p>
+          <div class="why-it-matters">
+            <strong>Why it matters:</strong> Comparing model A on dataset X to model B on dataset Y is an invalid comparison. Fair evaluation requires a level playing field.
+          </div>
+          <span class="badge-recommendation">RECOMMENDATION</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- Final CTA -->
+  <section class="py-4 mb-5">
+    <div class="row">
+      <div class="col-lg-8 mx-auto text-center">
+        <h2 class="section-heading">Ready to Apply These Guidelines?</h2>
+        <p class="lead mb-5">Use the DOME Registry to document your machine learning methods and ensure they meet these guidelines.</p>
+        
+        <a href="https://registry.dome-ml.org/intro" target="_blank" class="cta-button">
+          <i class="icon icon-common icon-external-link-alt mr-2"></i>Start Using DOME Registry
+        </a>
+      </div>
+    </div>
+  </section>
 </div>

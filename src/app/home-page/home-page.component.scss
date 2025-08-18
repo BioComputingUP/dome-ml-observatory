@@ -1,1 +1,132 @@
 @import 'src/variables';
+
+/* Direct styling for headings to override any conflicting styles */
+.dome-homepage {
+  h1, .h1, h1 *, .h1 * {
+    font-size: 2.5rem !important;
+    font-weight: 700 !important;
+    color: #103444 !important;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+    font-family: 'Lato', sans-serif !important;
+  }
+  
+  h2, .h2 {
+    font-size: 2rem !important;
+    font-weight: 600 !important;
+    color: #F66729 !important;
+    margin-bottom: 0.75rem;
+    line-height: 1.3;
+    font-family: 'Lato', sans-serif !important;
+  }
+  
+  h3, .h3 {
+    font-size: 1.5rem !important;
+    font-weight: 600 !important;
+    color: #103344 !important;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+    font-family: 'Lato', sans-serif !important;
+  }
+  
+  /* Add specific classes with higher specificity */
+  .dome-heading {
+    color: #103344 !important;
+  }
+  
+  .dome-heading-accent {
+    color: #F66729 !important;
+  }
+  
+  /* Ensure li-txt doesn't override our styles */
+  .li-txt h1, .li-txt h2, .li-txt h3, .li-txt h4, .li-txt h5, .li-txt h6 {
+    color: inherit !important;
+  }
+  
+  .li-txt h1, .li-txt .h1 {
+    color: #0b2735 !important;
+  }
+  
+  .li-txt h2, .li-txt .h2 {
+    color: #F66729 !important;
+  }
+  
+  .li-txt h3, .li-txt .h3 {
+    color: #103344 !important;
+  }
+  
+  /* Hero section styles */
+  .hero-section {
+    padding: 3rem 0;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+  }
+  
+  /* Pillar card styles */
+  .pillar-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+  }
+  
+  /* Benefits section styles */
+  .benefits-section {
+    border-radius: 8px;
+    background-color: #f8f9fa;
+  }
+  
+  .benefit-item {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+    margin-bottom: 1rem;
+  }
+  
+  /* CTA button styles */
+  .cta-buttons {
+    .btn-primary {
+      background-color: #103344;
+      border-color: #103344;
+      padding: 0.6rem 1.5rem;
+      border-radius: 5px;
+      font-weight: 500;
+      
+      &:hover {
+        background-color: darken(#103344, 10%);
+        border-color: darken(#103344, 10%);
+      }
+    }
+    
+    .btn-outline-primary {
+      color: #103344;
+      border-color: #103344;
+      padding: 0.6rem 1.5rem;
+      border-radius: 5px;
+      font-weight: 500;
+      
+      &:hover {
+        background-color: #103344;
+        color: white;
+      }
+    }
+  }
+  
+  /* Display text for hero section */
+  .display-4 {
+    font-size: 2.8rem !important;
+    font-weight: 700 !important;
+    
+    @media (max-width: 768px) {
+      font-size: 2rem !important;
+    }
+  }
+}

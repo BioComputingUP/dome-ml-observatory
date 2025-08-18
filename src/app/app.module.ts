@@ -19,8 +19,7 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { NewsComponent } from './news/news.component';
 import { GuidelinesComponent } from './guidelines/guidelines.component';
 import { AboutComponent } from './about/about.component';
-import { DomeRegistryComponent } from './dome_registry/dome_registry';
-import { AiEcosystemComponent } from './ai_ecosystem/ai_ecosystem.component'; // Import the new component
+import { AiEcosystemComponent } from './ai_ecosystem/ai_ecosystem.component';
 import { HttpClientModule } from '@angular/common/http';
 
 let LOG_LEVEL = Level.OFF;
@@ -40,8 +39,7 @@ if (environment.enableLogger) {
     NewsComponent,
     GuidelinesComponent,
     AboutComponent,
-    DomeRegistryComponent,
-    AiEcosystemComponent // Add the new component to declarations
+    AiEcosystemComponent
   ],
   imports: [
     BrowserModule,

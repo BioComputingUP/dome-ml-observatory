@@ -1,0 +1,23 @@
+@import './styles/typography.css';
+
+/* Override any conflicting global styles that might interfere with typography */
+/*h1, h2, h3, h4, h5, h6 {
+  font-family: 'Lato', sans-serif !important;
+}
+
+/* Ensure typography takes precedence over Bootstrap and other global styles */
+.page-header h1,
+.page-header h2,
+.page-header h3,
+.container h1,
+.container h2,
+.container h3,
+.main-content h1,
+.main-content h2,
+.main-content h3,
+.container-fluid h1,
+.container-fluid h2,
+.container-fluid h3 {
+  font-family: 'Lato', sans-serif !important;
+}
+

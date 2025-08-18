@@ -8,8 +8,10 @@ body {
 
 .page-header {
   padding: 1rem 1rem;
-  background-size: 400% 400%;
-  background: linear-gradient(90deg, darken(map-get($theme-colors, 'primary'), 7.5%), lighten(map-get($theme-colors, 'primary'), 7.5%));
+  // Remove gradient and use solid primary color
+  background-color: #103344; // Updated to new blue color
+  // background-size: 400% 400%;
+  // background: linear-gradient(90deg, darken(map-get($theme-colors, 'primary'), 7.5%), lighten(map-get($theme-colors, 'primary'), 7.5%));
 }
 
 .project-title {
@@ -26,12 +28,14 @@ body {
 }
 
 .section-title {
-  color: map-get($theme-colors, 'primary');
+  /* Use typography.css colors instead */
+  /* color: map-get($theme-colors, 'primary'); */
   font-size: 1.4rem !important;
 }
 
 .li-txt {
-  color: map-get($theme-colors, 'tertiary') !important;
+  /* Remove color override to let typography.css handle heading colors */
+  /* color: map-get($theme-colors, 'tertiary') !important; */
   margin-bottom: 0;
 }
 

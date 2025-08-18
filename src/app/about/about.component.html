@@ -1,122 +1,590 @@
-<div class="container-fluid container-wide">
-
-
-  <div class="card mt-5">
-    <div class="card-header">
-      <h4 class="li-txt">About DOME</h4>
-    </div>
-    <div class="card-body">
+<div class="container-fluid container-wide" style="background-color: white;">
+  <!-- Custom styles to match home page -->
+  <style>
+    .section-heading {
+      color: #103344;
+      margin-bottom: 2rem;
+      font-weight: 600;
+    }
+    .accent-text {
+      color: #F66729;
+    }
+    .content-card {
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+      transition: transform 0.3s ease;
+      background-color: white;
+    }
+    .content-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    .card-header {
+      background-color: #103344;
+      color: white;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+    }
+    .organization-logo {
+      transition: transform 0.3s ease;
+      max-width: 100%;
+      height: auto;
+    }
+    .organization-logo:hover {
+      transform: scale(1.05);
+    }
+    .citation-box {
+      padding: 1.5rem;
+      border-left: 4px solid #F66729;
+      background-color: rgba(246, 103, 41, 0.05);
+      margin-bottom: 1.5rem;
+    }
+    .team-member {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .team-member img {
+      border-radius: 50%;
+      border: 3px solid #F66729;
+      width: 160px;
+      height: 160px;
+      object-fit: cover;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+    .team-member img:hover {
+      transform: scale(1.05);
+      border-color: #103344;
+    }
+    .section-divider {
+      height: 3px;
+      background-color: #003958;
+      margin: 3rem 0;
+      width: 100%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
     
-
-  <p><strong>Developing the DOME Recommendations</strong></p>
-
-  <div class="d-flex flex-row">
-    <p style="text-align: justify"> 
-      <a href="https://elixir-europe.org/"
-         tooltip="ELIXIR, initially established in 2014, is now a mature intergovernmental European infrastructure
-             for biological data and represents over 220 research organizations in 22 countries across many aspects of
-             bioinformatics">ELIXIR</a> is comprised of over 250 research institutes and over 1,000 national experts who operate and develop life science services 
-      supporting data access, integration, and analysis for the global research community. Driven by the growth in poorly described ML methods in scientific publications, 
-      ELIXIR experts came together to develop a standard to guide authors to correctly disclose their ML methodologies. Over 50 ELIXIR machine learning domain experts established the <a href="https://elixir-europe.org/focus-groups/machine-learning"
-      tooltip="The ELIXIR Machine Learning Focus Group was initiated in October 2019, in order to capture the
-      emerging need in Machine Learning expertise across the network.">ELIXIR ML focus group</a> which held a number of meetings to create and
-      refine the DOME ML reporting standard through broad consensus. These standards are now known as the DOME Recommendations and were published in Nature Methods during 2021.   </p>
+    /* Additional styles for the updated layout */
+    .mission-box {
+      background-color: rgba(246, 103, 41, 0.05);
+      border-left: 5px solid #F66729;
+      padding: 2rem;
+      margin: 2rem 0;
+      font-size: 1.2rem;
+      font-weight: 300;
+      font-style: italic;
+      line-height: 1.6;
+    }
     
+    .timeline-dot {
+      width: 12px;
+      height: 12px;
+      background-color: #F66729;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 10px;
+    }
+    
+    .profile-card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      height: 100%;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .profile-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .profile-img {
+      border-radius: 50%;
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border: 3px solid #F66729;
+      margin-bottom: 1rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .profile-card:hover .profile-img {
+      transform: scale(1.05);
+    }
+    
+    .profile-name {
+      font-weight: 600;
+      color: #103344;
+      margin-bottom: 0.25rem;
+    }
+    
+    .profile-role {
+      color: #F66729;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .profile-affiliation {
+      font-size: 0.85rem;
+      color: #666;
+    }
+    
+    .publication-card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .publication-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .publication-title {
+      color: #F66729;
+      margin-bottom: 0.5rem;
+    }
+    
+    .publication-authors {
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .publication-journal {
+      font-style: italic;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .publication-links {
+      font-size: 0.85rem;
+    }
+    
+    .sub-heading {
+      color: #103344;
+      margin: 2rem 0 1.5rem;
+    }
+    
+    .cta-button {
+      background-color: white;
+      color: #F66729;
+      border: 2px solid #F66729;
+      padding: 0.75rem 2rem;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .cta-button:hover {
+      background-color: #F66729;
+      color: white;
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(246, 103, 41, 0.3);
+    }
+    
+    /* Add no-underline class for stakeholder buttons */
+    .no-underline {
+      text-decoration: none !important;
+    }
+    .no-underline:hover {
+      text-decoration: none !important;
+    }
+    
+    /* Fixed Position Navigation */
+    .fixed-nav {
+      position: fixed;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 100;
+      background-color: white;
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+      padding: 1rem 0.75rem;
+      width: auto;
+      min-width: 120px;
+    }
+    
+    .fixed-nav-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .fixed-nav-item {
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+    
+    .fixed-nav-link {
+      display: flex;
+      align-items: center;
+      color: #103344;
+      padding: 0.5rem;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
+    }
+    
+    .fixed-nav-link:hover {
+      background-color: rgba(246, 103, 41, 0.1);
+      color: #F66729;
+    }
+    
+    .fixed-nav-icon {
+      font-size: 1.25rem;
+      margin-right: 0.5rem;
+      color: #F66729;
+    }
+  </style>
 
-    <a href="https://elixir-europe.org/focus-groups/machine-learning">
-      <div class="d-flex flex-column text-center ml-5 mr-3">
-        <div><img alt="elixir-logo" height="90" width="120" src="assets/img/elixir-logo-dark.png"></div>
-        <div><small>ELIXIR ML Focus Group</small></div>
+  <!-- Fixed Side Navigation -->
+  <nav class="fixed-nav">
+    <ul class="fixed-nav-list">
+      <li class="fixed-nav-item">
+        <a href="/about#mission-section" class="fixed-nav-link" title="Mission">
+          <i class="icon icon-common icon-bullseye fixed-nav-icon"></i>
+          <span>Mission</span>
+        </a>
+      </li>
+      <li class="fixed-nav-item">
+        <a href="/about#story-section" class="fixed-nav-link" title="Our Story">
+          <i class="icon icon-common icon-history fixed-nav-icon"></i>
+          <span>Our Story</span>
+        </a>
+      </li>
+      <li class="fixed-nav-item">
+        <a href="/about#team-section" class="fixed-nav-link" title="Team">
+          <i class="icon icon-common icon-users fixed-nav-icon"></i>
+          <span>Team</span>
+        </a>
+      </li>
+      <li class="fixed-nav-item">
+        <a href="/about#governance-section" class="fixed-nav-link" title="Governance">
+          <i class="icon icon-common icon-sitemap fixed-nav-icon"></i>
+          <span>Governance</span>
+        </a>
+      </li>
+      <li class="fixed-nav-item">
+        <a href="/about#publications-section" class="fixed-nav-link" title="Publications">
+          <i class="icon icon-common icon-book fixed-nav-icon"></i>
+          <span>Publications</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="text-center pt-5 pb-2">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <h1 class="display-4 mb-4" style="font-weight: bold; font-size: 2.8rem;">About DOME</h1>
+        <h2 class="h3 mb-3" style="color: #F66729 !important; font-weight: bold; font-size: 1.5rem;">Revolutionizing machine learning transparency</h2>
       </div>
-    </a>
-  </div>
-
+    </div>
+  </section>
   
-
+  <!-- Section 1: The Mission -->
+  <section class="py-2" id="mission-section">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <h2 class="section-heading">Our Mission</h2>
+        <div class="mission-box">
+          To establish a global standard for transparency, reproducibility, and rigor in machine learning supporting life science research, building a foundation of trust for the next generation of scientific discoveries.
+        </div>
+      </div>
+    </div>
+  </section>
   
-  <p><strong>DOME Registry service</strong></p>
+  <div class="section-divider"></div>
 
-  <div class="d-flex flex-row">
-    <p style="text-align: justify"> 
-       The DOME Recommendations are complemented by the <a href="https://elixir-europe.org/focus-groups/machine-learning">DOME Registry</a> service developed through ELIXIR and launched in 2023. 
-       It is a technical solution to support transparent ML publishing by providing a template to disclose a publication's 
-       compliance with the DOME Recommendations standard. This makes a publication more reproducible, transparent and trustworthy for reader's and can prompt an author 
-       during pre-print stage to improve the ML methods reporting in their text. The service is under active development and expansion to
-       support adoption by publishers.   </p>
-    
-
-    <a href="https://elixir-europe.org/focus-groups/machine-learning">
-      <div class="d-flex flex-column text-center ml-5 mr-3">
-        <div><img alt="DOME Registry blue" height="90" width="120" src="assets/img/logo-blue-static.svg"></div>
-        <div><small>DOME Registry</small></div>
-      </div>
-    </a>
-  </div>
-
-</div>
-</div>
-
-  <div class="card mt-5">
-    <div class="card-header">
-      <h4 class="li-txt">Cite</h4>
-    </div>
-    <div class="card-body">
-      <strong>DOME: recommendations for supervised machine learning validation in biology</strong>
-      <p class="li-txt">Ian Walsh, Dmytro Fishman, Dario Garcia-Gasulla, Tiina Titma, Gianluca Pollastri, The ELIXIR
-        Machine Learning focus group, Jen Harrow, Fotis E. Psomopoulos, Silvio C.E. Tosatto</p>
-      <i>Nat Methods</i>. 2021. doi: <a href="https://www.nature.com/articles/s41592-021-01205-4" target="_blank">10.1038/s41592-021-01205-4</a> |
-      PubMed: <a href="https://pubmed.ncbi.nlm.nih.gov/34316068" target="_blank">34316068</a>
-    </div>
-    <div class="card-body">
-      <strong>DOME Registry: implementing community-wide recommendations for reporting supervised machine learning in biology</strong>
-      <p class="li-txt">
-        Omar Abdelghani Attafi, Damiano Clementel, Konstantinos Kyritsis, Emidio Capriotti, Gavin Farrell, Styliani-Christina Fragkouli, Leyla Jael Castro, András Hatos, Tom Lenaerts, Stanislav Mazurenko, Soroush Mozaffari, Franco Pradelli, Patrick Ruch, Castrense Savojardo, Paola Turina, Federico Zambelli, Damiano Piovesan, Alexander Miguel Monzon, Fotis Psomopoulos, Silvio C E Tosatto</p>
-      <i>Nat Methods</i>. 2021. doi: <a href="https://doi.org/10.1093/gigascience/giae094" target="_blank">10.1093/gigascience/giae094</a> |
-      PubMed: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11633452/" target="_blank">11633452</a>
-    </div>
-  </div>
-
-
-  <div class="card mt-4">
-    <div class="card-header">
-      <h4 class="li-txt">Governance</h4>
-    </div>
-    <div class="card-body">
-      <p>The current governance committee members are:</p>
-
-      <div class="d-flex flex-row">
-        <div class="d-flex flex-column pl-5">
-          <figure><img alt="Contact-1" class="border" height="160" width="160" src="assets/img/contact-1.gif"></figure>
-          <div><p class="li-txt">Silvio Tosatto</p></div>
-          <div><p class="li-txt"><a href="mailto:silvio.tosatto@unipd.it">silvio.tosatto@unipd.it</a></p></div>
+  <!-- Section 2: The Story -->
+  <section class="py-4" id="story-section">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <h2 class="section-heading">Our Story: From a Community Need to a Global Standard</h2>
+        <p class="mb-4">
+          Driven by the growing challenge of poorly described machine learning methods in scientific publications, experts from across 
+          <a href="https://elixir-europe.org/" target="_blank">ELIXIR Europe</a> came together to address the problem.
+        </p>
+        
+        <div class="row mb-4 align-items-center">
+          <div class="col-md-8">
+            <h4 class="accent-text mb-3">ELIXIR Machine Learning Focus Group</h4>
+            <p>In a collaborative effort, over 50 domain specialists from the ELIXIR Machine Learning (ML) Focus group established a set of guidelines to help researchers correctly document and validate their ML methodologies. These efforts culminated in the DOME Recommendations.</p>
+          </div>
+          <div class="col-md-4 text-center">
+            <a href="https://elixir-europe.org/focus-groups/machine-learning" target="_blank">
+              <img alt="ELIXIR logo" class="organization-logo" style="max-height: 120px;" src="assets/img/elixir-logo-dark.png">
+            </a>
+          </div>
         </div>
-        <div class="d-flex flex-column pl-5">
-          <figure><img alt="Contact-2" class="border" height="160" width="160" src="assets/img/contact-2.jpg"></figure>
-          <div><p class="li-txt">Fotis Psomopoulos</p></div>
-          <div><p class="li-txt"><a href="mailto:fpsom@certh.gr">fpsom@certh.gr</a></p></div>
+        
+        <div class="row mb-4 align-items-center">
+          <div class="col-md-8">
+            <h4 class="accent-text mb-3">DOME Recommendations</h4>
+            <p>The DOME Recommendations provide comprehensive guidelines for machine learning validation in the life sciences. Published in Nature Methods, these evidence-based standards help researchers document and validate their ML methodologies to ensure transparency, reproducibility, and scientific rigor.</p>
+          </div>
+          <div class="col-md-4 text-center">
+            <a href="https://dome-ml.org/guidelines" target="_blank">
+              <img alt="DOME Recommendations logo" class="organization-logo" style="max-height: 540px;" src="assets/img/dome_rec.svg">
+            </a>
+          </div>
         </div>
-      </div>
-      <br>
-      <p>The past governance committee members are:</p>
-
-      <div class="d-flex flex-row">
-        <div class="d-flex flex-column pl-5">
-          <figure><img alt="Contact-3" class="border" height="160" width="160" src="assets/img/contact-3.jpg"></figure>
-          <div><p class="li-txt">Jen Harrow</p></div>
+        
+        <div class="row mb-4 align-items-center">
+          <div class="col-md-8">
+            <h4 class="accent-text mb-3">DOME Registry</h4>
+            <p>To translate these recommendations into practice, the DOME Registry was launched in 2023. This service provides a technical solution to help authors, reviewers, and publishers ensure that machine learning models are transparent, trustworthy, and truly reproducible. The Registry is under active development to support wider adoption across the scientific community.</p>
+          </div>
+          <div class="col-md-4 text-center">
+            <a href="https://registry.dome-ml.org/intro" target="_blank">
+              <img alt="DOME Registry logo" class="organization-logo" style="max-height: 400px;" src="assets/img/DOME_Registry_Rounded-cropped.svg">
+            </a>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
+  
+  <div class="section-divider"></div>
 
-  <!-- Separate Contact card -->
-  <div class="card mt-4">
-    <div class="card-header">
-      <h4 class="li-txt">Contact</h4>
+  <!-- Section 3: The People -->
+  <section class="py-4" id="team-section">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <h2 class="section-heading text-center">Meet the DOME Team</h2>
+        <p class="text-center mb-5">
+          The DOME Recommendations and Registry are the result of a collaborative effort involving researchers, developers, and experts from various institutions. 
+          We acknowledge the contributions of the core team members driving this initiative forward.
+        </p>
+        
+        <h3 class="sub-heading text-center">Principal Investigators</h3>
+        <p class="text-center mb-4">Provide strategic leadership, guidance, and oversight for the DOME project.</p>
+        
+        <div class="row justify-content-center">
+          <div class="col-md-5 col-lg-4 mb-4">
+            <div class="profile-card">
+              <img src="assets/img/contact-1.gif" alt="Silvio Tosatto" class="profile-img">
+              <h4 class="profile-name">Silvio Tosatto</h4>
+              <p class="profile-role">Lead PI</p>
+              <p class="profile-affiliation">University of Padova</p>
+              <a href="mailto:silvio.tosatto@unipd.it" class="accent-text mt-2 d-block">Contact</a>
+            </div>
+          </div>
+          
+          <div class="col-md-5 col-lg-4 mb-4">
+            <div class="profile-card">
+              <img src="assets/img/contact-2.jpg" alt="Fotis Psomopoulos" class="profile-img">
+              <h4 class="profile-name">Fotis Psomopoulos</h4>
+              <p class="profile-role">Lead PI</p>
+              <p class="profile-affiliation">CERTH | INAB</p>
+              <a href="mailto:fpsom@certh.gr" class="accent-text mt-2 d-block">Contact</a>
+            </div>
+          </div>
+        </div>
+        
+        <h3 class="sub-heading text-center mt-5">Development Team</h3>
+        <p class="text-center mb-4">Responsible for the technical design, implementation, and ongoing development of the DOME Regsitry platform.</p>
+        
+        <div class="row justify-content-center">
+          <div class="col-md-6 col-lg-3 mb-4">
+            <div class="profile-card">
+              <img src="assets/img/omar.jpg" alt="Omar A Attafi" class="profile-img">
+              <h4 class="profile-name">Omar Attafi</h4>
+              <p class="profile-role">Lead Developer & PhD Researcher</p>
+              <p class="profile-affiliation">University of Padova</p>
+            </div>
+          </div>
+          
+          <div class="col-md-6 col-lg-3 mb-4">
+            <div class="profile-card">
+              <img src="assets/img/ramin.jpeg" alt="Ramin Khalili" class="profile-img">
+              <h4 class="profile-name">Ramin Khalili</h4>
+              <p class="profile-role">Developer & Lab Intern</p>
+              <p class="profile-affiliation">University of Padova</p>
+            </div>
+          </div>
+          
+          <div class="col-md-6 col-lg-3 mb-4">
+            <div class="profile-card">
+              <img src="assets/img/gavin.jpeg" alt="Gavin Farrell" class="profile-img">
+              <h4 class="profile-name">Gavin Farrell</h4>
+              <p class="profile-role">Scaling Curation & PhD Researcher</p>
+              <p class="profile-affiliation">University of Padova</p>
+            </div>
+          </div>
+          
+          <div class="col-md-6 col-lg-3 mb-4">
+            <div class="profile-card">
+              <img src="assets/img/ivan.jpeg" alt="Ivan Mičetić" class="profile-img">
+              <h4 class="profile-name">Ivan Mičetić</h4>
+              <p class="profile-role">Lab Services Manager</p>
+              <p class="profile-affiliation">University of Padova</p>
+            </div>
+          </div>
+        </div>
+        
+        <h3 class="sub-heading text-center mt-5">Past Contributors</h3>
+        <p class="text-center mb-4">We gratefully acknowledge the valuable contributions of former team members who helped shape DOME.</p>
+        
+        <div class="row">
+          <div class="col-md-6 col-lg-3 mb-4">
+            <div class="profile-card">
+              <img src="assets/img/contact-3.jpg" alt="Jen Harrow" class="profile-img">
+              <h4 class="profile-name">Jen Harrow</h4>
+              <p class="profile-role">Former DOME Scientific Coordinator</p>
+              <p class="profile-affiliation"></p>
+            </div>
+          </div>
+          
+          <div class="col-md-6 col-lg-3 mb-4">
+            <div class="profile-card">
+              <img src="assets/img/ian.jpeg" alt="Ian Walsh" class="profile-img">
+              <h4 class="profile-name">Ian Walsh</h4>
+              <p class="profile-role">DOME Recommendations author</p>
+              <p class="profile-affiliation"></p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="card-body">
-      <p>Reach out to explore how you can adopt the DOME Recommendations and Registry service:</p>
-      <div><p class="li-txt"><a href="mailto:contact@dome-ml.org">contact@dome-ml.org</a></p></div>
+  </section>
+  
+  <div class="section-divider"></div>
+
+  <!-- Section 4: The Governance -->
+  <section class="py-4" id="governance-section">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <h2 class="section-heading text-center">Our Governance: Ensuring Sustainable Impact</h2>
+        <p class="text-center mb-5">
+          DOME's development is guided by a transparent governance model that integrates advice from an independent Scientific Advisory Board, 
+          continuous dialogue with key ELIXIR Europe groups, and input from publishers and industry experts. This ensures our work remains relevant, 
+          and aligned with community needs.
+        </p>
+        
+        <h3 class="sub-heading text-center">Scientific Advisory Board </h3>
+        <p class="text-center mb-4">Provide independent strategic advice and critical evaluation from internationally recognized experts.</p>
+        
+        <div class="row justify-content-center">
+          <div class="col-md-4 mb-4">
+            <div class="profile-card">
+              <img src="assets/img/sira_0.jpg" alt="Sirarat Sarntivijai" class="profile-img">
+              <h4 class="profile-name">Sirarat Sarntivijai</h4>
+              <p class="profile-role">Industry & Interoperability</p>
+              <p class="profile-affiliation">Boehringer Ingelheim</p>
+            </div>
+          </div>
+          
+          <div class="col-md-4 mb-4">
+            <div class="profile-card">
+              <img src="assets/img/daniel.png" alt="Daniel Garijo" class="profile-img">
+              <h4 class="profile-name">Daniel Garijo</h4>
+              <p class="profile-role">Academia, AI & Ontologies</p>
+              <p class="profile-affiliation">Universidad Politécnica de Madrid</p>
+            </div>
+          </div>
+          
+          <div class="col-md-4 mb-4">
+            <div class="profile-card">
+              <img src="assets/img/Christopher-Hunter-10.png" alt="Chris Hunter" class="profile-img">
+              <h4 class="profile-name">Chris Hunter</h4>
+              <p class="profile-role">Publishing & Open Science</p>
+              <p class="profile-affiliation">GigaScience & GigaDB</p>
+            </div>
+          </div>
+        </div>
+        
+        <h3 class="sub-heading text-center mt-5">ELIXIR Community Stakeholders</h3>
+        
+        <div class="row mt-4">
+          <div class="col-md-6 mb-4">
+            <div class="content-card p-4 h-100 d-flex flex-column">
+              <div>
+                <h4 class="mb-3 accent-text">ELIXIR AI Ecosystem Focus Group</h4>
+                <p>A primary source of scientific AI expertise and community feedback, ensuring DOME remains relevant to researchers' practical needs.</p>
+              </div>
+              <div class="mt-auto pt-2 text-center">
+                <a href="https://elixir-europe.org/focus-groups/machine-learning" target="_blank" class="cta-button no-underline">Learn More →</a>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-6 mb-4">
+            <div class="content-card p-4 h-100 d-flex flex-column">
+              <div>
+                <h4 class="mb-3 accent-text">ELIXIR Data Platform</h4>
+                <p>Provide strategic guidance on FAIR principles and data infrastructure, ensuring the DOME Registry adheres to robust technical standards for sustainability and interoperability.</p>
+              </div>
+              <div class="mt-auto pt-2 text-center">
+                <a href="https://elixir-europe.org/platforms/data" target="_blank" class="cta-button no-underline">Learn More →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
+  
+  <div class="section-divider"></div>
+
+  <!-- Section 5: The Evidence -->
+  <section class="py-4" id="publications-section">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <h2 class="section-heading text-center">Key Publications</h2>
+        
+        <div class="publication-card mb-4">
+          <h4 class="publication-title">DOME: recommendations for machine learning validation in biology</h4>
+          <p class="publication-authors">Ian Walsh, Dmytro Fishman, Dario Garcia-Gasulla, Tiina Titma, Gianluca Pollastri, The ELIXIR Machine Learning focus group, Jen Harrow, Fotis E. Psomopoulos, Silvio C.E. Tosatto</p>
+          <p class="publication-journal">Nature Methods (2021)</p>
+          <p class="publication-links">
+            <a href="https://www.nature.com/articles/s41592-021-01205-4" target="_blank" class="mr-2">DOI: 10.1038/s41592-021-01205-4</a>
+            <span class="mx-2">|</span>
+            <a href="https://pubmed.ncbi.nlm.nih.gov/34316068" target="_blank">PubMed: 34316068</a>
+          </p>
+        </div>
+        
+        <div class="publication-card">
+          <h4 class="publication-title">DOME Registry: implementing community-wide recommendations for reporting machine learning in biology</h4>
+          <p class="publication-authors">Omar Abdelghani Attafi, Damiano Clementel, Konstantinos Kyritsis, Emidio Capriotti, Gavin Farrell, Styliani-Christina Fragkouli, Leyla Jael Castro, András Hatos, Tom Lenaerts, Stanislav Mazurenko, Soroush Mozaffari, Franco Pradelli, Patrick Ruch, Castrense Savojardo, Paola Turina, Federico Zambelli, Damiano Piovesan, Alexander Miguel Monzon, Fotis Psomopoulos, Silvio C E Tosatto</p>
+          <p class="publication-journal">GigaScience (2024)</p>
+          <p class="publication-links">
+            <a href="https://doi.org/10.1093/gigascience/giae094" target="_blank" class="mr-2">DOI: 10.1093/gigascience/giae094</a>
+            <span class="mx-2">|</span>
+            <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11633452/" target="_blank">PubMed: 11633452</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <div class="section-divider"></div>
+
+  <!-- Section 6: The Call to Action -->
+  <section class="py-4 mb-5">
+    <div class="row">
+      <div class="col-lg-8 mx-auto text-center">
+        <h2 class="section-heading">Get in Touch</h2>
+        <p class="lead mb-5">Reach out to explore how you can adopt the DOME Recommendations, integrate the Registry service, or collaborate with our team.</p>
+        
+        <a href="mailto:contact@dome-ml.org" class="cta-button">
+          <i class="icon icon-common icon-envelope mr-2"></i>contact@dome-ml.org
+        </a>
+      </div>
+    </div>
+  </section>
 </div>
 

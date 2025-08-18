@@ -1,186 +1,143 @@
-<div class="container-fluid container-wide">
-  <section>
-<!--    <h2 class="section-title">Welcome to DOME-ML!</h2>-->
+<div class="container-fluid container-wide dome-homepage" style="background-color: white;">
+  <!-- Custom styles for button hover -->
+  <style>
+    .btn-outline-primary:hover {
+      background-color: #103444 !important;
+      border-color: #103444 !important;
+      color: white !important;
+    }
+  </style>
+  
+  <!-- Hero Section -->
+  <section class="hero-section text-center pt-5 pb-2 bg-white" style="background-color: white !important;">
+    <div class="row align-items-center">
+      <div class="col-lg-10 mx-auto">
+        <h1 class="display-4 mb-4">DOME: The Community Standard for Transparent Machine Learning</h1>
+        <h2 class="h3 mb-5" style="color: #F66729 !important;">Guidelines to ensure your machine learning models are <br> Transparent, Reproducible, and FAIR</h2>
+        
+        <div class="cta-buttons mb-5">
+          <a routerLink="/guidelines" class="btn btn-outline-primary btn-lg mx-2 mb-2">View the Guidelines</a>
+          <a href="https://registry.dome-ml.org/intro" target="_blank" class="btn btn-outline-primary btn-lg mx-2 mb-2">Use the DOME Registry</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
-      <div class="li-txt">
-        <p><strong>What is DOME-ML?</strong></p>
-        <p> DOME-ML (or simply DOME) is an acronym standing for Data, Optimization, Model and Evaluation in Machine
-          Learning. DOME is a set of community-wide guidelines, recommendations and checklists spanning these four
-          areas aiming to help establish standards of supervised machine learning validation in biology. The
-          recommendations are formulated as questions to anyone wishing to pursue implementation of a machine learning
-          algorithm. Answers to these questions can be easily included in the supplementary material of published
-          papers. </p>
-      </div>
-      <div class="li-txt">
-        <p><strong>What is the scope of the recommendations?</strong></p>
-        <p>The recommendations cover four separate aspects covering the major areas of ML:</p>
-<!--        <div class="d-flex justify-content-end mb-2">
-          <button type="button" class="btn btn-sm btn-primary mr-1" (click)="expandAll()">Expand All</button>
-          <button type="button" class="btn btn-sm btn-primary ml-1" (click)="collapseAll()">Collapse All</button>
-        </div>-->
-        <div class="row">
-          <div class="col-2" [@openClose]="!dataCollapsed ? 'open' : 'closed'" >
-            <h3 class="section-title"><b>D</b>ata</h3>
+  <!-- Divider between Hero and Four Pillars - full width with modern design -->
+  <div class="container-fluid px-0">
+    <hr style="border: 0; height: 3px; background-color: #003958; margin: 1.5rem 0; width: 100%; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+  </div>
+
+  <!-- Four Pillars Section -->
+  <section class="pillars-section pt-4 pb-5 bg-white" style="background-color: white !important;">
+    <div class="text-center mb-5">
+      <h2 class="h2 dome-heading">A Disclosure Framework Built on Four Pillars</h2>
+    </div>
+    
+    <div class="row">
+      <!-- Data Pillar -->
+      <div class="col-md-6 col-lg-3 mb-4">
+        <div class="pillar-card p-4 text-center h-100">
+          <div class="pillar-icon mb-3">
+            <i class="icon icon-common icon-database" style="font-size: 3rem; color: #F66729;"></i>
           </div>
-          <div class="col-9">
-            <p [hidden]="!dataCollapsed">Preprocessing data properly, and using it in a knowledgeable manner is the
-              only way to obtain good generalization</p>
-          </div>
-          <div class="p-2 col-1 text-center">
-            <button type="button" class="btn btn-sm btn-primary" (click)="dataCollapsed = !dataCollapsed"
-                    [attr.aria-expanded]="!dataCollapsed" aria-controls="collapseData">
-              <i class="icon icon-common"
-                 [class.icon-chevron-up]="!dataCollapsed"
-                 [class.icon-chevron-down]="dataCollapsed"></i>
-            </button>
-          </div>
-        </div>
-        <div id="collapseData" [collapse]="dataCollapsed" [isAnimated]="true" class="li-txt">
-          <p>Machine learning models analyse experimental biological data by extracting patterns. The extracted patterns
-            can
-            then be used to give biological insights on similar data that were not previously seen by the model. The
-            degree to
-            which a model retains its performance on new data is called generalization power. Building ML models that
-            generalize
-            well is the main challenge of these methodologies, otherwise the trained models cannot be reused.
-            Preprocessing
-            data
-            properly, and using it in a knowledgeable manner is the only way to obtain good generalization. Some basic
-            concerns
-            to consider are:</p>
-          <ul>
-            <li>Training, test and validation datasets are partially or completely overlapping. This includes both
-              sequence/structure similarities and a set of experiments obtained in different conditions or batches (e.g.
-              for
-              next-generation sequencing data);
-            </li>
-            <li>Training dataset is too small to capture the full complexity of the underlying distribution;</li>
-            <li>Validation and test datasets are too small to provide a stable estimate of the model’s generalization
-              power;
-            </li>
-            <li>Training, validation and test sets are not representative of the problem domain due to e.g. presence of
-              high
-              noise levels, imbalanced classes, large chunks of similar (redundant) data points;
-            </li>
-            <li>Data is not released to the public.</li>
-          </ul>
-        </div>
-        <hr>
-        <div class="row">
-          <div class="col-2" [@openClose]="!optimizationCollapsed ? 'open' : 'closed'">
-            <h3 class="section-title"><b>O</b>ptimization</h3>
-          </div>
-          <div class="col-9">
-            <p [hidden]="!optimizationCollapsed">Problems associated with a poor choice of optimization strategy.</p>
-          </div>
-          <div class="p-2 col-1 text-center">
-            <button type="button" class="btn btn-sm btn-primary"
-                    (click)="optimizationCollapsed = !optimizationCollapsed"
-                    [attr.aria-expanded]="!optimizationCollapsed" aria-controls="collapseOptimization">
-              <i class="icon icon-common"
-                 [class.icon-chevron-up]="!optimizationCollapsed"
-                 [class.icon-chevron-down]="optimizationCollapsed"></i>
-            </button>
-          </div>
-        </div>
-        <div id="collapseOptimization" [collapse]="optimizationCollapsed" [isAnimated]="true" class="li-txt">
-          <p>Optimization, also known as model training, refers to the process of changing values that constitute the
-            model
-            (parameters and hyper-parameters of the model) in a way that maximizes the model’s ability to solve a given
-            problem.
-            In this section, we will focus on problems associated with a poor choice of optimization strategy. Such
-            problems
-            may
-            include:</p>
-          <ul>
-            <li>Selecting a too powerful model, that may over-fit (known as high-variance <a
-              href="https://arxiv.org/abs/1803.08823">[arXiv:1803.08823]</a>);
-            </li>
-            <li>Selecting a too simple model, that may under-fit (known as high-bias <a
-              href="https://arxiv.org/abs/1803.08823">[arXiv:1803.08823]</a>);
-            </li>
-            <li>Parameters are optimized and/or features are selected on hold-out data used to evaluate performance
-              only. This
-              may be particularly hard to spot for meta-predictors;
-            </li>
-            <li>Parameters, hyper-parameters and optimization protocol are not specified and/or files supporting their
-              specification are not open-access or follow a standard widely adopted by the community (if any).
-            </li>
-          </ul>
-        </div>
-        <hr>
-        <div class="row">
-          <div class="col-2" [@openClose]="!modelCollapsed ? 'open' : 'closed'">
-            <h3 class="section-title"><b>M</b>odel</h3>
-          </div>
-          <div class="col-9">
-            <p [hidden]="!modelCollapsed">Fallacies of important aspects of the ML models (black-box models where
-              interpretability is required,
-              dissemination level of the model components, computational requirements to execute trained models)</p>
-          </div>
-          <div class="p-2 col-1 text-center">
-            <button type="button" class="btn btn-sm btn-primary" (click)="modelCollapsed = !modelCollapsed"
-                    [attr.aria-expanded]="!modelCollapsed" aria-controls="collapseModel">
-              <i class="icon icon-common"
-                 [class.icon-chevron-up]="!modelCollapsed"
-                 [class.icon-chevron-down]="modelCollapsed"></i>
-            </button>
-          </div>
-        </div>
-        <div id="collapseModel" [collapse]="modelCollapsed" [isAnimated]="true" class="li-txt">
-          <p>
-            Good overall performance of the trained model and its ability to generalize well to unseen data are
-            important
-            factors that undoubtedly affect the applicability of any proposed ML research. However, a few other
-            important
-            aspects related to ML models must be kept in mind. These include the following fallacies:
-          </p>
-          <ul>
-            <li>Employing unexplainable models (blackbox) for areas where interpretability is required;</li>
-            <li>The various components of a model (source code, model files, parameter configurations, executables) are
-              not
-              made available to the public;
-            </li>
-            <li>Computational requirements to execute the trained models (generate prediction based on new data) are
-              impractical.
-            </li>
-          </ul>
-        </div>
-        <hr>
-        <div class="row">
-          <div class="col-2" [@openClose]="!evaluationCollapsed ? 'open' : 'closed'">
-            <h3 class="section-title"><b>E</b>valuation</h3>
-          </div>
-          <div class="col-9">
-            <p [hidden]="!evaluationCollapsed">Valid assessment methodology for any final model with adequate and
-              comprehensive measures.</p>
-          </div>
-          <div class="p-2 col-1 text-center">
-            <button type="button" class="btn btn-sm btn-primary" (click)="evaluationCollapsed = !evaluationCollapsed"
-                    [attr.aria-expanded]="!evaluationCollapsed" aria-controls="collapseEvaluation">
-              <i class="icon icon-common"
-                 [class.icon-chevron-up]="!evaluationCollapsed"
-                 [class.icon-chevron-down]="evaluationCollapsed"></i>
-            </button>
-          </div>
-        </div>
-        <div id="collapseEvaluation" [collapse]="evaluationCollapsed" [isAnimated]="true" class="li-txt">
-          <p>In the implementation of a robust and trustworthy ML method, a comprehensive data description, a correct
-            optimization
-            protocol, and a clearly defined (and open-access) model are critical first steps; however, equally important
-            is a
-            valid assessment methodology for any final model. Here are a few possible risks related to model assessment
-            and
-            evaluation:</p>
-          <ul>
-            <li>The selected performance measures are not adequate or comprehensive for the problem at hand;</li>
-            <li>Reported performances are highly unstable;</li>
-            <li>Obtained performances are not compared to similar studies, methods and community-agreed datasets;
-              obtained
-              performances are not compared to simpler baseline methods.
-            </li>
-          </ul>
+          <h2 class="dome-heading-accent mb-3"><span style="color: #103444;">D</span>ata</h2>
+          <p>Ensuring high-quality data, proper preprocessing, and transparent handling to build a foundation of trust for your research discoveries.</p>
         </div>
       </div>
+      
+      <!-- Optimization Pillar -->
+      <div class="col-md-6 col-lg-3 mb-4">
+        <div class="pillar-card p-4 text-center h-100">
+          <div class="pillar-icon mb-3">
+            <i class="icon icon-common icon-cogs" style="font-size: 3rem; color: #F66729;"></i>
+          </div>
+          <h2 class="dome-heading-accent mb-3"><span style="color: #103444;">O</span>ptimization</h2>
+          <p>Guiding the selection of appropriate optimization strategies to avoid common pitfalls and ensure your model learns effectively.</p>
+        </div>
+      </div>
+      
+      <!-- Model Pillar -->
+      <div class="col-md-6 col-lg-3 mb-4">
+        <div class="pillar-card p-4 text-center h-100">
+          <div class="pillar-icon mb-3">
+            <i class="icon icon-common icon-sitemap" style="font-size: 3rem; color: #F66729;"></i>
+          </div>
+          <h2 class="dome-heading-accent mb-3"><span style="color: #103444;">M</span>odel</h2>
+          <p>Promoting clarity in model architecture, interpretability where required, and responsible dissemination of trained models.</p>
+        </div>
+      </div>
+      
+      <!-- Evaluation Pillar -->
+      <div class="col-md-6 col-lg-3 mb-4">
+        <div class="pillar-card p-4 text-center h-100">
+          <div class="pillar-icon mb-3">
+            <i class="icon icon-common icon-chart-line" style="font-size: 3rem; color: #F66729;"></i>
+          </div>
+          <h2 class="dome-heading-accent mb-3"><span style="color: #103444;">E</span>valuation</h2>
+          <p>Implementing valid assessment methodologies with comprehensive metrics to prove the true performance and generalizability of your final model.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Divider between Four Pillars and Benefits - full width with modern design -->
+  <div class="container-fluid px-0">
+    <hr style="border: 0; height: 3px; background-color: #003958; margin: 1.5rem 0; width: 100%; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+  </div>
+  
+  <!-- Benefits Section -->
+  <section class="benefits-section pt-4 pb-5 bg-white" style="background-color: white !important;">
+    <div class="row">
+      <div class="col-lg-8 mx-auto text-center">
+        <h2 class="h2 dome-heading mb-5">Enhance Your Research & Build Community Trust</h2>
+        
+        <div class="benefits-list text-left">
+          <div class="benefit-item d-flex align-items-start mb-4">
+            <div class="benefit-icon mr-3 mt-1">
+              <i class="icon icon-common icon-check" style="color: #F66729; font-size: 1.2rem;"></i>
+            </div>
+            <div>
+              <h4 class="h5 dome-heading"><strong>Improve Publication Quality</strong></h4>
+              <p>Satisfy reviewer and journal requirements for ML model validation.</p>
+            </div>
+          </div>
+          
+          <div class="benefit-item d-flex align-items-start mb-4">
+            <div class="benefit-icon mr-3 mt-1">
+              <i class="icon icon-common icon-check" style="color: #F66729; font-size: 1.2rem;"></i>
+            </div>
+            <div>
+              <h4 class="h5 dome-heading"><strong>Increase Reproducibility</strong></h4>
+              <p>Provide a clear, step-by-step record of your methodology that others can follow.</p>
+            </div>
+          </div>
+          
+          <div class="benefit-item d-flex align-items-start mb-4">
+            <div class="benefit-icon mr-3 mt-1">
+              <i class="icon icon-common icon-check" style="color: #F66729; font-size: 1.2rem;"></i>
+            </div>
+            <div>
+              <h4 class="h5 dome-heading"><strong>Streamline Your Workflow</strong></h4>
+              <p>Use our checklist as a guide from project inception to publication.</p>
+            </div>
+          </div>
+          
+          <div class="benefit-item d-flex align-items-start mb-4">
+            <div class="benefit-icon mr-3 mt-1">
+              <i class="icon icon-common icon-check" style="color: #F66729; font-size: 1.2rem;"></i>
+            </div>
+            <div>
+              <h4 class="h5 dome-heading"><strong>Join a Community Standard</strong></h4>
+              <p>Align your work with best practices developed by and for the life science research community.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="cta-buttons mt-5">
+          <a href="https://registry.dome-ml.org/intro" target="_blank" class="btn btn-outline-primary btn-lg">Get Started with DOME Registry</a>
+        </div>
+      </div>
+    </div>
   </section>
 </div>

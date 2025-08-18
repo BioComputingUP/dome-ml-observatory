@@ -7,7 +7,6 @@ import {NotFoundPageComponent} from './not-found-page/not-found-page.component';
 import {NewsComponent} from './news/news.component';
 import {GuidelinesComponent} from './guidelines/guidelines.component';
 import {AboutComponent} from './about/about.component';
-import {DomeRegistryComponent} from './dome_registry/dome_registry';
 import {AiEcosystemComponent} from './ai_ecosystem/ai_ecosystem.component'; // Import the new component
 
 const appRoutes: Routes = [
@@ -15,7 +14,6 @@ const appRoutes: Routes = [
   {path: 'news', component: NewsComponent},
   {path: 'guidelines', component: GuidelinesComponent},
   {path: 'about', component: AboutComponent},
-  {path: 'dome_registry', component: DomeRegistryComponent},
   {path: 'ai-ecosystem', component: AiEcosystemComponent}, // Add route for AI Ecosystem
   {path: '**', component: NotFoundPageComponent}
 ];

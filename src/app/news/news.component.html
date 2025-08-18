@@ -1,66 +1,215 @@
-<div class="container-fluid container-wide">
-  <!--  <a class="twitter-timeline" href="https://twitter.com/BioComputingUP?ref_src=twsrc%5Etfw"-->
-  <!--        data-chrome="nofooter noheader noborders transparent" data-aria-polite="assertive" data-tweet-limit="3">-->
-  <!--  </a>-->
-  <div class="card mt-2">
-    <div class="card-header">
-      <h4 class="li-txt">News</h4>
-    </div>
-    <div class="card-body"> 
-      <h5><strong>11 December, 2024</strong></h5>
-      <p>DOME Registry paper published in <i>GigaScience</i> <a href="https://academic.oup.com/gigascience/article/doi/10.1093/gigascience/giae094/7921169"><i
-        class="icon ml-2 icon-common icon-external-link-alt"></i></a></p>
-      <h5><strong>10 April, 2024</strong></h5>
-      <p>DOME Registry service adopted for use by publisher: <i>GigaScience</i> <a href="https://academic.oup.com/gigascience/article/doi/10.1093/gigascience/giae094/7921169"><i
-          class="icon ml-2 icon-common icon-external-link-alt"></i></a></p>
-      <h5><strong>1 September, 2022</strong></h5>
-      <p>DOME Registry service launched <a href="https://registry.dome-ml.org/intro"><i
-          class="icon ml-2 icon-common icon-external-link-alt"></i></a></p>
-      <h5><strong>27 July, 2021</strong></h5>
-      <p>DOME Recommendations paper published in <i>Nature Methods</i> <a href="https://www.nature.com/articles/s41592-021-01205-4"><i
-        class="icon ml-2 icon-common icon-external-link-alt"></i></a></p>
-      <h5><strong>10 December, 2020</strong></h5>
-      <p>dome-ml GitHub repository created <a href="https://github.com/MachineLearning-ELIXIR/dome-ml"><i
-        class="icon ml-2 icon-common icon-github"></i></a></p>
-      <h5 class="mt-4"><strong>25 June, 2020</strong></h5>
-      <p>Deposited first manuscript to arXiv <a href="https://arxiv.org/abs/2006.16189"><i
-        class="icon ml-2 icon-common icon-external-link-alt"></i></a></p>
-      <h5 class="mt-4"><strong>1 October, 2019</strong></h5>
-      <p>The ELIXIR Machine Learning Focus Group was formed with ML domain experts<a
-        href="https://elixir-europe.org/focus-groups/machine-learning"><i
-        class="icon ml-2 icon-common icon-external-link-alt"></i></a></p>
-    </div>
+<div class="container-fluid container-wide news-events-container">
+  <!-- Custom styles for the page -->
+  <style>
+    .section-heading {
+      color: #103344;
+      margin-bottom: 2rem;
+      font-weight: 600;
+    }
+    .news-events-container {
+      background-color: #f8f9fa;
+      padding-bottom: 3rem;
+    }
+    .content-nav {
+      background-color: #103344;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+    .content-nav-list {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .content-nav-item {
+      flex: 1;
+    }
+    .content-nav-link {
+      color: white;
+      display: block;
+      font-weight: 500;
+      padding: 1rem;
+      text-align: center;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .content-nav-link.active {
+      background-color: #F66729;
+      color: white;
+    }
+    .content-nav-link:hover:not(.active) {
+      background-color: rgba(246, 103, 41, 0.2);
+    }
+    .content-section {
+      display: none;
+    }
+    .content-section.active {
+      display: block;
+    }
+    .news-card, .event-card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .news-card:hover, .event-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+      border: 2px solid #103344;
+    }
+    .card-date {
+      background-color: #F66729;
+      color: white;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      text-align: center;
+      transition: background-color 0.3s ease;
+    }
+    .news-card:hover .card-date, .event-card:hover .card-date {
+      background-color: #103344;
+    }
+    .card-content {
+      padding: 1.5rem;
+    }
+    .card-title {
+      color: #103344;
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+    .card-description {
+      color: #555;
+      margin-bottom: 1rem;
+    }
+    .card-link {
+      color: #007bff;
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    .card-link:hover {
+      color: #0056b3;
+    }
+    .card-link-icon {
+      margin-left: 0.5rem;
+    }
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .card-tag {
+      background-color: #e9ecef;
+      border-radius: 4px;
+      color: #495057;
+      font-size: 0.8rem;
+      padding: 0.25rem 0.5rem;
+    }
+    .content-empty {
+      background-color: rgba(246, 103, 41, 0.05);
+      border: 1px dashed #F66729;
+      border-radius: 8px;
+      color: #6c757d;
+      padding: 2rem;
+      text-align: center;
+    }
+    .page-title {
+      color: #103344;
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    .nav-icon {
+      margin-right: 0.5rem;
+    }
+  </style>
+
+  <!-- Page Title -->
+  <div class="text-center pt-4 pb-2">
+    <h1 class="page-title">News & Events</h1>
+    <p class="lead mb-4">Stay updated with the latest developments, announcements, and upcoming events from DOME.</p>
   </div>
 
-  <div class="card mt-3">
-    <div class="card-header">
-      <h4 class="li-txt">Events</h4>
+  <!-- Navigation Tabs -->
+  <nav class="content-nav">
+    <ul class="content-nav-list">
+      <li class="content-nav-item">
+        <a class="content-nav-link" [class.active]="isActive('news-section')" (click)="showContent($event, 'news-section')">
+          <i class="icon icon-common icon-newspaper nav-icon"></i>News
+        </a>
+      </li>
+      <li class="content-nav-item">
+        <a class="content-nav-link" [class.active]="isActive('events-section')" (click)="showContent($event, 'events-section')">
+          <i class="icon icon-common icon-calendar nav-icon"></i>Events
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
     </div>
-    <div class="card-body">
-      <h5><strong>13 February, 2025</strong></h5>
-      <p>DOME presented at event RDA AI in Action: How Researchers Leverage AI <a href="https://www.rd-alliance.org/event/ai-in-action-how-researchers-leverage-ai-europe-americas-friendly-time/"><i
-        class="icon ml-2 icon-common icon-external-link-alt"></i></a></p> 
-      <h5 class="mt-4"><strong>5 December, 2024</strong></h5>
-      <p>DOME - Machine Learning Best Practices & Recommendations Webinar with Australian BioCommons <a href="https://www.biocommons.org.au/events/dome-ml"><i
-        class="icon ml-2 icon-common icon-external-link-alt"></i></a></p>
-      <h5><strong>21 November, 2024</strong></h5>
-      <p>GigaScience talk on DOME adoption at the 19th International Conference on Genomics (ICG) <a href="https://youtu.be/EQM0GVjPbmQ?si=bZXR5TP38zM_hUyU"><i
-        class="icon ml-2 icon-common icon-external-link-alt"></i></a></p>
-        <h5 class="mt-4"><strong>24 September, 2024</strong></h5>
-      <p>DOME - Machine Learning Best Practices & Recommendations Webinar with ELIXIR <a href="https://elixir-europe.org/events/dome-machine-learning-best-practices-recommendations-webinar"><i
-        class="icon ml-2 icon-common icon-external-link-alt"></i></a></p>
-        <h5 class="mt-4"><strong>7 June, 2021</strong></h5>
-        <p>ELIXIR All Hands Meeting 2021 | Workshop on defining the road ahead for machine learning in ELIXIR <a href="https://docs.google.com/document/d/1jV1poS7Jth7OPmZUyOPVH3hy8ZkfFq72x9FvFRRS9y4/export?format=pdf"><i
-          class="icon ml-2 icon-common icon-external-link-alt"></i></a></p>
-    </div>
+    <p class="mt-3">Loading content...</p>
   </div>
 
-<!--  <div class="card mt-5">
-    <div class="card-header">
-      <h4 class="li-txt">Changelog</h4>
+  <!-- Error State -->
+  <div *ngIf="error" class="alert alert-danger" role="alert">
+    {{ error }}
+  </div>
+
+  <!-- News Section -->
+  <section id="news-section" class="content-section" [class.active]="isActive('news-section')">
+    <h2 class="section-heading">Latest News</h2>
+    <div class="row">
+      <div class="col-md-6" *ngFor="let item of newsItems">
+        <div class="news-card">
+          <div class="card-date">{{ item.date }}</div>
+          <div class="card-content">
+            <h3 class="card-title">{{ item.title }}</h3>
+            <p class="card-description">{{ item.description }}</p>
+            <a [href]="item.link" target="_blank" class="card-link">
+              {{ item.linkText }}
+              <i class="icon icon-common {{ item.linkIcon }} card-link-icon"></i>
+            </a>
+            <div class="card-tags">
+              <span class="card-tag" *ngFor="let tag of item.tags">{{ tag }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="card-body">
-      &lt;!&ndash;<p>v1.0 guidelines</p>&ndash;&gt;
+  </section>
+
+  <!-- Events Section -->
+  <section id="events-section" class="content-section" [class.active]="isActive('events-section')">
+    <h2 class="section-heading">Upcoming & Past Events</h2>
+    <div class="row">
+      <div class="col-md-6" *ngFor="let item of eventItems">
+        <div class="event-card">
+          <div class="card-date">{{ item.date }}</div>
+          <div class="card-content">
+            <h3 class="card-title">{{ item.title }}</h3>
+            <p class="card-description">{{ item.description }}</p>
+            <a [href]="item.link" target="_blank" class="card-link">
+              {{ item.linkText }}
+              <i class="icon icon-common {{ item.linkIcon }} card-link-icon"></i>
+            </a>
+            <div class="card-tags">
+              <span class="card-tag" *ngFor="let tag of item.tags">{{ tag }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>-->
+  </section>
 </div>
