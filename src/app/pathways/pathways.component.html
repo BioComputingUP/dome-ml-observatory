@@ -1,0 +1,388 @@
+<div class="container-fluid container-wide" style="background-color: white;">
+  <!-- Custom styles to match home page -->
+  <style>
+    .section-heading {
+      color: #103344;
+      margin-bottom: 2rem;
+      font-weight: 600;
+    }
+    .accent-text {
+      color: #F66729;
+    }
+    .content-card {
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+      transition: transform 0.3s ease;
+      background-color: white;
+    }
+    .content-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    .section-divider {
+      height: 3px;
+      background-color: #003958;
+      margin: 3rem 0;
+      width: 100%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .pathway-icon {
+      font-size: 2.5rem;
+      color: #F66729;
+      margin-bottom: 1rem;
+    }
+    .implementation-step {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: transform 0.3s ease;
+    }
+    .implementation-step:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    .step-number {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 2rem;
+      height: 2rem;
+      background-color: #F66729;
+      color: white;
+      border-radius: 50%;
+      font-weight: bold;
+      margin-right: 0.75rem;
+    }
+    .fixed-nav {
+      position: fixed;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 100;
+      background-color: white;
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+      padding: 1rem 0.75rem;
+      width: auto;
+      min-width: 120px;
+    }
+    .fixed-nav-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .fixed-nav-item {
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+    .fixed-nav-link {
+      display: flex;
+      align-items: center;
+      color: #103344;
+      padding: 0.5rem;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
+    }
+    .fixed-nav-link:hover {
+      background-color: rgba(246, 103, 41, 0.1);
+      color: #F66729;
+    }
+    .fixed-nav-icon {
+      font-size: 1.25rem;
+      margin-right: 0.5rem;
+      color: #F66729;
+    }
+    .resource-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      background-color: rgba(246, 103, 41, 0.1);
+      color: #F66729;
+      border-radius: 4px;
+      text-decoration: none;
+      margin-top: 1rem;
+      transition: all 0.3s ease;
+    }
+    .resource-link:hover {
+      background-color: #F66729;
+      color: white;
+    }
+    .resource-link i {
+      margin-right: 0.5rem;
+    }
+    @media (max-width: 768px) {
+      .fixed-nav {
+        display: none;
+      }
+    }
+  </style>
+
+  <!-- Fixed Side Navigation -->
+  <nav class="fixed-nav">
+    <ul class="fixed-nav-list">
+      <li class="fixed-nav-item">
+        <a href="/pathways#reusability-section" class="fixed-nav-link" title="Reusability">
+          <i class="icon icon-common icon-recycle fixed-nav-icon"></i>
+          <span>Reusability</span>
+        </a>
+      </li>
+      <li class="fixed-nav-item">
+        <a href="/pathways#reproducibility-section" class="fixed-nav-link" title="Reproducibility">
+          <i class="icon icon-common icon-copy fixed-nav-icon"></i>
+          <span>Reproducibility</span>
+        </a>
+      </li>
+      <li class="fixed-nav-item">
+        <a href="/pathways#sustainability-section" class="fixed-nav-link" title="Environmental Sustainability">
+          <i class="icon icon-common icon-leaf fixed-nav-icon"></i>
+          <span>Sustainability</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="text-center pt-5 pb-2">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <h1 class="display-4 mb-4" style="font-weight: bold; font-size: 2.8rem; color: #103344;">Implementation Pathways</h1>
+        <h2 class="h3 mb-3" style="color: #F66729 !important; font-weight: bold; font-size: 1.5rem;">Practical steps to implement OSAI recommendations</h2>
+        <p class="lead mb-5">
+          These implementation pathways provide concrete steps and resources to help you apply the OSAI recommendations 
+          in your AI/ML research workflows and systems.
+        </p>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Section 1: Reusability Pathway -->
+  <section class="py-4" id="reusability-section">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <div class="d-flex align-items-center mb-4">
+          <i class="icon icon-common icon-recycle pathway-icon mr-3"></i>
+          <h2 class="section-heading mb-0">Reusability Pathway</h2>
+        </div>
+        <p class="mb-4">
+          Building AI systems that others can easily find, understand, and adapt for their own research is essential for advancing
+          scientific progress. Follow these steps to ensure your AI models and datasets are reusable.
+        </p>
+
+        <div class="implementation-step">
+          <h3><span class="step-number">1</span>Standardize Your Metadata</h3>
+          <p>
+            Create and share standardized metadata for your models and datasets using recommended frameworks such as 
+            AI model cards, dataset datasheets, or domain-specific standards.
+          </p>
+          <div class="mt-3">
+            <strong class="accent-text">Key Actions:</strong>
+            <ul>
+              <li>Document your model's intended use, limitations, and performance metrics</li>
+              <li>Describe your dataset's collection methodology, biases, and usage restrictions</li>
+              <li>Use established templates from your community or domain</li>
+            </ul>
+          </div>
+          <a href="https://registry.dome-ml.org/intro" target="_blank" class="resource-link">
+            <i class="icon icon-common icon-external-link-alt"></i>
+            Use DOME Registry for Metadata Documentation
+          </a>
+        </div>
+
+        <div class="implementation-step">
+          <h3><span class="step-number">2</span>Register Your Research Assets</h3>
+          <p>
+            Make your models, datasets, and code discoverable by registering them in community repositories and catalogues with appropriate metadata.
+          </p>
+          <div class="mt-3">
+            <strong class="accent-text">Key Actions:</strong>
+            <ul>
+              <li>Submit your AI model to model repositories like Hugging Face or BioModels</li>
+              <li>Share your datasets in domain-relevant repositories with rich metadata</li>
+              <li>Register your software in directories like bio.tools or GitHub</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="implementation-step">
+          <h3><span class="step-number">3</span>Document Your Training Process</h3>
+          <p>
+            Provide comprehensive documentation of your model training process, including preprocessing steps, architecture decisions, hyperparameters, and validation approaches.
+          </p>
+          <div class="mt-3">
+            <strong class="accent-text">Key Actions:</strong>
+            <ul>
+              <li>Create clear documentation using Jupyter notebooks or similar tools</li>
+              <li>Include detailed explanations of design choices and their rationale</li>
+              <li>Document data preprocessing steps and their impact on model performance</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <div class="section-divider"></div>
+
+  <!-- Section 2: Reproducibility Pathway -->
+  <section class="py-4" id="reproducibility-section">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <div class="d-flex align-items-center mb-4">
+          <i class="icon icon-common icon-copy pathway-icon mr-3"></i>
+          <h2 class="section-heading mb-0">Reproducibility Pathway</h2>
+        </div>
+        <p class="mb-4">
+          Enabling others to verify and build upon your research findings is crucial for scientific integrity. 
+          This pathway helps ensure your AI research can be reliably reproduced.
+        </p>
+
+        <div class="implementation-step">
+          <h3><span class="step-number">1</span>Disclose All Methods and Parameters</h3>
+          <p>
+            Document your complete workflow with sufficient detail for others to reproduce your results, including detailed methods, configuration parameters, and validation procedures.
+          </p>
+          <div class="mt-3">
+            <strong class="accent-text">Key Actions:</strong>
+            <ul>
+              <li>Record hyperparameters, initialization strategies, and optimization techniques</li>
+              <li>Document data splits, preprocessing, and augmentation methods</li>
+              <li>Describe your evaluation metrics and validation process</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="implementation-step">
+          <h3><span class="step-number">2</span>Ensure Code and Environment Portability</h3>
+          <p>
+            Package your code, dependencies, and runtime environment to ensure your research can be run consistently across different computing systems.
+          </p>
+          <div class="mt-3">
+            <strong class="accent-text">Key Actions:</strong>
+            <ul>
+              <li>Use containerization tools like Docker or Singularity</li>
+              <li>Create environment files (requirements.txt, environment.yml) with specific versions</li>
+              <li>Document system requirements and hardware specifications</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="implementation-step">
+          <h3><span class="step-number">3</span>Use Standardized Benchmarks</h3>
+          <p>
+            Validate your models using standardized, community-accepted benchmarks and evaluation protocols to facilitate accurate comparisons with other methods.
+          </p>
+          <div class="mt-3">
+            <strong class="accent-text">Key Actions:</strong>
+            <ul>
+              <li>Select appropriate benchmark datasets for your domain</li>
+              <li>Follow established evaluation protocols</li>
+              <li>Report performance across multiple metrics and trials</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <div class="section-divider"></div>
+
+  <!-- Section 3: Environmental Sustainability Pathway -->
+  <section class="py-4" id="sustainability-section">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <div class="d-flex align-items-center mb-4">
+          <i class="icon icon-common icon-leaf pathway-icon mr-3"></i>
+          <h2 class="section-heading mb-0">Environmental Sustainability Pathway</h2>
+        </div>
+        <p class="mb-4">
+          Developing AI systems with environmental impact in mind helps reduce the growing carbon footprint of machine learning.
+          Follow these steps to make your AI research more environmentally sustainable.
+        </p>
+
+        <div class="implementation-step">
+          <h3><span class="step-number">1</span>Implement Green AI Development Techniques</h3>
+          <p>
+            Adopt development approaches that reduce computational requirements while maintaining performance.
+          </p>
+          <div class="mt-3">
+            <strong class="accent-text">Key Actions:</strong>
+            <ul>
+              <li>Use transfer learning instead of training from scratch</li>
+              <li>Apply model pruning and knowledge distillation</li>
+              <li>Optimize your model architecture for efficiency</li>
+              <li>Consider Frugal AI practices that emphasize efficiency</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="implementation-step">
+          <h3><span class="step-number">2</span>Choose and Optimize Hardware</h3>
+          <p>
+            Select appropriate hardware and optimize its usage to reduce energy consumption and carbon emissions.
+          </p>
+          <div class="mt-3">
+            <strong class="accent-text">Key Actions:</strong>
+            <ul>
+              <li>Select energy-efficient hardware appropriate for your tasks</li>
+              <li>Use specialized accelerators (e.g., GPUs, TPUs) efficiently</li>
+              <li>Consider cloud providers with renewable energy commitments</li>
+              <li>Schedule training during off-peak hours or in regions with cleaner energy</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="implementation-step">
+          <h3><span class="step-number">3</span>Measure and Report Environmental Impact</h3>
+          <p>
+            Track and transparently report the environmental impact of your AI development process.
+          </p>
+          <div class="mt-3">
+            <strong class="accent-text">Key Actions:</strong>
+            <ul>
+              <li>Use tools like Carbontracker or Code Carbon to measure emissions</li>
+              <li>Report energy consumption, carbon emissions, and compute hours</li>
+              <li>Include environmental impact statements in your publications</li>
+              <li>Share your impact reduction strategies with the community</li>
+            </ul>
+          </div>
+          <a href="https://github.com/mlco2/codecarbon" target="_blank" class="resource-link">
+            <i class="icon icon-common icon-external-link-alt"></i>
+            Explore CodeCarbon Measurement Tool
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- Final CTA -->
+  <section class="py-4 mb-5">
+    <div class="row">
+      <div class="col-lg-8 mx-auto text-center">
+        <h2 class="section-heading">Ready to Start Your OSAI Journey?</h2>
+        <p class="lead mb-5">Explore our interactive tools and resources to implement these pathways in your AI research.</p>
+        
+        <div class="d-flex flex-wrap justify-content-center">
+          <a href="https://registry.dome-ml.org/intro" target="_blank" class="btn btn-outline-primary mx-2 mb-2" style="color: #103344; border-color: #103344;">
+            <i class="icon icon-common icon-external-link-alt mr-2"></i>DOME Registry
+          </a>
+          <a routerLink="/ai-ecosystem" class="btn btn-outline-primary mx-2 mb-2" style="color: #103344; border-color: #103344;">
+            <i class="icon icon-common icon-project-diagram mr-2"></i>AI Ecosystem
+          </a>
+          <a routerLink="/guidelines" class="btn btn-outline-primary mx-2 mb-2" style="color: #103344; border-color: #103344;">
+            <i class="icon icon-common icon-book mr-2"></i>OSAI Guidelines
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

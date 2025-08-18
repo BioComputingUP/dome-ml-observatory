@@ -28,6 +28,21 @@ $color-dark-blue: #103344; // Updated to new blue color
   }
 }
 
+// Add responsive adjustments for medium-large screens
+@media (min-width: 992px) and (max-width: 1199px) {
+  .navbar {
+    padding-left: 3%; // Reduce side padding
+    padding-right: 3%; // Reduce side padding
+  }
+  
+  .btn-navbar {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    margin-left: 0.2rem;
+    margin-right: 0.2rem;
+  }
+}
+
 .brand-img {
   height: 7.2rem; // Increased by 20% from 6rem
 }
@@ -58,10 +73,10 @@ $color-dark-blue: #103344; // Updated to new blue color
 
 .btn-navbar {
   color: white !important;
-  margin-left: 0.6rem; // Reduced by 30% from 1rem
-  margin-right: 0.6rem; // Reduced by 30% from 1rem
-  padding-left: 1rem !important;
-  padding-right: 1rem !important;
+  margin-left: 0.3rem; // Reduced from original
+  margin-right: 0.3rem; // Reduced from original
+  padding-left: 0.65rem !important; // Reduced from 1rem
+  padding-right: 0.65rem !important; // Reduced from 1rem
   background-color: transparent;
   border: none;
   border-radius: 5px;
@@ -192,5 +207,6 @@ $color-dark-blue: #103344; // Updated to new blue color
     margin: 0 !important;
     align-items: center;
     height: 100%;
+    flex-wrap: nowrap; // Prevent wrapping
   }
 }

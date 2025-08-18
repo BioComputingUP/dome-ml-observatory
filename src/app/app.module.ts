@@ -20,6 +20,7 @@ import { NewsComponent } from './news/news.component';
 import { GuidelinesComponent } from './guidelines/guidelines.component';
 import { AboutComponent } from './about/about.component';
 import { AiEcosystemComponent } from './ai_ecosystem/ai_ecosystem.component';
+import { PathwaysComponent } from './pathways/pathways.component';
 import { HttpClientModule } from '@angular/common/http';
 
 let LOG_LEVEL = Level.OFF;
@@ -39,7 +40,8 @@ if (environment.enableLogger) {
     NewsComponent,
     GuidelinesComponent,
     AboutComponent,
-    AiEcosystemComponent
+    AiEcosystemComponent,
+    PathwaysComponent
   ],
   imports: [
     BrowserModule,
