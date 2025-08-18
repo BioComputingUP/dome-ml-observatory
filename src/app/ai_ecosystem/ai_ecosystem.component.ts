@@ -57,6 +57,10 @@ export class AiEcosystemComponent implements OnInit {
     { value: 'R9', displayName: 'R9 - Impact' }
   ];
 
+  isLoading: boolean = true;
+  errorLoading: boolean = false;
+  showRecommendations: boolean = false;
+
   // Inject data service if needed
   constructor(private http: HttpClient) {}
 
@@ -66,60 +70,72 @@ export class AiEcosystemComponent implements OnInit {
     this.loadData(); // Load data when the component initializes
   }
 
+  toggleRecommendations(): void {
+    this.showRecommendations = !this.showRecommendations;
+  }
+
   loadData(): void {
+    this.isLoading = true;
+    this.errorLoading = false;
+    
     this.http.get('assets/ecosystem_components_list.yml', { responseType: 'text' })
-      .subscribe(yamlData => {
-        try {
-          const data: any = yaml.load(yamlData);
-          
-          if (data && Array.isArray(data)) {
-            this.originalData = data as RegistryItem[];
-          } else {
-            let warningMessage = 'YAML data is not an array or is malformed.';
-            if (data === null || data === undefined) {
-              warningMessage = 'Parsed YAML data is null or undefined. Check YAML file content.';
+      .subscribe({
+        next: (yamlData) => {
+          try {
+            const data: any = yaml.load(yamlData);
+            
+            if (data && Array.isArray(data)) {
+              this.originalData = data as RegistryItem[];
+              // Rest of your existing data processing code
+              // Sort originalData by name alphabetically
+              this.originalData.sort((a, b) => {
+                const nameA = a.name ? a.name.toLowerCase() : '';
+                const nameB = b.name ? b.name.toLowerCase() : '';
+                if (nameA < nameB) return -1;
+                if (nameA > nameB) return 1;
+                return 0;
+              });
+
+              // Populate type filter dropdown dynamically
+              this.availableTypes = ['All', ...new Set(this.originalData.map(item => item.type).filter(Boolean) as string[])].sort((a, b) => {
+                if (a === 'All') return -1;
+                if (b === 'All') return 1;
+                if (a === 'Other') return 1; // 'Other' should be at the end (before 'All' is handled)
+                if (b === 'Other') return -1; // 'Other' should be at the end
+                return a.localeCompare(b);
+              });
+
+              // Populate access model filter dropdown dynamically
+              this.availableAccessModels = ['All', ...new Set(this.originalData.map(item => item['access-model']).filter(Boolean) as string[])].sort((a, b) => {
+                if (a === 'All') return -1;
+                if (b === 'All') return 1;
+                return a.localeCompare(b);
+              });
+              // Dynamic population of availableRecommendations removed as it's now hardcoded.
+
+              this.applyFilters(); // Apply initial filters (which will also update paginated data)
+            } else {
+              this.handleDataError('YAML data is not in the expected format');
             }
-            console.warn(warningMessage, 'Data loaded:', data);
-            this.originalData = [];
+            
+            this.isLoading = false;
+            this.applyFilters();
+          } catch (e) {
+            this.handleDataError('Error parsing YAML data');
           }
-
-          // Sort originalData by name alphabetically
-          this.originalData.sort((a, b) => {
-            const nameA = a.name ? a.name.toLowerCase() : '';
-            const nameB = b.name ? b.name.toLowerCase() : '';
-            if (nameA < nameB) return -1;
-            if (nameA > nameB) return 1;
-            return 0;
-          });
-
-          // Populate type filter dropdown dynamically
-          this.availableTypes = ['All', ...new Set(this.originalData.map(item => item.type).filter(Boolean) as string[])].sort((a, b) => {
-            if (a === 'All') return -1;
-            if (b === 'All') return 1;
-            if (a === 'Other') return 1; // 'Other' should be at the end (before 'All' is handled)
-            if (b === 'Other') return -1; // 'Other' should be at the end
-            return a.localeCompare(b);
-          });
-
-          // Populate access model filter dropdown dynamically
-          this.availableAccessModels = ['All', ...new Set(this.originalData.map(item => item['access-model']).filter(Boolean) as string[])].sort((a, b) => {
-            if (a === 'All') return -1;
-            if (b === 'All') return 1;
-            return a.localeCompare(b);
-          });
-          // Dynamic population of availableRecommendations removed as it's now hardcoded.
-
-          this.applyFilters(); // Apply initial filters (which will also update paginated data)
-        } catch (e) {
-          console.error('Error parsing YAML:', e);
-          this.originalData = []; // Set to empty array on error
-          this.applyFilters(); // Ensure paginatedData is also updated (to empty)
+        },
+        error: (err) => {
+          this.handleDataError('Error loading data from server');
         }
-      }, error => {
-        console.error('Error loading YAML file:', error);
-        this.originalData = []; // Set to empty array on error
-        this.applyFilters(); // Ensure paginatedData is also updated (to empty)
       });
+  }
+
+  private handleDataError(message: string): void {
+    console.error(message);
+    this.originalData = [];
+    this.errorLoading = true;
+    this.isLoading = false;
+    this.applyFilters();
   }
 
   applyFilters(): void {

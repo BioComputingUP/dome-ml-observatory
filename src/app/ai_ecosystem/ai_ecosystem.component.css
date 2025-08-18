@@ -1,9 +1,453 @@
-/* Add any specific styles for the AI Ecosystem component here */
+/* Modern AI Ecosystem Component Styles */
+
+/* Main container */
+.ecosystem-container {
+  background-color: white;
+  padding-bottom: 3rem;
+}
+
+/* Page header section */
+.page-header {
+  background: linear-gradient(135deg, #103344 0%, #0a2942 100%);
+  color: white;
+  padding: 2rem 0;
+  margin-bottom: 2rem;
+  border-radius: 0 0 16px 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.page-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+/* Action buttons */
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+.btn-action {
+  background-color: #F66729;
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(246, 103, 41, 0.2);
+}
+
+.btn-action:hover {
+  background-color: #e55a24;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(246, 103, 41, 0.3);
+  color: white;
+  text-decoration: none;
+}
+
+.btn-secondary-action {
+  background-color: #0f3a62;
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(10, 41, 66, 0.2);
+}
+
+.btn-secondary-action:hover {
+  background-color: #134779;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(10, 41, 66, 0.3);
+  color: white;
+  text-decoration: none;
+}
+
+.btn-action img, .btn-secondary-action img {
+  height: 1.1em;
+  filter: brightness(0) invert(1);
+}
+
+/* OSAI Recommendations section */
+.recommendations-card {
+  background-color: white;
+  border-radius: 12px;
+  margin: 2rem 0;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.recommendations-header {
+  background: linear-gradient(135deg, #103344 0%, #0a2942 100%);
+  color: white;
+  padding: 1.25rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.recommendations-header:hover {
+  background: linear-gradient(135deg, #134779 0%, #0f3a62 100%);
+}
+
+.recommendations-header .indicator {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.recommendations-header[aria-expanded="true"] .indicator {
+  transform: rotate(180deg);
+}
+
+.recommendations-content {
+  padding: 1.5rem;
+}
+
+.recommendations-content p {
+  margin-bottom: 1.25rem;
+  line-height: 1.6;
+  color: #495057;
+}
+
+.recommendations-content a {
+  color: #F66729;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.recommendations-content a:hover {
+  color: #e55a24;
+  text-decoration: underline;
+}
+
+.recommendation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.recommendation-item {
+  background: linear-gradient(135deg, #103344 0%, #0f3a62 100%);
+  border-radius: 8px;
+  padding: 1.25rem;
+  color: white;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+}
+
+.recommendation-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(16, 51, 68, 0.2);
+}
+
+.recommendation-item strong {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.recommendation-item p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Filters section */
+.filters-section {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  margin-bottom: 2rem;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.filters-title {
+  color: #103344;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-label {
+  color: #103344;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.filter-input,
+.filter-select {
+  padding: 0.75rem;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  background-color: white;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+  outline: none;
+  border-color: #F66729;
+  box-shadow: 0 0 0 3px rgba(246, 103, 41, 0.1);
+}
+
+/* Results section */
+.results-section {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.results-header {
+  background-color: #f8f9fa;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.results-count {
+  color: #103344;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* Modern table styling */
+.ecosystem-table {
+  width: 100%;
+  border-collapse: collapse;
+}
 
 .table-header-custom th {
-  background-color: #0a2942; /* Updated to primary theme color */
+  background: linear-gradient(135deg, #103344 0%, #0a2942 100%);
   color: white;
-  border-color: #082033; /* Adjusted darker border for header cells */
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: none;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.ecosystem-table tbody tr {
+  border-bottom: 1px solid #e9ecef;
+  transition: background-color 0.2s ease;
+}
+
+.ecosystem-table tbody tr:hover {
+  background-color: rgba(246, 103, 41, 0.05);
+}
+
+.ecosystem-table td {
+  padding: 1rem;
+  vertical-align: top;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.ecosystem-table a {
+  color: #F66729;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.ecosystem-table a:hover {
+  color: #e55a24;
+  text-decoration: underline;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: #6c757d;
+}
+
+.empty-state i {
+  font-size: 3rem;
+  color: #dee2e6;
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+/* Pagination */
+.pagination-section {
+  background-color: #f8f9fa;
+  padding: 1.25rem;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pagination-info {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pagination-btn {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #dee2e6;
+  background-color: white;
+  color: #103344;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 40px;
+  text-align: center;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #F66729;
+  color: white;
+  border-color: #F66729;
+}
+
+.pagination-btn.active {
+  background-color: #103344;
+  color: white;
+  border-color: #103344;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.items-per-page {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.items-per-page select {
+  padding: 0.5rem;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  background-color: white;
+  font-size: 0.85rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 2rem;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .recommendation-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .pagination-section {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* Tags & badges */
+.tag-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background-color: rgba(16, 51, 68, 0.1);
+  color: #103344;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-right: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Loading state */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e9ecef;
+  border-top: 3px solid #F66729;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* Optional: Ensure links in header are also white if any were to be added */
