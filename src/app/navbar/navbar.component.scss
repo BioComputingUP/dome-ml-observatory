@@ -7,23 +7,23 @@ $color-dark-blue: #103344; // Updated to new blue color
 .navbar {
   background-color: $color-dark-blue !important;
   font-family: $font-primary;
-  padding-left: 5%;
-  padding-right: 5%;
+  padding-left: 4%; // Reduced from 5% for better proportion
+  padding-right: 4%; // Reduced from 5% for better proportion
   position: relative;
   z-index: 1040;
-  height: 90px; // Increased from 75px to accommodate larger logo
+  height: 85px; // Slightly reduced from 90px
   display: flex;
   justify-content: flex-start;
   align-items: center;
 
   @media (min-width: 1200px) {
-    padding-left: 120px;
-    padding-right: 120px;
+    padding-left: 100px; // Reduced from 120px
+    padding-right: 100px; // Reduced from 120px
   }
 
   @media (max-width: 991px) {
     height: auto;
-    min-height: 90px; // Increased from 75px
+    min-height: 85px; // Reduced from 90px
     display: block;
   }
 }
@@ -31,20 +31,20 @@ $color-dark-blue: #103344; // Updated to new blue color
 // Add responsive adjustments for medium-large screens
 @media (min-width: 992px) and (max-width: 1199px) {
   .navbar {
-    padding-left: 3%; // Reduce side padding
-    padding-right: 3%; // Reduce side padding
+    padding-left: 3%; // Reduced for tighter layout
+    padding-right: 3%; // Reduced for tighter layout
   }
   
   .btn-navbar {
-    padding-left: 0.5rem !important;
-    padding-right: 0.5rem !important;
-    margin-left: 0.2rem;
-    margin-right: 0.2rem;
+    padding-left: 0.8rem !important; // More balanced
+    padding-right: 0.8rem !important; // More balanced
+    margin-left: 0.25rem; // Tighter spacing
+    margin-right: 0.25rem; // Tighter spacing
   }
 }
 
 .brand-img {
-  height: 7.2rem; // Increased by 20% from 6rem
+  height: 6.5rem; // Reduced from 7.2rem for better proportion
 }
 
 .brand-img-small {
@@ -73,10 +73,10 @@ $color-dark-blue: #103344; // Updated to new blue color
 
 .btn-navbar {
   color: white !important;
-  margin-left: 0.3rem; // Reduced from original
-  margin-right: 0.3rem; // Reduced from original
-  padding-left: 0.65rem !important; // Reduced from 1rem
-  padding-right: 0.65rem !important; // Reduced from 1rem
+  margin-left: 0.4rem; // Reduced from 0.6rem for tighter spacing
+  margin-right: 0.4rem; // Reduced from 0.6rem for tighter spacing
+  padding-left: 1rem !important; // Reduced from 1.2rem for better balance
+  padding-right: 1rem !important; // Reduced from 1.2rem for better balance
   background-color: transparent;
   border: none;
   border-radius: 5px;
