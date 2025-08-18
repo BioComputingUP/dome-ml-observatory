@@ -189,47 +189,66 @@
           <div class="results-count">{{ filteredData.length }} components found</div>
         </div>
         
-        <!-- Components grid -->
-        <div class="components-grid">
-          <div class="component-card" *ngFor="let item of paginatedData">
-            <!-- Component header -->
-            <div class="component-header">
-              <div class="component-type">{{ item.type || 'N/A' }}</div>
-              <h3 class="component-name">
-                <a *ngIf="item.url" [href]="item.url" target="_blank" rel="noopener noreferrer">{{ item.name || 'N/A' }}</a>
-                <span *ngIf="!item.url">{{ item.name || 'N/A' }}</span>
-              </h3>
-              <p class="component-description">{{ item.description || 'No description available' }}</p>
-            </div>
-            
-            <!-- Component metadata -->
-            <div class="component-meta">
-              <div class="component-meta-row" *ngIf="item['osai-recommendation']">
-                <span class="meta-label">Recommendations:</span>
-                <div class="recommendation-tags">
-                  <span class="recommendation-tag" *ngFor="let rec of item['osai-recommendation'].split(',')">{{ rec.trim() }}</span>
-                </div>
-              </div>
-              
-              <div class="component-meta-row" *ngIf="item['osai-explanation']">
-                <span class="meta-label">Relevance:</span>
-                <span class="meta-value">{{ item['osai-explanation'] }}</span>
-              </div>
-              
-              <div class="component-meta-row" *ngIf="item['access-model']">
-                <span class="meta-label">Access:</span>
-                <span class="access-model-badge">{{ item['access-model'] }}</span>
-              </div>
-              
-              <div class="component-meta-row" *ngIf="item['biotools-url'] || item['fairsharing-url']">
-                <span class="meta-label">Links:</span>
-                <div class="external-links">
-                  <a *ngIf="item['biotools-url']" [href]="item['biotools-url']" target="_blank" rel="noopener noreferrer" class="external-link">bio.tools</a>
-                  <a *ngIf="item['fairsharing-url']" [href]="item['fairsharing-url']" target="_blank" rel="noopener noreferrer" class="external-link">FAIRsharing</a>
-                </div>
-              </div>
-            </div>
-          </div>
+        <!-- Modern table for components -->
+        <div class="table-responsive">
+          <table class="ecosystem-table">
+            <thead class="table-header-custom">
+              <tr>
+                <th>Type</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Recommendations</th>
+                <th>Access</th>
+                <th>Links</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of paginatedData">
+                <td>
+                  <span class="table-type-badge">{{ item.type || 'N/A' }}</span>
+                </td>
+                <td>
+                  <div class="component-name">
+                    <a *ngIf="item.url" [href]="item.url" target="_blank" rel="noopener noreferrer">{{ item.name || 'N/A' }}</a>
+                    <span *ngIf="!item.url">{{ item.name || 'N/A' }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="component-description">
+                    {{ item.description || 'No description available' }}
+                    <div *ngIf="item['osai-explanation']" class="mt-2">
+                      <strong>Relevance:</strong> {{ item['osai-explanation'] }}
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div *ngIf="item['osai-recommendation']" class="table-recommendation-tags">
+                    <span *ngFor="let rec of item['osai-recommendation'].split(',')" class="table-recommendation-tag">
+                      {{ rec.trim() }}
+                    </span>
+                  </div>
+                  <span *ngIf="!item['osai-recommendation']">N/A</span>
+                </td>
+                <td>
+                  <span *ngIf="item['access-model']" class="table-access-model">{{ item['access-model'] }}</span>
+                  <span *ngIf="!item['access-model']">N/A</span>
+                </td>
+                <td>
+                  <div class="table-external-links">
+                    <a *ngIf="item.url" [href]="item.url" target="_blank" rel="noopener noreferrer" class="table-external-link">
+                      <i class="icon icon-common icon-external-link-alt"></i>Website
+                    </a>
+                    <a *ngIf="item['biotools-url']" [href]="item['biotools-url']" target="_blank" rel="noopener noreferrer" class="table-external-link">
+                      <i class="icon icon-common icon-tools"></i>bio.tools
+                    </a>
+                    <a *ngIf="item['fairsharing-url']" [href]="item['fairsharing-url']" target="_blank" rel="noopener noreferrer" class="table-external-link">
+                      <i class="icon icon-common icon-share-alt"></i>FAIRsharing
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
         
         <!-- Pagination controls -->
