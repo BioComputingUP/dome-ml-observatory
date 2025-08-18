@@ -145,39 +145,124 @@
       margin-right: 0.5rem;
       color: #F66729;
     }
+
+    /* Theme icon styling */
+    .theme-icon-container {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: rgba(246, 103, 41, 0.1);
+      margin-bottom: 1rem;
+    }
+    
+    .theme-icon {
+      font-size: 2rem;
+      color: #F66729;
+    }
+    
+    /* Theme card styling */
+    .theme-card {
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background-color: white;
+    }
+    
+    .theme-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .theme-title {
+      color: #103344;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+    }
+    
+    .theme-title i {
+      margin-right: 0.75rem;
+      color: #F66729;
+    }
+    
+    .theme-description {
+      margin-bottom: 1.5rem;
+      color: #555;
+    }
+    
+    /* Challenge section styling */
+    .challenge-item {
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background-color: rgba(16, 51, 68, 0.05);
+      border-radius: 8px;
+    }
+    
+    .challenge-title {
+      font-weight: 600;
+      color: #103344;
+      margin-bottom: 1rem;
+    }
+    
+    /* Fix for sidebar navigation */
+    @media (max-width: 768px) {
+      .fixed-nav {
+        display: none;
+      }
+    }
   </style>
 
   <!-- Fixed Side Navigation -->
   <nav class="fixed-nav">
     <ul class="fixed-nav-list">
       <li class="fixed-nav-item">
-        <a href="/guidelines#intro-section" class="fixed-nav-link" title="Introduction">
+        <a href="/guidelines#challenge-section" class="fixed-nav-link" title="The Challenge">
+          <i class="icon icon-common icon-exclamation-triangle fixed-nav-icon"></i>
+          <span>The Challenge</span>
+        </a>
+      </li>
+      <li class="fixed-nav-item">
+        <a href="/guidelines#recommendations-section" class="fixed-nav-link" title="Our Recommendations">
           <i class="icon icon-common icon-lightbulb fixed-nav-icon"></i>
-          <span>Introduction</span>
+          <span>Recommendations</span>
         </a>
       </li>
       <li class="fixed-nav-item">
-        <a href="/guidelines#data-section" class="fixed-nav-link" title="Data">
-          <i class="icon icon-common icon-database fixed-nav-icon"></i>
-          <span>Data</span>
+        <a href="/guidelines#reusability-section" class="fixed-nav-link" title="Reusability">
+          <i class="icon icon-common icon-recycle fixed-nav-icon"></i>
+          <span>Reusability</span>
         </a>
       </li>
       <li class="fixed-nav-item">
-        <a href="/guidelines#optimization-section" class="fixed-nav-link" title="Optimization">
+        <a href="/guidelines#reproducibility-section" class="fixed-nav-link" title="Reproducibility">
           <i class="icon icon-common icon-cogs fixed-nav-icon"></i>
-          <span>Optimization</span>
+          <span>Reproducibility</span>
         </a>
       </li>
       <li class="fixed-nav-item">
-        <a href="/guidelines#model-section" class="fixed-nav-link" title="Model">
-          <i class="icon icon-common icon-sitemap fixed-nav-icon"></i>
-          <span>Model</span>
+        <a href="/guidelines#sustainability-section" class="fixed-nav-link" title="Sustainability">
+          <i class="icon icon-common icon-leaf fixed-nav-icon"></i>
+          <span>Sustainability</span>
         </a>
       </li>
       <li class="fixed-nav-item">
-        <a href="/guidelines#evaluation-section" class="fixed-nav-link" title="Evaluation">
-          <i class="icon icon-common icon-chart-line fixed-nav-icon"></i>
-          <span>Evaluation</span>
+        <a href="/guidelines#ecosystem-section" class="fixed-nav-link" title="OSAI Ecosystem">
+          <i class="icon icon-common icon-project-diagram fixed-nav-icon"></i>
+          <span>OSAI Ecosystem</span>
+        </a>
+      </li>
+      <li class="fixed-nav-item">
+        <a href="/guidelines#about-section" class="fixed-nav-link" title="About Us">
+          <i class="icon icon-common icon-users fixed-nav-icon"></i>
+          <span>About Us</span>
         </a>
       </li>
     </ul>
@@ -187,42 +272,60 @@
   <section class="text-center pt-5 pb-4">
     <div class="row">
       <div class="col-lg-8 mx-auto">
-        <h1 class="display-4 mb-4" style="color: #103344; font-weight: bold; font-size: 2.8rem;">Put the Guidelines into Practice</h1>
-        <p class="lead mb-5">Use our online registry to easily document your model's compliance or access the complete checklist resource on our public repository.</p>
+        <h1 class="display-4 mb-4" style="color: #103344; font-weight: bold; font-size: 2.8rem;">Open and Sustainable AI in the Life Sciences</h1>
+        <p class="lead mb-5">Practical Recommendations for Reusable, Reproducible, and Environmentally Responsible Research</p>
         
         <a href="https://registry.dome-ml.org/review" target="_blank" class="cta-button mx-2 mb-3">Use the DOME Registry</a>
-        <a href="https://github.com/MachineLearning-ELIXIR/dome-ml" target="_blank" class="cta-button mx-2 mb-3">Access Checklist on GitHub</a>
+        <a href="https://github.com/MachineLearning-ELIXIR/dome-ml" target="_blank" class="cta-button mx-2 mb-3">Contribute on GitHub</a>
       </div>
     </div>
   </section>
 
   <div class="section-divider"></div>
 
-  <!-- Introduction Section -->
-  <section class="py-4" id="intro-section">
+  <!-- The Challenge Section -->
+  <section class="py-4" id="challenge-section">
     <div class="row">
       <div class="col-lg-10 mx-auto">
-        <h2 class="section-heading">How to Use These Guidelines</h2>
+        <h2 class="section-heading">Advancing Life Science Research with Sustainable AI</h2>
         <p class="mb-4">
-          These guidelines are structured around the four pillars of machine learning validation: Data, Optimization, Model, and Evaluation. 
-          Each recommendation is designed to address common pitfalls that can lead to unreliable results and a lack of reproducibility.
-        </p>
-        <p class="mb-4">
-          Pay close attention to the labels, as they distinguish between two levels of importance:
+          Artificial intelligence is revolutionizing the life sciences, but its rapid adoption has created significant challenges. 
+          Many new AI models are difficult to reuse, their results are hard to reproduce, and their environmental impact is often overlooked. 
+          This hinders scientific progress and leads to wasted resources. 
         </p>
         
-        <div class="row mb-4">
-          <div class="col-md-6 mb-3">
-            <div class="content-card p-4 h-100">
-              <span class="badge-requirement">REQUIREMENT</span>
-              <p class="mt-3">A critical step considered essential for transparent and reproducible ML.</p>
+        <p class="mb-5">
+          To address this, we've identified three key areas that need our collective focus:
+        </p>
+        
+        <div class="row">
+          <div class="col-md-4 mb-4">
+            <div class="challenge-item text-center h-100">
+              <div class="theme-icon-container">
+                <i class="icon icon-common icon-recycle theme-icon"></i>
+              </div>
+              <h3 class="challenge-title">Reusability</h3>
+              <p>Many AI models and datasets are difficult to discover, access, and adapt for new research, leading to duplicate efforts and slower progress.</p>
             </div>
           </div>
           
-          <div class="col-md-6 mb-3">
-            <div class="content-card p-4 h-100">
-              <span class="badge-recommendation">RECOMMENDATION</span>
-              <p class="mt-3">A highly advised best practice that further enhances the quality and rigor of the work.</p>
+          <div class="col-md-4 mb-4">
+            <div class="challenge-item text-center h-100">
+              <div class="theme-icon-container">
+                <i class="icon icon-common icon-cogs theme-icon"></i>
+              </div>
+              <h3 class="challenge-title">Reproducibility</h3>
+              <p>Incomplete documentation and missing code dependencies make it hard to verify results and build upon previous work.</p>
+            </div>
+          </div>
+          
+          <div class="col-md-4 mb-4">
+            <div class="challenge-item text-center h-100">
+              <div class="theme-icon-container">
+                <i class="icon icon-common icon-leaf theme-icon"></i>
+              </div>
+              <h3 class="challenge-title">Sustainability</h3>
+              <p>The growing environmental footprint of AI training and deployment is rarely measured or optimized, contributing to unnecessary carbon emissions.</p>
             </div>
           </div>
         </div>
@@ -232,41 +335,54 @@
 
   <div class="section-divider"></div>
 
-  <!-- Data Section -->
-  <section class="py-4" id="data-section">
+  <!-- Our Recommendations Section -->
+  <section class="py-4" id="recommendations-section">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <h2 class="section-heading">Nine Recommendations for Open and Sustainable AI (OSAI)</h2>
+        <p class="mb-5">
+          We propose nine practical recommendations to guide researchers in creating AI models that are more open and sustainable. 
+          These recommendations are grouped into three core themes and are designed to be actionable, supported by a wider ecosystem of tools and resources.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reusability Section -->
+  <section class="py-4" id="reusability-section">
     <div class="row">
       <div class="col-lg-10 mx-auto">
         <div class="pillar-header">
-          <i class="icon icon-common icon-database guideline-icon"></i>
-          <h3>Part 1: Data</h3>
+          <i class="icon icon-common icon-recycle guideline-icon"></i>
+          <h3>♻️ Reusability</h3>
         </div>
-        <p class="mb-4">Guiding principles for ensuring the integrity and utility of the data used for training and evaluation.</p>
+        <p class="mb-4">To ensure that AI models and datasets can be effectively shared, understood, and adapted for new research.</p>
         
         <div class="guideline-item">
-          <h4>1.1 Ensure Data is Representative</h4>
-          <p>The dataset's size, scope, and distribution must be representative of the biological domain and the problem being addressed. Address any significant class imbalances.</p>
+          <h4>R1: Generate and share standardised AI metadata for models and datasets</h4>
+          <p>Adopt community-driven standards like FAIR4ML for models and Croissant for datasets to improve how they can be found and used by others. This makes your work more discoverable and interoperable.</p>
           <div class="why-it-matters">
-            <strong>Why it matters:</strong> Using data that is too small, biased, or not representative of the real-world application can lead to models with unreliable or misleading performance.
+            <strong>Why it matters:</strong> Standardized metadata makes it easier for others to find, understand, and properly use your AI models and datasets, increasing their impact and reusability.
           </div>
           <span class="badge-requirement">REQUIREMENT</span>
         </div>
         
         <div class="guideline-item">
-          <h4>1.2 Guarantee Independent Datasets</h4>
-          <p>The data must be partitioned into strictly independent sets for training, validation, and testing. There must be no leakage of information from the test set into the training or model selection process.</p>
+          <h4>R2: Leverage AI registries as central hubs for sharing and discovering reusable AI models and datasets</h4>
+          <p>Deposit your models and datasets in established registries (e.g., BioImage Model Zoo, Hugging Face) to increase their visibility and accessibility within the scientific community.</p>
           <div class="why-it-matters">
-            <strong>Why it matters:</strong> If the test set influences model training (even indirectly), the final performance evaluation will be over-optimistic and will not reflect how the model will perform on new, unseen data. This is one of the most critical errors in machine learning.
+            <strong>Why it matters:</strong> Registries provide a structured way to share your work, making it more discoverable and ensuring it remains available long-term for others to build upon.
           </div>
           <span class="badge-requirement">REQUIREMENT</span>
         </div>
         
         <div class="guideline-item">
-          <h4>1.3 Publish All Data and Splits</h4>
-          <p>Whenever possible, release all datasets used for training, validation, and testing through a suitable long-term public repository. The exact data splits used must be provided.</p>
+          <h4>R3: Host, promote and share training and guidance on correct deposition of AI research objects for reuse</h4>
+          <p>Develop and share training materials on best practices for depositing AI models and datasets. Use open platforms to make this knowledge accessible to everyone.</p>
           <div class="why-it-matters">
-            <strong>Why it matters:</strong> Data availability is the foundation of reproducibility. It allows other researchers to verify your results, check data credibility, and accurately compare their own methods against yours.
+            <strong>Why it matters:</strong> Training materials help build community capacity and ensure that researchers understand how to properly share their work for maximum reuse.
           </div>
-          <span class="badge-requirement">REQUIREMENT</span>
+          <span class="badge-recommendation">RECOMMENDATION</span>
         </div>
       </div>
     </div>
@@ -274,48 +390,39 @@
 
   <div class="section-divider"></div>
 
-  <!-- Optimization Section -->
-  <section class="py-4" id="optimization-section">
+  <!-- Reproducibility Section -->
+  <section class="py-4" id="reproducibility-section">
     <div class="row">
       <div class="col-lg-10 mx-auto">
         <div class="pillar-header">
           <i class="icon icon-common icon-cogs guideline-icon"></i>
-          <h3>Part 2: Optimization</h3>
+          <h3>⚙️ Reproducibility</h3>
         </div>
-        <p class="mb-4">Guiding principles for the transparent and robust training of the model.</p>
+        <p class="mb-4">To ensure that research findings can be independently verified and built upon by other researchers.</p>
         
         <div class="guideline-item">
-          <h4>2.1 Isolate the Test Set from All Tuning</h4>
-          <p>There must be a clear statement confirming that the evaluation (test) set was not used for any part of model development, including feature selection, preprocessing choices, or hyperparameter tuning.</p>
+          <h4>R4: Ensure transparent disclosure, clear documentation and sharing of all model relevant information</h4>
+          <p>Provide comprehensive details about your model architecture, training data, and evaluation methods. Use checklists like the Model Openness Framework to guide your documentation.</p>
           <div class="why-it-matters">
-            <strong>Why it matters:</strong> Using the test set to tune parameters is a form of data leakage that leads to an over-optimistic performance report. The test set must only be used once for the final evaluation of the final model.
+            <strong>Why it matters:</strong> Without thorough documentation, others cannot understand how your model works or why it produces certain results, making it difficult to verify or build upon.
           </div>
           <span class="badge-requirement">REQUIREMENT</span>
         </div>
         
         <div class="guideline-item">
-          <h4>2.2 Report All Hyperparameters and Protocols</h4>
-          <p>Fully disclose the optimization protocol, all algorithmic hyperparameters, and the final parameters of the selected model. For neural networks, releasing training and learning curves is also advised.</p>
+          <h4>R5: Provide portable code and reproducible environments to facilitate smooth reuse</h4>
+          <p>Use tools like Docker, Conda, and Nextflow to package your code and its dependencies. This allows other researchers to more easily run and reproduce your work across different systems.</p>
           <div class="why-it-matters">
-            <strong>Why it matters:</strong> Without these details, the results are not reproducible. Other researchers cannot understand how the model was trained or attempt to replicate the process.
+            <strong>Why it matters:</strong> Code that runs on your system but fails on others due to environment differences is a major barrier to reproduction. Containerization solves this problem.
           </div>
           <span class="badge-requirement">REQUIREMENT</span>
         </div>
         
         <div class="guideline-item">
-          <h4>2.3 Demonstrate No Over/Underfitting</h4>
-          <p>Provide evidence that the model is not overfitting to the training data or underfitting (failing to capture relevant patterns). This is typically done by comparing the error/performance on the training set versus the validation/test set.</p>
+          <h4>R6: Use standardised AI-ready datasets and benchmarking evaluation protocols to facilitate reproducible model comparisons</h4>
+          <p>Use community-accepted benchmark datasets and evaluation protocols to ensure that your model's performance can be fairly and accurately compared to others.</p>
           <div class="why-it-matters">
-            <strong>Why it matters:</strong> An overfit model has learned noise instead of the true signal and will perform poorly on new data. An underfit model has failed to learn the signal and is not useful.
-          </div>
-          <span class="badge-requirement">REQUIREMENT</span>
-        </div>
-        
-        <div class="guideline-item">
-          <h4>2.4 Use Explicit Model Validation Techniques</h4>
-          <p>Where appropriate, include explicit model validation techniques such as N-fold cross-validation during the model tuning phase to ensure robust hyperparameter selection.</p>
-          <div class="why-it-matters">
-            <strong>Why it matters:</strong> Cross-validation provides a more reliable estimate of model performance and helps prevent selecting hyperparameters that are only optimal for one specific train/validation split.
+            <strong>Why it matters:</strong> Standardized benchmarking enables fair comparisons between models and prevents selective reporting that may exaggerate performance claims.
           </div>
           <span class="badge-recommendation">RECOMMENDATION</span>
         </div>
@@ -325,39 +432,39 @@
 
   <div class="section-divider"></div>
 
-  <!-- Model Section -->
-  <section class="py-4" id="model-section">
+  <!-- Environmental Sustainability Section -->
+  <section class="py-4" id="sustainability-section">
     <div class="row">
       <div class="col-lg-10 mx-auto">
         <div class="pillar-header">
-          <i class="icon icon-common icon-sitemap guideline-icon"></i>
-          <h3>Part 3: Model</h3>
+          <i class="icon icon-common icon-leaf guideline-icon"></i>
+          <h3>🌱 Environmental Sustainability</h3>
         </div>
-        <p class="mb-4">Guiding principles for the description and dissemination of the final model.</p>
+        <p class="mb-4">To minimize the environmental footprint of AI research by promoting energy-efficient practices.</p>
         
         <div class="guideline-item">
-          <h4>3.1 Justify and Describe Model Choice</h4>
-          <p>Clearly state the model architecture and justify the choice of model type (e.g., "black box" vs. an interpretable model). If an interpretable model is used, provide examples that demonstrate its explanatory behavior.</p>
+          <h4>R7: Implement Green AI model development techniques</h4>
+          <p>Reduce energy consumption by using techniques like transfer learning, pruning, and knowledge distillation. Adopt "Frugal AI" principles to achieve better results with less computational power.</p>
           <div class="why-it-matters">
-            <strong>Why it matters:</strong> The choice of model impacts everything from performance to our ability to trust its predictions. The rationale helps others understand if the model is appropriate for the scientific question at hand.
+            <strong>Why it matters:</strong> Computationally efficient models not only reduce environmental impact but can also be more accessible to researchers with limited computing resources.
           </div>
           <span class="badge-requirement">REQUIREMENT</span>
         </div>
         
         <div class="guideline-item">
-          <h4>3.2 Ensure Model Accessibility</h4>
-          <p>Provide access to the final trained model and the documented source code required to run it. Using software containers (e.g., Docker, Singularity) is highly encouraged.</p>
+          <h4>R8: Choose and optimise hardware to reduce environmental impact</h4>
+          <p>Select energy-efficient hardware and, when using cloud services, consider data centers powered by green energy.</p>
           <div class="why-it-matters">
-            <strong>Why it matters:</strong> Releasing the model and code is essential for true reproducibility and allows other researchers to apply your model to their own data or use it for comparison.
+            <strong>Why it matters:</strong> The hardware used for training and inference can significantly affect energy consumption. Making informed choices can substantially reduce carbon emissions.
           </div>
           <span class="badge-recommendation">RECOMMENDATION</span>
         </div>
         
         <div class="guideline-item">
-          <h4>3.3 Report Computational Performance</h4>
-          <p>Report the model's execution time (for both training and inference), ideally averaged across multiple repeats. If the model is computationally intensive, compare its performance to similar methods.</p>
+          <h4>R9: Measure and report AI model environmental impact</h4>
+          <p>Consistently track and report key metrics such as energy consumption (kWh) and carbon emissions (CO₂e). Disclose these figures in your publications or on dedicated platforms.</p>
           <div class="why-it-matters">
-            <strong>Why it matters:</strong> A model with impractical execution times may have limited real-world utility. This information is crucial for others who may want to use or build upon your work.
+            <strong>Why it matters:</strong> What gets measured gets managed. Tracking and reporting environmental impact creates awareness and accountability while establishing benchmarks for improvement.
           </div>
           <span class="badge-recommendation">RECOMMENDATION</span>
         </div>
@@ -367,50 +474,42 @@
 
   <div class="section-divider"></div>
 
-  <!-- Evaluation Section -->
-  <section class="py-4 mb-5" id="evaluation-section">
+  <!-- OSAI Ecosystem Section -->
+  <section class="py-4" id="ecosystem-section">
     <div class="row">
       <div class="col-lg-10 mx-auto">
-        <div class="pillar-header">
-          <i class="icon icon-common icon-chart-line guideline-icon"></i>
-          <h3>Part 4: Evaluation</h3>
-        </div>
-        <p class="mb-4">Guiding principles for the fair and comprehensive assessment of model performance.</p>
+        <h2 class="section-heading">Connecting Recommendations to Real-World Tools</h2>
+        <p class="mb-5">
+          To help you put these recommendations into practice, we have mapped them to a collection of over 300 components from the AI ecosystem. 
+          This interactive resource connects you with the right tools, registries, and standards to support your journey towards Open and Sustainable AI.
+        </p>
         
-        <div class="guideline-item">
-          <h4>4.1 Use Appropriate Performance Measures</h4>
-          <p>Select evaluation metrics that are appropriate for the specific task and data characteristics (e.g., using Precision-Recall curves for imbalanced datasets). Use community-validated measures where they exist.</p>
-          <div class="why-it-matters">
-            <strong>Why it matters:</strong> Using inadequate metrics can hide a model's weaknesses. For example, high accuracy on an imbalanced dataset can be meaningless if the model simply ignores the minority class.
-          </div>
-          <span class="badge-requirement">REQUIREMENT</span>
+        <div class="text-center mb-5">
+          <a routerLink="/ai-ecosystem" class="cta-button">
+            <i class="icon icon-common icon-project-diagram mr-2"></i>Explore the Interactive AI Ecosystem
+          </a>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- About Us Section -->
+  <section class="py-4 mb-5" id="about-section">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <h2 class="section-heading">About Us</h2>
+        <p class="mb-4">
+          This work is a collaborative effort by a dedicated group of researchers passionate about fostering a more open and sustainable future for AI in the life sciences. 
+          Our goal is to provide practical guidance that empowers the research community to adopt best practices, accelerating discovery while minimizing our environmental impact. 
+          This initiative has been supported by ELIXIR and other key projects.
+        </p>
         
-        <div class="guideline-item">
-          <h4>4.2 Compare Against Meaningful Baselines</h4>
-          <p>The model's performance must be compared against relevant public methods and simpler baseline models (e.g., logistic regression, a random classifier).</p>
-          <div class="why-it-matters">
-            <strong>Why it matters:</strong> Without baselines, performance is meaningless. A complex model is only useful if it significantly outperforms simpler, established alternatives.
-          </div>
-          <span class="badge-requirement">REQUIREMENT</span>
-        </div>
-        
-        <div class="guideline-item">
-          <h4>4.3 Report Performance with Confidence Intervals</h4>
-          <p>Provide confidence intervals or error bars for all reported performance metrics to gauge the robustness and variability of the predictions.</p>
-          <div class="why-it-matters">
-            <strong>Why it matters:</strong> A single performance number can be misleading. Confidence intervals show the range in which the true performance likely falls, giving a much clearer picture of the model's reliability.
-          </div>
-          <span class="badge-requirement">REQUIREMENT</span>
-        </div>
-        
-        <div class="guideline-item">
-          <h4>4.4 Compare Methods on Identical Datasets</h4>
-          <p>When comparing to related or alternative methods, the comparison should be performed on the exact same dataset and data splits to ensure a fair and direct evaluation.</p>
-          <div class="why-it-matters">
-            <strong>Why it matters:</strong> Comparing model A on dataset X to model B on dataset Y is an invalid comparison. Fair evaluation requires a level playing field.
-          </div>
-          <span class="badge-recommendation">RECOMMENDATION</span>
+        <div class="text-center mb-5">
+          <a href="https://doi.org/10.1101/2023.12.07.570714" target="_blank" class="cta-button">
+            <i class="icon icon-common icon-file-alt mr-2"></i>Read the Full Paper
+          </a>
         </div>
       </div>
     </div>
@@ -422,8 +521,8 @@
   <section class="py-4 mb-5">
     <div class="row">
       <div class="col-lg-8 mx-auto text-center">
-        <h2 class="section-heading">Ready to Apply These Guidelines?</h2>
-        <p class="lead mb-5">Use the DOME Registry to document your machine learning methods and ensure they meet these guidelines.</p>
+        <h2 class="section-heading">Ready to Apply These Recommendations?</h2>
+        <p class="lead mb-5">Use the DOME Registry to document your AI research and ensure it follows OSAI principles.</p>
         
         <a href="https://registry.dome-ml.org/intro" target="_blank" class="cta-button">
           <i class="icon icon-common icon-external-link-alt mr-2"></i>Start Using DOME Registry
