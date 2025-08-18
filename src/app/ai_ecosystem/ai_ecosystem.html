@@ -1,7 +1,7 @@
 <style>
   .btn-contribute-github-custom {
-    background-color: #0f3a62; /* lighten(#0a2942, 5%) */
-    border-color: #0f3a62;
+    background-color: #103344;
+    border-color: #103344;
     color: white;
     display: inline-flex;
     align-items: center;
@@ -9,23 +9,24 @@
   }
 
   .btn-contribute-github-custom:hover {
-    background-color: #134779; /* lighten(#0a2942, 7.5%) */
-    border-color: #134779;
+    background-color: darken(#103344, 10%);
+    border-color: darken(#103344, 10%);
     color: white;
   }
 
   .osai-recommendations-details {
     margin-bottom: 20px;
-    background-color: #0a2942; /* base primary color */
-    border: 1px solid #134779; /* lighten(#0a2942, 7.5%) */
+    background-color: #103344;
+    border: 1px solid darken(#103344, 5%);
     border-radius: 4px;
     padding: 10px;
+    color: white;
     transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
   }
 
   .osai-recommendations-details:hover {
-    background-color: #0f3a62; /* lighten(#0a2942, 5%) */
-    border-color: #18588F; /* lighten(#0a2942, 10%) */
+    background-color: darken(#103344, 5%);
+    border-color: darken(#103344, 10%);
   }
 
   .osai-recommendations-details summary {
@@ -41,7 +42,7 @@
   }
 </style>
 <div class="ecosystem-container">
-  <!-- Modern page header -->
+  <!-- Lighter, more cohesive page header -->
   <div class="page-header text-center py-4">
     <div class="container">
       <h1 class="page-title">OSAI: Open and Sustainable AI Ecosystem Components</h1>
@@ -188,43 +189,48 @@
           <div class="results-count">{{ filteredData.length }} components found</div>
         </div>
         
-        <!-- Results table -->
-        <table class="ecosystem-table">
-          <thead class="table-header-custom">
-            <tr>
-              <th>Type</th>
-              <th>Name</th>
-              <th>Description</th>
-              <th>Recommendation</th>
-              <th>Relevance</th>
-              <th>Additional Information</th>
-              <th>Access Model</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of paginatedData">
-              <td>
-                <span class="tag-badge">{{ item.type || 'N/A' }}</span>
-              </td>
-              <td>
+        <!-- Components grid -->
+        <div class="components-grid">
+          <div class="component-card" *ngFor="let item of paginatedData">
+            <!-- Component header -->
+            <div class="component-header">
+              <div class="component-type">{{ item.type || 'N/A' }}</div>
+              <h3 class="component-name">
                 <a *ngIf="item.url" [href]="item.url" target="_blank" rel="noopener noreferrer">{{ item.name || 'N/A' }}</a>
                 <span *ngIf="!item.url">{{ item.name || 'N/A' }}</span>
-              </td>
-              <td>{{ item.description || 'N/A' }}</td>
-              <td>{{ item['osai-recommendation'] || 'N/A' }}</td>
-              <td>{{ item['osai-explanation'] || 'N/A' }}</td>
-              <td>
-                <ng-container *ngIf="item['biotools-url'] || item['fairsharing-url']">
-                  <a *ngIf="item['biotools-url']" [href]="item['biotools-url']" target="_blank" rel="noopener noreferrer">bio.tools</a>
-                  <br *ngIf="item['biotools-url'] && item['fairsharing-url']">
-                  <a *ngIf="item['fairsharing-url']" [href]="item['fairsharing-url']" target="_blank" rel="noopener noreferrer">FAIRsharing</a>
-                </ng-container>
-                <span *ngIf="!item['biotools-url'] && !item['fairsharing-url']">N/A</span>
-              </td>
-              <td>{{ item['access-model'] || 'N/A' }}</td>
-            </tr>
-          </tbody>
-        </table>
+              </h3>
+              <p class="component-description">{{ item.description || 'No description available' }}</p>
+            </div>
+            
+            <!-- Component metadata -->
+            <div class="component-meta">
+              <div class="component-meta-row" *ngIf="item['osai-recommendation']">
+                <span class="meta-label">Recommendations:</span>
+                <div class="recommendation-tags">
+                  <span class="recommendation-tag" *ngFor="let rec of item['osai-recommendation'].split(',')">{{ rec.trim() }}</span>
+                </div>
+              </div>
+              
+              <div class="component-meta-row" *ngIf="item['osai-explanation']">
+                <span class="meta-label">Relevance:</span>
+                <span class="meta-value">{{ item['osai-explanation'] }}</span>
+              </div>
+              
+              <div class="component-meta-row" *ngIf="item['access-model']">
+                <span class="meta-label">Access:</span>
+                <span class="access-model-badge">{{ item['access-model'] }}</span>
+              </div>
+              
+              <div class="component-meta-row" *ngIf="item['biotools-url'] || item['fairsharing-url']">
+                <span class="meta-label">Links:</span>
+                <div class="external-links">
+                  <a *ngIf="item['biotools-url']" [href]="item['biotools-url']" target="_blank" rel="noopener noreferrer" class="external-link">bio.tools</a>
+                  <a *ngIf="item['fairsharing-url']" [href]="item['fairsharing-url']" target="_blank" rel="noopener noreferrer" class="external-link">FAIRsharing</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         
         <!-- Pagination controls -->
         <div class="pagination-section">

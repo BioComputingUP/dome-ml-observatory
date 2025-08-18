@@ -2,30 +2,30 @@
 
 /* Main container */
 .ecosystem-container {
-  background-color: white;
+  background-color: #f8f9fa;
   padding-bottom: 3rem;
 }
 
-/* Page header section */
+/* Page header section - lighter, more cohesive design */
 .page-header {
-  background: linear-gradient(135deg, #103344 0%, #0a2942 100%);
-  color: white;
+  background-color: white;
+  color: #103344;
   padding: 2rem 0;
   margin-bottom: 2rem;
-  border-radius: 0 0 16px 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-bottom: 3px solid #103344;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .page-title {
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  color: white;
+  color: #103344;
 }
 
 .page-subtitle {
   font-size: 1.1rem;
-  opacity: 0.9;
+  color: #666;
   margin-bottom: 1.5rem;
   line-height: 1.5;
 }
@@ -34,6 +34,7 @@
 .action-buttons {
   display: flex;
   gap: 1rem;
+  justify-content: center;
   flex-wrap: wrap;
   margin-top: 1.5rem;
 }
@@ -62,7 +63,7 @@
 }
 
 .btn-secondary-action {
-  background-color: #0f3a62;
+  background-color: #103344;
   border: none;
   color: white;
   padding: 0.75rem 1.5rem;
@@ -73,13 +74,13 @@
   align-items: center;
   gap: 0.5rem;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 6px rgba(10, 41, 66, 0.2);
+  box-shadow: 0 2px 6px rgba(16, 51, 68, 0.2);
 }
 
 .btn-secondary-action:hover {
-  background-color: #134779;
+  background-color: darken(#103344, 10%);
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(10, 41, 66, 0.3);
+  box-shadow: 0 4px 10px rgba(16, 51, 68, 0.3);
   color: white;
   text-decoration: none;
 }
@@ -100,7 +101,7 @@
 }
 
 .recommendations-header {
-  background: linear-gradient(135deg, #103344 0%, #0a2942 100%);
+  background: linear-gradient(135deg, #103344 0%, darken(#103344, 5%) 100%);
   color: white;
   padding: 1.25rem 1.5rem;
   font-size: 1.1rem;
@@ -113,7 +114,7 @@
 }
 
 .recommendations-header:hover {
-  background: linear-gradient(135deg, #134779 0%, #0f3a62 100%);
+  background: linear-gradient(135deg, darken(#103344, 5%) 0%, darken(#103344, 10%) 100%);
 }
 
 .recommendations-header .indicator {
@@ -154,10 +155,11 @@
 }
 
 .recommendation-item {
-  background: linear-gradient(135deg, #103344 0%, #0f3a62 100%);
+  background: linear-gradient(135deg, #103344 0%, darken(#103344, 5%) 100%);
   border-radius: 8px;
   padding: 1.25rem;
   color: white;
+  box-shadow: 0 4px 8px rgba(16, 51, 68, 0.15);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: none;
 }
@@ -264,7 +266,7 @@
 }
 
 .table-header-custom th {
-  background: linear-gradient(135deg, #103344 0%, #0a2942 100%);
+  background: linear-gradient(135deg, #103344 0%, darken(#103344, 5%) 100%);
   color: white;
   padding: 1rem;
   text-align: left;
