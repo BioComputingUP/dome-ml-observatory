@@ -640,49 +640,158 @@
           <h2 class="section-heading mb-0">Environmental Sustainability Pathway</h2>
         </div>
         <p class="mb-4">
-          Developing AI systems with environmental impact in mind helps reduce the growing carbon footprint of machine learning.
-          Follow these steps to make your AI research more environmentally sustainable.
+          Achieving results with AI should not come at an unnecessary cost to our planet. By embedding environmental sustainability into your research practice, you can minimize the carbon footprint of your work while promoting a more responsible and efficient approach to AI development. This pathway will guide you through implementing Green AI techniques, making informed hardware choices, and transparently reporting your model's environmental impact.
         </p>
 
         <!-- Card 1 -->
         <div class="implementation-step" id="reuse-training-step7" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content7').classList.toggle('d-none');">
           <h3>
             <span class="step-number">1</span>
-            Learn Reuse Best Practices Through Training (R3)
+            Implement Green AI Model Development Techniques (R7)
             <span style="float:right;">
               <i class="icon icon-common icon-chevron-down"></i>
             </span>
           </h3>
           <div id="reuse-training-content7" class="d-none" style="margin-top:1rem;">
             <p>
-              Before sharing your model and data, it's beneficial to understand the established best practices for making research outputs reusable. Several resources provide guidance on data and software management.
+              The most direct way to reduce your environmental impact is to decrease the amount of computation required to train and run your model. Adopting "Green AI" practices focuses on efficiency, ensuring you achieve your research goals with the least amount of energy possible.
+              <br><br>
+              <strong>Select Efficient Algorithms and Models:</strong> Before starting, consider the inherent efficiency of the algorithms you plan to use. Some models are less computationally intensive by design.<br>
+              For tabular data, libraries like XGBoost and LightGBM are not only high-performing but are also optimized for speed and efficiency, making them a greener choice than more complex deep learning models where not necessary.
+              <br><br>
+              <strong>Apply Model Optimization Techniques:</strong> You can significantly reduce the computational cost of deep learning models by making them smaller and more efficient without a major loss in performance.<br>
+              Techniques like pruning (removing unnecessary model parameters) and quantization (using lower-precision numerical formats) can drastically cut down on resource needs. The EfficientBioAI package is an example of a tool designed specifically to implement such methods for bio-imaging AI tasks.
+              <br><br>
+              <strong>Adopt Energy-Efficient Development Practices:</strong> How you develop your model matters just as much as the model itself. Consult established guides to learn about and apply these practices throughout your project lifecycle.<br>
+              The Green Software Patterns guide, from the Green Software Foundation, provides a collection of actionable strategies, such as efficient data loading, energy-aware hyperparameter tuning, and leveraging transfer learning from pre-trained models to avoid training from scratch.
             </p>
             <div class="mt-3">
               <strong class="accent-text">Key Resources:</strong>
               <div style="margin-bottom:1rem;">
-                <a href="https://rdmkit.elixir-europe.org/" target="_blank" class="resource-link">
+                <a href="https://xgboost.readthedocs.io/" target="_blank" class="resource-link">
                   <i class="icon icon-common icon-external-link-alt"></i>
-                  RDMkit (Research Data Management Toolkit)
+                  XGBoost
                 </a>
                 <div style="margin-left:2rem;">
-                  This toolkit offers comprehensive guidance on managing research data throughout its lifecycle. While not exclusively focused on AI, its principles are fundamental for preparing your AI datasets for sharing.
+                  A high-performance, efficient library for gradient boosting on tabular data, optimized for speed and resource usage.
                 </div>
               </div>
               <div style="margin-bottom:1rem;">
-                <a href="https://everse.software/RSQKit/" target="_blank" class="resource-link">
+                <a href="https://efficientbioai.readthedocs.io/" target="_blank" class="resource-link">
                   <i class="icon icon-common icon-external-link-alt"></i>
-                  RSQkit (Research Software Quality Toolkit)
+                  EfficientBioAI
                 </a>
                 <div style="margin-left:2rem;">
-                  As AI models are a form of research software, this toolkit provides valuable best practices for ensuring your model's code is high-quality, well-documented, and sustainable for long-term reuse.
+                  A package for bio-imaging AI that implements pruning and quantization techniques to reduce model size and energy consumption.
                 </div>
               </div>
-              <div>
-                <a href="https://www.scilifelab.se/data/open-fair-ml-models/" target="_blank" class="resource-link">
+              <div style="margin-bottom:1rem;">
+                <a href="https://patterns.greensoftware.foundation/" target="_blank" class="resource-link">
                   <i class="icon icon-common icon-external-link-alt"></i>
-                  SciLifeLab Funder requirements and FAIR ML models
+                  Green Software Patterns
                 </a>
                 <div style="margin-left:2rem;">
+                  A guide from the Green Software Foundation with practical strategies for energy-efficient AI development, including efficient data loading and transfer learning.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="implementation-step" id="reuse-training-step8" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content8').classList.toggle('d-none');">
+          <h3>
+            <span class="step-number">2</span>
+            Optimize Model Training and Resource Usage (S2)
+            <span style="float:right;">
+              <i class="icon icon-common icon-chevron-down"></i>
+            </span>
+          </h3>
+          <div id="reuse-training-content8" class="d-none" style="margin-top:1rem;">
+            <p>
+              Reduce the carbon footprint of your AI research by optimizing model architectures, using energy-efficient hardware, and monitoring resource consumption during training and inference.
+            </p>
+            <div class="mt-3">
+              <strong class="accent-text">Key Resources:</strong>
+              <div style="margin-bottom:1rem;">
+                <a href="https://mlco2.github.io/impact/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  Machine Learning CO2 Impact
+                </a>
+                <div style="margin-left:2rem;">
+                  A calculator and guide for estimating and reducing the carbon emissions of machine learning experiments.
+                </div>
+              </div>
+              <div style="margin-bottom:1rem;">
+                <a href="https://codecarbon.io/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  CodeCarbon
+                </a>
+                <div style="margin-left:2rem;">
+                  An open-source tool to track and visualize the energy consumption and emissions of your code, helping you make informed decisions about resource usage.
+                </div>
+              </div>
+              <div style="margin-bottom:1rem;">
+                <a href="https://www.green-algorithms.org/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  Green Algorithms
+                </a>
+                <div style="margin-left:2rem;">
+                  A platform for assessing and reporting the environmental impact of computational research, including AI workflows.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="implementation-step" id="reuse-training-step9" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content9').classList.toggle('d-none');">
+          <h3>
+            <span class="step-number">3</span>
+            Report and Share Environmental Impact Data (S3)
+            <span style="float:right;">
+              <i class="icon icon-common icon-chevron-down"></i>
+            </span>
+          </h3>
+          <div id="reuse-training-content9" class="d-none" style="margin-top:1rem;">
+            <p>
+              Transparently report the environmental impact of your AI research in publications and repositories. Sharing this information helps the community improve sustainability practices and meet funder requirements.
+            </p>
+            <div class="mt-3">
+              <strong class="accent-text">Key Resources:</strong>
+              <div style="margin-bottom:1rem;">
+                <a href="https://www.nature.com/articles/s42256-021-00395-7" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  Nature: How to make AI greener
+                </a>
+                <div style="margin-left:2rem;">
+                  A perspective article on best practices for reporting and reducing the environmental impact of AI research.
+                </div>
+              </div>
+              <div style="margin-bottom:1rem;">
+                <a href="https://www.green-algorithms.org/reporting.html" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  Green Algorithms Reporting Guidelines
+                </a>
+                <div style="margin-left:2rem;">
+                  Guidelines and templates for reporting the carbon footprint of computational research in publications and repositories.
+                </div>
+              </div>
+              <div style="margin-bottom:1rem;">
+                <a href="https://codecarbon.io/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  CodeCarbon Reporting
+                </a>
+                <div style="margin-left:2rem;">
+                  Instructions for exporting and sharing energy consumption and emissions data from CodeCarbon in your research outputs.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
   <script>
     // Collapse all cards on page load
     document.addEventListener('DOMContentLoaded', function() {
