@@ -43,3 +43,22 @@ body {
   width: 64px;
   height: 64px;
 }
+
+.cta-button {
+  background-color: white;
+  color: #F66729;
+  border: 2px solid #F66729;
+  padding: 0.75rem 2rem;
+  border-radius: 4px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-decoration: none !important;
+
+  &:hover {
+    background-color: #F66729;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(246, 103, 41, 0.3);
+    text-decoration: none !important;
+  }
+}

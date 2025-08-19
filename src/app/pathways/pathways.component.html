@@ -118,6 +118,26 @@
     .resource-link i {
       margin-right: 0.5rem;
     }
+    .cta-button {
+      background-color: white;
+      color: #F66729;
+      border: 2px solid #F66729;
+      padding: 0.75rem 2rem;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-decoration: none !important;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .cta-button:hover {
+      background-color: #F66729;
+      color: white;
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(246, 103, 41, 0.3);
+      text-decoration: none !important;
+    }
     @media (max-width: 768px) {
       .fixed-nav {
         display: none;
@@ -157,16 +177,16 @@
         <h2 class="h3 mb-3" style="color: #F66729 !important; font-weight: bold; font-size: 1.5rem;">Practical steps to implement OSAI recommendations</h2>
         <p class="lead mb-1">
           These sample implementation pathways provide concrete steps and resources to help you apply the OSAI recommendations 
-          in your AI/ML research workflows and systems. For future OSAI and general AI best practice implementation pathways, check the RDMkit & RSQkit resources
+          in your AI/ML research workflows and systems. <br> <br> For future OSAI and general AI best practice implementation pathways, check the RDMkit & RSQkit resources:
         </p>
-        <div class="d-flex justify-content-center gap-2">
-          <a href="https://everse.software/RSQKit/" target="_blank" class="resource-link" style="margin-right: 0.5rem;">
+        <div class="d-flex justify-content-center" style="margin-top: 1.5rem;">
+          <a href="https://rdmkit.elixir-europe.org/" target="_blank" class="cta-button" style="margin-right: 1rem;">
             <i class="icon icon-common icon-external-link-alt"></i>
-            RSQkit Resource
+            RDMkit
           </a>
-          <a href="https://rdmkit.elixir-europe.org/" target="_blank" class="resource-link">
+          <a href="https://everse.software/RSQKit/" target="_blank" class="cta-button">
             <i class="icon icon-common icon-external-link-alt"></i>
-            RDMkit Resource
+            RSQkit
           </a>
         </div>
       </div>
@@ -373,4 +393,5 @@
       </div>
     </div>
   </section>
+</div>
 
