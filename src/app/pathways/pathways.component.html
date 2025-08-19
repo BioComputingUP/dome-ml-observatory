@@ -207,7 +207,8 @@
           After investing time creating an AI model and corresponding dataset, it is important to ensure these are reusable in order to maximize the impact of your work. This crucial step is vital to ensure that other researchers in the scientific community can easily find, access, and understand, your outputs for reuse. This example pathway outlines the key steps leveraging OSAI reuse guidelines (R1-R3) to effectively share your AI model and dataset for reuse, thereby enhancing collaboration and accelerating scientific progress.
         </p>
 
-        <div class="implementation-step" id="reuse-training-step" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content').classList.toggle('d-none');">
+        <!-- Card 1 -->
+        <div class="implementation-step" id="reuse-training-step1" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content1').classList.toggle('d-none');">
           <h3>
             <span class="step-number">1</span>
             Learn Reuse Best Practices Through Training (R3)
@@ -215,7 +216,7 @@
               <i class="icon icon-common icon-chevron-down"></i>
             </span>
           </h3>
-          <div id="reuse-training-content" class="d-none" style="margin-top:1rem;">
+          <div id="reuse-training-content1" class="d-none" style="margin-top:1rem;">
             <p>
               Before sharing your model and data, it's beneficial to understand the established best practices for making research outputs reusable. Several resources provide guidance on data and software management.
             </p>
@@ -252,39 +253,101 @@
           </div>
         </div>
 
-        <div class="implementation-step">
-          <h3><span class="step-number">2</span>Register Your Research Assets</h3>
-          <p>
-            Make your models, datasets, and code discoverable by registering them in community repositories and catalogues with appropriate metadata.
-          </p>
-          <div class="mt-3">
-            <strong class="accent-text">Key Actions:</strong>
-            <ul>
-              <li>Submit your AI model to model repositories like Hugging Face or BioModels</li>
-              <li>Share your datasets in domain-relevant repositories with rich metadata</li>
-              <li>Register your software in directories like bio.tools or GitHub</li>
-            </ul>
+        <!-- Card 2 -->
+        <div class="implementation-step" id="reuse-training-step2" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content2').classList.toggle('d-none');">
+          <h3>
+            <span class="step-number">2</span>
+            Learn Reuse Best Practices Through Training (R3)
+            <span style="float:right;">
+              <i class="icon icon-common icon-chevron-down"></i>
+            </span>
+          </h3>
+          <div id="reuse-training-content2" class="d-none" style="margin-top:1rem;">
+            <p>
+              Before sharing your model and data, it's beneficial to understand the established best practices for making research outputs reusable. Several resources provide guidance on data and software management.
+            </p>
+            <div class="mt-3">
+              <strong class="accent-text">Key Resources:</strong>
+              <div style="margin-bottom:1rem;">
+                <a href="https://rdmkit.elixir-europe.org/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  RDMkit (Research Data Management Toolkit)
+                </a>
+                <div style="margin-left:2rem;">
+                  This toolkit offers comprehensive guidance on managing research data throughout its lifecycle. While not exclusively focused on AI, its principles are fundamental for preparing your AI datasets for sharing.
+                </div>
+              </div>
+              <div style="margin-bottom:1rem;">
+                <a href="https://everse.software/RSQKit/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  RSQkit (Research Software Quality Toolkit)
+                </a>
+                <div style="margin-left:2rem;">
+                  As AI models are a form of research software, this toolkit provides valuable best practices for ensuring your model's code is high-quality, well-documented, and sustainable for long-term reuse.
+                </div>
+              </div>
+              <div>
+                <a href="https://www.scilifelab.se/data/open-fair-ml-models/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  SciLifeLab Funder requirements and FAIR ML models
+                </a>
+                <div style="margin-left:2rem;">
+                  This is a practical example of guidance from a national life science organization on how to make machine learning models Open and FAIR (Findable, Accessible, Interoperable, and Reusable). It can serve as a template for meeting the requirements of funders and institutions.
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="implementation-step">
-          <h3><span class="step-number">3</span>Document Your Training Process</h3>
-          <p>
-            Provide comprehensive documentation of your model training process, including preprocessing steps, architecture decisions, hyperparameters, and validation approaches.
-          </p>
-          <div class="mt-3">
-            <strong class="accent-text">Key Actions:</strong>
-            <ul>
-              <li>Create clear documentation using Jupyter notebooks or similar tools</li>
-              <li>Include detailed explanations of design choices and their rationale</li>
-              <li>Document data preprocessing steps and their impact on model performance</li>
-            </ul>
+        <!-- Card 3 -->
+        <div class="implementation-step" id="reuse-training-step3" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content3').classList.toggle('d-none');">
+          <h3>
+            <span class="step-number">3</span>
+            Learn Reuse Best Practices Through Training (R3)
+            <span style="float:right;">
+              <i class="icon icon-common icon-chevron-down"></i>
+            </span>
+          </h3>
+          <div id="reuse-training-content3" class="d-none" style="margin-top:1rem;">
+            <p>
+              Before sharing your model and data, it's beneficial to understand the established best practices for making research outputs reusable. Several resources provide guidance on data and software management.
+            </p>
+            <div class="mt-3">
+              <strong class="accent-text">Key Resources:</strong>
+              <div style="margin-bottom:1rem;">
+                <a href="https://rdmkit.elixir-europe.org/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  RDMkit (Research Data Management Toolkit)
+                </a>
+                <div style="margin-left:2rem;">
+                  This toolkit offers comprehensive guidance on managing research data throughout its lifecycle. While not exclusively focused on AI, its principles are fundamental for preparing your AI datasets for sharing.
+                </div>
+              </div>
+              <div style="margin-bottom:1rem;">
+                <a href="https://everse.software/RSQKit/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  RSQkit (Research Software Quality Toolkit)
+                </a>
+                <div style="margin-left:2rem;">
+                  As AI models are a form of research software, this toolkit provides valuable best practices for ensuring your model's code is high-quality, well-documented, and sustainable for long-term reuse.
+                </div>
+              </div>
+              <div>
+                <a href="https://www.scilifelab.se/data/open-fair-ml-models/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  SciLifeLab Funder requirements and FAIR ML models
+                </a>
+                <div style="margin-left:2rem;">
+                  This is a practical example of guidance from a national life science organization on how to make machine learning models Open and FAIR (Findable, Accessible, Interoperable, and Reusable). It can serve as a template for meeting the requirements of funders and institutions.
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
-  
+
   <div class="section-divider"></div>
 
   <!-- Section 2: Reproducibility Pathway -->
@@ -300,54 +363,147 @@
           This pathway helps ensure your AI research can be reliably reproduced.
         </p>
 
-        <div class="implementation-step">
-          <h3><span class="step-number">1</span>Disclose All Methods and Parameters</h3>
-          <p>
-            Document your complete workflow with sufficient detail for others to reproduce your results, including detailed methods, configuration parameters, and validation procedures.
-          </p>
-          <div class="mt-3">
-            <strong class="accent-text">Key Actions:</strong>
-            <ul>
-              <li>Record hyperparameters, initialization strategies, and optimization techniques</li>
-              <li>Document data splits, preprocessing, and augmentation methods</li>
-              <li>Describe your evaluation metrics and validation process</li>
-            </ul>
+        <!-- Card 1 -->
+        <div class="implementation-step" id="reuse-training-step4" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content4').classList.toggle('d-none');">
+          <h3>
+            <span class="step-number">1</span>
+            Learn Reuse Best Practices Through Training (R3)
+            <span style="float:right;">
+              <i class="icon icon-common icon-chevron-down"></i>
+            </span>
+          </h3>
+          <div id="reuse-training-content4" class="d-none" style="margin-top:1rem;">
+            <p>
+              Before sharing your model and data, it's beneficial to understand the established best practices for making research outputs reusable. Several resources provide guidance on data and software management.
+            </p>
+            <div class="mt-3">
+              <strong class="accent-text">Key Resources:</strong>
+              <div style="margin-bottom:1rem;">
+                <a href="https://rdmkit.elixir-europe.org/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  RDMkit (Research Data Management Toolkit)
+                </a>
+                <div style="margin-left:2rem;">
+                  This toolkit offers comprehensive guidance on managing research data throughout its lifecycle. While not exclusively focused on AI, its principles are fundamental for preparing your AI datasets for sharing.
+                </div>
+              </div>
+              <div style="margin-bottom:1rem;">
+                <a href="https://everse.software/RSQKit/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  RSQkit (Research Software Quality Toolkit)
+                </a>
+                <div style="margin-left:2rem;">
+                  As AI models are a form of research software, this toolkit provides valuable best practices for ensuring your model's code is high-quality, well-documented, and sustainable for long-term reuse.
+                </div>
+              </div>
+              <div>
+                <a href="https://www.scilifelab.se/data/open-fair-ml-models/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  SciLifeLab Funder requirements and FAIR ML models
+                </a>
+                <div style="margin-left:2rem;">
+                  This is a practical example of guidance from a national life science organization on how to make machine learning models Open and FAIR (Findable, Accessible, Interoperable, and Reusable). It can serve as a template for meeting the requirements of funders and institutions.
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="implementation-step">
-          <h3><span class="step-number">2</span>Ensure Code and Environment Portability</h3>
-          <p>
-            Package your code, dependencies, and runtime environment to ensure your research can be run consistently across different computing systems.
-          </p>
-          <div class="mt-3">
-            <strong class="accent-text">Key Actions:</strong>
-            <ul>
-              <li>Use containerization tools like Docker or Singularity</li>
-              <li>Create environment files (requirements.txt, environment.yml) with specific versions</li>
-              <li>Document system requirements and hardware specifications</li>
-            </ul>
+        <!-- Card 2 -->
+        <div class="implementation-step" id="reuse-training-step5" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content5').classList.toggle('d-none');">
+          <h3>
+            <span class="step-number">2</span>
+            Learn Reuse Best Practices Through Training (R3)
+            <span style="float:right;">
+              <i class="icon icon-common icon-chevron-down"></i>
+            </span>
+          </h3>
+          <div id="reuse-training-content5" class="d-none" style="margin-top:1rem;">
+            <p>
+              Before sharing your model and data, it's beneficial to understand the established best practices for making research outputs reusable. Several resources provide guidance on data and software management.
+            </p>
+            <div class="mt-3">
+              <strong class="accent-text">Key Resources:</strong>
+              <div style="margin-bottom:1rem;">
+                <a href="https://rdmkit.elixir-europe.org/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  RDMkit (Research Data Management Toolkit)
+                </a>
+                <div style="margin-left:2rem;">
+                  This toolkit offers comprehensive guidance on managing research data throughout its lifecycle. While not exclusively focused on AI, its principles are fundamental for preparing your AI datasets for sharing.
+                </div>
+              </div>
+              <div style="margin-bottom:1rem;">
+                <a href="https://everse.software/RSQKit/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  RSQkit (Research Software Quality Toolkit)
+                </a>
+                <div style="margin-left:2rem;">
+                  As AI models are a form of research software, this toolkit provides valuable best practices for ensuring your model's code is high-quality, well-documented, and sustainable for long-term reuse.
+                </div>
+              </div>
+              <div>
+                <a href="https://www.scilifelab.se/data/open-fair-ml-models/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  SciLifeLab Funder requirements and FAIR ML models
+                </a>
+                <div style="margin-left:2rem;">
+                  This is a practical example of guidance from a national life science organization on how to make machine learning models Open and FAIR (Findable, Accessible, Interoperable, and Reusable). It can serve as a template for meeting the requirements of funders and institutions.
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="implementation-step">
-          <h3><span class="step-number">3</span>Use Standardized Benchmarks</h3>
-          <p>
-            Validate your models using standardized, community-accepted benchmarks and evaluation protocols to facilitate accurate comparisons with other methods.
-          </p>
-          <div class="mt-3">
-            <strong class="accent-text">Key Actions:</strong>
-            <ul>
-              <li>Select appropriate benchmark datasets for your domain</li>
-              <li>Follow established evaluation protocols</li>
-              <li>Report performance across multiple metrics and trials</li>
-            </ul>
+        <!-- Card 3 -->
+        <div class="implementation-step" id="reuse-training-step6" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content6').classList.toggle('d-none');">
+          <h3>
+            <span class="step-number">3</span>
+            Learn Reuse Best Practices Through Training (R3)
+            <span style="float:right;">
+              <i class="icon icon-common icon-chevron-down"></i>
+            </span>
+          </h3>
+          <div id="reuse-training-content6" class="d-none" style="margin-top:1rem;">
+            <p>
+              Before sharing your model and data, it's beneficial to understand the established best practices for making research outputs reusable. Several resources provide guidance on data and software management.
+            </p>
+            <div class="mt-3">
+              <strong class="accent-text">Key Resources:</strong>
+              <div style="margin-bottom:1rem;">
+                <a href="https://rdmkit.elixir-europe.org/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  RDMkit (Research Data Management Toolkit)
+                </a>
+                <div style="margin-left:2rem;">
+                  This toolkit offers comprehensive guidance on managing research data throughout its lifecycle. While not exclusively focused on AI, its principles are fundamental for preparing your AI datasets for sharing.
+                </div>
+              </div>
+              <div style="margin-bottom:1rem;">
+                <a href="https://everse.software/RSQKit/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  RSQkit (Research Software Quality Toolkit)
+                </a>
+                <div style="margin-left:2rem;">
+                  As AI models are a form of research software, this toolkit provides valuable best practices for ensuring your model's code is high-quality, well-documented, and sustainable for long-term reuse.
+                </div>
+              </div>
+              <div>
+                <a href="https://www.scilifelab.se/data/open-fair-ml-models/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  SciLifeLab Funder requirements and FAIR ML models
+                </a>
+                <div style="margin-left:2rem;">
+                  This is a practical example of guidance from a national life science organization on how to make machine learning models Open and FAIR (Findable, Accessible, Interoperable, and Reusable). It can serve as a template for meeting the requirements of funders and institutions.
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
-  
+
   <div class="section-divider"></div>
 
   <!-- Section 3: Environmental Sustainability Pathway -->
@@ -363,69 +519,155 @@
           Follow these steps to make your AI research more environmentally sustainable.
         </p>
 
-        <div class="implementation-step">
-          <h3><span class="step-number">1</span>Implement Green AI Development Techniques</h3>
-          <p>
-            Adopt development approaches that reduce computational requirements while maintaining performance.
-          </p>
-          <div class="mt-3">
-            <strong class="accent-text">Key Actions:</strong>
-            <ul>
-              <li>Use transfer learning instead of training from scratch</li>
-              <li>Apply model pruning and knowledge distillation</li>
-              <li>Optimize your model architecture for efficiency</li>
-              <li>Consider Frugal AI practices that emphasize efficiency</li>
-            </ul>
+        <!-- Card 1 -->
+        <div class="implementation-step" id="reuse-training-step7" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content7').classList.toggle('d-none');">
+          <h3>
+            <span class="step-number">1</span>
+            Learn Reuse Best Practices Through Training (R3)
+            <span style="float:right;">
+              <i class="icon icon-common icon-chevron-down"></i>
+            </span>
+          </h3>
+          <div id="reuse-training-content7" class="d-none" style="margin-top:1rem;">
+            <p>
+              Before sharing your model and data, it's beneficial to understand the established best practices for making research outputs reusable. Several resources provide guidance on data and software management.
+            </p>
+            <div class="mt-3">
+              <strong class="accent-text">Key Resources:</strong>
+              <div style="margin-bottom:1rem;">
+                <a href="https://rdmkit.elixir-europe.org/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  RDMkit (Research Data Management Toolkit)
+                </a>
+                <div style="margin-left:2rem;">
+                  This toolkit offers comprehensive guidance on managing research data throughout its lifecycle. While not exclusively focused on AI, its principles are fundamental for preparing your AI datasets for sharing.
+                </div>
+              </div>
+              <div style="margin-bottom:1rem;">
+                <a href="https://everse.software/RSQKit/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  RSQkit (Research Software Quality Toolkit)
+                </a>
+                <div style="margin-left:2rem;">
+                  As AI models are a form of research software, this toolkit provides valuable best practices for ensuring your model's code is high-quality, well-documented, and sustainable for long-term reuse.
+                </div>
+              </div>
+              <div>
+                <a href="https://www.scilifelab.se/data/open-fair-ml-models/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  SciLifeLab Funder requirements and FAIR ML models
+                </a>
+                <div style="margin-left:2rem;">
+                  This is a practical example of guidance from a national life science organization on how to make machine learning models Open and FAIR (Findable, Accessible, Interoperable, and Reusable). It can serve as a template for meeting the requirements of funders and institutions.
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="implementation-step">
-          <h3><span class="step-number">2</span>Choose and Optimize Hardware</h3>
-          <p>
-            Select appropriate hardware and optimize its usage to reduce energy consumption and carbon emissions.
-          </p>
-          <div class="mt-3">
-            <strong class="accent-text">Key Actions:</strong>
-            <ul>
-              <li>Select energy-efficient hardware appropriate for your tasks</li>
-              <li>Use specialized accelerators (e.g., GPUs, TPUs) efficiently</li>
-              <li>Consider cloud providers with renewable energy commitments</li>
-              <li>Schedule training during off-peak hours or in regions with cleaner energy</li>
-            </ul>
+        <!-- Card 2 -->
+        <div class="implementation-step" id="reuse-training-step8" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content8').classList.toggle('d-none');">
+          <h3>
+            <span class="step-number">2</span>
+            Learn Reuse Best Practices Through Training (R3)
+            <span style="float:right;">
+              <i class="icon icon-common icon-chevron-down"></i>
+            </span>
+          </h3>
+          <div id="reuse-training-content8" class="d-none" style="margin-top:1rem;">
+            <p>
+              Before sharing your model and data, it's beneficial to understand the established best practices for making research outputs reusable. Several resources provide guidance on data and software management.
+            </p>
+            <div class="mt-3">
+              <strong class="accent-text">Key Resources:</strong>
+              <div style="margin-bottom:1rem;">
+                <a href="https://rdmkit.elixir-europe.org/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  RDMkit (Research Data Management Toolkit)
+                </a>
+                <div style="margin-left:2rem;">
+                  This toolkit offers comprehensive guidance on managing research data throughout its lifecycle. While not exclusively focused on AI, its principles are fundamental for preparing your AI datasets for sharing.
+                </div>
+              </div>
+              <div style="margin-bottom:1rem;">
+                <a href="https://everse.software/RSQKit/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  RSQkit (Research Software Quality Toolkit)
+                </a>
+                <div style="margin-left:2rem;">
+                  As AI models are a form of research software, this toolkit provides valuable best practices for ensuring your model's code is high-quality, well-documented, and sustainable for long-term reuse.
+                </div>
+              </div>
+              <div>
+                <a href="https://www.scilifelab.se/data/open-fair-ml-models/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  SciLifeLab Funder requirements and FAIR ML models
+                </a>
+                <div style="margin-left:2rem;">
+                  This is a practical example of guidance from a national life science organization on how to make machine learning models Open and FAIR (Findable, Accessible, Interoperable, and Reusable). It can serve as a template for meeting the requirements of funders and institutions.
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="implementation-step">
-          <h3><span class="step-number">3</span>Measure and Report Environmental Impact</h3>
-          <p>
-            Track and transparently report the environmental impact of your AI development process.
-          </p>
-          <div class="mt-3">
-            <strong class="accent-text">Key Actions:</strong>
-            <ul>
-              <li>Use tools like Carbontracker or Code Carbon to measure emissions</li>
-              <li>Report energy consumption, carbon emissions, and compute hours</li>
-              <li>Include environmental impact statements in your publications</li>
-              <li>Share your impact reduction strategies with the community</li>
-            </ul>
+        <!-- Card 3 -->
+        <div class="implementation-step" id="reuse-training-step9" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content9').classList.toggle('d-none');">
+          <h3>
+            <span class="step-number">3</span>
+            Learn Reuse Best Practices Through Training (R3)
+            <span style="float:right;">
+              <i class="icon icon-common icon-chevron-down"></i>
+            </span>
+          </h3>
+          <div id="reuse-training-content9" class="d-none" style="margin-top:1rem;">
+            <p>
+              Before sharing your model and data, it's beneficial to understand the established best practices for making research outputs reusable. Several resources provide guidance on data and software management.
+            </p>
+            <div class="mt-3">
+              <strong class="accent-text">Key Resources:</strong>
+              <div style="margin-bottom:1rem;">
+                <a href="https://rdmkit.elixir-europe.org/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  RDMkit (Research Data Management Toolkit)
+                </a>
+                <div style="margin-left:2rem;">
+                  This toolkit offers comprehensive guidance on managing research data throughout its lifecycle. While not exclusively focused on AI, its principles are fundamental for preparing your AI datasets for sharing.
+                </div>
+              </div>
+              <div style="margin-bottom:1rem;">
+                <a href="https://everse.software/RSQKit/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  RSQkit (Research Software Quality Toolkit)
+                </a>
+                <div style="margin-left:2rem;">
+                  As AI models are a form of research software, this toolkit provides valuable best practices for ensuring your model's code is high-quality, well-documented, and sustainable for long-term reuse.
+                </div>
+              </div>
+              <div>
+                <a href="https://www.scilifelab.se/data/open-fair-ml-models/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  SciLifeLab Funder requirements and FAIR ML models
+                </a>
+                <div style="margin-left:2rem;">
+                  This is a practical example of guidance from a national life science organization on how to make machine learning models Open and FAIR (Findable, Accessible, Interoperable, and Reusable). It can serve as a template for meeting the requirements of funders and institutions.
+                </div>
+              </div>
+            </div>
           </div>
-          <a href="https://github.com/mlco2/codecarbon" target="_blank" class="resource-link">
-            <i class="icon icon-common icon-external-link-alt"></i>
-            Explore CodeCarbon Measurement Tool
-          </a>
         </div>
       </div>
     </div>
   </section>
-</div>
 
-<script>
-  // Ensure only the first card is shown, hide others on page load
-  document.addEventListener('DOMContentLoaded', function() {
-    // Hide all implementation steps except the first
-    document.querySelectorAll('.implementation-step').forEach(function(step, idx) {
-      if (step.id !== 'reuse-training-step') step.style.display = 'none';
+  <script>
+    // Collapse all cards on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      for (let i = 1; i <= 9; i++) {
+        var el = document.getElementById('reuse-training-content' + i);
+        if (el) el.classList.add('d-none');
+      }
     });
-  });
-</script>
+  </script>
+</div>
 
