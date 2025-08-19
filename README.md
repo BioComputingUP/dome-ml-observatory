@@ -20,3 +20,6 @@ Build the app for production and rsync `dist/` to `REDACTED-HOST`:
 ```bash
 npm run deploy-prod-quick
 ```
+## Update YAML
+Run in python: scripts/update_yaml.py
+This will pull the latest YAML for OSAI registry table from GitHub: https://github.com/BioComputingUP/OSAI_ecosystem/blob/main/data/ecosystem_components_list.yml
