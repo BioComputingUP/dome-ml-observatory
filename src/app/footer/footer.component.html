@@ -1,50 +1,69 @@
-<footer class="footer-bar bg-primary text-light pt-4 pb-2">
-  <div class="container-fluid container-wide">
-    <div class="row justify-content-center">
-      <!-- Column 1: About OSAI -->
-      <div class="col-md-3 mb-4 mb-md-0 text-center">
-        <h6 class="text-uppercase mb-3"><strong>About</strong></h6>
-        <ul class="list-unstyled">
-          <li><a href="/about" class="text-light text-decoration-none">About OSAI</a></li>
-          <li><a href="/publications" class="text-light text-decoration-none">Key Publications</a></li>
-        </ul>
+<footer class="footer-bar bg-primary text-light pt-4 pb-2" style="width:100vw; position:relative; left:50%; right:50%; margin-left:-50vw; margin-right:-50vw;">
+  <div class="footer-inner-content">
+    <div class="container-fluid">
+      <div class="row justify-content-center">
+        <!-- Column 1: About OSAI -->
+        <div class="col-md-3 mb-4 mb-md-0 text-center">
+          <h6 class="text-uppercase mb-3"><strong>About</strong></h6>
+          <ul class="list-unstyled">
+            <li><a href="/about" class="text-light text-decoration-none">About OSAI</a></li>
+            <li><a href="/publications" class="text-light text-decoration-none">Key Publications</a></li>
+          </ul>
+        </div>
+        <!-- Column 2: OSAI Framework -->
+        <div class="col-md-3 mb-4 mb-md-0 text-center">
+          <h6 class="text-uppercase mb-3"><strong>OSAI Framework</strong></h6>
+          <ul class="list-unstyled">
+            <li><a href="/guidelines" class="text-light text-decoration-none">Guidelines</a></li>
+            <li><a href="/ai-ecosystem" class="text-light text-decoration-none">AI Ecosystem</a></li>
+            <li><a href="/implementation" class="text-light text-decoration-none">Pathways</a></li>
+          </ul>
+        </div>
+        <!-- Column 3: Connect -->
+        <div class="col-md-4 text-center">
+          <h6 class="text-uppercase mb-3"><strong>Connect</strong></h6>
+          <ul class="list-unstyled">
+            <li><a href="/news" class="text-light text-decoration-none">News & Events</a></li>
+            <li><a href="mailto:contact@dome-ml.org" class="text-light text-decoration-none">Contact Us</a></li>
+            <li>
+              <a href="https://github.com/BioComputingUP/OSAI_ecosystem/tree/main" target="_blank" rel="noopener" class="text-light text-decoration-none">
+                Contribute on GitHub
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
-      <!-- Column 2: OSAI Framework -->
-      <div class="col-md-3 mb-4 mb-md-0 text-center">
-        <h6 class="text-uppercase mb-3"><strong>OSAI Framework</strong></h6>
-        <ul class="list-unstyled">
-          <li><a href="/guidelines" class="text-light text-decoration-none">Guidelines</a></li>
-          <li><a href="/ai-ecosystem" class="text-light text-decoration-none">AI Ecosystem</a></li>
-          <li><a href="/implementation" class="text-light text-decoration-none">Pathways</a></li>
-        </ul>
-      </div>
-      <!-- Column 3: Connect -->
-      <div class="col-md-4 text-center">
-        <h6 class="text-uppercase mb-3"><strong>Connect</strong></h6>
-        <ul class="list-unstyled">
-          <li><a href="/news" class="text-light text-decoration-none">News & Events</a></li>
-          <li><a href="mailto:contact@dome-ml.org" class="text-light text-decoration-none">Contact Us</a></li>
-          <li>
-            <a href="https://github.com/BioComputingUP/OSAI_ecosystem/tree/main" target="_blank" rel="noopener" class="text-light text-decoration-none">
-              Contribute on GitHub
+      <hr class="bg-light my-3">
+      <!-- Full-width bottom bar -->
+      <div class="row">
+        <div class="col text-center">
+          <small>
+            &copy; 2025 Open &amp; Sustainable AI (OSAI). All rights reserved.
+            <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener" class="text-light text-decoration-underline ml-2">
+              <img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="CC" height="16" style="vertical-align:middle;">
+              <img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="BY" height="16" style="vertical-align:middle;">
+              CC BY 4.0
             </a>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <hr class="bg-light my-3">
-    <!-- Full-width bottom bar -->
-    <div class="row">
-      <div class="col text-center">
-        <small>
-          &copy; 2025 Open &amp; Sustainable AI (OSAI). All rights reserved.
-          <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener" class="text-light text-decoration-underline ml-2">
-            <img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="CC" height="16" style="vertical-align:middle;">
-            <img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="BY" height="16" style="vertical-align:middle;">
-            CC BY 4.0
-          </a>
-        </small>
+          </small>
+        </div>
       </div>
     </div>
   </div>
 </footer>
+<style>
+  /* Ensure footer background stretches full width, content stays centered */
+  .footer-bar {
+    background-color: #103344;
+    color: white !important;
+    border-top: 3px solid #F66729;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .footer-inner-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+</style>
