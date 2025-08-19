@@ -1,0 +1,10 @@
+.eventItem {
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.eventItem:hover {
+  background-color: #f5f5f5;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  /* Remove any transform, margin, or padding changes */
+  /* Do not change position, margin, padding, or transform */
+}

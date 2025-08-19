@@ -55,12 +55,15 @@
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
       margin-bottom: 1.5rem;
       overflow: hidden;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      transition: box-shadow 0.3s ease;
     }
-    .news-card:hover, .event-card:hover {
-      transform: translateY(-5px);
+    .news-card:hover {
       box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-      border: 2px solid #103344;
+      /* No transform or border change */
+    }
+    .event-card:hover {
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+      /* No transform or border change */
     }
     .card-date {
       background-color: #F66729;
@@ -135,7 +138,7 @@
   <!-- Page Title -->
   <div class="text-center pt-4 pb-2">
     <h1 class="page-title">News & Events</h1>
-    <p class="lead mb-4">Stay updated with the latest developments, announcements, and upcoming events from DOME.</p>
+    <p class="lead mb-4">Stay updated with the latest developments, announcements, and upcoming events from OSAI</p>
   </div>
 
   <!-- Navigation Tabs -->

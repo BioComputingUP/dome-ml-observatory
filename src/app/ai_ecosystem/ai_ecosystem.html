@@ -85,7 +85,9 @@
         <div class="filter-group">
           <label for="recommendationFilter" class="filter-label">OSAI Recommendation</label>
           <select id="recommendationFilter" class="filter-select" [(ngModel)]="selectedRecommendation" (ngModelChange)="applyFilters()">
-            <option *ngFor="let rec of availableRecommendations" [value]="rec.value">{{ rec.displayName }}</option>
+            <option *ngFor="let rec of availableRecommendations" [value]="rec.value">
+              {{ rec.displayName === 'R9 - Impact' ? 'R9 - Monitoring' : rec.displayName }}
+            </option>
           </select>
         </div>
         
@@ -133,7 +135,7 @@
           <table class="ecosystem-table">
             <!-- Column item type header row -->
             <thead>
-              <tr style="background-color: #f8f9fa; color: #103344; font-weight: 600;">
+              <tr style="background-color: #f8f9fa; color: #103344; font-weight: 600; font-size: 1.15rem;">
                 <td>Type</td>
                 <td>Name</td>
                 <td>Description</td>
@@ -142,7 +144,7 @@
                 <td>Links</td>
               </tr>
             </thead>
-            <thead class="table-header-custom">
+            <thead class="table-header-custom" style="font-size: 1.15rem;">
               <tr>
                 <th>Type</th>
                 <th>Name</th>
@@ -184,15 +186,19 @@
                   <span *ngIf="!item['access-model']">N/A</span>
                 </td>
                 <td>
-                  <div class="table-external-links">
-                    <a *ngIf="item.url" [href]="item.url" target="_blank" rel="noopener noreferrer" class="table-external-link">
-                      <i class="icon icon-common icon-external-link-alt"></i>Website
+                  <div class="table-external-links" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                    <a *ngIf="item.url" [href]="item.url" target="_blank" rel="noopener noreferrer" class="table-external-link" style="display: inline-flex; align-items: center;">
+                      <i class="icon icon-common icon-external-link-alt" style="margin-right: 6px;"></i>
+                      Website
                     </a>
-                    <a *ngIf="item['biotools-url']" [href]="item['biotools-url']" target="_blank" rel="noopener noreferrer" class="table-external-link">
-                      <i class="icon icon-common icon-tools"></i>bio.tools
+                    <a *ngIf="item['biotools-url']" [href]="item['biotools-url']" target="_blank" rel="noopener noreferrer" class="table-external-link" style="display: inline-flex; align-items: center;">
+                      <i class="icon icon-common icon-tools" style="margin-right: 6px;"></i>
+                      <i class="icon icon-common icon-share-alt" style="margin-right: 6px;"></i>
+                      bio.tools
                     </a>
-                    <a *ngIf="item['fairsharing-url']" [href]="item['fairsharing-url']" target="_blank" rel="noopener noreferrer" class="table-external-link">
-                      <i class="icon icon-common icon-share-alt"></i>FAIRsharing
+                    <a *ngIf="item['fairsharing-url']" [href]="item['fairsharing-url']" target="_blank" rel="noopener noreferrer" class="table-external-link" style="display: inline-flex; align-items: center;">
+                      <i class="icon icon-common icon-share-alt" style="margin-right: 6px;"></i>
+                      FAIRsharing
                     </a>
                   </div>
                 </td>
