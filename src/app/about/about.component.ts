@@ -1,13 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ShimmerDirective } from '../directives/shimmer.directive';
 
 @Component({
   selector: 'app-about',
   templateUrl: './about.component.html',
-  styleUrls: ['./about.component.scss'],
-  imports: [
-    ShimmerDirective
-  ]
+  styleUrls: ['./about.component.scss']
 })
 export class AboutComponent implements OnInit {
   showAuthors = false;
