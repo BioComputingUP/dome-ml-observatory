@@ -41,22 +41,29 @@
       max-width: 100%;
       height: 60px;
       object-fit: contain;
-      opacity: 0.5;
+      opacity: 0.7;
       transition: all 0.3s ease;
       filter: grayscale(50%);
       padding: 8px;
       border-radius: 8px;
       background-color: white;
       box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      cursor: default;
+    }
+    .tool-logo:hover {
+      opacity: 1 !important;
+      filter: grayscale(0%) !important;
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
     }
     .tool-logo.reusability {
-      opacity: 0.5;
+      opacity: 0.7;
     }
     .tool-logo.reproducibility {
-      opacity: 0.5;
+      opacity: 0.7;
     }
     .tool-logo.sustainability {
-      opacity: 0.5;
+      opacity: 0.7;
     }
     .highlight-reusability .tool-logo.reusability {
       opacity: 1;
@@ -155,62 +162,46 @@
         <p class="lead mb-4">
           Stop searching, start implementing. The OSAI AI Ecosystem is a living, interactive registry connecting our OSAI Recommendations to over 300 real-world components. Filter by your goal, from reproducibility tools to sustainability supprots. Find the right resources to build better and more responsible AI.
         </p>
-        <div class="cta-buttons mt-4">
-          <a routerLink="/ai-ecosystem" class="btn btn-outline-primary btn-lg">Explore the AI Ecosystem</a>
-        </div>
       </div>
       
       <div class="col-lg-6 mx-auto mt-4 mt-lg-0">
-        <h4 class="mb-4 text-center">The Live Showcase</h4>
-        
-        <div class="filter-container text-center mb-3">
-          <span class="filter-pill" id="reusabilityFilter" onclick="highlightCategory('reusability')">Reusability</span>
-          <span class="filter-pill" id="reproducibilityFilter" onclick="highlightCategory('reproducibility')">Reproducibility</span>
-          <span class="filter-pill" id="sustainabilityFilter" onclick="highlightCategory('sustainability')">Sustainability</span>
+        <div class="video-showcase text-center">
+          <video width="100%" height="300px" autoplay muted loop style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); object-fit: cover; object-position: top;">
+            <source src="assets/img/Showcase_loop.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
         </div>
-        
-        <div class="logo-grid" id="logoGrid">
-          <!-- Row 1 -->
-          <img src="assets/img/docker.png" alt="Docker" class="tool-logo reproducibility">
-          <img src="assets/img/hf-logo.svg" alt="Hugging Face" class="tool-logo reusability">
-          <img src="assets/img/Kaggle_logo.png" alt="Kaggle" class="tool-logo reusability reproducibility">
-          <img src="assets/img/Nextflow_logo.png" alt="Nextflow" class="tool-logo reproducibility">
-          
-          <!-- Row 2 -->
-          <img src="assets/img/githublogo.png" alt="GitHub" class="tool-logo reusability reproducibility">
-          <img src="assets/img/greensoftware.png" alt="Green Software Foundation" class="tool-logo sustainability">
-          <img src="assets/img/snakemake.png" alt="Snakemake" class="tool-logo reproducibility">
-          <img src="assets/img/fair4ml.png" alt="FAIR4ML" class="tool-logo reusability">
-          
-          <!-- Row 3 -->
-          <img src="assets/img/DOME_Registry_Rounded-cropped.svg" alt="DOME Registry" class="tool-logo reusability">
-          <img src="assets/img/openml.png" alt="OpenML" class="tool-logo reusability reproducibility">
-          <img src="assets/img/Ersilia_Plum.png" alt="Ersilia" class="tool-logo sustainability reusability">
+      </div>
+    </div>
+    
+    <!-- Single row of logos below both panes -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <div class="logo-grid" id="logoGrid" style="display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; margin-top: 0;">
+          <img src="assets/img/docker.png" alt="Docker" class="tool-logo reproducibility" style="flex: none; width: 80px;">
+          <img src="assets/img/hf-logo.svg" alt="Hugging Face" class="tool-logo reusability" style="flex: none; width: 80px;">
+          <img src="assets/img/Kaggle_logo.png" alt="Kaggle" class="tool-logo reusability reproducibility" style="flex: none; width: 80px;">
+          <img src="assets/img/Nextflow_logo.png" alt="Nextflow" class="tool-logo reproducibility" style="flex: none; width: 80px;">
+          <img src="assets/img/githublogo.png" alt="GitHub" class="tool-logo reusability reproducibility" style="flex: none; width: 80px;">
+          <img src="assets/img/greensoftware.png" alt="Green Software Foundation" class="tool-logo sustainability" style="flex: none; width: 80px;">
+          <img src="assets/img/snakemake.png" alt="Snakemake" class="tool-logo reproducibility" style="flex: none; width: 80px;">
+          <img src="assets/img/fair4ml.png" alt="FAIR4ML" class="tool-logo reusability" style="flex: none; width: 80px;">
+          <img src="assets/img/DOME_Registry_Rounded-cropped.svg" alt="DOME Registry" class="tool-logo reusability" style="flex: none; width: 80px;">
+          <img src="assets/img/openml.png" alt="OpenML" class="tool-logo reusability reproducibility" style="flex: none; width: 80px;">
+          <img src="assets/img/Ersilia_Plum.png" alt="Ersilia" class="tool-logo sustainability reusability" style="flex: none; width: 80px;">
+        </div>
+      </div>
+    </div>
+    
+    <!-- Centered button below logos -->
+    <div class="row mt-4">
+      <div class="col-12 text-center">
+        <div class="cta-buttons">
+          <a routerLink="/ai-ecosystem" class="btn btn-outline-primary btn-lg">Explore the AI Ecosystem</a>
         </div>
       </div>
     </div>
   </section>
-
-  <!-- Add script for the filter functionality -->
-  <script>
-    function highlightCategory(category) {
-      // Remove all highlight classes
-      document.getElementById('logoGrid').classList.remove('highlight-reusability');
-      document.getElementById('logoGrid').classList.remove('highlight-reproducibility');
-      document.getElementById('logoGrid').classList.remove('highlight-sustainability');
-      
-      // Remove active class from all pills
-      document.querySelectorAll('.filter-pill').forEach(pill => {
-        pill.classList.remove('active');
-      });
-      
-      // Add highlight class for the selected category
-      document.getElementById('logoGrid').classList.add('highlight-' + category);
-      
-      // Add active class to selected pill
-      document.getElementById(category + 'Filter').classList.add('active');
-    }
-  </script>
   
   <!-- Divider between OSAI AI Ecosystem and Implementation Pathways -->
   <div class="container-fluid px-0">
