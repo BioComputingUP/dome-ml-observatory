@@ -46,12 +46,12 @@
   <div class="page-header text-center py-4">
     <div class="container">
       <h1 class="page-title">OSAI: Open and Sustainable AI Ecosystem Components</h1>
-      <p class="page-subtitle">Discover and explore tools, standards, and resources that support the OSAI recommendations</p>
+      <p class="page-subtitle">Discover and explore tools, standards, and resources that implementing the OSAI recommendations</p>
       
       <div class="action-buttons">
-        <a href="https://doi.org/10.48550/arXiv.2505.16619" target="_blank" rel="noopener noreferrer" class="btn-action">
-          <img src="assets/img/book-solid.svg" alt="Publication icon">
-          OSAI Publication
+        <a href="/guidelines" class="btn-action">
+          <img src="assets/img/book-solid.svg" alt="Guidelines icon">
+          OSAI Guidelines
         </a>
         <a href="https://github.com/gavinf97/OSAI_ecosystem" target="_blank" rel="noopener noreferrer" class="btn-secondary-action">
           <img src="https://cdnjs.cloudflare.com/ajax/libs/octicons/8.5.0/svg/mark-github.svg" alt="GitHub logo" style="filter: invert(1) brightness(2);">
@@ -62,71 +62,10 @@
   </div>
   
   <div class="container">
-    <!-- OSAI Recommendations Section -->
-    <div class="recommendations-card">
-      <div class="recommendations-header" role="button" (click)="toggleRecommendations()">
-        <span>OSAI Recommendations</span>
-        <span class="indicator" [style.transform]="showRecommendations ? 'rotate(180deg)' : 'none'">▼</span>
-      </div>
-      <div class="recommendations-content" [hidden]="!showRecommendations">
-        <p>
-          The OSAI Recommendations, detailed in the paper <a href="https://doi.org/10.48550/arXiv.2505.16619" target="_blank" rel="noopener noreferrer">'Open and Sustainable AI: challenges, opportunities and the road ahead in the life sciences'</a>, 
-          propose the following actions to guide the development and deployment of AI models in a manner that aids reusability, reproducibility and is environmentally conscious:
-        </p>
-        
-        <div class="recommendation-grid">
-          <div class="recommendation-item">
-            <strong>R1: Generate and share standardised AI metadata for models and datasets.</strong>
-            <p>Adopt and share standardised metadata using community-driven schemas for both datasets and models to enhance machine readability, findability, and interoperability for reuse.</p>
-          </div>
-          
-          <div class="recommendation-item">
-            <strong>R2: Leverage AI registries as central hubs for sharing and discovering reusable AI models and datasets.</strong>
-            <p>Deposit and register models and datasets in established AI registries, considering choice between domain-specific or general-purpose options to maximise visibility and accessibility for the research community.</p>
-          </div>
-          
-          <div class="recommendation-item">
-            <strong>R3: Host, promote and share training and guidance on correct deposition of AI research objects for reuse.</strong>
-            <p>Develop and disseminate training materials on best practices for AI model and dataset deposition, utilising dedicated training resource platforms to build community capacity and ensure proper sharing for reuse.</p>
-          </div>
-          
-          <div class="recommendation-item">
-            <strong>R4: Ensure transparent disclosure, clear documentation and sharing of all model relevant information.</strong>
-            <p>Ensure transparent reporting by comprehensively documenting all model-relevant information, including data, methods, and configurations, guided by community disclosure checklists and reporting platforms.</p>
-          </div>
-          
-          <div class="recommendation-item">
-            <strong>R5: Provide portable code and reproducible environments to facilitate smooth reuse.</strong>
-            <p>Facilitate practical model execution by providing portable code within reproducible environments using software containerisation, environment management tools, and workflow systems.</p>
-          </div>
-          
-          <div class="recommendation-item">
-            <strong>R6: Use standardised AI-ready datasets and benchmarking evaluation protocols to facilitate reproducible model comparisons.</strong>
-            <p>Promote model comparability and validate performance claims by using standardised benchmark datasets and community-agreed evaluation protocols, often accessible via public benchmarking platforms.</p>
-          </div>
-          
-          <div class="recommendation-item">
-            <strong>R7: Implement Green AI model development techniques.</strong>
-            <p>Reduce energy consumption by implementing Green AI techniques (e.g., pruning, transfer learning) and adopting Frugal AI principles throughout the model development lifecycle, guided by established best practices.</p>
-          </div>
-          
-          <div class="recommendation-item">
-            <strong>R8: Choose and optimise hardware to reduce environmental impact.</strong>
-            <p>Minimise environmental footprint by selecting energy-efficient hardware, optimising chip usage for specific tasks, and considering green energy sources or sustainably designed data centres for computations.</p>
-          </div>
-          
-          <div class="recommendation-item">
-            <strong>R9: Measure and report AI model environmental impact.</strong>
-            <p>Consistently measure and report key environmental impact metrics (e.g., energy consumption, carbon emissions, runtime) using suitable tooling, and disclose these figures in publications or on dedicated reporting platforms.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    
     <!-- Filters Section -->
     <div class="filters-section">
-      <h2 class="filters-title">
-        <i class="icon icon-common icon-filter"></i>
+      <h2 class="filters-title" style="color: #F66729;">
+        <i class="icon icon-common icon-filter" style="color: #F66729;"></i>
         Filter Components
       </h2>
       
@@ -186,7 +125,7 @@
       <ng-container *ngIf="filteredData.length > 0">
         <!-- Results header with count -->
         <div class="results-header">
-          <div class="results-count">{{ filteredData.length }} components found</div>
+          <div class="results-count">{{ filteredData.length }} components</div>
         </div>
         
         <!-- Modern table for components -->
