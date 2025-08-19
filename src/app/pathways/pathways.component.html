@@ -656,35 +656,44 @@
             <p>
               The most direct way to reduce your environmental impact is to decrease the amount of computation required to train and run your model. Adopting "Green AI" practices focuses on efficiency, ensuring you achieve your research goals with the least amount of energy possible.
             </p>
+
             <p>
-              <strong>Select Efficient Algorithms and Models:</strong> Before starting, consider the inherent efficiency of the algorithms you plan to use. Some models are less computationally intensive by design. For tabular data, libraries like XGBoost and LightGBM are not only high-performing but are also optimized for speed and efficiency, making them a greener choice than more complex deep learning models where not necessary.
-            </p>
-            <p>
-              <strong>Apply Model Optimization Techniques:</strong> You can significantly reduce the computational cost of deep learning models by making them smaller and more efficient without a major loss in performance. Techniques like pruning (removing unnecessary model parameters) and quantization (using lower-precision numerical formats) can drastically cut down on resource needs. The EfficientBioAI package is an example of a tool designed specifically to implement such methods for bio-imaging AI tasks.
-            </p>
-            <p>
-              <strong>Adopt Energy-Efficient Development Practices:</strong> How you develop your model matters just as much as the model itself. Consult established guides to learn about and apply these practices throughout your project lifecycle. The Green Software Patterns guide, from the Green Software Foundation, provides a collection of actionable strategies, such as efficient data loading, energy-aware hyperparameter tuning, and leveraging transfer learning from pre-trained models to avoid training from scratch.
+              <strong style="display: block; margin-bottom: 0.5rem;">Select Efficient Algorithms and Models:</strong> Before starting, consider the inherent efficiency of the algorithms you plan to use. Some models are less computationally intensive by design. For tabular data, libraries like XGBoost and LightGBM are not only high-performing but are also optimized for speed and efficiency, making them a greener choice than more complex deep learning models where not necessary.
             </p>
             <div class="mt-3">
-              <strong class="accent-text">Key Resources:</strong>
+              <strong class="accent-text">Key Resource:</strong>
               <div style="margin-bottom:1rem;">
                 <a href="https://xgboost.readthedocs.io/" target="_blank" class="resource-link">
                   <i class="icon icon-common icon-external-link-alt"></i>
-                  XGBoost & LightGBM
+                  XGBoost
                 </a>
                 <div style="margin-left:2rem;">
-                  High-performance, efficient libraries for gradient boosting on tabular data, optimized for speed and resource usage.
+                  A high-performance, efficient library for gradient boosting on tabular data, optimized for speed and resource usage.
                 </div>
               </div>
+            </div>
+
+            <p>
+              <strong style="display: block; margin-bottom: 0.5rem;">Apply Model Optimization Techniques:</strong> You can significantly reduce the computational cost of deep learning models by making them smaller and more efficient without a major loss in performance. Techniques like pruning (removing unnecessary model parameters) and quantization (using lower-precision numerical formats) can drastically cut down on resource needs. The EfficientBioAI package is an example of a tool designed specifically to implement such methods for bio-imaging AI tasks.
+            </p>
+            <div class="mt-3">
+              <strong class="accent-text">Key Resource:</strong>
               <div style="margin-bottom:1rem;">
-                <a href="https://github.com/MMV-Lab/EfficientBioAI" target="_blank" class="resource-link">
+                <a href="https://efficientbioai.readthedocs.io/" target="_blank" class="resource-link">
                   <i class="icon icon-common icon-external-link-alt"></i>
                   EfficientBioAI
                 </a>
                 <div style="margin-left:2rem;">
-                  A package for bio-imaging AI that implements pruning and quantization techniques to reduce model size and energy consumption. [20, 28, 30]
+                  A package for bio-imaging AI that implements pruning and quantization techniques to reduce model size and energy consumption.
                 </div>
               </div>
+            </div>
+
+            <p>
+              <strong style="display: block; margin-bottom: 0.5rem;">Adopt Energy-Efficient Development Practices:</strong> How you develop your model matters just as much as the model itself. Consult established guides to learn about and apply these practices throughout your project lifecycle. The Green Software Patterns guide, from the Green Software Foundation, provides a collection of actionable strategies, such as efficient data loading, energy-aware hyperparameter tuning, and leveraging transfer learning from pre-trained models to avoid training from scratch.
+            </p>
+            <div class="mt-3">
+              <strong class="accent-text">Key Resource:</strong>
               <div style="margin-bottom:1rem;">
                 <a href="https://patterns.greensoftware.foundation/" target="_blank" class="resource-link">
                   <i class="icon icon-common icon-external-link-alt"></i>
@@ -711,17 +720,8 @@
             <p>
               The hardware you use and where it is located are critical factors in your project's overall energy consumption and carbon footprint.
             </p>
-            <p><strong>On-Premises and Local Computing:</strong> If you are using your institution's hardware, there are still choices you can make to optimize for sustainability.</p>
-            <ul>
-              <li><strong>Select Efficient Hardware:</strong> Use modern, energy-efficient hardware. When working with deep learning, use chips optimized for the task, such as GPUs from providers like NVIDIA, which are supported by platforms like NVIDIA GPU Cloud (NGC). [7, 8, 17, 19, 31]</li>
-              <li><strong>Optimize Your Workloads:</strong> For researchers with access to High-Performance Computing (HPC) centers, dedicated services like the Performance Optimisation and Productivity Centre of Excellence in HPC (POP CoE) can provide expert advice on how to make your code run more efficiently on the available infrastructure. [5, 6, 35, 45, 47]</li>
-              <li><strong>Choose Greener Institutions:</strong> If you have a choice of where to run large-scale computations, consult the Top 500 Green list, which ranks supercomputing centers based on their energy efficiency.</li>
-            </ul>
-            <p><strong>Cloud Computing:</strong> Cloud platforms offer significant flexibility for reducing your carbon footprint by allowing you to choose where and when your computations run.</p>
-            <ul>
-              <li><strong>Select Green Energy Regions:</strong> Most major cloud providers operate data centers around the world, some of which are powered by a higher percentage of renewable energy. Use guides like the Carbon free energy for Google Cloud regions to select a data center in a low-carbon zone. [1, 22, 24, 44, 50]</li>
-              <li><strong>Schedule Workloads Intelligently:</strong> The carbon intensity of the electricity grid fluctuates throughout the day. Tools like the Carbon Aware SDK can help you schedule your computational jobs to run at times when the grid is supplied by more renewable energy, thereby minimizing the emissions associated with your work. [2, 14, 16, 40, 46]</li>
-            </ul>
+
+            <p><strong style="display: block; margin-bottom: 0.5rem;">On-Premises and Local Computing:</strong> If you are using your institution's hardware, there are still choices you can make to optimize for sustainability. Use modern, energy-efficient hardware like GPUs for deep learning, optimize your code for the available infrastructure, and consider the energy efficiency of the supercomputing centers you use by consulting resources like the Top 500 Green list.</p>
             <div class="mt-3">
               <strong class="accent-text">Key Resources:</strong>
               <div style="margin-bottom:1rem;">
@@ -729,28 +729,33 @@
                   <i class="icon icon-common icon-external-link-alt"></i>
                   NVIDIA GPU Cloud (NGC)
                 </a>
-                <div style="margin-left:2rem;">A hub for GPU-optimized software and pre-built containers that accelerate AI and HPC workloads on energy-efficient NVIDIA GPUs. [7, 8, 17, 19, 31]</div>
+                <div style="margin-left:2rem;">A hub for GPU-optimized software that accelerates AI on energy-efficient GPUs.</div>
               </div>
               <div style="margin-bottom:1rem;">
                 <a href="https://pop-coe.eu/" target="_blank" class="resource-link">
                   <i class="icon icon-common icon-external-link-alt"></i>
                   POP CoE
                 </a>
-                <div style="margin-left:2rem;">An EU Centre of Excellence that provides free services to help academic and industrial users optimize their HPC applications for better performance and efficiency. [5, 6, 35, 45, 47]</div>
+                <div style="margin-left:2rem;">Provides free services to help academic and industrial users optimize their HPC applications for better performance and efficiency.</div>
               </div>
+            </div>
+
+            <p><strong style="display: block; margin-bottom: 0.5rem;">Cloud Computing:</strong> Cloud platforms offer significant flexibility for reducing your carbon footprint. You can choose to run your computations in data centers powered by a higher percentage of renewable energy and schedule your jobs to run at times when the local electricity grid is less carbon-intensive.</p>
+            <div class="mt-3">
+              <strong class="accent-text">Key Resources:</strong>
               <div style="margin-bottom:1rem;">
                 <a href="https://cloud.google.com/sustainability/region-carbon" target="_blank" class="resource-link">
                   <i class="icon icon-common icon-external-link-alt"></i>
                   Carbon free energy for Google Cloud
                 </a>
-                <div style="margin-left:2rem;">Data and guidance from Google to help users select cloud regions with a higher percentage of carbon-free energy. [1, 22, 24, 44, 50]</div>
+                <div style="margin-left:2rem;">Guidance from Google to help users select cloud regions with a higher percentage of carbon-free energy.</div>
               </div>
               <div style="margin-bottom:1rem;">
                 <a href="https://github.com/Green-Software-Foundation/carbon-aware-sdk" target="_blank" class="resource-link">
                   <i class="icon icon-common icon-external-link-alt"></i>
                   Carbon Aware SDK
                 </a>
-                <div style="margin-left:2rem;">A Green Software Foundation toolkit that allows applications to be scheduled and run during times of lower grid carbon intensity. [2, 14, 16, 40, 46]</div>
+                <div style="margin-left:2rem;">A toolkit that allows applications to be scheduled and run during times of lower grid carbon intensity.</div>
               </div>
             </div>
           </div>
@@ -769,10 +774,7 @@
             <p>
               To understand your project's environmental footprint and contribute to a community-wide culture of transparency, it is essential to measure and report your energy consumption and carbon emissions. This should be planned from the very beginning of your project.
             </p>
-            <p><strong>Use Active Monitoring Tools (Preferred):</strong> Integrate monitoring tools directly into your code to automatically track energy consumption and estimate the carbon footprint of your training and inference runs in real-time. Tools like CodeCarbon, Experiment Impact Tracker, and Carbon Tracker can be added to your code to log CO2 emissions. [10, 11, 29, 36, 37, 38, 41, 42, 43, 49] If using the cloud, leverage built-in dashboards like the Google Carbon Footprint tool, the AWS Carbon Footprint Tool, or the Microsoft Emissions Dashboard. [3, 4, 9, 12, 13, 18, 21, 23, 25, 26, 27, 32, 33, 39, 48]</p>
-            <p><strong>Estimate Impact When Active Monitoring Is Not Possible:</strong> If you cannot use active monitoring tools, you can still create an estimate after your experiments are complete. This requires you to diligently log key details during your runs: the specific hardware used (e.g., CPU/GPU models), the total runtime, and the geographic location of the hardware. This information can then be input into tools like the ML CO2 Impact Calculator to generate a post-hoc estimate of your carbon footprint.</p>
-            <p><strong>Report Your Findings:</strong> Finally, make your environmental impact metrics public. Disclose them in the methods section of your publication or in your code repository. For a greater community impact, submit your results to dedicated platforms that track and compare the energy efficiency of models, such as the Reinforcement Learning Energy Leaderboard or the Machine Learning Energy Leaderboard.</p>
-
+            <p><strong style="display: block; margin-bottom: 0.5rem;">Use Active Monitoring Tools (Preferred):</strong> Integrate monitoring tools directly into your code to automatically track energy consumption and estimate the carbon footprint of your training and inference runs in real-time. Cloud platforms also offer built-in dashboards to monitor your carbon footprint.</p>
             <div class="mt-3">
               <strong class="accent-text">Key Resources:</strong>
               <div style="margin-bottom:1rem;">
@@ -790,7 +792,7 @@
                   Experiment Impact Tracker
                 </a>
                 <div style="margin-left:2rem;">
-                  A tool to track energy usage, carbon emissions, and compute utilization for experiments on Linux systems with Intel CPUs and NVIDIA GPUs. [11, 36, 38, 43, 49]
+                  A tool to track energy usage, carbon emissions, and compute utilization of your experiments.
                 </div>
               </div>
               <div style="margin-bottom:1rem;">
@@ -799,9 +801,14 @@
                    Carbon Tracker
                 </a>
                 <div style="margin-left:2rem;">
-                  A tool designed to predict and track the carbon footprint of training deep learning models. [10, 29, 37, 41, 42]
+                  A tool designed to predict and track the carbon footprint of training deep learning models.
                 </div>
               </div>
+            </div>
+
+            <p><strong style="display: block; margin-bottom: 0.5rem;">Estimate Impact When Active Monitoring Is Not Possible:</strong> If you cannot use active monitoring tools, you can still create an estimate after your experiments are complete. This requires you to diligently log key details during your runs: the specific hardware used, the total runtime, and the geographic location of the hardware. This information can then be input into an online calculator.</p>
+            <div class="mt-3">
+              <strong class="accent-text">Key Resource:</strong>
               <div style="margin-bottom:1rem;">
                 <a href="https://mlco2.github.io/impact/" target="_blank" class="resource-link">
                   <i class="icon icon-common icon-external-link-alt"></i>
@@ -812,6 +819,8 @@
                 </div>
               </div>
             </div>
+            
+            <p><strong style="display: block; margin-bottom: 0.5rem;">Report Your Findings:</strong> Finally, make your environmental impact metrics public. Disclose them in the methods section of your publication or in your code repository. For a greater community impact, submit your results to dedicated platforms that track and compare the energy efficiency of models, such as the Reinforcement Learning Energy Leaderboard or the Machine Learning Energy Leaderboard.</p>
           </div>
         </div>
       </div>
