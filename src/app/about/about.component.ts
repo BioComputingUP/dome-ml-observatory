@@ -6,10 +6,14 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./about.component.scss']
 })
 export class AboutComponent implements OnInit {
+  showAuthors = false;
 
   constructor() { }
 
   ngOnInit(): void {
   }
 
+  toggleAuthors() {
+    this.showAuthors = !this.showAuthors;
+  }
 }
