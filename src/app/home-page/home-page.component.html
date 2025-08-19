@@ -6,6 +6,78 @@
       border-color: #103444 !important;
       color: white !important;
     }
+    .pathway-card {
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .pathway-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important;
+    }
+    .filter-pill {
+      display: inline-block;
+      padding: 8px 18px;
+      margin: 0 8px 15px 0;
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 25px;
+      color: #495057;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .filter-pill:hover, .filter-pill.active {
+      background-color: #F66729;
+      border-color: #F66729;
+      color: white;
+    }
+    .logo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .tool-logo {
+      max-width: 100%;
+      height: 60px;
+      object-fit: contain;
+      opacity: 0.5;
+      transition: all 0.3s ease;
+      filter: grayscale(50%);
+      padding: 8px;
+      border-radius: 8px;
+      background-color: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .tool-logo.reusability {
+      opacity: 0.5;
+    }
+    .tool-logo.reproducibility {
+      opacity: 0.5;
+    }
+    .tool-logo.sustainability {
+      opacity: 0.5;
+    }
+    .highlight-reusability .tool-logo.reusability {
+      opacity: 1;
+      filter: grayscale(0%);
+      transform: scale(1.05);
+    }
+    .highlight-reproducibility .tool-logo.reproducibility {
+      opacity: 1;
+      filter: grayscale(0%);
+      transform: scale(1.05);
+    }
+    .highlight-sustainability .tool-logo.sustainability {
+      opacity: 1;
+      filter: grayscale(0%);
+      transform: scale(1.05);
+    }
+    .highlight-reusability .tool-logo:not(.reusability),
+    .highlight-reproducibility .tool-logo:not(.reproducibility),
+    .highlight-sustainability .tool-logo:not(.sustainability) {
+      opacity: 0.2;
+    }
   </style>
   
   <!-- Hero Section -->
@@ -78,17 +150,68 @@
   <!-- From Principles to Practice: The OSAI Ecosystem Section -->
   <section class="ecosystem-section pt-4 pb-5 bg-white" style="background-color: white !important;">
     <div class="row">
-      <div class="col-lg-8 mx-auto text-center">
-        <h2 class="h2 dome-heading mb-4">From Guidelines to Implementation: The AI Ecosystem</h2>
+      <div class="col-lg-5 mx-auto text-center">
+        <h2 class="h2 dome-heading mb-4">OSAI's AI Ecosystem: <br>Supporting Implementation</h2>
         <p class="lead mb-4">
-          Adopting new standards and implementing best practices can be challenging in a fragmented AI landscape. The OSAI AI Ecosystem is a curated, interactive registry connecting each recommendation to over 300 real-world components. Discover the exact tools, data registries, and metadata standards you need to implement sustainable and open AI in your research today.
+          Stop searching, start implementing. The OSAI AI Ecosystem is a living, interactive registry connecting our OSAI Recommendations to over 300 real-world components. Filter by your goal, from reproducibility tools to sustainability supprots. Find the right resources to build better and more responsible AI.
         </p>
         <div class="cta-buttons mt-4">
           <a routerLink="/ai-ecosystem" class="btn btn-outline-primary btn-lg">Explore the AI Ecosystem</a>
         </div>
       </div>
+      
+      <div class="col-lg-6 mx-auto mt-4 mt-lg-0">
+        <h4 class="mb-4 text-center">The Live Showcase</h4>
+        
+        <div class="filter-container text-center mb-3">
+          <span class="filter-pill" id="reusabilityFilter" onclick="highlightCategory('reusability')">Reusability</span>
+          <span class="filter-pill" id="reproducibilityFilter" onclick="highlightCategory('reproducibility')">Reproducibility</span>
+          <span class="filter-pill" id="sustainabilityFilter" onclick="highlightCategory('sustainability')">Sustainability</span>
+        </div>
+        
+        <div class="logo-grid" id="logoGrid">
+          <!-- Row 1 -->
+          <img src="assets/img/ecosystem/docker.png" alt="Docker" class="tool-logo reproducibility">
+          <img src="assets/img/ecosystem/huggingface.png" alt="HuggingFace" class="tool-logo reusability">
+          <img src="assets/img/ecosystem/kaggle.png" alt="Kaggle" class="tool-logo reusability reproducibility">
+          <img src="assets/img/ecosystem/colab.png" alt="Google Colab" class="tool-logo reproducibility">
+          
+          <!-- Row 2 -->
+          <img src="assets/img/ecosystem/github.png" alt="GitHub" class="tool-logo reusability reproducibility">
+          <img src="assets/img/ecosystem/codecarbon.png" alt="CodeCarbon" class="tool-logo sustainability">
+          <img src="assets/img/ecosystem/zenodo.png" alt="Zenodo" class="tool-logo reusability">
+          <img src="assets/img/ecosystem/jupyter.png" alt="Jupyter" class="tool-logo reproducibility">
+          
+          <!-- Row 3 -->
+          <img src="assets/img/ecosystem/fair.png" alt="FAIR Principles" class="tool-logo reusability">
+          <img src="assets/img/ecosystem/greensoftware.png" alt="Green Software Foundation" class="tool-logo sustainability">
+          <img src="assets/img/ecosystem/snakemake.png" alt="Snakemake" class="tool-logo reproducibility">
+          <img src="assets/img/ecosystem/dvc.png" alt="DVC" class="tool-logo reusability reproducibility">
+        </div>
+      </div>
     </div>
   </section>
+
+  <!-- Add script for the filter functionality -->
+  <script>
+    function highlightCategory(category) {
+      // Remove all highlight classes
+      document.getElementById('logoGrid').classList.remove('highlight-reusability');
+      document.getElementById('logoGrid').classList.remove('highlight-reproducibility');
+      document.getElementById('logoGrid').classList.remove('highlight-sustainability');
+      
+      // Remove active class from all pills
+      document.querySelectorAll('.filter-pill').forEach(pill => {
+        pill.classList.remove('active');
+      });
+      
+      // Add highlight class for the selected category
+      document.getElementById('logoGrid').classList.add('highlight-' + category);
+      
+      // Add active class to selected pill
+      document.getElementById(category + 'Filter').classList.add('active');
+    }
+  </script>
   
   <!-- Divider between OSAI AI Ecosystem and Implementation Pathways -->
   <div class="container-fluid px-0">
