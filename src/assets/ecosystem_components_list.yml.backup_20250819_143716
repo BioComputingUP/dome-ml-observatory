@@ -4308,31 +4308,3 @@
     This overview paper discusses numerous drivers for reproducibility, including
     best practices (R3), information disclosure via checklists/model cards (R4),
     portable code (R5), and standardized evaluation (R6).
-
-- id: mldcat
-  name: MLDCAT-AP
-  type: Metadata
-  description: >-
-    A metadata format that aims to describe machine learning models, together with their datasets, 
-    quality measured on the datasets and citing papers. It has been originally developed in collaboration with OpenML.
-  url: https://semiceu.github.io/MLDCAT-AP/releases/2.0.0/
-  biotools-url: ''
-  fairsharing-url: ''
-  access-model: Free
-  domain: domain-agnostic
-  osai-recommendation: R1
-  osai-explanation: AI model and dataset specific metadata format (R1).
-
-- id: fairformlassessment
-  name: FAIR for Machine Learning Model - Principles and Assessment Metrics
-  type: Best practice
-  description: >-
-    FAIR4ML Model specifies the adoption of the FAIR principles for ML models, 
-    including a set of metrics to conduct its assessment.
-  url: https://zenodo.org/records/13835105
-  biotools-url: ''
-  fairsharing-url: ''
-  access-model: Free
-  domain: domain-agnostic
-  osai-recommendation: R4
-  osai-explanation: AI model assessment metrics based on FAIR principles mapped to ML models (R4).
