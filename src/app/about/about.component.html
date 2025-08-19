@@ -361,6 +361,40 @@
       background-color: rgba(246, 103, 41, 0.1);
       color: #F66729;
     }
+
+    /* Premium Gold Shimmer for Carole Goble */
+    .carole-goble-premium {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      z-index: 1;
+    }
+    .carole-goble-premium::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 100%;
+      pointer-events: none;
+      transform: translateX(-100%) skewX(-20deg);
+      background: linear-gradient(
+        90deg,
+        rgba(255,255,255,0) 0%,
+        rgba(220,190,110,0.7) 50%,
+        rgba(255,255,255,0) 100%
+      );
+      transition: transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94);
+      z-index: 2;
+    }
+    .carole-goble-premium:hover::after {
+      transform: translateX(50%) skewX(-20deg);
+    }
+    .carole-goble-premium:hover {
+      border-color: #D4AF37;
+      box-shadow: 0 0 15px rgba(212,175,55,0.3);
+    }
   </style>
 
   <!-- Fixed Side Navigation -->
@@ -671,51 +705,7 @@
                 </div>
               </div>
               
-              <div class="author-card">
-                <div class="author-name">Christophe Dessimoz</div>
-                <div class="author-org">University of Lausanne; SIB</div>
-                <div class="author-country">Switzerland</div>
-                <div class="author-links">
-                  <a href="https://orcid.org/0000-0002-2170-853X" target="_blank" class="author-link">
-                    <img src="https://orcid.org/assets/vectors/orcid.logo.icon.svg" alt="ORCID" style="width: 16px; height: 16px; margin-right: 5px; vertical-align: middle;">ORCID
-                  </a>
-                </div>
-              </div>
-              
-              <div class="author-card">
-                <div class="author-name">Alexandros Dimopoulos</div>
-                <div class="author-org">Biomedical Sciences Research Center 'Alexander Fleming'</div>
-                <div class="author-country">Greece</div>
-                <div class="author-links">
-                  <a href="https://orcid.org/0000-0002-4602-2040" target="_blank" class="author-link">
-                    <img src="https://orcid.org/assets/vectors/orcid.logo.icon.svg" alt="ORCID" style="width: 16px; height: 16px; margin-right: 5px; vertical-align: middle;">ORCID
-                  </a>
-                </div>
-              </div>
-              
-              <div class="author-card">
-                <div class="author-name">Raúl Fernández-Díaz</div>
-                <div class="author-org">University College Dublin; IBM Research</div>
-                <div class="author-country">Ireland</div>
-                <div class="author-links">
-                  <a href="https://orcid.org/0000-0002-7383-6568" target="_blank" class="author-link">
-                    <img src="https://orcid.org/assets/vectors/orcid.logo.icon.svg" alt="ORCID" style="width: 16px; height: 16px; margin-right: 5px; vertical-align: middle;">ORCID
-                  </a>
-                </div>
-              </div>
-              
-              <div class="author-card">
-                <div class="author-name">Styliani-Christina Fragkouli</div>
-                <div class="author-org">Centre for Research and Technology Hellas</div>
-                <div class="author-country">Greece</div>
-                <div class="author-links">
-                  <a href="https://orcid.org/0000-0003-4067-7123" target="_blank" class="author-link">
-                    <img src="https://orcid.org/assets/vectors/orcid.logo.icon.svg" alt="ORCID" style="width: 16px; height: 16px; margin-right: 5px; vertical-align: middle;">ORCID
-                  </a>
-                </div>
-              </div>
-              
-              <div class="author-card">
+              <div class="author-card carole-goble-premium">
                 <div class="author-name">Carole Goble</div>
                 <div class="author-org">University of Manchester</div>
                 <div class="author-country">United Kingdom</div>
