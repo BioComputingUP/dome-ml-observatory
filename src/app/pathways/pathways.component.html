@@ -476,7 +476,7 @@
         <div class="implementation-step" id="reuse-training-step5" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content5').classList.toggle('d-none');">
           <h3>
             <span class="step-number">2</span>
-            Create Portable Code via Reproducible Environments & Workflows (R5)
+            Create Reproducible Environments and Workflows (R5)
             <span style="float:right;">
               <i class="icon icon-common icon-chevron-down"></i>
             </span>
@@ -557,42 +557,69 @@
         <div class="implementation-step" id="reuse-training-step6" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content6').classList.toggle('d-none');">
           <h3>
             <span class="step-number">3</span>
-            Learn Reuse Best Practices Through Training (R3)
+            Ensure Transparent Disclosure and Clear Documentation (R4)
             <span style="float:right;">
               <i class="icon icon-common icon-chevron-down"></i>
             </span>
           </h3>
           <div id="reuse-training-content6" class="d-none" style="margin-top:1rem;">
             <p>
-              Before sharing your model and data, it's beneficial to understand the established best practices for making research outputs reusable. Several resources provide guidance on data and software management.
+              With a standardized evaluation and a portable workflow in place, the final step is to create comprehensive documentation that clearly discloses all information necessary for someone to understand and reproduce your work.
+            </p>
+            <p>
+              <strong>Consult AI disclosure frameworks:</strong> Many established checklists and recommendations exist to understand and guide researchers on what information is considered essential for disclosure. These frameworks provide a structured guide to ensure you don't miss any critical details.
             </p>
             <div class="mt-3">
               <strong class="accent-text">Key Resources:</strong>
               <div style="margin-bottom:1rem;">
-                <a href="https://rdmkit.elixir-europe.org/" target="_blank" class="resource-link">
+                <a href="https://dome-ml.org/guidelines" target="_blank" class="resource-link">
                   <i class="icon icon-common icon-external-link-alt"></i>
-                  RDMkit (Research Data Management Toolkit)
+                  DOME Recommendations
                 </a>
                 <div style="margin-left:2rem;">
-                  This toolkit offers comprehensive guidance on managing research data throughout its lifecycle. While not exclusively focused on AI, its principles are fundamental for preparing your AI datasets for sharing.
+                  Community-driven guidelines for reporting supervised machine learning in biology, covering aspects from data processing to model evaluation.
                 </div>
               </div>
               <div style="margin-bottom:1rem;">
-                <a href="https://everse.software/RSQKit/" target="_blank" class="resource-link">
+                <a href="https://isitopen.ai/" target="_blank" class="resource-link">
                   <i class="icon icon-common icon-external-link-alt"></i>
-                  RSQkit (Research Software Quality Toolkit)
+                  Model Openness Framework (MOF)
                 </a>
                 <div style="margin-left:2rem;">
-                  As AI models are a form of research software, this toolkit provides valuable best practices for ensuring your model's code is high-quality, well-documented, and sustainable for long-term reuse.
+                  A domain-agnostic checklist for evaluating the openness and completeness of a machine learning model, covering code, data, and documentation.
                 </div>
               </div>
-              <div>
-                <a href="https://www.scilifelab.se/data/open-fair-ml-models/" target="_blank" class="resource-link">
+              <div style="margin-bottom:1rem;">
+                <a href="https://commonfund.nih.gov/bridge2ai" target="_blank" class="resource-link">
                   <i class="icon icon-common icon-external-link-alt"></i>
-                  SciLifeLab Funder requirements and FAIR ML models
+                  Bridge2AI Recommendations
                 </a>
                 <div style="margin-left:2rem;">
-                  This is a practical example of guidance from a national life science organization on how to make machine learning models Open and FAIR (Findable, Accessible, Interoperable, and Reusable). It can serve as a template for meeting the requirements of funders and institutions.
+                  NIH guidance including best practices for making biomedical data AI-ready and for transparently documenting AI methodologies.
+                </div>
+              </div>
+              <!-- Align these sections left to match "Consult AI disclosure frameworks:" -->
+              <div style="margin-bottom:1rem;">
+                <strong>Disclose Information Alongside Your Research Assets:</strong>
+                <ul style="margin-top:0.5rem;">
+                  <li>In the methods section of your publication.</li>
+                  <li>As supplementary material linked to your paper.</li>
+                  <li>Within the README.md file of your public code repository.</li>
+                </ul>
+              </div>
+              <div style="margin-bottom:1rem;">
+                <strong>Leverage Dedicated Reporting Services:</strong> For an even higher level of transparency and findability, use specialized registries designed to capture structured information about your study.
+                <div style="margin-top:0.5rem;">
+                  <strong class="accent-text">Key Resource:</strong>
+                  <div style="margin-bottom:1rem;">
+                    <a href="https://registry.dome-ml.org/intro" target="_blank" class="resource-link">
+                      <i class="icon icon-common icon-external-link-alt"></i>
+                      DOME Registry
+                    </a>
+                    <div>
+                      Allows you to create a structured, machine-readable record of your machine learning study. It complements your publication by providing curated, persistent annotations based on the DOME recommendations, directly linking all components of your work and maximizing its visibility and reproducibility.
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
