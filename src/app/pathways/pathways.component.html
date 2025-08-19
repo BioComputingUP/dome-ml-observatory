@@ -257,42 +257,74 @@
         <div class="implementation-step" id="reuse-training-step2" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content2').classList.toggle('d-none');">
           <h3>
             <span class="step-number">2</span>
-            Learn Reuse Best Practices Through Training (R3)
+            Create Comprehensive Metadata Based on Standards (R1)
             <span style="float:right;">
               <i class="icon icon-common icon-chevron-down"></i>
             </span>
           </h3>
           <div id="reuse-training-content2" class="d-none" style="margin-top:1rem;">
             <p>
-              Before sharing your model and data, it's beneficial to understand the established best practices for making research outputs reusable. Several resources provide guidance on data and software management.
+              Metadata is the data describing your AI model and dataset. It is essential for reusability. It provides the necessary context for others to discover, comprehend, and trust your work. It allows both humans and machines to interact with them in a structured and consistent way when using metadata standards.
+              <br> <br> Before you start, it's wise to identify a few potential registries where you plan to deposit your model and dataset (see Step 3). Review their specific metadata requirements to ensure you capture all necessary information from the outset, which will save you time and effort later.
             </p>
             <div class="mt-3">
               <strong class="accent-text">Key Resources:</strong>
-              <div style="margin-bottom:1rem;">
-                <a href="https://rdmkit.elixir-europe.org/" target="_blank" class="resource-link">
+              <div style="margin-bottom:1rem;">    
+              </div>
+              <div style="margin-top:2rem; margin-bottom:0.5rem; font-weight:600;">Metadata for Your Model:</div>
+              <div style="margin-left:2rem; margin-bottom:1rem;">
+                <a href="https://www.rd-alliance.org/groups/fair4ml-ig.html" target="_blank" class="resource-link">
                   <i class="icon icon-common icon-external-link-alt"></i>
-                  RDMkit (Research Data Management Toolkit)
+                  FAIR4ML (FAIR for Machine Learning) Schema
                 </a>
-                <div style="margin-left:2rem;">
-                  This toolkit offers comprehensive guidance on managing research data throughout its lifecycle. While not exclusively focused on AI, its principles are fundamental for preparing your AI datasets for sharing.
+                <div>
+                  Developed by the Research Data Alliance, this schema is specifically designed to apply the FAIR principles to machine learning models, ensuring they are well-described for reuse.
                 </div>
               </div>
-              <div style="margin-bottom:1rem;">
-                <a href="https://everse.software/RSQKit/" target="_blank" class="resource-link">
+              <div style="margin-left:2rem; margin-bottom:1rem;">
+                <a href="https://modelcards.google.com/" target="_blank" class="resource-link">
                   <i class="icon icon-common icon-external-link-alt"></i>
-                  RSQkit (Research Software Quality Toolkit)
+                  Model Cards
                 </a>
-                <div style="margin-left:2rem;">
-                  As AI models are a form of research software, this toolkit provides valuable best practices for ensuring your model's code is high-quality, well-documented, and sustainable for long-term reuse.
+                <div>
+                  This is a documentation framework for reporting on a model's intended uses, performance, limitations, and ethical considerations. It provides a standardized summary for potential users.
                 </div>
               </div>
-              <div>
-                <a href="https://www.scilifelab.se/data/open-fair-ml-models/" target="_blank" class="resource-link">
+              <div style="margin-left:2rem; margin-bottom:1rem;">
+                <a href="https://onnx.ai/" target="_blank" class="resource-link">
                   <i class="icon icon-common icon-external-link-alt"></i>
-                  SciLifeLab Funder requirements and FAIR ML models
+                  ONNX (Open Neural Network Exchange)
                 </a>
-                <div style="margin-left:2rem;">
-                  This is a practical example of guidance from a national life science organization on how to make machine learning models Open and FAIR (Findable, Accessible, Interoperable, and Reusable). It can serve as a template for meeting the requirements of funders and institutions.
+                <div>
+                  While a format for model interoperability, ONNX files also embed important metadata about the model's architecture, inputs, and outputs, which is crucial for practical reuse.
+                </div>
+              </div>
+              <div style="margin-top:2rem; margin-bottom:0.5rem; font-weight:600;">Metadata for Your Dataset:</div>
+              <div style="margin-left:2rem; margin-bottom:1rem;">
+                <a href="https://mlcommons.org/croissant/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  Croissant
+                </a>
+                <div>
+                  A metadata format from MLCommons designed to make ML datasets easily discoverable, understandable, and usable across different tools and platforms.
+                </div>
+              </div>
+              <div style="margin-left:2rem; margin-bottom:1rem;">
+                <a href="https://datasetcard.for.ai/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  Dataset Cards
+                </a>
+                <div>
+                  Similar to Model Cards, these provide a structured way to document a dataset's origins, contents, collection methods, and potential biases, helping others assess its suitability for their needs.
+                </div>
+              </div>
+              <div style="margin-left:2rem; margin-bottom:1rem;">
+                <a href="https://www.w3.org/TR/prov-o/" target="_blank" class="resource-link">
+                  <i class="icon icon-common icon-external-link-alt"></i>
+                  PROV-O (PROV Ontology)
+                </a>
+                <div>
+                  The PROV Ontology is a general-purpose standard for representing provenance information. Using it allows you to describe the origin and processing history of your data, building trust and enabling reproducibility.
                 </div>
               </div>
             </div>
@@ -604,62 +636,6 @@
                   SciLifeLab Funder requirements and FAIR ML models
                 </a>
                 <div style="margin-left:2rem;">
-                  This is a practical example of guidance from a national life science organization on how to make machine learning models Open and FAIR (Findable, Accessible, Interoperable, and Reusable). It can serve as a template for meeting the requirements of funders and institutions.
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 3 -->
-        <div class="implementation-step" id="reuse-training-step9" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content9').classList.toggle('d-none');">
-          <h3>
-            <span class="step-number">3</span>
-            Learn Reuse Best Practices Through Training (R3)
-            <span style="float:right;">
-              <i class="icon icon-common icon-chevron-down"></i>
-            </span>
-          </h3>
-          <div id="reuse-training-content9" class="d-none" style="margin-top:1rem;">
-            <p>
-              Before sharing your model and data, it's beneficial to understand the established best practices for making research outputs reusable. Several resources provide guidance on data and software management.
-            </p>
-            <div class="mt-3">
-              <strong class="accent-text">Key Resources:</strong>
-              <div style="margin-bottom:1rem;">
-                <a href="https://rdmkit.elixir-europe.org/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  RDMkit (Research Data Management Toolkit)
-                </a>
-                <div style="margin-left:2rem;">
-                  This toolkit offers comprehensive guidance on managing research data throughout its lifecycle. While not exclusively focused on AI, its principles are fundamental for preparing your AI datasets for sharing.
-                </div>
-              </div>
-              <div style="margin-bottom:1rem;">
-                <a href="https://everse.software/RSQKit/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  RSQkit (Research Software Quality Toolkit)
-                </a>
-                <div style="margin-left:2rem;">
-                  As AI models are a form of research software, this toolkit provides valuable best practices for ensuring your model's code is high-quality, well-documented, and sustainable for long-term reuse.
-                </div>
-              </div>
-              <div>
-                <a href="https://www.scilifelab.se/data/open-fair-ml-models/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  SciLifeLab Funder requirements and FAIR ML models
-                </a>
-                <div style="margin-left:2rem;">
-                  This is a practical example of guidance from a national life science organization on how to make machine learning models Open and FAIR (Findable, Accessible, Interoperable, and Reusable). It can serve as a template for meeting the requirements of funders and institutions.
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <script>
     // Collapse all cards on page load
     document.addEventListener('DOMContentLoaded', function() {
