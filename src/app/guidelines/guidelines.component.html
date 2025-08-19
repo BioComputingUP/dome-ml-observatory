@@ -212,6 +212,10 @@
       margin-bottom: 1rem;
     }
     
+    .challenge-item p {
+      margin-bottom: 0; /* Remove extra space after the paragraph in each card */
+    }
+    
     /* Fix for sidebar navigation */
     @media (max-width: 768px) {
       .fixed-nav {
@@ -224,47 +228,36 @@
   <nav class="fixed-nav">
     <ul class="fixed-nav-list">
       <li class="fixed-nav-item">
-        <a href="/guidelines#challenge-section" class="fixed-nav-link" title="The Challenge">
+        <a href="#challenge-section" class="fixed-nav-link" title="The Challenge">
           <i class="icon icon-common icon-exclamation-triangle fixed-nav-icon"></i>
           <span>The Challenge</span>
         </a>
       </li>
       <li class="fixed-nav-item">
-        <a href="/guidelines#recommendations-section" class="fixed-nav-link" title="Our Recommendations">
+        <a href="#recommendations-section" class="fixed-nav-link" title="Our Recommendations">
           <i class="icon icon-common icon-lightbulb fixed-nav-icon"></i>
           <span>Recommendations</span>
         </a>
       </li>
       <li class="fixed-nav-item">
-        <a href="/guidelines#reusability-section" class="fixed-nav-link" title="Reusability">
+        <a href="#reusability-section" class="fixed-nav-link" title="Reusability">
           <i class="icon icon-common icon-recycle fixed-nav-icon"></i>
           <span>Reusability</span>
         </a>
       </li>
       <li class="fixed-nav-item">
-        <a href="/guidelines#reproducibility-section" class="fixed-nav-link" title="Reproducibility">
+        <a href="#reproducibility-section" class="fixed-nav-link" title="Reproducibility">
           <i class="icon icon-common icon-cogs fixed-nav-icon"></i>
           <span>Reproducibility</span>
         </a>
       </li>
       <li class="fixed-nav-item">
-        <a href="/guidelines#sustainability-section" class="fixed-nav-link" title="Sustainability">
+        <a href="#sustainability-section" class="fixed-nav-link" title="Sustainability">
           <i class="icon icon-common icon-leaf fixed-nav-icon"></i>
           <span>Sustainability</span>
         </a>
       </li>
-      <li class="fixed-nav-item">
-        <a href="/guidelines#ecosystem-section" class="fixed-nav-link" title="OSAI Ecosystem">
-          <i class="icon icon-common icon-project-diagram fixed-nav-icon"></i>
-          <span>OSAI Ecosystem</span>
-        </a>
-      </li>
-      <li class="fixed-nav-item">
-        <a href="/guidelines#about-section" class="fixed-nav-link" title="About Us">
-          <i class="icon icon-common icon-users fixed-nav-icon"></i>
-          <span>About Us</span>
-        </a>
-      </li>
+      <!-- Removed OSAI Ecosystem and About Us from side nav -->
     </ul>
   </nav>
 
