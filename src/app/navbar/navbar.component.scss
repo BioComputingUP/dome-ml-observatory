@@ -31,15 +31,15 @@ $color-dark-blue: #103344; // Updated to new blue color
 // Add responsive adjustments for medium-large screens
 @media (min-width: 992px) and (max-width: 1199px) {
   .navbar {
-    padding-left: 3%; // Reduce side padding
-    padding-right: 3%; // Reduce side padding
+    padding-left: 2%; // Further reduce side padding
+    padding-right: 2%; // Further reduce side padding
   }
   
   .btn-navbar {
-    padding-left: 0.633rem !important; // Increased by 15% from 0.55rem
-    padding-right: 0.633rem !important; // Increased by 15% from 0.55rem
-    margin-left: 0.253rem; // Increased by 15% from 0.22rem
-    margin-right: 0.253rem; // Increased by 15% from 0.22rem
+    padding-left: 0.5rem !important; // Reduced padding
+    padding-right: 0.5rem !important; // Reduced padding
+    margin-left: 0.2rem; // Reduced margins
+    margin-right: 0.2rem; // Reduced margins
   }
 }
 
@@ -73,10 +73,10 @@ $color-dark-blue: #103344; // Updated to new blue color
 
 .btn-navbar {
   color: white !important;
-  margin-left: 0.6rem; // Reduced by 30% from 1rem
-  margin-right: 0.6rem; // Reduced by 30% from 1rem
-  padding-left: 1rem !important;
-  padding-right: 1rem !important;
+  margin-left: 0.4rem; // Reduced from 0.6rem to allow more space
+  margin-right: 0.4rem; // Reduced from 0.6rem to allow more space
+  padding-left: 0.8rem !important; // Reduced from 1rem
+  padding-right: 0.8rem !important; // Reduced from 1rem
   background-color: transparent;
   border: none;
   border-radius: 5px;
@@ -85,6 +85,7 @@ $color-dark-blue: #103344; // Updated to new blue color
   display: inline-block;
   transform-origin: center;
   font-weight: bold;
+  white-space: nowrap; // Prevent text wrapping within navbar items
 
   &:hover {
     background-color: transparent;
@@ -207,6 +208,6 @@ $color-dark-blue: #103344; // Updated to new blue color
     margin: 0 !important;
     align-items: center;
     height: 100%;
-    flex-wrap: nowrap; // Prevent wrapping
+    // Remove flex-wrap: nowrap to allow natural wrapping if needed
   }
 }
