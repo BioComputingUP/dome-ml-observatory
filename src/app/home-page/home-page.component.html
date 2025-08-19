@@ -85,6 +85,23 @@
     .highlight-sustainability .tool-logo:not(.sustainability) {
       opacity: 0.2;
     }
+    .cta-button {
+      background-color: white;
+      color: #F66729;
+      border: 2px solid #F66729;
+      padding: 0.75rem 2rem;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-decoration: none !important;
+    }
+    .cta-button:hover {
+      background-color: #F66729;
+      color: white;
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(246, 103, 41, 0.3);
+      text-decoration: none !important;
+    }
   </style>
   
   <!-- Hero Section -->
@@ -147,7 +164,7 @@
     <div class="row mt-5">
       <div class="col-12 text-center">
         <div class="cta-buttons">
-          <a routerLink="/guidelines" class="btn btn-outline-primary btn-lg">View the Guidelines</a>
+          <a routerLink="/guidelines" class="cta-button">View the Guidelines</a>
         </div>
       </div>
     </div>
@@ -201,7 +218,7 @@
     <div class="row mt-5">
       <div class="col-12 text-center">
         <div class="cta-buttons">
-          <a routerLink="/ai-ecosystem" class="btn btn-outline-primary btn-lg">Explore the AI Ecosystem</a>
+          <a routerLink="/ai-ecosystem" class="cta-button">Explore the AI Ecosystem</a>
         </div>
       </div>
     </div>
@@ -272,7 +289,7 @@
     <div class="row mt-4">
       <div class="col-12 text-center">
         <div class="cta-buttons">
-          <a routerLink="/pathways" class="btn btn-outline-primary btn-lg">View the Pathways</a>
+          <a routerLink="/pathways" class="cta-button">View the Pathways</a>
         </div>
       </div>
     </div>
