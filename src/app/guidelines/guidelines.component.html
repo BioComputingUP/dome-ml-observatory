@@ -57,9 +57,9 @@
       margin-bottom: 0.5rem;
     }
     .guideline-icon {
-      font-size: 3rem;
+      font-size: 2rem;
       color: #F66729;
-      margin-bottom: 1rem;
+      margin-bottom: 0;
     }
     .badge-requirement {
       background-color: #F66729;
@@ -93,8 +93,9 @@
     .pillar-header h3 {
       margin-left: 1rem;
       margin-bottom: 0;
-      color: #103344;
+      color: #F66729;
       font-weight: 600;
+      font-size: 2rem;
     }
     
     /* Fixed Position Navigation */
@@ -228,36 +229,35 @@
   <nav class="fixed-nav">
     <ul class="fixed-nav-list">
       <li class="fixed-nav-item">
-        <a href="#challenge-section" class="fixed-nav-link" title="The Challenge">
+        <a href="/guidelines#challenge-section" class="fixed-nav-link" title="The Challenge">
           <i class="icon icon-common icon-exclamation-triangle fixed-nav-icon"></i>
           <span>The Challenge</span>
         </a>
       </li>
       <li class="fixed-nav-item">
-        <a href="#recommendations-section" class="fixed-nav-link" title="Our Recommendations">
+        <a href="/guidelines#recommendations-section" class="fixed-nav-link" title="Our Recommendations">
           <i class="icon icon-common icon-lightbulb fixed-nav-icon"></i>
           <span>Recommendations</span>
         </a>
       </li>
       <li class="fixed-nav-item">
-        <a href="#reusability-section" class="fixed-nav-link" title="Reusability">
+        <a href="/guidelines#reusability-section" class="fixed-nav-link" title="Reusability">
           <i class="icon icon-common icon-recycle fixed-nav-icon"></i>
           <span>Reusability</span>
         </a>
       </li>
       <li class="fixed-nav-item">
-        <a href="#reproducibility-section" class="fixed-nav-link" title="Reproducibility">
+        <a href="/guidelines#reproducibility-section" class="fixed-nav-link" title="Reproducibility">
           <i class="icon icon-common icon-cogs fixed-nav-icon"></i>
           <span>Reproducibility</span>
         </a>
       </li>
       <li class="fixed-nav-item">
-        <a href="#sustainability-section" class="fixed-nav-link" title="Sustainability">
+        <a href="/guidelines#sustainability-section" class="fixed-nav-link" title="Sustainability">
           <i class="icon icon-common icon-leaf fixed-nav-icon"></i>
           <span>Sustainability</span>
         </a>
       </li>
-      <!-- Removed OSAI Ecosystem and About Us from side nav -->
     </ul>
   </nav>
 
@@ -330,9 +330,9 @@
   <!-- Our Recommendations Section -->
   <section class="py-4" id="recommendations-section">
     <div class="row">
-      <div class="col-lg-10 mx-auto">
+      <div class="col-lg-10 mx-auto text-center">
         <h2 class="section-heading">Nine Recommendations for Open and Sustainable AI (OSAI)</h2>
-        <p class="mb-5">
+        <p class="mb-5" style="margin-bottom: 0.75rem;">
           We propose nine practical recommendations to guide researchers in creating AI models that are more open and sustainable. 
           These recommendations are grouped into three core themes and are designed to be actionable, supported by a wider ecosystem of tools and resources.
         </p>
@@ -351,7 +351,7 @@
         <p class="mb-4">To ensure that AI models and datasets can be effectively shared, understood, and adapted for new research.</p>
         
         <div class="guideline-item">
-          <h4>R1: Generate and share standardised AI metadata for models and datasets</h4>
+          <h4>R1: Generate and share standardized AI metadata for models and datasets</h4>
           <p>Adopt community-driven standards like FAIR4ML for models and Croissant for datasets to improve how they can be found and used by others. This makes your work more discoverable and interoperable.</p>
           <div class="why-it-matters">
             <strong>Why it matters:</strong> Standardized metadata makes it easier for others to find, understand, and properly use your AI models and datasets, increasing their impact and reusability.
@@ -394,7 +394,7 @@
         
         <div class="guideline-item">
           <h4>R4: Ensure transparent disclosure, clear documentation and sharing of all model relevant information</h4>
-          <p>Provide comprehensive details about your model architecture, training data, and evaluation methods. Use checklists like the Model Openness Framework to guide your documentation.</p>
+          <p>Provide comprehensive details about your model architecture, training data, and evaluation methods. Use checklists like the Model Openness Framework and DOME to guide your documentation.</p>
           <div class="why-it-matters">
             <strong>Why it matters:</strong> Without thorough documentation, others cannot understand how your model works or why it produces certain results, making it difficult to verify or build upon.
           </div>
@@ -405,13 +405,13 @@
           <h4>R5: Provide portable code and reproducible environments to facilitate smooth reuse</h4>
           <p>Use tools like Docker, Conda, and Nextflow to package your code and its dependencies. This allows other researchers to more easily run and reproduce your work across different systems.</p>
           <div class="why-it-matters">
-            <strong>Why it matters:</strong> Code that runs on your system but fails on others due to environment differences is a major barrier to reproduction. Containerization solves this problem.
+            <strong>Why it matters:</strong> Code that runs on your system but fails on others due to environment differences is a major barrier to reproduction. Containerization and workflows solve this problem.
           </div>
           <span class="badge-requirement">REQUIREMENT</span>
         </div>
         
         <div class="guideline-item">
-          <h4>R6: Use standardised AI-ready datasets and benchmarking evaluation protocols to facilitate reproducible model comparisons</h4>
+          <h4>R6: Use standardized AI-ready datasets and benchmarking evaluation protocols to facilitate reproducible model comparisons</h4>
           <p>Use community-accepted benchmark datasets and evaluation protocols to ensure that your model's performance can be fairly and accurately compared to others.</p>
           <div class="why-it-matters">
             <strong>Why it matters:</strong> Standardized benchmarking enables fair comparisons between models and prevents selective reporting that may exaggerate performance claims.
@@ -458,7 +458,7 @@
           <div class="why-it-matters">
             <strong>Why it matters:</strong> What gets measured gets managed. Tracking and reporting environmental impact creates awareness and accountability while establishing benchmarks for improvement.
           </div>
-          <span class="badge-recommendation">RECOMMENDATION</span>
+          <span class="badge-requirement">REQUIREMENT</span>
         </div>
       </div>
     </div>
@@ -469,7 +469,7 @@
   <!-- OSAI Ecosystem Section -->
   <section class="py-4" id="ecosystem-section">
     <div class="row">
-      <div class="col-lg-10 mx-auto">
+      <div class="col-lg-10 mx-auto text-center">
         <h2 class="section-heading">Connecting Recommendations to Real-World Tools</h2>
         <p class="mb-5">
           To help you put these recommendations into practice, we have mapped them to a collection of over 300 components from the AI ecosystem. 
@@ -478,7 +478,7 @@
         
         <div class="text-center mb-5">
           <a routerLink="/ai-ecosystem" class="cta-button">
-            <i class="icon icon-common icon-project-diagram mr-2"></i>Explore the Interactive AI Ecosystem
+            <i class="icon icon-common icon-project-diagram mr-2"></i>Explore the AI Ecosystem
           </a>
         </div>
       </div>
