@@ -1,28 +1,28 @@
 <footer class="footer-bar bg-primary text-light pt-4 pb-2">
   <div class="footer-inner-content">
-    <div class="container-fluid">
+    <div class="container">
       <div class="row justify-content-center">
         <!-- Column 1: About OSAI -->
-        <div class="col-md-3 mb-4 mb-md-0 text-left">
+        <div class="col-md-3 mb-4 mb-md-0 footer-col-align">
           <h6 class="text-uppercase mb-3"><strong>About</strong></h6>
-          <ul class="list-unstyled">
+          <ul class="list-unstyled footer-list-align">
             <li><a href="/about" class="text-light text-decoration-none"><i class="icon icon-common icon-bullseye mr-2"></i>About OSAI</a></li>
-            <li><a href="/publications" class="text-light text-decoration-none"><i class="icon icon-common icon-copy mr-2"></i>Key Publications</a></li>
+            <li><a href="/about#publications-section" class="text-light text-decoration-none"><i class="icon icon-common icon-copy mr-2"></i>Key Publications</a></li>
           </ul>
         </div>
         <!-- Column 2: OSAI Framework -->
-        <div class="col-md-3 mb-4 mb-md-0 text-left">
+        <div class="col-md-3 mb-4 mb-md-0 footer-col-align">
           <h6 class="text-uppercase mb-3"><strong>OSAI Framework</strong></h6>
-          <ul class="list-unstyled">
+          <ul class="list-unstyled footer-list-align">
             <li><a href="/guidelines" class="text-light text-decoration-none"><i class="icon icon-common icon-lightbulb mr-2"></i>Guidelines</a></li>
             <li><a href="/ai-ecosystem" class="text-light text-decoration-none"><i class="icon icon-common icon-cogs mr-2"></i>AI Ecosystem</a></li>
-            <li><a href="/implementation" class="text-light text-decoration-none"><i class="icon icon-common icon-sitemap mr-2"></i>Pathways</a></li>
+            <li><a href="/pathways" class="text-light text-decoration-none"><i class="icon icon-common icon-sitemap mr-2"></i>Pathways</a></li>
           </ul>
         </div>
         <!-- Column 3: Connect -->
-        <div class="col-md-4 text-left">
+        <div class="col-md-4 footer-col-align">
           <h6 class="text-uppercase mb-3"><strong>Connect</strong></h6>
-          <ul class="list-unstyled">
+          <ul class="list-unstyled footer-list-align">
             <li><a href="/news" class="text-light text-decoration-none"><i class="icon icon-common icon-newspaper mr-2"></i>News & Events</a></li>
             <li><a href="mailto:contact@dome-ml.org" class="text-light text-decoration-none"><i class="icon icon-common icon-envelope mr-2"></i>Contact Us</a></li>
             <li>
@@ -65,5 +65,19 @@
     margin: 0 auto;
     padding-left: 16px;
     padding-right: 16px;
+  }
+  .footer-col-align {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .footer-list-align {
+    padding-left: 0;
+    margin-left: 0;
+    width: 100%;
+  }
+  .footer-list-align li {
+    width: 100%;
   }
 </style>
