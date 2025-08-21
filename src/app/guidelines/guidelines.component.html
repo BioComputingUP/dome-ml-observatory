@@ -61,9 +61,17 @@
       color: #F66729;
       margin-bottom: 0;
     }
-    .badge-requirement {
+    .badge-essential {
       background-color: #F66729;
       color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-required {
+      background-color: rgba(246, 103, 41, 0.15);
+      color: #D95319;
       padding: 0.25rem 0.5rem;
       border-radius: 4px;
       font-size: 0.75rem;
@@ -364,7 +372,7 @@
           <div class="why-it-matters">
             <strong>Why it matters:</strong> Standardized metadata makes it easier for others to find, understand, and properly use your AI models and datasets, increasing their impact and reusability.
           </div>
-          <span class="badge-requirement">REQUIREMENT</span>
+          <span class="badge-essential">ESSENTIAL</span>
         </div>
         
         <div class="guideline-item">
@@ -373,7 +381,7 @@
           <div class="why-it-matters">
             <strong>Why it matters:</strong> Registries provide a structured way to share your work, making it more discoverable and ensuring it remains available long-term for others to build upon.
           </div>
-          <span class="badge-requirement">REQUIREMENT</span>
+          <span class="badge-required">REQUIRED</span>
         </div>
         
         <div class="guideline-item">
@@ -382,7 +390,7 @@
           <div class="why-it-matters">
             <strong>Why it matters:</strong> Training materials help build community capacity and ensure that researchers understand how to properly share their work for maximum reuse.
           </div>
-          <span class="badge-recommendation">RECOMMENDATION</span>
+          <span class="badge-recommendation">RECOMMENDED</span>
         </div>
       </div>
     </div>
@@ -406,7 +414,7 @@
           <div class="why-it-matters">
             <strong>Why it matters:</strong> Without thorough documentation, others cannot understand how your model works or why it produces certain results, making it difficult to verify or build upon.
           </div>
-          <span class="badge-requirement">REQUIREMENT</span>
+          <span class="badge-essential">ESSENTIAL</span>
         </div>
         
         <div class="guideline-item">
@@ -415,7 +423,7 @@
           <div class="why-it-matters">
             <strong>Why it matters:</strong> Code that runs on your system but fails on others due to environment differences is a major barrier to reproduction. Containerization and workflows solve this problem.
           </div>
-          <span class="badge-requirement">REQUIREMENT</span>
+          <span class="badge-required">REQUIRED</span>
         </div>
         
         <div class="guideline-item">
@@ -424,7 +432,7 @@
           <div class="why-it-matters">
             <strong>Why it matters:</strong> Standardized benchmarking enables fair comparisons between models and prevents selective reporting that may exaggerate performance claims.
           </div>
-          <span class="badge-recommendation">RECOMMENDATION</span>
+          <span class="badge-recommendation">RECOMMENDED</span>
         </div>
       </div>
     </div>
@@ -448,7 +456,7 @@
           <div class="why-it-matters">
             <strong>Why it matters:</strong> Computationally efficient models not only reduce environmental impact but can also be more accessible to researchers with limited computing resources.
           </div>
-          <span class="badge-requirement">REQUIREMENT</span>
+          <span class="badge-essential">ESSENTIAL</span>
         </div>
         
         <div class="guideline-item">
@@ -457,7 +465,7 @@
           <div class="why-it-matters">
             <strong>Why it matters:</strong> What gets measured gets managed. Tracking and reporting environmental impact creates awareness and accountability while establishing benchmarks for improvement.
           </div>
-          <span class="badge-requirement">REQUIREMENT</span>
+          <span class="badge-required">REQUIRED</span>
         </div>
         
         <div class="guideline-item">
@@ -466,7 +474,7 @@
           <div class="why-it-matters">
             <strong>Why it matters:</strong> The hardware used for training and inference can significantly affect energy consumption. Making informed choices can substantially reduce carbon emissions.
           </div>
-          <span class="badge-recommendation">RECOMMENDATION</span>
+          <span class="badge-recommendation">RECOMMENDED</span>
         </div>
       </div>
     </div>
