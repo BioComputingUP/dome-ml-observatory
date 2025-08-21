@@ -24,12 +24,13 @@ $color-dark-blue: #103344; // Updated to new blue color
   @media (max-width: 991px) {
     height: auto;
     min-height: 90px; // Increased from 75px
-    display: block;
+    display: flex;
+    justify-content: space-between;
   }
 }
 
 // Add responsive adjustments for medium-large screens
-@media (min-width: 992px) and (max-width: 1199px) {
+@media (min-width: 992px) and (max-width: 1600px) {
   .navbar {
     padding-left: 2%; // Further reduce side padding
     padding-right: 2%; // Further reduce side padding
@@ -40,6 +41,11 @@ $color-dark-blue: #103344; // Updated to new blue color
     padding-right: 0.5rem !important; // Reduced padding
     margin-left: 0.2rem; // Reduced margins
     margin-right: 0.2rem; // Reduced margins
+  }
+
+  .navbar-brand {
+    opacity: 0;
+    pointer-events: none;
   }
 }
 
@@ -133,9 +139,15 @@ $color-dark-blue: #103344; // Updated to new blue color
   padding: 0;
   top: 50%;
   transform: translateY(-50%);
+  transition: opacity 0.3s ease-in-out;
   
   @media (min-width: 1200px) {
     left: 120px;
+  }
+
+  @media (max-width: 991px) {
+    position: static;
+    transform: none;
   }
 
   @media (max-width: 576px) {
@@ -183,6 +195,7 @@ $color-dark-blue: #103344; // Updated to new blue color
   }
 
   @media (max-width: 991px) {
+    flex-basis: 100%;
     background-color: $color-dark-blue;
     padding: 10px 0;
     margin: 0 -15px;
