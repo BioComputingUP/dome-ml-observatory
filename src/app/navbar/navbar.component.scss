@@ -11,7 +11,8 @@ $color-dark-blue: #103344; // Updated to new blue color
   padding-right: 5%;
   position: relative;
   z-index: 1040;
-  height: 90px; // Increased from 75px to accommodate larger logo
+  height: 90px; // Fixed height for all breakpoints
+  min-height: 90px;
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -22,10 +23,11 @@ $color-dark-blue: #103344; // Updated to new blue color
   }
 
   @media (max-width: 991px) {
-    height: auto;
-    min-height: 90px; // Increased from 75px
+    height: 90px; // Keep height fixed
+    min-height: 90px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
   }
 }
 
@@ -46,11 +48,14 @@ $color-dark-blue: #103344; // Updated to new blue color
   .navbar-brand {
     opacity: 0;
     pointer-events: none;
+    visibility: hidden;
   }
 }
 
 .brand-img {
-  height: 7.2rem; // Increased by 20% from 6rem
+  height: 7.2rem; // Fixed logo height
+  min-height: 7.2rem;
+  max-height: 7.2rem;
 }
 
 .brand-img-small {
@@ -139,7 +144,7 @@ $color-dark-blue: #103344; // Updated to new blue color
   padding: 0;
   top: 50%;
   transform: translateY(-50%);
-  transition: opacity 0.3s ease-in-out;
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
   
   @media (min-width: 1200px) {
     left: 120px;
@@ -148,6 +153,12 @@ $color-dark-blue: #103344; // Updated to new blue color
   @media (max-width: 991px) {
     position: static;
     transform: none;
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+    height: 90px; // Match navbar height
+    display: flex;
+    align-items: center;
   }
 
   @media (max-width: 576px) {
@@ -162,10 +173,23 @@ $color-dark-blue: #103344; // Updated to new blue color
 .navbar-toggler {
   border: 1px solid rgba(255, 255, 255, 0.3);
   padding: 5px 10px;
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+  opacity: 0;
+  visibility: hidden;
 
   &:focus {
     box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25);
     outline: none;
+  }
+
+  @media (max-width: 991px) {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  @media (min-width: 992px) {
+    opacity: 0;
+    visibility: hidden;
   }
 }
 
