@@ -1,59 +1,43 @@
-<!--<div class="container-fluid d-flex flex-row">-->
-<!--  &lt;!&ndash;    <app-header></app-header>&ndash;&gt;-->
-<!--  <div class="d-flex mx-auto">-->
-<!--    <img alt="" src="assets/img/DOME_image_web_transparent.png" class="d-inline-block brand-img img-fluid">-->
-<!--  </div>-->
-<!--  <div class="d-flex mx-auto text-center align-items-center">-->
-<!--    <div>-->
-<!--      <h1 class="project-title text-break">DOME-ML</h1>-->
-<!--      <h2 class="project-subtitle">The website of the DOME guidelines</h2>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--</div>-->
 <div class="container-fluid">
   <nav class="navbar navbar-expand-lg navbar-light">
     <a routerLink="/" class="navbar-brand">
       <img alt="" src="assets/img/OSAI_logo.png" class="brand-img img-fluid">
     </a>
-    <div class="d-flex mx-auto">
-      <div>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-label="Toggle navigation"
-                [attr.aria-expanded]="!isCollapsed"
-                (click)="isCollapsed = !isCollapsed">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-      </div>
-      <div class="collapse navbar-collapse d-flex" id="navbarSupportedContent"
-           [ngClass]="{'show': !isCollapsed}">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a class="nav-link btn-navbar" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-               routerLink=""
-               title="Home">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-item nav-link btn-navbar" routerLinkActive="active" routerLink="about"
-               title="About">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-item nav-link btn-navbar" routerLinkActive="active" routerLink="guidelines"
-               title="Guidelines">Guidelines</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-item nav-link btn-navbar" routerLinkActive="active" routerLink="ai-ecosystem"
-               title="AI Ecosystem">AI Ecosystem</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-item nav-link btn-navbar" routerLinkActive="active" routerLink="pathways"
-               title="Pathways">Pathways</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-item nav-link btn-navbar" routerLinkActive="active" routerLink="news"
-               title="News & Events">News & Events</a>
-          </li>
-        </ul>
-      </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-label="Toggle navigation"
+            [attr.aria-expanded]="!isCollapsed"
+            (click)="isCollapsed = !isCollapsed">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent"
+         [ngClass]="{'show': !isCollapsed}">
+      <ul class="navbar-nav mx-auto">
+        <li class="nav-item">
+          <a class="nav-link btn-navbar" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+             routerLink=""
+             title="Home">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-item nav-link btn-navbar" routerLinkActive="active" routerLink="about"
+             title="About">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-item nav-link btn-navbar" routerLinkActive="active" routerLink="guidelines"
+             title="Guidelines">Guidelines</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-item nav-link btn-navbar" routerLinkActive="active" routerLink="ai-ecosystem"
+             title="AI Ecosystem">AI Ecosystem</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-item nav-link btn-navbar" routerLinkActive="active" routerLink="pathways"
+             title="Pathways">Pathways</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-item nav-link btn-navbar" routerLinkActive="active" routerLink="news"
+             title="News & Events">News & Events</a>
+        </li>
+      </ul>
     </div>
   </nav>
 </div>
