@@ -13,6 +13,10 @@ export class NavbarComponent implements OnInit {
     this.isCollapsed = !this.isCollapsed;
   }
 
+  collapseNav(): void {
+    this.isCollapsed = true;
+  }
+
   constructor() {
   }
 

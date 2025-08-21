@@ -219,12 +219,17 @@ $color-dark-blue: #103344; // Updated to new blue color
   }
 
   @media (max-width: 991px) {
-    flex-basis: 100%;
+    position: absolute;
+    top: 90px; /* Match navbar height */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
     background-color: $color-dark-blue;
-    padding: 10px 0;
-    margin: 0 -15px;
-    padding-left: 15px;
-    padding-right: 15px;
+    padding: 10px 15px;
+    margin: 0;
+    border-top: 3px solid #F66729;
+    border-bottom: 3px solid #F66729;
+    z-index: 1030;
 
     .navbar-nav {
       margin-top: 10px;
