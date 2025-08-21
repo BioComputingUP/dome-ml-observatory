@@ -213,6 +213,7 @@
       padding: 1rem 0.75rem;
       width: auto;
       min-width: 120px;
+      transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
     }
     
     .fixed-nav-list {
@@ -246,6 +247,14 @@
       font-size: 1.25rem;
       margin-right: 0.5rem;
       color: #F66729;
+    }
+    
+    @media (max-width: 1599px) {
+      .fixed-nav {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
     }
     
     /* Expandable section styles */
