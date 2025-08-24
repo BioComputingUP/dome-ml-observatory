@@ -119,6 +119,26 @@
     .resource-link i {
       margin-right: 0.5rem;
     }
+    .example-impl-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      background-color: rgba(16, 51, 68, 0.1);
+      color: #103344;
+      border-radius: 4px;
+      text-decoration: none;
+      margin-top: 1rem;
+      margin-left: 0.5rem;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+    .example-impl-link:hover {
+      background-color: #103344;
+      color: white;
+    }
+    .example-impl-link i {
+      margin-right: 0.5rem;
+    }
     .cta-button {
       background-color: white;
       color: #F66729;
@@ -232,28 +252,46 @@
             <div class="mt-3">
               <strong class="accent-text">Example Resources:</strong>
               <div style="margin-bottom:1rem;">
-                <a href="https://rdmkit.elixir-europe.org/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  RDMkit (Research Data Management Toolkit)
-                </a>
+                <div>
+                  <a href="https://rdmkit.elixir-europe.org/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    RDMkit (Research Data Management Toolkit)
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div style="margin-left:2rem;">
                   This toolkit offers comprehensive guidance on managing research data throughout its lifecycle. While not exclusively focused on AI, its principles are fundamental for preparing your AI datasets for sharing.
                 </div>
               </div>
               <div style="margin-bottom:1rem;">
-                <a href="https://everse.software/RSQKit/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  RSQkit (Research Software Quality Toolkit)
-                </a>
+                <div>
+                  <a href="https://everse.software/RSQKit/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    RSQkit (Research Software Quality Toolkit)
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div style="margin-left:2rem;">
                   As AI models are a form of research software, this toolkit provides valuable best practices for ensuring your model's code is high-quality, well-documented, and sustainable for long-term reuse.
                 </div>
               </div>
               <div>
-                <a href="https://serve.scilifelab.se/docs/model-serving/fair/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  SciLifeLab Funder requirements and FAIR ML models
-                </a>
+                <div>
+                  <a href="https://serve.scilifelab.se/docs/model-serving/fair/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    SciLifeLab Funder requirements and FAIR ML models
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div style="margin-left:2rem;">
                   This is a practical example of guidance from a national life science organization on how to make machine learning models Open and FAIR (Findable, Accessible, Interoperable, and Reusable). It can serve as a template for meeting the requirements of funders and institutions.
                 </div>
@@ -282,56 +320,92 @@
               </div>
               <div style="margin-top:2rem; margin-bottom:0.5rem; font-weight:600;">Metadata for Your Model:</div>
               <div style="margin-left:2rem; margin-bottom:1rem;">
-                <a href="https://github.com/RDA-FAIR4ML/FAIR4ML-schema" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  FAIR4ML (FAIR for Machine Learning) Schema
-                </a>
+                <div>
+                  <a href="https://github.com/RDA-FAIR4ML/FAIR4ML-schema" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    FAIR4ML (FAIR for Machine Learning) Schema
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div>
                   Developed by the Research Data Alliance, this schema is specifically designed to apply the FAIR principles to machine learning models, ensuring they are well-described for reuse.
                 </div>
               </div>
               <div style="margin-left:2rem; margin-bottom:1rem;">
-                <a href="https://modelcards.withgoogle.com/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  Model Cards
-                </a>
+                <div>
+                  <a href="https://modelcards.withgoogle.com/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Model Cards
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div>
                   This is a documentation framework for reporting on a model's intended uses, performance, limitations, and ethical considerations. It provides a standardized summary for potential users.
                 </div>
               </div>
               <div style="margin-left:2rem; margin-bottom:1rem;">
-                <a href="https://onnx.ai/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  ONNX (Open Neural Network Exchange)
-                </a>
+                <div>
+                  <a href="https://onnx.ai/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    ONNX (Open Neural Network Exchange)
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div>
                   While a format for model interoperability, ONNX files also embed important metadata about the model's architecture, inputs, and outputs, which is crucial for practical reuse.
                 </div>
               </div>
               <div style="margin-top:2rem; margin-bottom:0.5rem; font-weight:600;">Metadata for Your Dataset:</div>
               <div style="margin-left:2rem; margin-bottom:1rem;">
-                <a href="https://mlcommons.org/croissant/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  Croissant
-                </a>
+                <div>
+                  <a href="https://mlcommons.org/croissant/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Croissant
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div>
                   A metadata format from MLCommons designed to make ML datasets easily discoverable, understandable, and usable across different tools and platforms.
                 </div>
               </div>
               <div style="margin-left:2rem; margin-bottom:1rem;">
-                <a href="https://huggingface.co/docs/hub/en/datasets-cards" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  Dataset Cards
-                </a>
+                <div>
+                  <a href="https://huggingface.co/docs/hub/en/datasets-cards" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Dataset Cards
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div>
                   Similar to Model Cards, these provide a structured way to document a dataset's origins, contents, collection methods, and potential biases, helping others assess its suitability for their needs.
                 </div>
               </div>
               <div style="margin-left:2rem; margin-bottom:1rem;">
-                <a href="https://www.w3.org/TR/prov-o/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  PROV-O (PROV Ontology)
-                </a>
+                <div>
+                  <a href="https://www.w3.org/TR/prov-o/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    PROV-O (PROV Ontology)
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div>
                   The PROV Ontology is a general-purpose standard for representing provenance information. Using it allows you to describe the origin and processing history of your data, building trust and enabling reproducibility.
                 </div>
@@ -357,56 +431,92 @@
               <strong class="accent-text">Example Resources:</strong>
               <div style="margin-top:2rem; margin-bottom:0.5rem; font-weight:600;">Registries for Your Model:</div>
               <div style="margin-left:2rem; margin-bottom:1rem;">
-                <a href="https://huggingface.co/models" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  Hugging Face
-                </a>
+                <div>
+                  <a href="https://huggingface.co/models" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Hugging Face
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div>
                   A widely used platform that serves as a central hub for sharing and discovering open-source models, especially in the domain of Natural Language Processing. It has strong community features and integrates well with many popular ML libraries.
                 </div>
               </div>
               <div style="margin-left:2rem; margin-bottom:1rem;">
-                <a href="https://ersilia.io/model-hub/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  Ersilia Model Hub
-                </a>
+                <div>
+                  <a href="https://ersilia.io/model-hub/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Ersilia Model Hub
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div>
                   A specialized registry focusing on pre-trained AI/ML models for drug discovery and infectious disease research, making it an excellent choice for models within this life science domain.
                 </div>
               </div>
               <div style="margin-left:2rem; margin-bottom:1rem;">
-                <a href="https://zenodo.org/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  Zenodo
-                </a>
+                <div>
+                  <a href="https://zenodo.org/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Zenodo
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div>
                   A general-purpose open-access repository, operated by CERN, that can be used to share any research output, including AI models. It is particularly useful for obtaining a persistent Digital Object Identifier (DOI) for your model, which makes it easily citable.
                 </div>
               </div>
               <div style="margin-top:2rem; margin-bottom:0.5rem; font-weight:600;">Registries for Your Dataset:</div>
               <div style="margin-left:2rem; margin-bottom:1rem;">
-                <a href="https://bioimage.io/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  BioImage Model Zoo
-                </a>
+                <div>
+                  <a href="https://bioimage.io/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    BioImage Model Zoo
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div>
                   A community-driven repository primarily for sharing pre-trained artificial intelligence models for bioimage analysis. It can host reference datasets used to train and test these models, linking models to their corresponding data.
                 </div>
               </div>
               <div style="margin-left:2rem; margin-bottom:1rem;">
-                <a href="https://figshare.com/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  Figshare
-                </a>
+                <div>
+                  <a href="https://figshare.com/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Figshare
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div>
                   An online digital repository where researchers can preserve and share their research outputs, including datasets, figures, and papers, with persistent identifiers.
                 </div>
               </div>
               <div style="margin-left:2rem; margin-bottom:1rem;">
-                <a href="https://www.kaggle.com/datasets" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  Kaggle
-                </a>
+                <div>
+                  <a href="https://www.kaggle.com/datasets" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Kaggle
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div>
                   A platform that hosts a vast collection of datasets, often used for machine learning competitions and data science practice. It fosters a large community for collaboration and provides integrated cloud-based tools for data analysis.
                 </div>
@@ -452,28 +562,46 @@
             <div class="mt-3">
               <strong class="accent-text">Example Resources:</strong>
               <div style="margin-left:2rem; margin-bottom:1rem;">
-                <a href="https://www.kaggle.com/competitions" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  Kaggle Competitions
-                </a>
+                <div>
+                  <a href="https://www.kaggle.com/competitions" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Kaggle Competitions
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div>
                   A domain-agnostic platform hosting a vast number of competitions with standardized datasets and evaluation metrics that can be used for benchmarking.
                 </div>
               </div>
               <div style="margin-left:2rem; margin-bottom:1rem;">
-                <a href="https://genomeinterpretation.org/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  CAGI (Critical Assessment of Genome Interpretation)
-                </a>
+                <div>
+                  <a href="https://genomeinterpretation.org/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    CAGI (Critical Assessment of Genome Interpretation)
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div>
                   A life-science-specific challenge that provides datasets and standardized protocols for models related to interpreting genomic variation.
                 </div>
               </div>
               <div style="margin-left:2rem; margin-bottom:1rem;">
-                <a href="https://caid.idpcentral.org/challenge" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  CAID (Critical Assessment of Intrinsic Disorder prediction)
-                </a>
+                <div>
+                  <a href="https://caid.idpcentral.org/challenge" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    CAID (Critical Assessment of Intrinsic Disorder prediction)
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div>
                   A life-science-specific challenge that provides datasets and standardized protocols for models that predict intrinsically disordered regions in proteins.
                 </div>
@@ -500,28 +628,46 @@
             <div class="mt-3">
               <strong class="accent-text">Example Resources:</strong>
               <div style="margin-left:2rem; margin-bottom:1rem;">
-                <a href="https://www.docker.com/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  Docker
-                </a>
+                <div>
+                  <a href="https://www.docker.com/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Docker
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div>
                   The most widely used containerization platform, ideal for creating and sharing application environments.
                 </div>
               </div>
               <div style="margin-left:2rem; margin-bottom:1rem;">
-                <a href="https://apptainer.org/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  Apptainer (formerly Singularity)
-                </a>
+                <div>
+                  <a href="https://apptainer.org/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Apptainer (formerly Singularity)
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div>
                   A container system popular in academic and High-Performance Computing (HPC) environments, designed with a focus on security for multi-user systems.
                 </div>
               </div>
               <div style="margin-left:2rem; margin-bottom:1rem;">
-                <a href="https://podman.io/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  Podman
-                </a>
+                <div>
+                  <a href="https://podman.io/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Podman
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div>
                   An open-source, daemonless container engine that is a popular alternative to Docker. It enhances security by not requiring a root-privileged daemon and is largely command-compatible with Docker, making it easy to adopt.
                 </div>
@@ -533,28 +679,46 @@
             <div class="mt-3">
               <strong class="accent-text">Example Resources:</strong>
               <div style="margin-left:2rem; margin-bottom:1rem;">
-                <a href="https://www.nextflow.io/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  Nextflow
-                </a>
+                <div>
+                  <a href="https://www.nextflow.io/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Nextflow
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div>
                   A powerful and scalable workflow system that excels at managing complex bioinformatics pipelines and integrates seamlessly with container technologies.
                 </div>
               </div>
               <div style="margin-left:2rem; margin-bottom:1rem;">
-                <a href="https://snakemake.readthedocs.io/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  Snakemake
-                </a>
+                <div>
+                  <a href="https://snakemake.readthedocs.io/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Snakemake
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div>
                   A Python-based workflow management system that is highly flexible and widely adopted in the life sciences for creating reproducible data analysis pipelines.
                 </div>
               </div>
               <div style="margin-left:2rem; margin-bottom:1rem;">
-                <a href="https://galaxyproject.org/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  Galaxy
-                </a>
+                <div>
+                  <a href="https://galaxyproject.org/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Galaxy
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div>
                   A web-based platform that allows researchers to build, run, and share complex computational analyses, including machine learning workflows, in a highly accessible and reproducible manner.
                 </div>
@@ -582,34 +746,52 @@
             <div class="mt-3">
               <strong class="accent-text">Example Resources:</strong>
               <div style="margin-bottom:1rem;">
-                <a href="https://dome-ml.org/guidelines" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  DOME Recommendations
-                </a>
+                <div>
+                  <a href="https://dome-ml.org/guidelines" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    DOME Recommendations
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div style="margin-left:2rem;">
                   Community-driven guidelines for reporting supervised machine learning in biology, covering aspects from data processing to model evaluation.
                 </div>
               </div>
               <div style="margin-bottom:1rem;">
-                <a href="https://isitopen.ai/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  Model Openness Framework (MOF)
-                </a>
+                <div>
+                  <a href="https://isitopen.ai/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Model Openness Framework (MOF)
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div style="margin-left:2rem;">
                   A domain-agnostic checklist for evaluating the openness and completeness of a machine learning model, covering code, data, and documentation.
                 </div>
               </div>
               <div style="margin-bottom:1rem;">
-                <a href="https://commonfund.nih.gov/bridge2ai" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  Bridge2AI Recommendations
-                </a>
+                <div>
+                  <a href="https://commonfund.nih.gov/bridge2ai" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Bridge2AI Recommendations
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div style="margin-left:2rem;">
                   NIH guidance including best practices for making biomedical data AI-ready and for transparently documenting AI methodologies.
                 </div>
               </div>
               <div style="margin-bottom:1rem;">
-                <strong>Disclose Information Alongside Your Research Assets:</strong>
+<strong>Disclose Information Alongside Your Research Assets:</strong>
                 <ul style="margin-top:0.5rem;">
                   <li>In the methods section of your publication.</li>
                   <li>As supplementary material linked to your paper.</li>
@@ -618,19 +800,31 @@
                 <div class="mt-2">
                   <strong class="accent-text">Example Resources:</strong>
                   <div style="margin-bottom:1rem;">
-                    <a href="https://github.com/" target="_blank" class="resource-link">
-                      <i class="icon icon-common icon-external-link-alt"></i>
-                      GitHub
-                    </a>
+                    <div>
+                      <a href="https://github.com/" target="_blank" class="resource-link">
+                        <i class="icon icon-common icon-external-link-alt"></i>
+                        GitHub
+                      </a>
+                      <a href="#" class="example-impl-link">
+                        <i class="icon icon-common icon-tasks"></i>
+                        Example Implementation
+                      </a>
+                    </div>
                     <div style="margin-left:2rem;">
                       The most widely used platform for sharing code and documentation, ideal for hosting your README.md and supplementary files for reproducibility.
                     </div>
                   </div>
                   <div style="margin-bottom:1rem;">
-                    <a href="https://gitlab.com/" target="_blank" class="resource-link">
-                      <i class="icon icon-common icon-external-link-alt"></i>
-                      GitLab
-                    </a>
+                    <div>
+                      <a href="https://gitlab.com/" target="_blank" class="resource-link">
+                        <i class="icon icon-common icon-external-link-alt"></i>
+                        GitLab
+                      </a>
+                      <a href="#" class="example-impl-link">
+                        <i class="icon icon-common icon-tasks"></i>
+                        Example Implementation
+                      </a>
+                    </div>
                     <div style="margin-left:2rem;">
                       An open-source alternative to GitHub, supporting public and private repositories for sharing code, documentation, and reproducibility assets.
                     </div>
@@ -642,10 +836,16 @@
                 <div style="margin-top:0.5rem;">
                   <strong class="accent-text">Example Resource:</strong>
                   <div style="margin-bottom:1rem;">
-                    <a href="https://registry.dome-ml.org/intro" target="_blank" class="resource-link">
-                      <i class="icon icon-common icon-external-link-alt"></i>
-                      DOME Registry
-                    </a>
+                    <div>
+                      <a href="https://registry.dome-ml.org/intro" target="_blank" class="resource-link">
+                        <i class="icon icon-common icon-external-link-alt"></i>
+                        DOME Registry
+                      </a>
+                      <a href="#" class="example-impl-link">
+                        <i class="icon icon-common icon-tasks"></i>
+                        Example Implementation
+                      </a>
+                    </div>
                     <div>
                       Allows you to create a structured, machine-readable record of your machine learning study. It complements your publication by providing curated, persistent annotations based on the DOME recommendations, directly linking all components of your work and maximizing its visibility and reproducibility.
                     </div>
@@ -694,10 +894,16 @@
             <div class="mt-3">
               <strong class="accent-text">Example Resource:</strong>
               <div style="margin-bottom:1rem;">
-                <a href="https://xgboost.readthedocs.io/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  XGBoost
-                </a>
+                <div>
+                  <a href="https://xgboost.readthedocs.io/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    XGBoost
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div style="margin-left:2rem;">
                   A high-performance, efficient library for gradient boosting on tabular data, optimized for speed and resource usage.
                 </div>
@@ -710,10 +916,16 @@
             <div class="mt-3">
               <strong class="accent-text">Example Resource:</strong>
               <div style="margin-bottom:1rem;">
-                <a href="https://github.com/MMV-Lab/EfficientBioAI" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  EfficientBioAI
-                </a>
+                <div>
+                  <a href="https://github.com/MMV-Lab/EfficientBioAI" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    EfficientBioAI
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div style="margin-left:2rem;">
                   A package for bio-imaging AI that implements pruning and quantization techniques to reduce model size and energy consumption.
                 </div>
@@ -726,10 +938,16 @@
             <div class="mt-3">
               <strong class="accent-text">Example Resource:</strong>
               <div style="margin-bottom:1rem;">
-                <a href="https://patterns.greensoftware.foundation/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  Green Software Patterns
-                </a>
+                <div>
+                  <a href="https://patterns.greensoftware.foundation/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Green Software Patterns
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div style="margin-left:2rem;">
                   A guide from the Green Software Foundation with practical strategies for energy-efficient AI development, including efficient data loading and transfer learning.
                 </div>
@@ -756,17 +974,29 @@
             <div class="mt-3">
               <strong class="accent-text">Example Resources:</strong>
               <div style="margin-bottom:1rem;">
-                <a href="https://www.nvidia.com/en-us/gpu-cloud/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  NVIDIA GPU Cloud (NGC)
-                </a>
+                <div>
+                  <a href="https://www.nvidia.com/en-us/gpu-cloud/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    NVIDIA GPU Cloud (NGC)
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div style="margin-left:2rem;">A hub for GPU-optimized software that accelerates AI on energy-efficient GPUs.</div>
               </div>
               <div style="margin-bottom:1rem;">
-                <a href="https://pop-coe.eu/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  POP CoE
-                </a>
+                <div>
+                  <a href="https://pop-coe.eu/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    POP CoE
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div style="margin-left:2rem;">Provides free services to help academic and industrial users optimize their HPC applications for better performance and efficiency.</div>
               </div>
             </div>
@@ -775,17 +1005,29 @@
             <div class="mt-3">
               <strong class="accent-text">Example Resources:</strong>
               <div style="margin-bottom:1rem;">
-                <a href="https://cloud.google.com/sustainability/region-carbon" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  Carbon free energy for Google Cloud
-                </a>
+                <div>
+                  <a href="https://cloud.google.com/sustainability/region-carbon" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Carbon free energy for Google Cloud
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div style="margin-left:2rem;">Guidance from Google to help users select cloud regions with a higher percentage of carbon-free energy.</div>
               </div>
               <div style="margin-bottom:1rem;">
-                <a href="https://github.com/Green-Software-Foundation/carbon-aware-sdk" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  Carbon Aware SDK
-                </a>
+                <div>
+                  <a href="https://github.com/Green-Software-Foundation/carbon-aware-sdk" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Carbon Aware SDK
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div style="margin-left:2rem;">A toolkit that allows applications to be scheduled and run during times of lower grid carbon intensity.</div>
               </div>
             </div>
@@ -809,28 +1051,46 @@
             <div class="mt-3">
               <strong class="accent-text">Example Resources:</strong>
               <div style="margin-bottom:1rem;">
-                <a href="https://codecarbon.io/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  CodeCarbon
-                </a>
+                <div>
+                  <a href="https://codecarbon.io/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    CodeCarbon
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div style="margin-left:2rem;">
                   An open-source Python package to track and visualize the energy consumption and CO2 emissions of your code.
                 </div>
               </div>
               <div style="margin-bottom:1rem;">
-                <a href="https://github.com/breakend/experiment-impact-tracker" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  Experiment Impact Tracker
-                </a>
+                <div>
+                  <a href="https://github.com/breakend/experiment-impact-tracker" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Experiment Impact Tracker
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div style="margin-left:2rem;">
                   A tool to track energy usage, carbon emissions, and compute utilization of your experiments.
                 </div>
               </div>
               <div style="margin-bottom:1rem;">
-                <a href="https://github.com/lfwa/carbontracker" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                   Carbon Tracker
-                </a>
+                <div>
+                  <a href="https://github.com/lfwa/carbontracker" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                     Carbon Tracker
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div style="margin-left:2rem;">
                   A tool designed to predict and track the carbon footprint of training deep learning models.
                 </div>
@@ -841,10 +1101,16 @@
             <div class="mt-3">
               <strong class="accent-text">Example Resource:</strong>
               <div style="margin-bottom:1rem;">
-                <a href="https://mlco2.github.io/impact/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  ML CO2 Impact Calculator
-                </a>
+                <div>
+                  <a href="https://mlco2.github.io/impact/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    ML CO2 Impact Calculator
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div style="margin-left:2rem;">
                   A calculator for estimating the carbon footprint of machine learning experiments based on hardware, runtime, and location.
                 </div>
@@ -855,19 +1121,31 @@
             <div class="mt-3">
               <strong class="accent-text">Example Resources:</strong>
               <div style="margin-bottom:1rem;">
-                <a href="https://breakend.github.io/RL-Energy-Leaderboard/reinforcement_learning_energy_leaderboard/index.html" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  Reinforcement Learning Energy Leaderboard
-                </a>
+                <div>
+                  <a href="https://breakend.github.io/RL-Energy-Leaderboard/reinforcement_learning_energy_leaderboard/index.html" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Reinforcement Learning Energy Leaderboard
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div style="margin-left:2rem;">
                   A public leaderboard that tracks and compares the energy efficiency and carbon footprint of reinforcement learning models and algorithms.
                 </div>
               </div>
               <div style="margin-bottom:1rem;">
-                <a href="https://ml-energy-leaderboard.github.io/" target="_blank" class="resource-link">
-                  <i class="icon icon-common icon-external-link-alt"></i>
-                  Machine Learning Energy Leaderboard
-                </a>
+                <div>
+                  <a href="https://ml-energy-leaderboard.github.io/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Machine Learning Energy Leaderboard
+                  </a>
+                  <a href="#" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
                 <div style="margin-left:2rem;">
                   A platform for reporting and comparing the energy consumption of machine learning models, helping researchers promote transparency and sustainability.
                 </div>
