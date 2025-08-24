@@ -1,3 +1,4 @@
+``yaml
 # This AI Ecosystem components list repurposes the YAML file format from the EVERSE RSQkit
 # (metadata format: https://w3id.org/everse/rs/0.0.1), which supports community curation,
 # interoperability, and reuse. It adds new fields relevant to its use case of capturing AI ecosystem components.
@@ -20,7 +21,7 @@
 #   domain: The primary application domain of the resource (e.g., 'life science', 'domain-agnostic').
 #   osai-recommendation: Mapped Open and Sustainable AI (OSAI) Recommendation(s) (see osai_recommendations.yml; e.g., R2 or R2, R3).
 #   osai-explanation: Brief explanation of the OSAI recommendation mapping (e.g., Ersilia Model Hub is a registry (R2) providing accessible ML models for drug discovery/disease research.).
-#
+
 # Blank tool entry template (Make a copy and insert at bottom of file after the last existing entry):
 
 # - id:
@@ -3667,7 +3668,7 @@
   type: Metadata
   description: >-
     Dedicated machine learning models licensing info webpage on the Turing Way resource.
-  url: https://book.the-turing-way.org/reproducible-research/licensing/licensing-ml.html
+  url: ''
   biotools-url: ''
   fairsharing-url: ''
   access-model: Free
@@ -4396,3 +4397,4 @@
   domain: life science
   osai-recommendation: R6
   osai-explanation: A benchmarking experiment that provides standardized datasets and evaluation protocols for protein function prediction methods (R6).
+```
