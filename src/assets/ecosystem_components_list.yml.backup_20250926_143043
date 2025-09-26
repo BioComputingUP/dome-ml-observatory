@@ -1653,7 +1653,7 @@
   url: https://aircheck.ai/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Commercial
   domain: domain-agnostic
   osai-recommendation: R4, R6
   osai-explanation: Will eventually validate hosted models (R2) against evaluation protocols in challenges (R6).

@@ -206,7 +206,7 @@
   url: https://www.comet.com/site/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Mixed
+  access-model: Free with Paid Tiers
   domain: domain-agnostic
   osai-recommendation: R4, R6
   osai-explanation: Tracks experiments (R4) and can be used for benchmarking (R6).
@@ -234,7 +234,7 @@
   url: https://www.nvidia.com/en-us/gpu-cloud/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Mixed
+  access-model: Free with Paid Tiers
   domain: domain-agnostic
   osai-recommendation: R2, R9
   osai-explanation: Hosts models/datasets (R2) and focuses on specific (NVIDIA) hardware (R9).
@@ -419,7 +419,7 @@
   url: https://colab.research.google.com/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Mixed
+  access-model: Free with Paid Tiers
   domain: domain-agnostic
   osai-recommendation: R5
   osai-explanation: Platform for sharing model code using notebooks for portability (R5).
@@ -447,7 +447,7 @@
   url: https://github.com/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Mixed
+  access-model: Free with Paid Tiers
   domain: domain-agnostic
   osai-recommendation: R5
   osai-explanation: Code sharing platform, can be used for sharing models/datasets and code (R5).
@@ -489,7 +489,7 @@
   url: https://figshare.com/
   biotools-url: ''
   fairsharing-url: https://fairsharing.org/FAIRsharing.drtwnh
-  access-model: Mixed
+  access-model: Free with Paid Tiers
   domain: domain-agnostic
   osai-recommendation: R2
   osai-explanation: Repository usable for finding and sharing AI/ML models and datasets (R2).
@@ -657,7 +657,7 @@
   url: https://mlcommons.org/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: domain-agnostic
   osai-recommendation: R1, R3, R6
   osai-explanation: Develops metadata standards (R1), hosts benchmarks (R6), promotes best practices (R3).
@@ -671,7 +671,7 @@
   url: https://www.rd-alliance.org/groups/fair-machine-learning-fair4ml-ig
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: domain-agnostic
   osai-recommendation: R1, R3, R4
   osai-explanation: Focuses on AI model metadata (R1), best practices (R3), and info disclosure (R4).
@@ -688,7 +688,7 @@
   url: https://elixir-europe.org/focus-groups/machine-learning
   biotools-url: ''
   fairsharing-url: '' 
-  access-model: Free
+  access-model: Portal
   domain: life science
   osai-recommendation: R3
   osai-explanation: Promotes training and best practices.
@@ -717,7 +717,7 @@
   url: https://www.nactem.ac.uk/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: life science
   osai-recommendation: ''
   osai-explanation: ''
@@ -731,7 +731,7 @@
   url: https://thealliance.ai/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: domain-agnostic
   osai-recommendation: ''
   osai-explanation: ''
@@ -745,7 +745,7 @@
   url: https://www.fbpml.org/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: domain-agnostic
   osai-recommendation: R3
   osai-explanation: Promotes best practices (R3) including AI/ML info disclosure.
@@ -760,7 +760,7 @@
   url: https://greensoftware.foundation/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: domain-agnostic
   osai-recommendation: R7, R8
   osai-explanation: Focuses on green techniques (R7) and impact measurement (R8).
@@ -774,7 +774,7 @@
   url: https://cairne.eu/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: domain-agnostic
   osai-recommendation: ''
   osai-explanation: ''
@@ -788,7 +788,7 @@
   url: https://www.gofair.us/farr
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: domain-agnostic
   osai-recommendation: R3
   osai-explanation: Promotes AI metadata, best practices (R3), and AI/ML info disclosure.
@@ -803,7 +803,7 @@
   url: https://ivi.uva.nl/content/news/2022/06/successful-fact-ai-course-leads-to-student-awards.html
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: ''
   domain: domain-agnostic
   osai-recommendation: R3
   osai-explanation: AI/ML training example (R3), focused on best practices related to confidentiality and transparency.
@@ -817,7 +817,7 @@
   url: https://ai.google/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: domain-agnostic # Broad AI research, some in life science but org is general
   osai-recommendation: ''
   osai-explanation: ''
@@ -831,7 +831,7 @@
   url: https://ai.meta.com/research/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: domain-agnostic
   osai-recommendation: ''
   osai-explanation: ''
@@ -845,7 +845,7 @@
   url: https://www.microsoft.com/en-us/research/research-area/artificial-intelligence/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: domain-agnostic
   osai-recommendation: ''
   osai-explanation: ''
@@ -873,7 +873,7 @@
   url: https://allenai.org/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: domain-agnostic # AI for common good, some life science but institute is broader
   osai-recommendation: ''
   osai-explanation: ''
@@ -901,7 +901,7 @@
   url: https://partnershiponai.org/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: domain-agnostic
   osai-recommendation: ''
   osai-explanation: ''
@@ -915,7 +915,7 @@
   url: https://vectorinstitute.ai/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: domain-agnostic # Broad AI research
   osai-recommendation: ''
   osai-explanation: ''
@@ -929,7 +929,7 @@
   url: https://ellis.eu/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: domain-agnostic
   osai-recommendation: ''
   osai-explanation: ''
@@ -943,7 +943,7 @@
   url: https://dmg.org/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: domain-agnostic
   osai-recommendation: R1
   osai-explanation: Develops AI-specific metadata standards (PMML) (R1). #to add in PMML
@@ -1370,11 +1370,11 @@
   name: AI4EOSC Platform
   type: Analysis platform
   description: >-
-    Software ecosystem platform designed to enhance the development and deployment of AI/ML/DL models and applications within the European Open Science Cloud (EOSC) 
+     Software ecosystem platform designed to enhance the development and deployment of AI/ML/DL models and applications within the European Open Science Cloud (EOSC) 
   url: https://dashboard.cloud.ai4eosc.eu/catalog/modules
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: domain-agnostic
   osai-recommendation: R2
   osai-explanation: Project output aims to share reusable AI models (R2).
@@ -1402,7 +1402,7 @@
   url: https://airise.eu/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: domain-agnostic
   osai-recommendation: R3
   osai-explanation: Focuses on skills and training on best practices (R3).
@@ -1416,7 +1416,7 @@
   url: https://bioimage.io/#/
   biotools-url: ''
   fairsharing-url: https://fairsharing.org/FAIRsharing.77fc63
-  access-model: Free
+  access-model: Portal
   domain: life science
   osai-recommendation: R2, R3
   osai-explanation: Registry provides bioimaging models/services (R2) and related training such as project webinars on project output usage (R3).
@@ -1430,7 +1430,7 @@
   url: https://www.ihi.europa.eu/projects-results/project-factsheets/synthia
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: life science
   osai-recommendation: ''
   osai-explanation: ''
@@ -1444,7 +1444,7 @@
   url: https://www.farr-rcn.org/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: domain-agnostic
   osai-recommendation: R1, R3, R4
   osai-explanation: Focuses on metadata (R1), AI best practices (R3), and info disclosure (R4).
@@ -1472,7 +1472,7 @@
   url: https://elsa-ai.eu/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: domain-agnostic
   osai-recommendation: ''
   osai-explanation: ''
@@ -1486,7 +1486,7 @@
   url: https://sustainml.eu/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: domain-agnostic
   osai-recommendation: R7, R8
   osai-explanation: Directly targets green AI techniques (R7) and considers impact measurement (R8).
@@ -1500,7 +1500,7 @@
   url: https://www.biodiritto.org/Attivita/Progetti/AHEAD-AI-for-Health-Evaluation-of-Applications-Datasets1
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: life science
   osai-recommendation: ''
   osai-explanation: ''
@@ -1528,7 +1528,7 @@
   url: https://commonfund.nih.gov/bridge2ai
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: life science
   osai-recommendation: R1, R2, R3, R6
   osai-explanation: Focuses on metadata (R1), datasets (R2), best practices (R3), and standardization (R6).
@@ -1653,7 +1653,7 @@
   url: https://aircheck.ai/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Commercial
   domain: domain-agnostic
   osai-recommendation: R4, R6
   osai-explanation: Will eventually validate hosted models (R2) against evaluation protocols in challenges (R6).
@@ -1708,7 +1708,7 @@
   url: https://ceur-ws.org/Vol-3890/paper-39.pdf
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: ''
   domain: domain-agnostic
   osai-recommendation: ''
   osai-explanation: ''
@@ -1750,7 +1750,7 @@
   url: https://docs.wandb.ai/guides/models/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Mixed
+  access-model: Free with Paid Tiers
   domain: domain-agnostic
   osai-recommendation: R2
   osai-explanation: Platform for sharing models/datasets (R2) and experiment results.
@@ -2100,7 +2100,7 @@
   url: https://www.atlassian.com/software/bitbucket
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Mixed
+  access-model: Free with Paid Tiers
   domain: domain-agnostic
   osai-recommendation: R5
   osai-explanation: Platform for sharing model code aiding portability (R5).
@@ -2419,7 +2419,7 @@
   url: https://github.com/MLOntology/MLO
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: domain-agnostic
   osai-recommendation: R1
   osai-explanation: Focuses on AI-specific metadata (R1).
@@ -2727,7 +2727,7 @@
   url: https://www.coursera.org/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Mixed
+  access-model: Free with Paid Tiers
   domain: domain-agnostic
   osai-recommendation: ''
   osai-explanation: ''
@@ -2754,7 +2754,7 @@
   url: https://www.deeplearning.ai/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Mixed
+  access-model: Free with Paid Tiers
   domain: domain-agnostic
   osai-recommendation: ''
   osai-explanation: ''
@@ -2838,7 +2838,7 @@
   url: https://clear.ml/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Mixed
+  access-model: Free with Paid Tiers
   domain: domain-agnostic
   osai-recommendation: ''
   osai-explanation: ''
@@ -2852,7 +2852,7 @@
   url: https://www.pachyderm.com/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Mixed
+  access-model: Free with Paid Tiers
   domain: domain-agnostic
   osai-recommendation: ''
   osai-explanation: ''
@@ -3256,7 +3256,7 @@
   url: https://www.nfdi4datascience.de/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Free
+  access-model: Portal
   domain: domain-agnostic
   osai-recommendation: ''
   osai-explanation: ''
@@ -3604,7 +3604,7 @@
   url: https://www.docker.com/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Mixed
+  access-model: Free
   domain: domain-agnostic
   osai-recommendation: R5
   osai-explanation: Used for containerising software to support portability across systems and reproducibility (R5).
@@ -3617,7 +3617,7 @@
   url: https://hub.docker.com/
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Mixed
+  access-model: Free
   domain: domain-agnostic
   osai-recommendation: R5
   osai-explanation: Used for downloading and sharing container software to support portability across systems and reproducibility (R5).
@@ -3931,7 +3931,7 @@
   name: Green AI Institute
   type: Organisation
   description: >-
-    Collective of researchers, academics, and professionals dedicated to advancing the integration of artificial intelligence and environmental sustainability.
+     Collective of researchers, academics, and professionals dedicated to advancing the integration of artificial intelligence and environmental sustainability.
   url: https://www.greenai.institute/home
   biotools-url: ''
   fairsharing-url: ''
@@ -4160,7 +4160,7 @@
   url: https://huggingface.co/mistralai
   biotools-url: ''
   fairsharing-url: ''
-  access-model: Mixed
+  access-model: Free
   domain: domain-agnostic
   osai-recommendation: ''
   osai-explanation: ''
@@ -4170,7 +4170,7 @@
   type: LLM
   description: >-
     GitHub Copilot offers integration of LLMs into coding IDEs such as VS Code to facilitate generative AI coding.
-  url: https://github.com/features/copilot
+  url: https://huggingface.co/mistralai
   biotools-url: ''
   fairsharing-url: ''
   access-model: Commercial
@@ -4396,148 +4396,3 @@
   domain: life science
   osai-recommendation: R6
   osai-explanation: A benchmarking experiment that provides standardized datasets and evaluation protocols for protein function prediction methods (R6).
-
-- id: pixi
-  name: Pixi
-  type: Reproducibility tool
-  description: >-
-    A cross-platform package manager and workflow tool built on Conda that
-    aims to provide robust, reproducible software environments for development.
-  url: https://pixi.sh/
-  biotools-url: ''
-  fairsharing-url: ''
-  access-model: Open Source
-  domain: domain-agnostic
-  osai-recommendation: R5
-  osai-explanation: >-
-    Creates reproducible software environments through lockfiles, ensuring
-    portable code and dependencies for AI/ML projects (R5).
-
-- id: stardai
-  name: STARD-AI (Standards for Reporting of Diagnostic Accuracy Studies - AI)
-  type: Best practice
-  description: >-
-    Reporting guideline for studies evaluating the diagnostic accuracy of an
-    artificial intelligence based test.
-  url: https://www.nature.com/articles/s41591-025-03953-8
-  biotools-url: ''
-  fairsharing-url: ''
-  access-model: Free
-  domain: life science
-  osai-recommendation: R4
-  osai-explanation: >-
-    A reporting guideline checklist that promotes transparent information
-    disclosure for diagnostic AI studies (R4).
-
-- id: decideai
-  name: DECIDE-AI (DEvelopment and Clinical-validation of trustworthy AI in DEcision-support)
-  type: Best practice
-  description: >-
-    Reporting guideline for the early-stage clinical evaluation of decision
-    support systems driven by artificial intelligence, including safety and human
-    factors evaluation.
-  url: https://www.bmj.com/content/377/bmj-2022-070904
-  biotools-url: ''
-  fairsharing-url: ''
-  access-model: Free
-  domain: life science
-  osai-recommendation: R4
-  osai-explanation: >-
-    A reporting guideline promoting transparent information disclosure for the
-    evaluation of clinical AI decision support systems (R4).
-
-- id: cheersai
-  name: CHEERS-AI (Consolidated Health Economic Evaluation Reporting Standards - AI)
-  type: Best practice
-  description: >-
-    Reporting guideline for studies describing health economic evaluations to
-    estimate the value for money (cost-effectiveness) of artificial intelligence
-    interventions.
-  url: https://www.sciencedirect.com/science/article/pii/S1098301524023660
-  biotools-url: ''
-  fairsharing-url: ''
-  access-model: Free
-  domain: life science
-  osai-recommendation: R4
-  osai-explanation: >-
-    A reporting guideline promoting transparent information disclosure for the
-    health economic evaluation of AI interventions (R4).
-
-- id: spiritai
-  name: SPIRIT-AI (Standard Protocol Items - Recommendations for Interventional Trials - AI)
-  type: Best practice
-  description: >-
-    Reporting guideline for protocols of clinical trials evaluating an
-    intervention with an artificial intelligence component.
-  url: https://www.nature.com/articles/s41591-020-1037-7
-  biotools-url: ''
-  fairsharing-url: ''
-  access-model: Free
-  domain: life science
-  osai-recommendation: R4
-  osai-explanation: >-
-    A reporting guideline promoting transparent information disclosure for AI
-    clinical trial protocols (R4).
-
-- id: consortai
-  name: CONSORT-AI (Consolidated Standards of Reporting Trials - AI)
-  type: Best practice
-  description: >-
-    Reporting guideline for clinical trial reports evaluating an intervention
-    with an artificial intelligence component.
-  url: https://www.nature.com/articles/s41591-020-1034-x
-  biotools-url: ''
-  fairsharing-url: ''
-  access-model: Free
-  domain: life science
-  osai-recommendation: R4
-  osai-explanation: >-
-    A reporting guideline promoting transparent information disclosure for AI
-    clinical trial reports (R4).
-
-- id: prismaai
-  name: PRISMA-AI (Preferred Reporting Items for Systematic reviews and Meta-Analyses - AI)
-  type: Best practice
-  description: >-
-    A reporting guideline for systematic reviews that use or evaluate artificial
-    intelligence tools.  
-  url: https://www.nature.com/articles/s41591-022-02139-w
-  biotools-url: ''
-  fairsharing-url: ''
-  access-model: Free
-  domain: life science
-  osai-recommendation: R4
-  osai-explanation: >-
-    A reporting guideline promoting transparent information disclosure for
-    systematic reviews involving AI (R4).
-
-- id: biocypher
-  name: BioCypher
-  type: Tool
-  description: >-
-    A Python framework for building and managing FAIR biomedical knowledge graphs
-    by simplifying the process of integrating and harmonizing heterogeneous data
-    sources.
-  url: https://biocypher.org/
-  biotools-url: ''
-  fairsharing-url: ''
-  access-model: Open Source
-  domain: life science
-  osai-recommendation: ''
-  osai-explanation: >-
-    Facilitates the creation of standardized, AI-ready knowledge graphs,
-    promoting metadata and data interoperability.
-
-- id: flarechallenge
-  name: FLARE (Fast and Low-resource Abdominal oRgan sEgmentation) Challenge
-  type: Benchmarking
-  description: >-
-    A MICCAI challenge for benchmarking abdominal organ segmentation methods,
-    with a focus on computational efficiency and performance on low-resource
-    hardware.
-  url: https://flare.grand-challenge.org/
-  biotools-url: ''
-  fairsharing-url: ''
-  access-model: Free
-  domain: life science
-  osai-recommendation: R6, R7
