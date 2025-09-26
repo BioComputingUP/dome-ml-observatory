@@ -551,17 +551,17 @@
               </div>
               <div style="margin-left:2rem; margin-bottom:1rem;">
                 <div>
-                  <a href="https://genomeinterpretation.org/" target="_blank" class="resource-link">
+                  <a href="https://openebench.bsc.es/" target="_blank" class="resource-link">
                     <i class="icon icon-common icon-external-link-alt"></i>
-                    CAGI (Critical Assessment of Genome Interpretation)
+                    OpenEBench
                   </a>
-                  <a href="https://genomeinterpretation.org/cagi7-challenge.html" class="example-impl-link">
+                  <a href="https://openebench.bsc.es/benchmarking/OEBC002?event=OEBE0020000003" class="example-impl-link">
                     <i class="icon icon-common icon-tasks"></i>
                     Example Implementation
                   </a>
                 </div>
                 <div>
-                  A life-science-specific challenge that provides datasets and standardized protocols for models related to interpreting genomic variation.
+                  A platform for scientific benchmarking that helps researchers to validate and select the best tools for their analyses in the life sciences.
                 </div>
               </div>
               <div style="margin-left:2rem; margin-bottom:1rem;">
@@ -595,8 +595,44 @@
           <div id="reuse-training-content5" class="d-none" style="margin-top:1rem;">
             <p>
               Once your model has been fairly benchmarked for reproducible results, the next step is to package the entire computational environment and workflow so that others can execute your code with minimal effort and achieve the same results.
-              <br><br>
-              <strong>Containerize the Environment:</strong> The foundation of practical reproducibility is containerization, which bundles your code with all its software dependencies (libraries, tools, and specific versions) into a single, portable image. This eliminates the common problem of "it works on my machine" by ensuring an identical environment on any system.
+            </p>
+            <p><strong style="display: block; margin-bottom: 0.5rem;">Ensure a compatible software environment:</strong> This foundational step involves meticulously defining and isolating all software dependencies, such as libraries, tools, and their specific versions. Properly managing these components prevents conflicts and ensures your code runs consistently across different machines, forming the bedrock of a reproducible workflow.</p>
+            <p>Before containerizing, use a dedicated environment control manager to create self-contained environments for your project's software packages. This is the first line of defense against dependency conflicts and simplifies sharing the exact software requirements with others.</p>
+            <div class="mt-3">
+              <strong class="accent-text">Example Resources:</strong>
+              <div style="margin-left:2rem; margin-bottom:1rem;">
+                <div>
+                  <a href="https://conda.io/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Conda
+                  </a>
+                  <a href="https://github.com/conda/conda-recipes" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
+                <div>
+                  An open-source package and environment management system popular in data science. It excels at installing packages and managing their complex dependencies across Windows, macOS, and Linux.
+                </div>
+              </div>
+              <div style="margin-left:2rem; margin-bottom:1rem;">
+                <div>
+                  <a href="https://pixi.sh/" target="_blank" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Pixi
+                  </a>
+                  <a href="https://github.com/prefix-dev/pixi-examples" class="example-impl-link">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
+                <div>
+                  A modern, fast package manager and workflow tool built on Conda's ecosystem. It uses a single pixi.toml file to manage cross-platform dependencies and tasks, simplifying project setup and collaboration.
+                </div>
+              </div>
+            </div>
+            <p>
+              <strong style="display: block; margin-bottom: 0.5rem;">Containerize the Environment:</strong> The foundation of practical reproducibility is containerization, which bundles your code with all its software dependencies (libraries, tools, and specific versions) into a single, portable image. This eliminates the common problem of "it works on my machine" by ensuring an identical environment on any system.
             </p>
             <div class="mt-3">
               <strong class="accent-text">Example Resources:</strong>
