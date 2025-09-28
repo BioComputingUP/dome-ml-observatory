@@ -6,6 +6,13 @@
       margin-bottom: 2rem;
       font-weight: 600;
     }
+    .implementation-step p a {
+      color: #F66729;
+      text-decoration: underline;
+    }
+    .implementation-step p a:hover {
+      color: #103344;
+    }
     .accent-text {
       color: #F66729;
     }
@@ -521,14 +528,14 @@
         <div class="implementation-step" id="reuse-training-step4" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content4').classList.toggle('d-none');">
           <h3>
             <span class="step-number">1</span>
-            Standardize Datasets and Evaluation for True Comparison (R6)
+            Standardize Datasets for Reproducible Comparison (R6)
             <span style="float:right;">
               <i class="icon icon-common icon-chevron-down"></i>
             </span>
           </h3>
           <div id="reuse-training-content4" class="d-none" style="margin-top:1rem;">
             <p>
-               Instead of using private or uniquely processed data for final evaluation of your AI model, you should benchmark your model on established "AI-ready" datasets. These are datasets that have been prepared and agreed upon by the community, reducing variability in evaluation.
+               Instead of using private or uniquely processed data for final evaluation of your AI model, you should benchmark your model on established <a href="https://theodi.org/insights/reports/a-framework-for-ai-ready-data/">AI-ready datasets</a>. These are datasets that have been prepared and agreed upon by the community, reducing variability in evaluation.
               <br> <br> Platforms hosting community benchmarking challenges are excellent sources for standardized datasets and evaluation protocols. Participating in or using resources from these challenges ensures your model is assessed against the current state-of-the-art in a controlled and transparent manner.
               <br> <br> Benchmarking services like OpenEBench serve as central hubs in the life sciences for discovering benchmarking challenges and accessing their standardized evaluation results and datasets. Using such platforms helps you to align your work with community best practices to ensure accurate and reproducible evaluation reporting.
             </p>
@@ -628,7 +635,7 @@
                 </div>
                 <div>
                   A modern, fast package manager and workflow tool built on Conda's ecosystem. It uses a single pixi.toml file to manage cross-platform dependencies and tasks, simplifying project setup and collaboration.
-                </div>
+              </div>
               </div>
             </div>
             <p>
