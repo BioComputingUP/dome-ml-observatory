@@ -964,30 +964,45 @@
               </div>
             </div>
             <br>
-            <p><strong style="display: block; margin-bottom: 0.5rem;">Specific Info on Flagship Green AI Model Development Techniques:</strong></p>
+            <p><strong style="display: block; margin-bottom: 0.5rem;">Specific Green AI Model Development Techniques:</strong></p>
             <div class="mt-3">
               <div style="margin-bottom:1rem;">
                 <div>
-                  <a href="https://huggingface.co/docs/transformers/en/training" target="_blank" rel="noopener noreferrer" class="resource-link">
+                  <a href="https://www.datacamp.com/blog/what-is-transfer-learning-in-ai-an-introductory-guide" target="_blank" rel="noopener noreferrer" class="resource-link">
                     <i class="icon icon-common icon-external-link-alt"></i>
-                    Transfer Learning & Fine-Tuning
+                    Transfer Learning
                   </a>
-                  <a href="https://huggingface.co/blog/multi-label-image-classification" class="example-impl-link" target="_blank" rel="noopener noreferrer">
+                  <a href="https://arxiv.org/abs/2406.14150v1" class="example-impl-link" target="_blank" rel="noopener noreferrer">
                     <i class="icon icon-common icon-tasks"></i>
                     Example Implementation
                   </a>
                 </div>
                 <div style="margin-left:2rem;">
-                  Adapting existing pre-trained models for new tasks to save the massive energy cost of training from scratch.
+                  Using a pre-trained model as a starting point for a new task, leveraging its learned features to save the massive energy cost of training from scratch.
                 </div>
               </div>
               <div style="margin-bottom:1rem;">
                 <div>
-                  <a href="https://pytorch.org/tutorials/intermediate/pruning_tutorial.html" target="_blank" rel="noopener noreferrer" class="resource-link">
+                  <a href="https://learn.microsoft.com/en-us/windows/ai/fine-tuning" target="_blank" rel="noopener noreferrer" class="resource-link">
+                    <i class="icon icon-common icon-external-link-alt"></i>
+                    Fine-Tuning
+                  </a>
+                  <a href="https://www.nature.com/articles/s41467-024-51844-2" class="example-impl-link" target="_blank" rel="noopener noreferrer">
+                    <i class="icon icon-common icon-tasks"></i>
+                    Example Implementation
+                  </a>
+                </div>
+                <div style="margin-left:2rem;">
+                  Further training a pre-trained model on a new, smaller dataset to adapt its specialized knowledge to a specific task, which is far more efficient than full training.
+                </div>
+              </div>
+              <div style="margin-bottom:1rem;">
+                <div>
+                  <a href="https://learn.microsoft.com/en-us/azure/architecture/ai-ml/" target="_blank" rel="noopener noreferrer" class="resource-link">
                     <i class="icon icon-common icon-external-link-alt"></i>
                     Efficient & Specialized Architectures
                   </a>
-                  <a href="https://github.com/google-research/google-research/tree/master/efficient-nas" class="example-impl-link" target="_blank" rel="noopener noreferrer">
+                  <a href="https://huggingface.co/blog/sasha/energy-efficiency-bigger-better" class="example-impl-link" target="_blank" rel="noopener noreferrer">
                     <i class="icon icon-common icon-tasks"></i>
                     Example Implementation
                   </a>
@@ -998,11 +1013,11 @@
               </div>
               <div style="margin-bottom:1rem;">
                 <div>
-                  <a href="https://pytorch.org/docs/stable/quantization.html" target="_blank" rel="noopener noreferrer" class="resource-link">
+                  <a href="https://arxiv.org/pdf/2101.09671" target="_blank" rel="noopener noreferrer" class="resource-link">
                     <i class="icon icon-common icon-external-link-alt"></i>
                     Model Optimization (Quantization & Pruning)
                   </a>
-                  <a href="https://github.com/MMV-Lab/EfficientBioAI" class="example-impl-link" target="_blank" rel="noopener noreferrer">
+                  <a href="https://arxiv.org/abs/1510.00149" class="example-impl-link" target="_blank" rel="noopener noreferrer">
                     <i class="icon icon-common icon-tasks"></i>
                     Example Implementation
                   </a>
@@ -1013,11 +1028,11 @@
               </div>
               <div style="margin-bottom:1rem;">
                 <div>
-                  <a href="https://huggingface.co/docs/transformers/en/knowledge_distillation" target="_blank" rel="noopener noreferrer" class="resource-link">
+                  <a href="https://neptune.ai/blog/knowledge-distillation" target="_blank" rel="noopener noreferrer" class="resource-link">
                     <i class="icon icon-common icon-external-link-alt"></i>
                     Knowledge Distillation
                   </a>
-                  <a href="https://huggingface.co/docs/transformers/en/distillation" class="example-impl-link" target="_blank" rel="noopener noreferrer">
+                  <a href="https://arxiv.org/abs/2508.15251" class="example-impl-link" target="_blank" rel="noopener noreferrer">
                     <i class="icon icon-common icon-tasks"></i>
                     Example Implementation
                   </a>
@@ -1028,11 +1043,11 @@
               </div>
               <div style="margin-bottom:1rem;">
                 <div>
-                  <a href="https://optuna.org/" target="_blank" rel="noopener noreferrer" class="resource-link">
+                  <a href="https://arxiv.org/html/2506.01869v1" target="_blank" rel="noopener noreferrer" class="resource-link">
                     <i class="icon icon-common icon-external-link-alt"></i>
                     Efficient Hyperparameter Optimization
                   </a>
-                  <a href="https://github.com/optuna/optuna-examples" class="example-impl-link" target="_blank" rel="noopener noreferrer">
+                  <a href="https://iopscience.iop.org/article/10.1088/2632-2153/abee59" class="example-impl-link" target="_blank" rel="noopener noreferrer">
                     <i class="icon icon-common icon-tasks"></i>
                     Example Implementation
                   </a>
@@ -1049,17 +1064,17 @@
         <div class="implementation-step" id="reuse-training-step8">
           <h3 style="cursor:pointer;" (click)="toggleCard(8)">
             <span class="step-number">2</span>
-            Choose and Optimize Hardware (R8)
+            Choose and Optimize Hardware for AI (R8)
             <span style="float:right;">
               <i id="reuse-training-icon8" class="icon icon-common" [ngClass]="isCardOpen(8) ? 'icon-chevron-down' : 'icon-chevron-right'"></i>
             </span>
           </h3>
           <div id="reuse-training-content8" [ngClass]="{'d-none': !isCardOpen(8)}" style="margin-top:1rem;">
             <p>
-              The hardware you use and where it is located are critical factors in your project's overall energy consumption and carbon footprint.
+              After taking appropriate action to identify the relevant Green AI software development techniques you will use (Step 1), the next major concern is the choice of hardware you use. This will relate to factors such as how it is optimised, where it is located and time of day you run your workloads which are all critical factors that influence your project's energy consumption and related carbon footprint.
             </p>
 
-            <p><strong style="display: block; margin-bottom: 0.5rem;">On-Premises and Local Computing:</strong> If you are using your institution's hardware, there are still choices you can make to optimize for sustainability. Use modern, energy-efficient hardware like GPUs for deep learning, optimize your code for the available infrastructure, and consider the energy efficiency of the supercomputing centers you use by consulting resources like the Top 500 Green list.</p>
+            <p><strong style="display: block; margin-bottom: 0.5rem;">On-Premises and Local Computing:</strong> If you are using your institution's hardware, there are still choices you can make to optimize for sustainability. Use modern, energy-efficient hardware like GPUs for deep learning, optimize the hardware settings of the available infrastructure, and consider the energy efficiency of the supercomputing centers you use by consulting resources like the Top 500 Green list.</p>
             <div class="mt-3">
               <strong class="accent-text">Example Resources:</strong>
               <div style="margin-bottom:1rem;">
@@ -1118,9 +1133,9 @@
           </h3>
           <div id="reuse-training-content9" [ngClass]="{'d-none': !isCardOpen(9)}" style="margin-top:1rem;">
             <p>
-              To understand your project's environmental footprint and contribute to a community-wide culture of transparency, it is essential to measure and report your energy consumption and carbon emissions. This should be planned from the very beginning of your project.
+              Finally, to understand your project's environmental footprint and contribute to a community-wide culture of transparency after taking stepos to reduce environmental impacts (Steps 1 & 2), it is essential to measure and report your energy consumption and carbon emissions. This should be planned from the very beginning of your project.
             </p>
-            <p><strong style="display: block; margin-bottom: 0.5rem;">Use Active Monitoring Tools (Preferred):</strong> Integrate monitoring tools directly into your code to automatically track energy consumption and estimate the carbon footprint of your training and inference runs in real-time. Cloud platforms also offer built-in dashboards to monitor your carbon footprint.</p>
+            <p><strong style="display: block; margin-bottom: 0.5rem;">3.1.1. Use Active Monitoring Tools (Preferred):</strong> Integrate monitoring tools directly into your code to automatically track energy consumption and estimate the carbon footprint of your training and inference runs in real-time. Cloud platforms also offer built-in dashboards to monitor your carbon footprint.</p>
             <div class="mt-3">
               <strong class="accent-text">Example Resources:</strong>
               <div style="margin-bottom:1rem;">
@@ -1170,7 +1185,7 @@
               </div>
             </div>
 
-            <p><strong style="display: block; margin-bottom: 0.5rem;">Estimate Impact When Active Monitoring Is Not Possible:</strong> If you cannot use active monitoring tools, you can still create an estimate after your experiments are complete. This requires you to diligently log key details during your runs: the specific hardware used, the total runtime, and the geographic location of the hardware. This information can then be input into an online calculator.</p>
+            <p><strong style="display: block; margin-bottom: 0.5rem;">3.1.2. Estimate Impact When Active Monitoring Is Not Possible:</strong> If you cannot use active monitoring tools, you can still create an estimate after your experiments are complete. This requires you to diligently log key details during your runs: the specific hardware used, the total runtime, and the geographic location of the hardware. This information can then be input into an online calculator.</p>
             <div class="mt-3">
               <strong class="accent-text">Example Resource:</strong>
               <div style="margin-bottom:1rem;">
@@ -1190,7 +1205,7 @@
               </div>
             </div>
             
-            <p><strong style="display: block; margin-bottom: 0.5rem;">Report Your Findings:</strong> Finally, make your environmental impact metrics public. Disclose them in the methods section of your publication or in your code repository. For a greater community impact, submit your results to dedicated platforms that track and compare the energy efficiency of models, such as the Reinforcement Learning Energy Leaderboard or the Machine Learning Energy Leaderboard.</p>
+            <p><strong style="display: block; margin-bottom: 0.5rem;">3.2. Report Your Findings:</strong> Finally, make your environmental impact metrics public. Disclose them in the methods section of your publication or in your code repository. For a greater community impact, submit your results to dedicated platforms that track and compare the energy efficiency of models, such as the Reinforcement Learning Energy Leaderboard or the Machine Learning Energy Leaderboard.</p>
             <div class="mt-3">
               <strong class="accent-text">Example Resources:</strong>
               <div style="margin-bottom:1rem;">
