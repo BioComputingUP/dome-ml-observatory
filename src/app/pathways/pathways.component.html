@@ -244,15 +244,15 @@
         <img src="assets/img/osai_pathways_1.webp" alt="OSAI Pathways" style="width:100%;display:block;margin-bottom:2rem;" loading="lazy" decoding="async">
 
         <!-- Card 1 -->
-        <div class="implementation-step" id="reuse-training-step1" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content1').classList.toggle('d-none');">
+        <div class="implementation-step" id="reuse-training-step1" style="cursor:pointer;" (click)="toggleCard(1)">
           <h3>
             <span class="step-number">1</span>
             Learn Reuse Best Practices Through Training (R3)
             <span style="float:right;">
-              <i class="icon icon-common icon-chevron-down"></i>
+              <i id="reuse-training-icon1" class="icon icon-common" [ngClass]="isCardOpen(1) ? 'icon-chevron-down' : 'icon-chevron-right'"></i>
             </span>
           </h3>
-          <div id="reuse-training-content1" class="d-none" style="margin-top:1rem;">
+          <div id="reuse-training-content1" [ngClass]="{'d-none': !isCardOpen(1)}" style="margin-top:1rem;">
             <p>
               Before sharing your model and data, it's beneficial to understand the established best practices for making research outputs reusable. Several resources provide guidance on data and software management which will set the foundation for metadata generation in Step 2 of this pathway.
             </p>
@@ -308,15 +308,15 @@
         </div>
 
         <!-- Card 2 -->
-        <div class="implementation-step" id="reuse-training-step2" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content2').classList.toggle('d-none');">
+        <div class="implementation-step" id="reuse-training-step2" style="cursor:pointer;" (click)="toggleCard(2)">
           <h3>
             <span class="step-number">2</span>
             Create Comprehensive Metadata Based on Standards (R1)
             <span style="float:right;">
-              <i class="icon icon-common icon-chevron-down"></i>
+              <i id="reuse-training-icon2" class="icon icon-common" [ngClass]="isCardOpen(2) ? 'icon-chevron-down' : 'icon-chevron-right'"></i>
             </span>
           </h3>
-          <div id="reuse-training-content2" class="d-none" style="margin-top:1rem;">
+          <div id="reuse-training-content2" [ngClass]="{'d-none': !isCardOpen(2)}" style="margin-top:1rem;">
             <p>
               After Step 1 of this pathway, you will have learned about different types of metadata. In this context metadata generated will be the data describing your AI model and dataset. It is essential for AI asset reusability as it provides the necessary context for others to discover, comprehend, and support trust in your work. It allows both humans and machines to interact with them in a structured and consistent way when using metadata standards.
               <br> <br> Before you start, it's wise to identify a few potential registries where you plan to deposit your model and dataset (see Step 3). Review their specific metadata requirements to ensure you capture all necessary information from the outset, which will save you time and effort later.
@@ -396,15 +396,15 @@
         </div>
 
         <!-- Card 3 -->
-        <div class="implementation-step" id="reuse-training-step3" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content3').classList.toggle('d-none');">
+        <div class="implementation-step" id="reuse-training-step3" style="cursor:pointer;" (click)="toggleCard(3)">
           <h3>
             <span class="step-number">3</span>
             Deposit in an Open and Accessible AI Registry (R2)
             <span style="float:right;">
-              <i class="icon icon-common icon-chevron-down"></i>
+              <i id="reuse-training-icon3" class="icon icon-common" [ngClass]="isCardOpen(3) ? 'icon-chevron-down' : 'icon-chevron-right'"></i>
             </span>
           </h3>
-          <div id="reuse-training-content3" class="d-none" style="margin-top:1rem;">
+          <div id="reuse-training-content3" [ngClass]="{'d-none': !isCardOpen(3)}" style="margin-top:1rem;">
             <p>
               Once your AI model and related dataset are well-documented with rich metadata (Step 2), the final step is to place them in a public AI registry to make them findable and accessible to the wider community. These repositories are crucial for disseminating AI models and datasets. Choose a registry according to aspects such as your target user audience, domain specificity of the registry, and optimal functionality (e.g. based on support for your metadata). 
             </p>
@@ -525,15 +525,15 @@
         <img src="assets/img/osai_pathways_2.webp" alt="OSAI Reproducibility Pathways" style="width:100%;display:block;margin-bottom:2rem;" loading="lazy" decoding="async">
 
         <!-- Card 1 -->
-        <div class="implementation-step" id="reuse-training-step4" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content4').classList.toggle('d-none');">
+        <div class="implementation-step" id="reuse-training-step4" style="cursor:pointer;" (click)="toggleCard(4)">
           <h3>
             <span class="step-number">1</span>
             Standardize Datasets for Reproducible Comparisons (R6)
             <span style="float:right;">
-              <i class="icon icon-common icon-chevron-down"></i>
+              <i id="reuse-training-icon4" class="icon icon-common" [ngClass]="isCardOpen(4) ? 'icon-chevron-down' : 'icon-chevron-right'"></i>
             </span>
           </h3>
-          <div id="reuse-training-content4" class="d-none" style="margin-top:1rem;">
+          <div id="reuse-training-content4" [ngClass]="{'d-none': !isCardOpen(4)}" style="margin-top:1rem;">
             <p>
                Before considering wider reproducibility of your AI model by others (Steps 2 & 3), it is crucial to have reprducible model evalution results for others to cross-compare to and ensure your model performance claims are valid. Instead of using personsally prepared datasets for final evaluations of your AI model, you should benchmark your it instead on established <a href="https://theodi.org/insights/reports/a-framework-for-ai-ready-data/">AI-ready datasets</a>. These are datasets that have been prepared for such purposes and are widely used by the community, reducing variability in evaluation.
               <br> <br> Platforms hosting community benchmarking challenges are excellent sources for standardized datasets and evaluation protocols. Participating in or using resources from these challenges ensures your model is assessed against the current state-of-the-art in a controlled and transparent manner.
@@ -595,15 +595,15 @@
         </div>
 
         <!-- Card 2 -->
-        <div class="implementation-step" id="reuse-training-step5" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content5').classList.toggle('d-none');">
+        <div class="implementation-step" id="reuse-training-step5" style="cursor:pointer;" (click)="toggleCard(5)">
           <h3>
             <span class="step-number">2</span>
             Create Reproducible Environments and Workflows (R5)
             <span style="float:right;">
-              <i class="icon icon-common icon-chevron-down"></i>
+              <i id="reuse-training-icon5" class="icon icon-common" [ngClass]="isCardOpen(5) ? 'icon-chevron-down' : 'icon-chevron-right'"></i>
             </span>
           </h3>
-          <div id="reuse-training-content5" class="d-none" style="margin-top:1rem;">
+          <div id="reuse-training-content5" [ngClass]="{'d-none': !isCardOpen(5)}" style="margin-top:1rem;">
             <p>
               Once your model has been fairly benchmarked for reproducible results (Step 1), the next step is to package the entire computational environment and use a workflow management system so that others can execute your code with minimal effort and achieve the same results. It is advised to implement the following technologies at the start of your AI model creation, as it is harder to implement them after the fact.
             </p>
@@ -722,15 +722,15 @@
         </div>
 
         <!-- Card 3 -->
-        <div class="implementation-step" id="reuse-training-step6" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content6').classList.toggle('d-none');">
+        <div class="implementation-step" id="reuse-training-step6" style="cursor:pointer;" (click)="toggleCard(6)">
           <h3>
             <span class="step-number">3</span>
             Ensure Transparent Disclosure and Clear Documentation (R4)
             <span style="float:right;">
-              <i class="icon icon-common icon-chevron-down"></i>
+              <i id="reuse-training-icon6" class="icon icon-common" [ngClass]="isCardOpen(6) ? 'icon-chevron-down' : 'icon-chevron-right'"></i>
             </span>
           </h3>
-          <div id="reuse-training-content6" class="d-none" style="margin-top:1rem;">
+          <div id="reuse-training-content6" [ngClass]="{'d-none': !isCardOpen(6)}" style="margin-top:1rem;">
             <p>
               Finally, with a standardized evaluation (Step 1) and a reproducible model with a containerised environment and orchestration workflow in place, the final step is to create comprehensive documentation that clearly discloses all information necessary for someone to understand and reproduce your work.
             </p>
@@ -884,15 +884,15 @@
         <img src="assets/img/osai_pathways_3.webp" alt="OSAI Sustainability Pathways" style="width:100%;display:block;margin-bottom:2rem;" loading="lazy" decoding="async">
 
         <!-- Card 1 -->
-        <div class="implementation-step" id="reuse-training-step7" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content7').classList.toggle('d-none');">
+        <div class="implementation-step" id="reuse-training-step7" style="cursor:pointer;" (click)="toggleCard(7)">
           <h3>
             <span class="step-number">1</span>
             Implement Green AI Model Development Techniques (R7)
             <span style="float:right;">
-              <i class="icon icon-common icon-chevron-down"></i>
+              <i id="reuse-training-icon7" class="icon icon-common" [ngClass]="isCardOpen(7) ? 'icon-chevron-down' : 'icon-chevron-right'"></i>
             </span>
           </h3>
-          <div id="reuse-training-content7" class="d-none" style="margin-top:1rem;">
+          <div id="reuse-training-content7" [ngClass]="{'d-none': !isCardOpen(7)}" style="margin-top:1rem;">
             <p>
               The most direct way to reduce your environmental impact is to decrease the amount of computation required to train and run your model. Adopting "Green AI" practices focuses on efficiency, ensuring you achieve your research goals with the least amount of energy possible.
             </p>
@@ -966,15 +966,15 @@
         </div>
 
         <!-- Card 2 -->
-        <div class="implementation-step" id="reuse-training-step8" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content8').classList.toggle('d-none');">
+        <div class="implementation-step" id="reuse-training-step8" style="cursor:pointer;" (click)="toggleCard(8)">
           <h3>
             <span class="step-number">2</span>
             Choose and Optimize Hardware (R8)
             <span style="float:right;">
-              <i class="icon icon-common icon-chevron-down"></i>
+              <i id="reuse-training-icon8" class="icon icon-common" [ngClass]="isCardOpen(8) ? 'icon-chevron-down' : 'icon-chevron-right'"></i>
             </span>
           </h3>
-          <div id="reuse-training-content8" class="d-none" style="margin-top:1rem;">
+          <div id="reuse-training-content8" [ngClass]="{'d-none': !isCardOpen(8)}" style="margin-top:1rem;">
             <p>
               The hardware you use and where it is located are critical factors in your project's overall energy consumption and carbon footprint.
             </p>
@@ -1028,15 +1028,15 @@
         </div>
 
         <!-- Card 3 -->
-        <div class="implementation-step" id="reuse-training-step9" style="cursor:pointer;" onclick="document.getElementById('reuse-training-content9').classList.toggle('d-none');">
+        <div class="implementation-step" id="reuse-training-step9" style="cursor:pointer;" (click)="toggleCard(9)">
           <h3>
             <span class="step-number">3</span>
             Measure and Report AI Model Environmental Impact (R9)
             <span style="float:right;">
-              <i class="icon icon-common icon-chevron-down"></i>
+              <i id="reuse-training-icon9" class="icon icon-common" [ngClass]="isCardOpen(9) ? 'icon-chevron-down' : 'icon-chevron-right'"></i>
             </span>
           </h3>
-          <div id="reuse-training-content9" class="d-none" style="margin-top:1rem;">
+          <div id="reuse-training-content9" [ngClass]="{'d-none': !isCardOpen(9)}" style="margin-top:1rem;">
             <p>
               To understand your project's environmental footprint and contribute to a community-wide culture of transparency, it is essential to measure and report your energy consumption and carbon emissions. This should be planned from the very beginning of your project.
             </p>
@@ -1156,13 +1156,4 @@
       Find More Tools in the AI Ecosystem
     </a>
   </div>
-  <script>
-    // Collapse all cards on page load
-    document.addEventListener('DOMContentLoaded', function() {
-      for (let i = 1; i <= 9; i++) {
-        var el = document.getElementById('reuse-training-content' + i);
-        if (el) el.classList.add('d-none');
-      }
-    });
-  </script>
 </div>
