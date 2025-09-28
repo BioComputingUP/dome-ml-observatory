@@ -535,7 +535,7 @@
           </h3>
           <div id="reuse-training-content4" class="d-none" style="margin-top:1rem;">
             <p>
-               Instead of using personsally prepared datasets for final evaluations of your AI model, you should benchmark your it instead on established <a href="https://theodi.org/insights/reports/a-framework-for-ai-ready-data/">AI-ready datasets</a>. These are datasets that have been prepared for such purposes and are widely used by the community, reducing variability in evaluation.
+               Before considering wider reproducibility of your AI model by others (Steps 2 & 3), it is crucial to have reprducible model evalution results for others to cross-compare to and ensure your model performance claims are valid. Instead of using personsally prepared datasets for final evaluations of your AI model, you should benchmark your it instead on established <a href="https://theodi.org/insights/reports/a-framework-for-ai-ready-data/">AI-ready datasets</a>. These are datasets that have been prepared for such purposes and are widely used by the community, reducing variability in evaluation.
               <br> <br> Platforms hosting community benchmarking challenges are excellent sources for standardized datasets and evaluation protocols. Participating in or using resources from these challenges ensures your model is assessed against the current state-of-the-art in a controlled and transparent manner.
               <br> <br> Benchmarking services like OpenEBench serve as central hubs in the life sciences for discovering benchmarking challenges and accessing their standardized evaluation results and datasets. Using such platforms helps you to align your work with community best practices to ensure accurate and reproducible evaluation reporting.
             </p>
@@ -585,6 +585,10 @@
                 <div>
                   A life-science-specific challenge that provides datasets and standardized protocols for models that predict intrinsically disordered regions in proteins.
                 </div>
+                <p>
+                  <br>
+                  <strong>Note:</strong> Where there are no available AI-ready benchmarking datasets for your model, make this clear and openly share your dataset in relevant AI registries for its reuse. Guidance on this is provided under the Reusability Pathway (Steps 2 & 3).
+               </p>
               </div>
             </div>
           </div>
@@ -601,7 +605,7 @@
           </h3>
           <div id="reuse-training-content5" class="d-none" style="margin-top:1rem;">
             <p>
-              Once your model has been fairly benchmarked for reproducible results, the next step is to package the entire computational environment and workflow so that others can execute your code with minimal effort and achieve the same results. It is advised to implement the following technologies at the start of your AI model creation, as it is harder to implement them after the fact.
+              Once your model has been fairly benchmarked for reproducible results (Step 1), the next step is to package the entire computational environment and use a workflow management system so that others can execute your code with minimal effort and achieve the same results. It is advised to implement the following technologies at the start of your AI model creation, as it is harder to implement them after the fact.
             </p>
             <p><strong style="display: block; margin-bottom: 0.5rem;">2.1. Ensure a compatible software environment:</strong> This foundational step involves meticulously defining and isolating all software dependencies, such as libraries, tools, and their specific versions. Properly managing these components prevents conflicts and ensures your code runs consistently across different machines, forming the bedrock of a reproducible workflow.</p>
             <p>Before containerizing, use a dedicated environment control manager to create self-contained environments for your project's software packages. This is the first line of defense against dependency conflicts and simplifies sharing the exact software requirements with others.</p>
@@ -731,7 +735,7 @@
               With a standardized evaluation and a portable workflow in place, the final step is to create comprehensive documentation that clearly discloses all information necessary for someone to understand and reproduce your work.
             </p>
             <p>
-              <strong>Consult AI disclosure frameworks:</strong> Many established checklists and recommendations exist to understand and guide researchers on what information is considered essential for disclosure. These frameworks provide a structured guide to ensure you don't miss any critical details.
+              <strong>Consult & use AI disclosure frameworks:</strong> <br> Many established checklists and recommendations exist to understand and guide researchers on what information is considered essential for disclosure. These frameworks provide a structured guide to ensure you don't miss any critical details.
             </p>
             <div class="mt-3">
               <strong class="accent-text">Example Resources:</strong>
@@ -838,6 +842,21 @@
                     </div>
                     <div>
                       A public repository for Quantitative Structure-Activity Relationship (QSAR) models and data. It provides a structured format for storing and sharing QSAR studies, ensuring that the data, models, and validation results are transparent and reproducible.
+                    </div>
+                  </div>
+                  <div style="margin-bottom:1rem;">
+                    <div>
+                      <a href="https://registry.dome-ml.org/intro" target="_blank" class="resource-link">
+                        <i class="icon icon-common icon-external-link-alt"></i>
+                        DOME Registry
+                      </a>
+                      <a href="https://registry.dome-ml.org/review/qew9jmdocf" class="example-impl-link">
+                        <i class="icon icon-common icon-tasks"></i>
+                        Example Implementation
+                      </a>
+                    </div>
+                    <div>
+                      Allows you to create a structured, human and machine-readable transparent documentation of your machine learning study. It complements your publication by providing curated, persistent annotations based on the DOME recommendations, directly linking all components of your work and maximizing its visibility and reproducibility potential.
                     </div>
                   </div>
                 </div>
