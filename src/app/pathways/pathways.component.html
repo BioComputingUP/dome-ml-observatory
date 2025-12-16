@@ -1275,7 +1275,8 @@
           </a>
         </div>
         <p class="mb-4">
-          <strong>APNet</strong> is an explainable sparse deep learning model designed to discover differentially active drivers of severe COVID-19. To help contextualise a basic implementation of the OSAI Recommendations 1-9, we highlight the APNet model as an exemplar of a minimal OSAI aligned AI method to guide first time adopters. <br> <br> <strong>Note:</strong> Most OSAI areas are directly covered by this APNet example. However, for certain OSAI Recommendations  where they were not fully met by the original publication, they are provided with additional context to ensure full OSAI example coverage to aid prospective pathway followers.
+          <strong>APNet</strong> is an explainable sparse deep learning model designed to discover differentially active drivers of severe COVID-19. To help contextualise a basic implementation of the OSAI Recommendations 1-9, we highlight the APNet model as an exemplar of a minimal OSAI aligned AI method to guide first time adopters. 
+          <br> <br> <strong>Note:</strong> Many OSAI areas are directly covered by this APNet example. However, for certain OSAI Recommendations where they were not fully met by the original publication, they are provided with additional example context to ensure full OSAI coverage and aid prospective pathway followers.
         </p>
         <img src="assets/img_originals/osai_pathways_example.png" alt="OSAI Implementation Example" style="width:100%;display:block;margin-bottom:2rem;" loading="lazy" decoding="async">
 
@@ -1290,8 +1291,8 @@
           </h3>
           <div id="osai-impl-content1" [ngClass]="{'d-none': !isCardOpen(10)}" style="margin-top:1rem;">
             <p><strong>R1 - Standardised Metadata:</strong> Standardised metadata files were generated to ensure the research is machine-readable. The <a href="https://www.rd-alliance.org/groups/fair-machine-learning-fair4ml-ig" target="_blank">FAIR4ML</a> standard was used for the APNet model and the Croissant standard for the Olink proteomic datasets (<a href="https://info.olink.com/mgh-covid-study-overview-page?hsCtaTracking=fff99a2a-81c1-4e4a-a70d-6922d26503b4" target="_blank">MGH</a>, <a href="https://www.thelancet.com/journals/landig/article/PIIS2589-7500(22)00112-1/fulltext#supplementaryMaterial" target="_blank">Mayo</a>, <a href="https://datadryad.org/stash/dataset/doi:10.5061/dryad.9cnp5hqmn" target="_blank">Stanford</a>) and scRNAseq datasets (<a href="https://www.covid19cellatlas.org/index.patient.html" target="_blank">scMGH</a>, <a href="https://www.covid19cellatlas.org/index.patient.html" target="_blank">Blish</a>).</p>
-            <p><strong>R2 - Registries:</strong> To guarantee long-term access, the stable version of the research objects was deposited in <a href="https://doi.org/10.5281/zenodo.14680520" target="_blank">Zenodo</a> (generating a persistent DOI), while the active development codebase is maintained on <a href="https://github.com/BiodataAnalysisGroup/APNet" target="_blank">GitHub</a>.</p>
-            <p><strong>R3 - Training & Guidance:</strong> Comprehensive documentation and a "How-to" tutorial were hosted directly on the <a href="https://github.com/BiodataAnalysisGroup/APNet" target="_blank">GitHub</a> repository. This guides users on how to properly use the datasets (processed via <a href="https://github.com/jyyulab/NetBID2" target="_blank">NetBID2</a> and <a href="https://github.com/jyyulab/scMINER" target="_blank">scMINER</a>) and how to contribute back to the project.</p>
+            <p><strong>R2 - Use of Registries:</strong> To guarantee long-term access, the stable version of the research objects was deposited in <a href="https://doi.org/10.5281/zenodo.14680520" target="_blank">Zenodo</a> (generating a persistent DOI), while the active development codebase is maintained on <a href="https://github.com/BiodataAnalysisGroup/APNet" target="_blank">GitHub</a>.</p>
+            <p><strong>R3 - Reuse Training:</strong> Comprehensive documentation and a "How-to" tutorial were hosted directly on the <a href="https://github.com/BiodataAnalysisGroup/APNet" target="_blank">GitHub</a> repository. This guides users on how to properly use the datasets (processed via <a href="https://github.com/jyyulab/NetBID2" target="_blank">NetBID2</a> and <a href="https://github.com/jyyulab/scMINER" target="_blank">scMINER</a>) and how to contribute back to the project.</p>
           </div>
         </div>
 
@@ -1305,9 +1306,9 @@
             </span>
           </h3>
           <div id="osai-impl-content2" [ngClass]="{'d-none': !isCardOpen(11)}" style="margin-top:1rem;">
-            <p><strong>R4 - Transparent Disclosure:</strong> The <a href="https://registry.dome-ml.org/review/c06c4e2tsl" target="_blank">DOME checklist</a> was followed to transparently document the PASNet architecture, biological priors (<a href="https://www.genome.jp/kegg/" target="_blank">KEGG</a>, <a href="https://reactome.org/" target="_blank">Reactome</a>, <a href="http://geneontology.org/" target="_blank">GO</a>), and specific evaluation scenarios (Scenario 1: Validation on Mayo/Testing on Stanford; Scenario 2: Validation on scMGH/Testing on Blish).</p>
+            <p><strong>R4 - Transparent Methods:</strong> The <a href="https://registry.dome-ml.org/review/c06c4e2tsl" target="_blank">DOME checklist</a> was followed to transparently document the PASNet architecture, biological priors (<a href="https://www.genome.jp/kegg/" target="_blank">KEGG</a>, <a href="https://reactome.org/" target="_blank">Reactome</a>, <a href="http://geneontology.org/" target="_blank">GO</a>), and specific evaluation scenarios (Scenario 1: Validation on Mayo/Testing on Stanford; Scenario 2: Validation on scMGH/Testing on Blish).</p>
             <p><strong>R5 - Portable Environments:</strong> The computational environment was ensured to be portable by providing a <a href="https://docs.conda.io/" target="_blank">Conda</a> configuration file (environment.yml) and step-by-step installation instructions in the README.</p>
-            <p><strong>R6 - Standardised Benchmarking:</strong> Rigorous ablation studies and benchmark evaluations were performed on identical expression matrices to ensure performance comparisons against other models are fair and reproducible.</p>
+            <p><strong>R6 - Standardised Evaluation:</strong> Rigorous ablation studies and benchmark evaluations were performed on identical expression matrices to ensure performance comparisons against other models are fair and reproducible.</p>
           </div>
         </div>
 
@@ -1322,8 +1323,8 @@
           </h3>
           <div id="osai-impl-content3" [ngClass]="{'d-none': !isCardOpen(12)}" style="margin-top:1rem;">
             <p><strong>R7 - Green AI Techniques:</strong> Model complexity and computational cost were reduced by adopting a sparse network architecture informed by pathway-based biological priors, rather than using a fully connected dense network.</p>
-            <p><strong>R8 - Hardware Optimisation:</strong> Hardware strategy was optimised by running lightweight experiments on <a href="https://colab.research.google.com/" target="_blank">Google Colab</a> and reserving energy-intensive tasks, such as hyperparameter grid searches, for efficient High-Performance Computing (HPC) infrastructure.</p>
-            <p><strong>R9 - Impact Reporting:</strong> [Planned Action] To address the current lack of energy metrics, tracking tools will be implemented to estimate and report the specific energy usage (kWh) and carbon emissions (CO₂e) for the final model training runs.</p>
+            <p><strong>R8 - Hardware Choice:</strong> Hardware strategy was optimised by running lightweight experiments on <a href="https://colab.research.google.com/" target="_blank">Google Colab</a> and reserving energy-intensive tasks, such as hyperparameter grid searches, for efficient High-Performance Computing (HPC) infrastructure.</p>
+            <p><strong>R9 - Measur & Report:</strong> [Planned Action] To address the current lack of energy metrics, tracking tools will be implemented to estimate and report the specific energy usage (kWh) and carbon emissions (CO₂e) for the final model training runs.</p>
           </div>
         </div>
       </div>
