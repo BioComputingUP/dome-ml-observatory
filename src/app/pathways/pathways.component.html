@@ -65,6 +65,9 @@
       font-weight: bold;
       margin-right: 0.75rem;
     }
+    .step-number i {
+      font-size: 0.85em;
+    }
     .fixed-nav {
       position: fixed;
       left: 0;
@@ -1261,9 +1264,15 @@
   <section class="py-4" id="osai-implementation-section">
     <div class="row">
       <div class="col-lg-10 mx-auto">
-        <div class="d-flex align-items-center mb-4">
-          <i class="icon icon-common icon-flask pathway-icon mr-3"></i>
-          <h2 class="section-heading mb-0">OSAI Implementation Example: APNet Project</h2>
+        <div class="d-flex align-items-center justify-content-between mb-4">
+          <div class="d-flex align-items-center">
+            <i class="icon icon-common icon-flask pathway-icon mr-3"></i>
+            <h2 class="section-heading mb-0">OSAI Implementation Example: APNet Project</h2>
+          </div>
+          <a href="https://academic.oup.com/bioinformatics/article/41/3/btaf063/8005858" target="_blank" class="cta-button">
+            <i class="icon icon-common icon-external-link-alt"></i>
+            Read the Paper
+          </a>
         </div>
         <p class="mb-4">
           <strong>Project:</strong> APNet: An explainable sparse deep learning model to discover differentially active drivers of severe COVID-19
@@ -1273,7 +1282,7 @@
         <!-- Card 1: Reusability -->
         <div class="implementation-step" id="osai-impl-step1">
           <h3 style="cursor:pointer;" (click)="toggleCard(10)">
-            <span class="step-number">I</span>
+            <span class="step-number"><i class="icon icon-common icon-recycle"></i></span>
             Reusability
             <span style="float:right;">
               <i id="osai-impl-icon1" class="icon icon-common" [ngClass]="isCardOpen(10) ? 'icon-chevron-down' : 'icon-chevron-right'"></i>
@@ -1289,7 +1298,7 @@
         <!-- Card 2: Reproducibility -->
         <div class="implementation-step" id="osai-impl-step2">
           <h3 style="cursor:pointer;" (click)="toggleCard(11)">
-            <span class="step-number">II</span>
+            <span class="step-number"><i class="icon icon-common icon-copy"></i></span>
             Reproducibility
             <span style="float:right;">
               <i id="osai-impl-icon2" class="icon icon-common" [ngClass]="isCardOpen(11) ? 'icon-chevron-down' : 'icon-chevron-right'"></i>
@@ -1305,7 +1314,7 @@
         <!-- Card 3: Environmental Sustainability -->
         <div class="implementation-step" id="osai-impl-step3">
           <h3 style="cursor:pointer;" (click)="toggleCard(12)">
-            <span class="step-number">III</span>
+            <span class="step-number"><i class="icon icon-common icon-leaf"></i></span>
             Environmental Sustainability
             <span style="float:right;">
               <i id="osai-impl-icon3" class="icon icon-common" [ngClass]="isCardOpen(12) ? 'icon-chevron-down' : 'icon-chevron-right'"></i>
