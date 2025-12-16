@@ -12,7 +12,7 @@ export class PathwaysComponent implements OnInit {
 
   ngOnInit(): void {
     // Initialize all cards to be closed
-    for (let i = 1; i <= 9; i++) {
+    for (let i = 1; i <= 12; i++) {
       this.openCards[i] = false;
     }
   }
