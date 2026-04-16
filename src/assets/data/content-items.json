@@ -1,5 +1,25 @@
 [
     {
+      "type": "news",
+      "date": "April 2026",
+      "title": "OSAI Paper Officially Published in Nature Methods",
+      "description": "The Open and Sustainable AI (OSAI) framework paper by Farrell, Psomopoulos, Tosatto et al. has been officially published in Nature Methods, marking a key milestone for AI/ML standards in the life sciences.",
+      "link": "https://www.nature.com/articles/s41592-026-03037-6",
+      "linkText": "Read in Nature Methods",
+      "linkIcon": "icon-external-link-alt",
+      "tags": ["Publication", "Nature Methods", "OSAI", "Sustainability"]
+    },
+    {
+      "type": "event",
+      "date": "March 17, 2026",
+      "title": "DOME Registry & OSAI at OpenPharma March 2026",
+      "description": "Gavin Farrell and Silvio Tosatto presented on the DOME Registry and OSAI, highlighting the importance of AI/ML standards for pharma and life sciences, at the OpenPharma March 2026 event.",
+      "link": "https://zenodo.org/records/19074420",
+      "linkText": "View on Zenodo",
+      "linkIcon": "icon-external-link-alt",
+      "tags": ["Presentation", "OpenPharma", "DOME", "OSAI"]
+    },
+    {
       "type": "event",
       "date": "November 3, 2025",
       "title": "DOME and OSAI featured in BioHackathon Europe 2025",
