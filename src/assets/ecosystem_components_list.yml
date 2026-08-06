@@ -4954,3 +4954,19 @@
   domain: domain-agnostic
   osai-recommendation: R3
   osai-explanation: Provides versioned best-practice guidance for responsible deployment of AI agents in scientific research (R3).
+
+- id: biocontextai
+  name: BioContextAI
+  type: Registry
+  description: >-
+    A community-driven registry of Model Context Protocol (MCP) servers connecting
+    agentic AI systems with biomedical and healthcare resources. Hosts dozens of
+    FAIR-aligned MCP servers offering thousands of tools, alongside a chat interface,
+    documentation, and templates for contributing new servers.
+  url: https://biocontext.ai
+  biotools-url: https://bio.tools/biocontextai_registry
+  fairsharing-url: ''
+  access-model: Open Source
+  domain: life science
+  osai-recommendation: R2
+  osai-explanation: A registry for discovering and sharing MCP servers that connect agentic AI to biomedical resources (R2).
