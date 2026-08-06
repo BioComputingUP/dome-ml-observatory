@@ -1,6 +1,16 @@
 [
     {
       "type": "news",
+      "date": "June 15, 2026",
+      "title": "Connecting ELIXIR's AI Ecosystem Workshop Report 2026",
+      "description": "A workshop report documenting the ELIXIR AHM session in Lyon, France (June 9, 2026), attended by over 60 participants. Discussions covered service gaps, unified web presence for AI agents, and actionable recommendations including defining ELIXIR's AI services and establishing best practices resources.",
+      "link": "https://zenodo.org/records/20702255",
+      "linkText": "View on Zenodo",
+      "linkIcon": "icon-external-link-alt",
+      "tags": ["Report", "ELIXIR", "AI", "Workshop"]
+    },
+    {
+      "type": "news",
       "date": "April 2026",
       "title": "OSAI Paper Officially Published in Nature Methods",
       "description": "The Open and Sustainable AI (OSAI) framework paper by Farrell, Psomopoulos, Tosatto et al. has been officially published in Nature Methods, marking a key milestone for AI/ML standards in the life sciences.",

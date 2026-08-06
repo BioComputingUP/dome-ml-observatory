@@ -4921,3 +4921,19 @@
   domain: domain-agnostic
   osai-recommendation: R1, R4
   osai-explanation: Introduces a new AI-specific data readiness framework extending FAIR metadata standards (R1) with emphasis on provenance tracking and data labelling for transparency (R4).
+
+- id: biocroissant
+  name: BioCroissant
+  type: Metadata
+  description: >-
+    An extension of the MLCommons Croissant metadata format, developed by a
+    dedicated sub-working group to make biomedical and life-science datasets
+    machine-readable and AI-ready. Adds FAIR-aligned structured metadata fields
+    for clinical and health data, integrating with existing ML tooling and workflows.
+  url: https://github.com/mlcommons/BioCroissant
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Open Source
+  domain: life science
+  osai-recommendation: R1
+  osai-explanation: AI-specific metadata extension of Croissant tailored to biomedical and life-science dataset needs (R1).
