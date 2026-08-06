@@ -4937,3 +4937,20 @@
   domain: life science
   osai-recommendation: R1
   osai-explanation: AI-specific metadata extension of Croissant tailored to biomedical and life-science dataset needs (R1).
+
+- id: aiforscience
+  name: AI for Science
+  type: Best practice
+  description: >-
+    A living, community-maintained collection of versioned best practices for
+    deploying agentic AI systems in scientific research, covering methodology
+    selection, accessibility, and governance. Developed collaboratively by European
+    research task forces and institutions, with practices open to public challenge
+    and revision.
+  url: https://aiforscience.eu/
+  biotools-url: ''
+  fairsharing-url: ''
+  access-model: Free
+  domain: domain-agnostic
+  osai-recommendation: R3
+  osai-explanation: Provides versioned best-practice guidance for responsible deployment of AI agents in scientific research (R3).
