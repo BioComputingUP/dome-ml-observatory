@@ -10,6 +10,22 @@ the code, trust the code and update this file.
 It is largely static content plus one data-driven page (`ai_ecosystem`) that renders a YAML
 registry fetched from another repo. There is no backend in this repo.
 
+## Agent skills — use these instead of improvising
+
+This repo ships its own Claude Code skills under [.claude/skills/](.claude/skills/). If
+you're Claude Code (or a tool that reads the same convention), check there before hand-rolling
+a multi-step workflow — they encode the exact sequencing and guardrails this file describes,
+so use them instead of re-deriving the steps.
+
+- **[osai-ecosystem-deploy](.claude/skills/osai-ecosystem-deploy/SKILL.md)** — the canonical
+  pull → commit → push → build → deploy cycle for the ecosystem YAML (wraps
+  `scripts/update_yaml.py` below). Trigger phrases: "pull the OSAI ecosystem", "update the
+  ecosystem list and deploy", "sync ecosystem and push". User-triggered only; it ends with a
+  live production deploy, so it should never run proactively or unprompted.
+
+If your tooling can't load `SKILL.md` files (non-Claude-Code agents), the same steps are
+written out in plain prose inside that file — read it directly, it's just markdown.
+
 ## Environment
 
 - Node: this project pins `lts/fermium` (Node 14) in `.nvmrc`, matching Angular 9 / the
@@ -62,18 +78,24 @@ changes, or without the user explicitly asking to deploy right now.
   `assets/ecosystem_components_list.yml`. Don't hand-edit it; re-run the script instead.
 - `scripts/update_yaml.py` — pulls the latest ecosystem YAML from GitHub raw and overwrites
   the local copy, after diffing to skip no-op updates. Run it with plain `python3
-  scripts/update_yaml.py` (needs `requests`, `pyyaml`).
+  scripts/update_yaml.py` (needs `requests`, `pyyaml`). For the full publish cycle (commit,
+  push, build, deploy) use the
+  [osai-ecosystem-deploy](.claude/skills/osai-ecosystem-deploy/SKILL.md) skill rather than
+  chaining these steps manually.
 - `scripts/validate_yaml.py` — sanity-parses that YAML file; run after updating it.
 - `scripts/convert_images.py` — image conversion helper for `src/assets/img*`.
 
 ## Things that have gone wrong before — don't reintroduce these
 
 - **`update_yaml.py` writes timestamped backup files** (`ecosystem_components_list.yml.backup_*`)
-  next to the real file on every run where content changed. These have repeatedly ended up
-  committed to git by accident (there are 8+ of them in history already). Always run
-  `git status` after the update script and **do not `git add` the `.backup_*` files** — they're
-  local scratch, not repo content. If you're the one adding automation around this script,
-  consider gitignoring `src/assets/*.backup_*` instead of relying on manual discipline.
+  next to the real file on every run where content changed. `src/assets/*.backup_*` is
+  gitignored (fixed after 8+ of them ended up committed by accident), so `git add` won't pick
+  them up — but they still bite you a second way: `dist/assets/` is a wholesale copy of
+  `src/assets/` at build time, so a leftover backup file gets bundled into the production build
+  and rsynced to the live site even though git never saw it. Delete
+  `src/assets/*.backup_*` before running a prod build/deploy. The
+  [osai-ecosystem-deploy](.claude/skills/osai-ecosystem-deploy/SKILL.md) skill does this for
+  you as one of its steps.
 - **`dist/` is gitignored and must stay that way** — it's a build artifact, not committed. If
   `git status` ever shows files under `dist/` as trackable, something is wrong (e.g. a stray
   `git add -A`); undo it, don't commit it.
