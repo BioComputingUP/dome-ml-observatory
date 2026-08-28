@@ -1,4 +1,4 @@
-# DOME-ML (UI) - OSAI
+# DOME Observatory
 
 ## Install node
 Install node and modules. Don't use `npm install` since it will upgrade and break packages.
