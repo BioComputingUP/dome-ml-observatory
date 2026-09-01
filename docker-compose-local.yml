@@ -1,0 +1,71 @@
+# docker-compose-local.yml -- runs observatory-ui + observatory-ws together as ONE Docker
+# project, entirely locally. This is the deliverable Ivan asked for (internal/ROADMAP.md, "Ivan's
+# dev workflow", step 1) -- NOT a deployment artifact. Ivan owns docker-compose-production.yml
+# (and any -staging.yml) separately, deployed to REDACTED-HOST; we don't touch that.
+#
+# Run from the repo root:
+#   cp .env.example .env        # first time only -- fill in real values, .env is gitignored
+#   docker compose -f docker-compose-local.yml up --build
+#
+# Both Dockerfiles build from THIS repo's root as their context (each needs schema/ -- see each
+# Dockerfile's own header), hence `context: .` + an explicit `dockerfile:` path below, rather
+# than `context: observatory-ui/` / `context: observatory-ws/`.
+
+services:
+  observatory-ws:
+    container_name: observatory-ws
+    build:
+      context: .
+      dockerfile: observatory-ws/Dockerfile
+    # Service name is a hard contract, not cosmetic: observatory-ui/nginx.conf hardcodes
+    # "observatory-ws:3000" as its proxy upstream, resolved via Docker's embedded DNS on the
+    # user-defined network below. Renaming this service breaks the frontend silently.
+    env_file:
+      - .env
+    ports:
+      # HOST:CONTAINER. Container side must stay 3000 -- fixed both here and by PORT in .env
+      # (read by observatory-ws/src/config/configuration.ts -> main.ts's app.listen), which
+      # nginx.conf's hardcoded proxy target assumes without ever reading it. If PORT in .env is
+      # ever changed away from 3000, this mapping's container side AND nginx.conf both need
+      # updating to match -- nothing keeps them in sync automatically. Host side (3000 here) is
+      # only for curling the API directly from the host during verification; the browser never
+      # talks to this port -- it goes through observatory-ui's nginx on 8080 instead.
+      - "3000:3000"
+    init: true          # PID 1 = tini: forwards SIGTERM to `node dist/main` cleanly and reaps
+                         # zombies, so `docker compose down`/`stop` actually exercises
+                         # app.enableShutdownHooks() (main.ts) instead of relying on Docker's
+                         # default 10s grace period + SIGKILL.
+    restart: unless-stopped
+    networks:
+      - observatory
+
+  observatory-ui:
+    container_name: observatory-ui
+    build:
+      context: .
+      dockerfile: observatory-ui/Dockerfile
+    ports:
+      - "8080:80"        # http://localhost:8080 is the one browser-facing origin for this stack
+    # Deliberately NOT `depends_on: observatory-ws: condition: service_healthy`. Phase 4 built
+    # nginx.conf's resolver + $backend variable specifically so this container tolerates
+    # observatory-ws not being ready yet -- /api/* just 502s for the ~15-40s the backend takes to
+    # boot (FacetsService/StatsService OnModuleInit warm-up, see observatory-ws/Dockerfile), it
+    # never crash-loops. A health-gated dependency would add that same ~15-40s as dead time to
+    # every `docker compose up` for no correctness benefit -- exactly the coupling Phase 4's
+    # design was built to avoid needing. Plain `depends_on` below only sets container *start*
+    # order (ws's process starts before ui's), which is enough.
+    depends_on:
+      - observatory-ws
+    restart: unless-stopped
+    networks:
+      - observatory
+
+networks:
+  # Named and explicit rather than relying on Compose's implicit default project network, purely
+  # for self-documentation: nginx.conf's `resolver 127.0.0.11` (Docker's embedded DNS) only
+  # resolves service names like "observatory-ws" on a Compose-created, USER-DEFINED network --
+  # confirmed in Phase 4 testing, not the default `bridge` network. (Compose's own implicit
+  # default network is already user-defined and would technically also satisfy this -- naming it
+  # here just makes the requirement obvious to whoever reads this file next, e.g. Ivan.)
+  observatory:
+    driver: bridge
