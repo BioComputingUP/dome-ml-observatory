@@ -101,6 +101,11 @@ textarea:focus-visible,
   // Without auto margins this only caps the width and leaves content hugging the left edge on
   // wide screens -- the ported rule set max-width alone.
   margin-inline: auto;
+  // <main> used to be wrapped in Bootstrap's .container-fluid, which supplied this gutter (and,
+  // as a side effect, inset every full-bleed blue band -- navbar, home's .metrics -- 12px short
+  // of the viewport edge). That wrapper is gone; .container-wide now owns its own edge padding
+  // so body content still clears the viewport edge on narrow screens.
+  padding-inline: var(--space-4);
 }
 
 // Shared side-nav + content layout, used by both the Download and About sections

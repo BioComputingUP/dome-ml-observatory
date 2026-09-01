@@ -1,75 +1,77 @@
-<div class="container-fluid">
-  <nav class="navbar navbar-expand-xl navbar-light">
-    <a routerLink="/" class="navbar-brand" title="DOME Observatory home">
-      <img alt="" src="assets/img/logo-white-static.svg" class="brand-mark" />
-      <span class="brand-wordmark">
-        <span class="brand-wordmark-dome">DOME</span>
-        <span class="brand-wordmark-observatory">OBSERVATORY</span>
-      </span>
-    </a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      aria-label="Toggle navigation"
-      [attr.aria-expanded]="!isCollapsed"
-      (click)="isCollapsed = !isCollapsed"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" [class.show]="!isCollapsed">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a
-            class="nav-item nav-link btn-navbar"
-            routerLink="/"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: true }"
-            title="Home"
-            (click)="collapseNav()"
-            >Home</a
-          >
-        </li>
-        <li class="nav-item">
-          <a
-            class="nav-item nav-link btn-navbar"
-            routerLinkActive="active"
-            routerLink="search"
-            title="Search & browse"
-            (click)="collapseNav()"
-            >Search</a
-          >
-        </li>
-        <li class="nav-item">
-          <a
-            class="nav-item nav-link btn-navbar"
-            routerLinkActive="active"
-            routerLink="download"
-            title="Bulk download"
-            (click)="collapseNav()"
-            >Download</a
-          >
-        </li>
-        <li class="nav-item">
-          <a
-            class="nav-item nav-link btn-navbar"
-            routerLinkActive="active"
-            routerLink="about"
-            title="About"
-            (click)="collapseNav()"
-            >About</a
-          >
-        </li>
-        <li class="nav-item">
-          <a
-            class="nav-item nav-link btn-navbar"
-            routerLinkActive="active"
-            routerLink="news"
-            title="News & Events"
-            (click)="collapseNav()"
-            >News & Events</a
-          >
-        </li>
-      </ul>
-    </div>
-  </nav>
-</div>
+<!-- No .container-fluid wrapper: Bootstrap gives that class 0.75rem of horizontal padding, which
+     sat OUTSIDE the blue <nav> and showed as white gutters at either end of the bar. The nav is
+     the full-bleed element (like <footer class="footer-bar">); its own padding-left/right below
+     insets the brand and links INSIDE the blue. -->
+<nav class="navbar navbar-expand-xl navbar-light">
+  <a routerLink="/" class="navbar-brand" title="DOME Observatory home">
+    <img alt="" src="assets/img/logo-white-static.svg" class="brand-mark" />
+    <span class="brand-wordmark">
+      <span class="brand-wordmark-dome">DOME</span>
+      <span class="brand-wordmark-observatory">OBSERVATORY</span>
+    </span>
+  </a>
+  <button
+    class="navbar-toggler"
+    type="button"
+    aria-label="Toggle navigation"
+    [attr.aria-expanded]="!isCollapsed"
+    (click)="isCollapsed = !isCollapsed"
+  >
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" [class.show]="!isCollapsed">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a
+          class="nav-item nav-link btn-navbar"
+          routerLink="/"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          title="Home"
+          (click)="collapseNav()"
+          >Home</a
+        >
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-item nav-link btn-navbar"
+          routerLinkActive="active"
+          routerLink="search"
+          title="Search & browse"
+          (click)="collapseNav()"
+          >Search</a
+        >
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-item nav-link btn-navbar"
+          routerLinkActive="active"
+          routerLink="download"
+          title="Bulk download"
+          (click)="collapseNav()"
+          >Download</a
+        >
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-item nav-link btn-navbar"
+          routerLinkActive="active"
+          routerLink="about"
+          title="About"
+          (click)="collapseNav()"
+          >About</a
+        >
+      </li>
+      <li class="nav-item">
+        <a
+          class="nav-item nav-link btn-navbar"
+          routerLinkActive="active"
+          routerLink="news"
+          title="News & Events"
+          (click)="collapseNav()"
+          >News & Events</a
+        >
+      </li>
+    </ul>
+  </div>
+</nav>
