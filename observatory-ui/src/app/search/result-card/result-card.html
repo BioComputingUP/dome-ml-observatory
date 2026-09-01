@@ -3,15 +3,32 @@
     <a [routerLink]="['/record', record()._id]">{{ title() }}</a>
   </h3>
 
-  @if (meta()) {
-    <p class="card-meta">{{ meta() }}</p>
-  }
+  <dl class="card-facts">
+    @if (authors()) {
+      <div class="card-fact">
+        <dt>Authors:</dt>
+        <dd>{{ authors() }}</dd>
+      </div>
+    }
+    @if (journal()) {
+      <div class="card-fact">
+        <dt>Journal:</dt>
+        <dd>{{ journal() }}</dd>
+      </div>
+    }
+    @if (year()) {
+      <div class="card-fact">
+        <dt>Year:</dt>
+        <dd>{{ year() }}</dd>
+      </div>
+    }
+  </dl>
 
   @if (snippet()) {
     <p class="card-snippet">{{ snippet() }}</p>
   }
 
-  <app-status-badge [record]="record()" />
+  <app-status-badge [record]="record()" context="card" />
 
   @if (links().length) {
     <div class="card-outbound" aria-label="Find this elsewhere">

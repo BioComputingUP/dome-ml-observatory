@@ -46,6 +46,11 @@ export interface SearchResult {
   totalRelation: 'eq' | 'gte';
   page: number;
   pageSize: number;
+  /** True when fetching this page itself hit its time budget and gave up -- items is [] in that
+   *  case. Distinct from a real outage (a 503, which arrives as an HTTP error instead): this is a
+   *  200 with an honest "that specific search was too slow" result. Only ever true for a
+   *  free-text (q=) search. See observatory-ws/src/records/records.service.ts. */
+  timedOut?: boolean;
 }
 
 /**

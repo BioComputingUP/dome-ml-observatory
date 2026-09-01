@@ -9,7 +9,7 @@ import {
   paramsToQuery,
   queryToParams,
   activeFilterCount,
-  isDefaultClassification,
+  DEFAULT_CLASSIFICATION,
   MAX_RESULT_WINDOW,
 } from '../core/search-params';
 import { FacetPanel } from './facet-panel/facet-panel';
@@ -78,6 +78,10 @@ export class Search {
   readonly items = computed(() => this.results().items);
   readonly total = computed(() => this.results().total);
   readonly totalRelation = computed(() => this.results().totalRelation);
+  /** True when the page fetch itself gave up on its time budget -- a 200 with an honest "that
+   *  search was too slow" result, not the outage state (error()/searchErrorMessage below, which
+   *  only ever fires on an actual HTTP error such as a 503). See records.service.ts (ws). */
+  readonly timedOut = computed(() => this.results().timedOut === true);
 
   /** 'gte' always means exactly MAX_RESULT_WINDOW (10,000) -- an uncertain lower bound, not an
    *  exact count. Render "10,000+", never a bare number -- see records.service.ts. */
@@ -107,6 +111,21 @@ export class Search {
   readonly stats = toSignal(this.records.getFacetStats().pipe(catchError(() => of(null))), { initialValue: null });
   readonly vocab = toSignal(this.records.getVocabularies().pipe(catchError(() => of(null))), { initialValue: null });
 
+  /** The permanent "what am I actually searching" line under the search bar -- the corpus is
+   *  827,061 screened publications, but the useful, searchable resource is the 355,558 AI/ML
+   *  methods papers; this says so plainly rather than leaving classification as a silent, hidden
+   *  filter (see facet-panel.ts, which no longer offers it as a control at all). Numbers come
+   *  live from /api/stats, not hardcoded, so they never drift from what a search can return. */
+  readonly searchSpaceNote = computed(() => {
+    const corpus = this.stats()?.corpus;
+    if (!corpus) return null;
+    return (
+      `Searching ${corpus.positive.toLocaleString()} AI/ML methods papers. ` +
+      `A further ${corpus.negative.toLocaleString()} screened publications were classified as ` +
+      `not AI/ML methods and are excluded.`
+    );
+  });
+
   /** Bound once, passed down to FacetPanel -> FacetTypeahead: journal and MeSH have no controlled
    *  vocabulary and too many corpus-wide values to ship as a static list, so their typeaheads
    *  query observatory-ws's /api/facets/:field cache live instead. */
@@ -120,14 +139,11 @@ export class Search {
     const f = this.filters();
     const chips: ActiveChip[] = [];
 
-    if (f.classification?.length) {
-      const label = isDefaultClassification(f.classification)
-        ? 'AI/ML methods papers only'
-        : `Classification: ${f.classification.join(', ')}`;
-      // Clearing sets [] rather than undefined -- "explicitly cleared", so it doesn't snap back
-      // to the positive default on the next URL read.
-      chips.push({ label, clear: { classification: [] } });
-    }
+    // No classification chip: the search page no longer offers a classification filter at all
+    // (see facet-panel.ts) -- the search space is always the positives, silently and permanently,
+    // not a removable "AI/ML methods papers only" choice a user could clear. The API param and
+    // its parsing rules (search-params.ts) are untouched for anyone hitting /api/records directly
+    // or landing on an old bookmarked ?class= URL -- only this UI stops surfacing it.
     if (f.openAccess !== undefined) {
       chips.push({ label: f.openAccess ? 'Open access' : 'Not open access', clear: { openAccess: undefined } });
     }
@@ -198,7 +214,11 @@ export class Search {
   }
 
   clearAll(): void {
-    this.navigate({ ...this.query(), q: undefined, filters: { classification: [] }, page: 1 });
+    // classification: DEFAULT_CLASSIFICATION, not []. [] means "explicitly cleared" on the wire
+    // (see search-params.ts's resolveClassification) and would silently widen the search from the
+    // 355,558 positives to all 827,061 screened records -- the opposite of what "clear all
+    // filters" should do now that the classification filter isn't a user-removable chip any more.
+    this.navigate({ ...this.query(), q: undefined, filters: { classification: DEFAULT_CLASSIFICATION }, page: 1 });
   }
 
   setSort(sort: string): void {

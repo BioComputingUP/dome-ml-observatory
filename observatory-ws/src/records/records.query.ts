@@ -90,6 +90,30 @@ function splitList(value: string | undefined): string[] | undefined {
   return items.length ? items : undefined;
 }
 
+/** A free-text query longer than this is almost certainly a paste, not a search -- and each term
+ *  becomes another regex clause per document on an unindexed collection, so this bounds the cost
+ *  of a single query as much as it bounds nonsense input. */
+const MAX_QUERY_TERMS = 8;
+
+/**
+ * "random forest sepsis" -> ['random', 'forest', 'sepsis']; a "quoted phrase" is kept as one term.
+ * Splitting on whitespace outside quotes (not a naive .split(' ')) so a query like
+ * `"cell type" transformer` produces two terms, not four. Terms beyond MAX_QUERY_TERMS are
+ * dropped rather than rejected -- a long paste should still search on its first few words instead
+ * of erroring outright.
+ */
+export function tokenizeQuery(q: string): string[] {
+  const terms: string[] = [];
+  const re = /"([^"]+)"|(\S+)/g;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(q)) !== null) {
+    const term = (match[1] ?? match[2]).trim();
+    if (term) terms.push(term);
+    if (terms.length >= MAX_QUERY_TERMS) break;
+  }
+  return terms;
+}
+
 function parseBool(value: string | undefined): boolean | undefined {
   if (value === 'true') return true;
   if (value === 'false') return false;
@@ -204,21 +228,42 @@ function licenseInClause(license: string[]): (string | null)[] {
 export function buildMongoFilter(filters: ParsedFilters): FilterQuery<RecordDocument> {
   const clauses: FilterQuery<RecordDocument>[] = [];
 
-  if (filters.q) {
-    const pattern = escapeRegex(filters.q);
+  // Classification goes FIRST, before the expensive free-text regex below -- measured directly
+  // against the database server: the identical filter with this clause first vs. last is 2,566ms vs. 5,809ms
+  // (more than 2x) on a zero-match query, because Mongo's un-indexed collection scan can then
+  // short-circuit the regex entirely for the majority of documents (the 464,581 non-positive ones
+  // on the default filter) via this cheap equality check first. Don't reorder this without
+  // re-measuring -- it looks like a no-op change and isn't.
+  if (filters.classification.length) {
     clauses.push({
-      $or: [
-        { 'publication_metadata.title': { $regex: pattern, $options: 'i' } },
-        { 'publication_metadata.abstract': { $regex: pattern, $options: 'i' } },
-      ],
+      'llm_classification.classification':
+        filters.classification.length === 1
+          ? { $eq: filters.classification[0] }
+          : { $in: filters.classification },
     });
   }
 
-  if (filters.classification.length) {
-    clauses.push({
-      'llm_classification.classification': { $in: filters.classification },
-    });
+  if (filters.q) {
+    // AND-of-terms, not one literal phrase: a user typing "random forest sepsis" means all three
+    // words, in any order, not that exact substring -- which appears in zero documents and used
+    // to force a full 827k-document scan to prove it (measured: 5.1s, then a false-positive 503
+    // from MongoUnavailableFilter for what was actually a healthy, just-slow query). Each term is
+    // \b-anchored (word-start only, so "cell" still matches "cells"/"cellular") -- measured to cut
+    // false hits like "excellent"/"parcellation" matching "cell" from 61,288 to 46,141, for a
+    // ~10-20% time cost. Matches across title, abstract AND author -- author search is new here.
+    const terms = tokenizeQuery(filters.q);
+    for (const term of terms) {
+      const pattern = `\\b${escapeRegex(term)}`;
+      clauses.push({
+        $or: [
+          { 'publication_metadata.title': { $regex: pattern, $options: 'i' } },
+          { 'publication_metadata.abstract': { $regex: pattern, $options: 'i' } },
+          { 'publication_metadata.authors': { $regex: pattern, $options: 'i' } },
+        ],
+      });
+    }
   }
+
   if (filters.openAccess !== undefined)
     clauses.push({ 'source.access.open_access': filters.openAccess });
   if (filters.fulltextAvailable !== undefined) {

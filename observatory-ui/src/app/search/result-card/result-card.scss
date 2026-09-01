@@ -1,21 +1,28 @@
 .result-card {
-  background-color: white;
-  border: 1px solid var(--status-neutral-bg);
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-default);
+  // A coloured left rule is a stronger "this is one distinct item" signal than a border alone --
+  // the previous border colour (--status-neutral-bg, #eef0f2) was nearly the same as the page's
+  // white background and cards ran together with no visible separation.
+  border-left: 3px solid var(--observatory-accent);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
   padding: var(--space-5);
   margin-bottom: var(--space-4);
-  transition: box-shadow 0.2s ease;
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 
   &:hover {
     box-shadow: var(--shadow-md);
+    border-color: var(--observatory-accent-dark);
   }
 }
 
 .card-title {
   font-size: var(--font-size-lg);
   font-weight: 600;
-  margin-bottom: var(--space-2);
+  margin-bottom: var(--space-3);
   line-height: 1.35;
 
   a {
@@ -29,10 +36,28 @@
   }
 }
 
-.card-meta {
+// Authors: / Journal: / Year: -- one row each, rather than a single "authors · journal · year"
+// line, so authors (now a genuine search field, not just display text) is easy to spot on its own.
+.card-facts {
+  margin: 0 0 var(--space-3);
   font-size: var(--font-size-sm);
-  color: var(--status-neutral);
-  margin-bottom: var(--space-3);
+}
+
+.card-fact {
+  display: flex;
+  gap: var(--space-2);
+  line-height: 1.5;
+
+  dt {
+    flex-shrink: 0;
+    font-weight: 600;
+    color: var(--observatory-primary);
+  }
+
+  dd {
+    margin: 0;
+    color: #444;
+  }
 }
 
 .card-snippet {

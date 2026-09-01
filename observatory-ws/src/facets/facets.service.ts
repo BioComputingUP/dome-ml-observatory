@@ -21,16 +21,21 @@ const FIELD_PATHS: Record<string, string> = {
 
 export const ALLOWED_FACET_FIELDS = Object.keys(FIELD_PATHS);
 
+/** Scopes every typeahead to the positives -- the search page's whole search space (see Part 2 of
+ *  the search repair; observatory-ui's facet-panel.ts no longer offers a classification filter).
+ *  Without this, e.g. the journal typeahead could suggest a journal that exists only among the
+ *  464,581 screened-out records and matches nothing a search here can ever return. */
+const POSITIVE_FILTER = { 'llm_classification.classification': 'positive' };
+
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;
 
 /**
- * Builds an in-memory value cache per allowed field at boot (measured ~5s total across all four:
- * journal 1.6s, mesh 2.1s, pub_types 1.6s, license negligible) and serves every /api/facets/:field
- * request from it -- no Mongo round trip per keystroke. Cardinalities (journal 12,753; mesh
- * 23,222; pub_types 141; license 10) are small enough that holding all of them (~36k strings, a
- * few MB) in process memory is cheap, and the corpus only changes 6-12x/year so staleness between
- * deploys is a non-issue.
+ * Builds an in-memory value cache per allowed field at boot, scoped to the positives, and serves
+ * every /api/facets/:field request from it -- no Mongo round trip per keystroke. Cardinalities are
+ * small enough (a few thousand journals, a few dozen publication types, single-digit licences)
+ * that holding all of them in process memory is cheap, and the corpus only changes 6-12x/year so
+ * staleness between deploys is a non-issue.
  */
 @Injectable()
 export class FacetsService implements OnModuleInit {
@@ -50,7 +55,10 @@ export class FacetsService implements OnModuleInit {
     const path = FIELD_PATHS[field];
     const maxTimeMs = this.config.get('mongo.maxTimeMs', { infer: true });
     try {
-      const values = await this.model.distinct(path).maxTimeMS(Math.max(maxTimeMs, 10_000)).exec();
+      const values = await this.model
+        .distinct(path, POSITIVE_FILTER)
+        .maxTimeMS(Math.max(maxTimeMs, 10_000))
+        .exec();
       const cleaned = (values as unknown[])
         .filter((v): v is string => typeof v === 'string' && v.trim() !== '')
         .sort((a, b) => a.localeCompare(b));

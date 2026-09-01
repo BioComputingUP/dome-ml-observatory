@@ -1,23 +1,58 @@
 .search-page {
   padding-bottom: var(--space-8);
+  background-color: var(--surface-page);
+}
+
+// Full-bleed header band -- same treatment as home.scss's .metrics band and the navbar, so the
+// search page reads as part of the same site instead of a bolted-on tool. This is the page's
+// visual anchor: previously the title/search bar/filters all sat on one flat white field with no
+// separation at all.
+.search-header {
+  background-color: var(--observatory-primary);
+  padding: var(--space-6) 0 var(--space-5);
 }
 
 .page-title {
-  color: var(--observatory-primary);
+  color: white;
   font-weight: 700;
   font-size: var(--font-size-2xl);
   margin-bottom: var(--space-4);
 }
 
 .search-form {
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-2);
 }
 
 .search-input {
   width: 100%;
   padding: var(--space-3) var(--space-4);
   font-size: var(--font-size-lg);
+  border: 2px solid transparent;
   border-radius: var(--radius-md);
+
+  &:focus-visible {
+    // Overrides the global outline-ring focus style: on the dark blue band a white input's own
+    // border is a clearer focus signal than an offset outline, which reads muddy against the
+    // adjacent dark background.
+    outline: none;
+    border-color: var(--observatory-accent);
+  }
+}
+
+.search-author-hint {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-xs);
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.search-space-note {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.search-body {
+  padding-top: var(--space-5);
 }
 
 .filters-toggle {
@@ -26,7 +61,7 @@
   padding: var(--space-2) var(--space-4);
   border: 1px solid var(--observatory-primary);
   border-radius: var(--radius-sm);
-  background: white;
+  background: var(--surface-card);
   color: var(--observatory-primary);
   font-weight: 600;
   cursor: pointer;
@@ -59,9 +94,6 @@
     max-height: none;
     overflow: visible;
     display: none;
-    border: 1px solid var(--status-neutral-bg);
-    border-radius: var(--radius-md);
-    padding: var(--space-4);
     margin-bottom: var(--space-5);
 
     &.open {
@@ -84,7 +116,7 @@
   align-items: center;
   gap: var(--space-2);
   border: 1px solid var(--observatory-primary);
-  background: white;
+  background: var(--surface-card);
   color: var(--observatory-primary);
   border-radius: var(--radius-pill);
   padding: var(--space-1) var(--space-3);
@@ -108,8 +140,10 @@
   justify-content: space-between;
   gap: var(--space-4);
   flex-wrap: wrap;
-  padding-bottom: var(--space-3);
-  border-bottom: 1px solid var(--status-neutral-bg);
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
   margin-bottom: var(--space-4);
 }
 
@@ -155,10 +189,12 @@
   padding: var(--space-4) 0;
 
   &.empty,
-  &.error {
+  &.error,
+  &.timeout {
     text-align: center;
     padding: var(--space-7) var(--space-4);
-    background-color: #f8f9fa;
+    background-color: var(--surface-card);
+    border: 1px solid var(--border-default);
     border-radius: var(--radius-md);
 
     h2 {
@@ -170,7 +206,24 @@
 
   &.error {
     background-color: var(--status-undeterminable-bg);
+    border-color: var(--status-undeterminable);
     color: var(--status-undeterminable);
+
+    h2 {
+      color: var(--status-undeterminable);
+    }
+  }
+
+  // A slow search is not an outage -- kept visually distinct from .error (amber/warning tone
+  // rather than the error-red-adjacent one) so users don't read "your search was too broad" as
+  // "the database is down". See search.ts's timedOut computed and records.service.ts (ws).
+  &.timeout {
+    background-color: var(--status-undeterminable-bg);
+    border-color: var(--status-undeterminable);
+
+    h2 {
+      color: var(--status-undeterminable);
+    }
   }
 }
 
@@ -178,7 +231,7 @@
   height: 150px;
   border-radius: var(--radius-md);
   margin-bottom: var(--space-4);
-  background: linear-gradient(90deg, #f2f4f5 25%, #e9ecef 37%, #f2f4f5 63%);
+  background: linear-gradient(90deg, var(--surface-sunken) 25%, var(--border-default) 37%, var(--surface-sunken) 63%);
   background-size: 400% 100%;
   animation: shimmer 1.4s ease infinite;
 }
@@ -197,7 +250,7 @@
 .cta-button {
   display: inline-block;
   margin-top: var(--space-4);
-  background-color: white;
+  background-color: var(--surface-card);
   color: var(--observatory-accent);
   border: 2px solid var(--observatory-accent);
   padding: var(--space-3) var(--space-6);
@@ -223,7 +276,7 @@
     padding: var(--space-2) var(--space-4);
     border: 1px solid var(--observatory-primary);
     border-radius: var(--radius-sm);
-    background: white;
+    background: var(--surface-card);
     color: var(--observatory-primary);
     font-weight: 600;
     cursor: pointer;

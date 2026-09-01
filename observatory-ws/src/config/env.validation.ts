@@ -44,6 +44,11 @@ class EnvironmentVariables {
   @IsInt()
   @Min(100)
   MONGO_MAX_TIME_MS?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(100)
+  MONGO_SEARCH_MAX_TIME_MS?: number;
 }
 
 export function validate(config: Record<string, unknown>): EnvironmentVariables {

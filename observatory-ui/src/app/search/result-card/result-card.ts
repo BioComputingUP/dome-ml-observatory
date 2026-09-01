@@ -27,10 +27,12 @@ export class ResultCard {
     return plain.length > SNIPPET_LENGTH ? `${plain.slice(0, SNIPPET_LENGTH).trimEnd()}…` : plain;
   });
 
-  readonly meta = computed(() => {
-    const pm = this.record().publication_metadata;
-    return [pm.authors, pm.journal, pm.year?.toString()].filter(Boolean).join(' · ');
-  });
+  // Labelled rows (Authors: / Journal: / Year:) rather than one "authors · journal · year" line
+  // -- each is its own fact and reads faster labelled than run together, and it's what makes
+  // authors visually findable at all now that the search box can match on them (see search.ts).
+  readonly authors = computed(() => this.record().publication_metadata.authors);
+  readonly journal = computed(() => this.record().publication_metadata.journal);
+  readonly year = computed(() => this.record().publication_metadata.year);
 
   readonly links = computed(() => outboundLinks(this.record()));
 }

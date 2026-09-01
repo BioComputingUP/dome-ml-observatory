@@ -9,6 +9,7 @@ import {
   MAX_PAGE_SIZE,
   ParsedFilters,
   parseSearchParams,
+  tokenizeQuery,
 } from './records.query';
 
 /** A filters object with every field left at its "untouched" default -- individual tests spread
@@ -156,31 +157,61 @@ describe('buildMongoFilter', () => {
     expect(buildMongoFilter(emptyFilters)).toEqual({});
   });
 
-  it('builds an escaped, case-insensitive $or regex clause for free text', () => {
-    const filter = buildMongoFilter({ ...emptyFilters, q: 'C++ models' });
+  it('builds one \\b-anchored, escaped, case-insensitive $or-of-fields clause per term (AND-of-terms, not one literal phrase)', () => {
+    const filter = buildMongoFilter({ ...emptyFilters, q: 'random forest' });
     expect(filter).toEqual({
       $and: [
         {
           $or: [
-            {
-              'publication_metadata.title': {
-                $regex: 'C\\+\\+ models',
-                $options: 'i',
-              },
-            },
-            {
-              'publication_metadata.abstract': {
-                $regex: 'C\\+\\+ models',
-                $options: 'i',
-              },
-            },
+            { 'publication_metadata.title': { $regex: '\\brandom', $options: 'i' } },
+            { 'publication_metadata.abstract': { $regex: '\\brandom', $options: 'i' } },
+            { 'publication_metadata.authors': { $regex: '\\brandom', $options: 'i' } },
+          ],
+        },
+        {
+          $or: [
+            { 'publication_metadata.title': { $regex: '\\bforest', $options: 'i' } },
+            { 'publication_metadata.abstract': { $regex: '\\bforest', $options: 'i' } },
+            { 'publication_metadata.authors': { $regex: '\\bforest', $options: 'i' } },
           ],
         },
       ],
     });
   });
 
-  it('filters by classification with $in', () => {
+  it('escapes regex metacharacters within a term (ReDoS/mismatch guard) after the \\b prefix', () => {
+    const filter = buildMongoFilter({ ...emptyFilters, q: 'C++' });
+    expect(filter).toEqual({
+      $and: [
+        {
+          $or: [
+            { 'publication_metadata.title': { $regex: '\\bC\\+\\+', $options: 'i' } },
+            { 'publication_metadata.abstract': { $regex: '\\bC\\+\\+', $options: 'i' } },
+            { 'publication_metadata.authors': { $regex: '\\bC\\+\\+', $options: 'i' } },
+          ],
+        },
+      ],
+    });
+  });
+
+  it("places the classification clause before the free-text clauses -- measured 2,566ms vs 5,809ms on the database server; see buildMongoFilter's comment", () => {
+    const filter = buildMongoFilter({ classification: ['positive'], q: 'transformer' });
+    expect(filter.$and?.[0]).toEqual({
+      'llm_classification.classification': { $eq: 'positive' },
+    });
+  });
+
+  it('filters by a single classification with $eq (cheaper than $in, and required for a future partial-index match)', () => {
+    const filter = buildMongoFilter({
+      ...emptyFilters,
+      classification: ['positive'],
+    });
+    expect(filter).toEqual({
+      $and: [{ 'llm_classification.classification': { $eq: 'positive' } }],
+    });
+  });
+
+  it('filters by multiple classifications with $in', () => {
     const filter = buildMongoFilter({
       ...emptyFilters,
       classification: ['positive', 'negative'],
@@ -259,11 +290,31 @@ describe('buildMongoFilter', () => {
     });
     expect(filter).toEqual({
       $and: [
-        { 'llm_classification.classification': { $in: ['positive'] } },
+        { 'llm_classification.classification': { $eq: 'positive' } },
         { 'source.access.open_access': true },
         { 'publication_metadata.year': { $gte: 2020 } },
       ],
     });
+  });
+});
+
+describe('tokenizeQuery', () => {
+  it('splits on whitespace', () => {
+    expect(tokenizeQuery('random forest sepsis')).toEqual(['random', 'forest', 'sepsis']);
+  });
+
+  it('collapses repeated whitespace and trims', () => {
+    expect(tokenizeQuery('  deep   learning  ')).toEqual(['deep', 'learning']);
+  });
+
+  it('keeps a "quoted phrase" as a single term', () => {
+    expect(tokenizeQuery('"cell type" transformer')).toEqual(['cell type', 'transformer']);
+  });
+
+  it('caps at MAX_QUERY_TERMS (8) rather than erroring on a long paste', () => {
+    const words = Array.from({ length: 12 }, (_, i) => `word${i}`).join(' ');
+    expect(tokenizeQuery(words)).toHaveLength(8);
+    expect(tokenizeQuery(words)[0]).toBe('word0');
   });
 });
 

@@ -1,14 +1,24 @@
 <ul class="status-badges" aria-label="Record status">
-  <li class="badge-chip" [class]="'tone-' + classificationTone()">{{ classificationLabel() }}</li>
+  @if (context() === 'record') {
+    <li class="badge-chip" [class]="'tone-' + classificationTone()">{{ classificationLabel() }}</li>
 
-  @if (openAccess()) {
-    <li class="badge-chip tone-positive">Open access</li>
+    @if (openAccess()) {
+      <li class="badge-chip tone-positive">Open access</li>
+    } @else {
+      <li class="badge-chip tone-neutral">Closed access</li>
+    }
+
+    @if (fulltext()) {
+      <li class="badge-chip tone-positive">Full text</li>
+    }
   } @else {
-    <li class="badge-chip tone-neutral">Closed access</li>
-  }
-
-  @if (fulltext()) {
-    <li class="badge-chip tone-neutral">Full text</li>
+    <!-- Card context: no classification chip (every card is a positive already), and open
+         access/full text collapse into one indicator -- see status-badge.ts's header comment. -->
+    @if (fulltext()) {
+      <li class="badge-chip tone-positive">Full text</li>
+    } @else {
+      <li class="badge-chip tone-neutral">No full text</li>
+    }
   }
 
   @if (enriched()) {

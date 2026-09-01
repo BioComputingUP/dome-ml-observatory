@@ -1,35 +1,63 @@
 <div class="facet-panel">
-  <!-- ============ Main filters ============ -->
+  <!-- ============ Filters -- everything scoped to the 355,558 AI/ML methods papers ============ -->
   <section class="facet-group" aria-labelledby="fg-main">
     <h2 id="fg-main" class="facet-group-title">Filters</h2>
 
-    <fieldset class="facet-block">
-      <legend>Classification</legend>
-      @for (c of classifications; track c) {
-        <label class="check">
+    <details class="facet-block" open>
+      <summary>
+        <span>Year</span>
+        @if (yearSummary()) {
+          <span class="active-value">{{ yearSummary() }}</span>
+        }
+      </summary>
+      <div class="year-range">
+        <div class="year-field">
+          <label class="visually-hidden" for="fp-year-min">Earliest year</label>
           <input
-            type="checkbox"
-            [checked]="isChecked(filters().classification, c)"
-            (change)="toggleInList('classification', c, $any($event.target).checked)"
+            id="fp-year-min"
+            type="text"
+            inputmode="numeric"
+            class="form-control"
+            [attr.placeholder]="yearBounds()?.min ?? 'From'"
+            [value]="filters().yearMin ?? ''"
+            (input)="onYearInput('yearMin', $any($event.target).value)"
           />
-          <span>{{ classificationLabels[c] }}</span>
-          @if (countFor('classification', c); as n) {
-            <span class="count">{{ n | number }}</span>
-          }
-        </label>
-      }
-    </fieldset>
+          <div class="year-steppers">
+            <button type="button" aria-label="Increase earliest year" (click)="stepYear('yearMin', 1)">▲</button>
+            <button type="button" aria-label="Decrease earliest year" (click)="stepYear('yearMin', -1)">▼</button>
+          </div>
+        </div>
+        <span class="year-sep" aria-hidden="true">–</span>
+        <div class="year-field">
+          <label class="visually-hidden" for="fp-year-max">Latest year</label>
+          <input
+            id="fp-year-max"
+            type="text"
+            inputmode="numeric"
+            class="form-control"
+            [attr.placeholder]="yearBounds()?.max ?? 'To'"
+            [value]="filters().yearMax ?? ''"
+            (input)="onYearInput('yearMax', $any($event.target).value)"
+          />
+          <div class="year-steppers">
+            <button type="button" aria-label="Increase latest year" (click)="stepYear('yearMax', 1)">▲</button>
+            <button type="button" aria-label="Decrease latest year" (click)="stepYear('yearMax', -1)">▼</button>
+          </div>
+        </div>
+      </div>
+    </details>
 
-    <fieldset class="facet-block">
-      <legend>Access</legend>
-      <label class="check">
-        <input
-          type="checkbox"
-          [checked]="filters().openAccess === true"
-          (change)="toggleTriState('openAccess', $any($event.target).checked ? true : undefined)"
-        />
-        <span>Open access only</span>
-      </label>
+    <div class="facet-block">
+      <app-facet-typeahead
+        label="Journal"
+        placeholder="Search journals…"
+        [searchFn]="journalSearch()"
+        [selected]="filters().journal ?? []"
+        (selectionChange)="setList('journal', $event)"
+      />
+    </div>
+
+    <div class="facet-block">
       <label class="check">
         <input
           type="checkbox"
@@ -38,78 +66,41 @@
         />
         <span>Full text available</span>
       </label>
-    </fieldset>
+    </div>
 
-    <fieldset class="facet-block">
-      <legend>Year</legend>
-      <div class="year-range">
-        <label>
-          <span class="visually-hidden">Earliest year</span>
-          <input
-            type="number"
-            class="form-control"
-            [attr.min]="yearBounds()?.min"
-            [attr.max]="yearBounds()?.max"
-            [placeholder]="yearBounds()?.min ?? 'From'"
-            [value]="filters().yearMin ?? ''"
-            (change)="setYear('yearMin', $any($event.target).value)"
-          />
-        </label>
-        <span aria-hidden="true">–</span>
-        <label>
-          <span class="visually-hidden">Latest year</span>
-          <input
-            type="number"
-            class="form-control"
-            [attr.min]="yearBounds()?.min"
-            [attr.max]="yearBounds()?.max"
-            [placeholder]="yearBounds()?.max ?? 'To'"
-            [value]="filters().yearMax ?? ''"
-            (change)="setYear('yearMax', $any($event.target).value)"
-          />
-        </label>
-      </div>
-    </fieldset>
-
-    @if (licences().length) {
-      <fieldset class="facet-block">
-        <legend>Licence</legend>
-        @for (lic of licences(); track lic) {
+    @if (pubTypes().length) {
+      <details class="facet-block" open>
+        <summary>
+          <span>Publication type</span>
+          @if (countOf('pubTypes')) {
+            <span class="active-value">{{ countOf('pubTypes') }}</span>
+          }
+        </summary>
+        @for (pt of pubTypes().slice(0, 8); track pt) {
           <label class="check">
             <input
               type="checkbox"
-              [checked]="isChecked(filters().license, lic)"
-              (change)="toggleInList('license', lic, $any($event.target).checked)"
+              [checked]="isChecked(filters().pubTypes, pt)"
+              (change)="toggleInList('pubTypes', pt, $any($event.target).checked)"
             />
-            <span>{{ licenceLabel(lic) }}</span>
-            @if (countFor('license', lic); as n) {
+            <span>{{ pt }}</span>
+            @if (countFor('pubTypes', pt); as n) {
               <span class="count">{{ n | number }}</span>
             }
           </label>
         }
-      </fieldset>
+      </details>
     }
-  </section>
 
-  <!-- ============ Content descriptors ============ -->
-  <section class="facet-group" aria-labelledby="fg-content">
-    <h2 id="fg-content" class="facet-group-title">Content descriptors</h2>
-
-    <app-facet-typeahead
-      label="Journal"
-      placeholder="Search journals…"
-      [searchFn]="journalSearch()"
-      [selected]="filters().journal ?? []"
-      (selectionChange)="setList('journal', $event)"
-    />
-
-    <app-facet-typeahead
-      label="MeSH headings"
-      placeholder="Search MeSH terms…"
-      [searchFn]="meshSearch()"
-      [selected]="filters().meshHeadings ?? []"
-      (selectionChange)="setList('meshHeadings', $event)"
-    />
+    <div class="facet-block">
+      <app-facet-typeahead
+        label="MeSH headings"
+        placeholder="Search MeSH terms…"
+        [searchFn]="meshSearch()"
+        [selected]="filters().meshHeadings ?? []"
+        (selectionChange)="setList('meshHeadings', $event)"
+      />
+    </div>
 
     <div class="facet-block author-keywords">
       <label for="fp-kw">
@@ -126,23 +117,28 @@
       />
     </div>
 
-    @if (pubTypes().length) {
-      <fieldset class="facet-block">
-        <legend>Publication type</legend>
-        @for (pt of pubTypes().slice(0, 8); track pt) {
+    @if (licences().length) {
+      <details class="facet-block">
+        <summary>
+          <span>Licence</span>
+          @if (countOf('license')) {
+            <span class="active-value">{{ countOf('license') }}</span>
+          }
+        </summary>
+        @for (lic of licences(); track lic) {
           <label class="check">
             <input
               type="checkbox"
-              [checked]="isChecked(filters().pubTypes, pt)"
-              (change)="toggleInList('pubTypes', pt, $any($event.target).checked)"
+              [checked]="isChecked(filters().license, lic)"
+              (change)="toggleInList('license', lic, $any($event.target).checked)"
             />
-            <span>{{ pt }}</span>
-            @if (countFor('pubTypes', pt); as n) {
+            <span>{{ licenceLabel(lic) }}</span>
+            @if (countFor('license', lic); as n) {
               <span class="count">{{ n | number }}</span>
             }
           </label>
         }
-      </fieldset>
+      </details>
     }
   </section>
 

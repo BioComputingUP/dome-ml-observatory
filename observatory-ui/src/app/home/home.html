@@ -10,12 +10,12 @@
       </p>
 
       <form class="hero-search" role="search" (submit)="$event.preventDefault(); search()">
-        <label for="home-q" class="visually-hidden">Search titles and abstracts</label>
+        <label for="home-q" class="visually-hidden">Search titles, abstracts and authors</label>
         <input
           id="home-q"
           type="search"
           class="form-control"
-          placeholder="Search titles and abstracts — e.g. random forest, segmentation, proteomics"
+          placeholder="Search titles, abstracts and authors — e.g. random forest sepsis, Tosatto"
           [value]="query()"
           (input)="query.set($any($event.target).value)"
         />

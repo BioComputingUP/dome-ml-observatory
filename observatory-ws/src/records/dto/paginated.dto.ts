@@ -29,4 +29,13 @@ export class PaginatedRecordsDto {
 
   @ApiProperty({ example: 25 })
   pageSize!: number;
+
+  @ApiProperty({
+    required: false,
+    description:
+      'True when fetching this page hit its time budget and gave up (items is empty in that ' +
+      'case) -- distinct from a real outage, which is a 503 instead. Only reachable for a ' +
+      'free-text (q=) search. See RecordsService.fetchPage.',
+  })
+  timedOut?: boolean;
 }

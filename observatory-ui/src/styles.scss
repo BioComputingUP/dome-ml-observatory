@@ -31,6 +31,19 @@
   --status-neutral: #55606b; // grey -- negative classification, closed access
   --status-neutral-bg: #eef0f2;
 
+  // Surface/border tokens -- added for the search page's visual segmentation (Part 5 of the
+  // search repair). The search page previously had no ground colour and a near-invisible card
+  // border (--status-neutral-bg, #eef0f2, on white -- practically no contrast), so result cards
+  // and the filter panel read as one flat white field with no separation between items or
+  // sections. --surface-page tints the ground so white cards read as distinct objects sitting on
+  // it; --border-default replaces that invisible hairline with one that's actually visible
+  // without being heavy.
+  --surface-page: #f4f7f8; // tinted ground behind cards/panels
+  --surface-card: #ffffff; // cards, the filter panel itself
+  --surface-sunken: #eaeff1; // filter group summary rows, zebra stripes
+  --border-default: #d4dade; // card/panel borders, dividers
+  --border-strong: #b6c0c6; // input borders, anything focusable
+
   // Spacing scale (4px base)
   --space-1: 0.25rem;
   --space-2: 0.5rem;
