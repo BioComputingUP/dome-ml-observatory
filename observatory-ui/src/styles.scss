@@ -97,10 +97,33 @@ textarea:focus-visible,
 }
 
 .container-wide {
-  max-width: 1200px;
+  max-width: 1400px;
   // Without auto margins this only caps the width and leaves content hugging the left edge on
   // wide screens -- the ported rule set max-width alone.
   margin-inline: auto;
+}
+
+// Shared side-nav + content two-column layout, used by both the Download and About sections
+// (download-layout.html / about-layout.html). Lives here rather than in either component's own
+// stylesheet because Angular's default view encapsulation scopes component styles to elements
+// that component's own template renders -- a class shared across two unrelated components has to
+// live at this global level, same as .container-wide above.
+.section-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: var(--space-7);
+  align-items: start;
+  padding-top: var(--space-6);
+  padding-bottom: var(--space-8);
+
+  @media (max-width: 991px) {
+    grid-template-columns: 1fr;
+    padding-top: var(--space-5);
+  }
+}
+
+.section-content {
+  min-width: 0;
 }
 
 .visually-hidden-focusable {

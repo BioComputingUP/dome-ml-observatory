@@ -4,6 +4,13 @@
 // blocks started overlapping around 1024px, silently clipping the "Search" link out of view.
 // Flexbox makes that class of bug structurally impossible -- the brand and the collapse are
 // normal-flow siblings that can never occupy the same space.
+//
+// Later rebuilt again on a 3-column grid (1fr auto 1fr) once the registry pill was removed --
+// flex's justify-content:space-between only balanced the brand against something on the right;
+// with nothing there any more, mx-auto centred the nav within the leftover space after the brand
+// instead of within the navbar as a whole, so it visibly drifted right. Grid fixes this
+// structurally: the brand (col 1) and toggler (col 3) sit in equal 1fr tracks regardless of the
+// brand's own width, so the auto-sized nav column (col 2) always lands at the true centre.
 .navbar {
   background-color: var(--observatory-primary) !important;
   padding-left: 5%;
@@ -11,10 +18,9 @@
   z-index: 1040;
   height: 90px;
   min-height: 90px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-
-  justify-content: space-between;
 
   // Only apply the wide fixed side padding once there's actually room for it -- confirmed clean
   // at 1440px+ in screenshots. The 1200-1400px zone below gets its own tighter padding instead
@@ -164,13 +170,14 @@
 }
 
 .navbar-brand {
+  grid-column: 1;
+  justify-self: start;
   color: white;
   display: flex;
   align-items: center;
   gap: var(--space-3);
   height: 90px;
   padding: 0;
-  flex-shrink: 0;
 
   @media (max-width: 576px) {
     font-size: 0.9rem;
@@ -182,9 +189,10 @@
 }
 
 .navbar-toggler {
+  grid-column: 3;
+  justify-self: end;
   border: 1px solid rgba(255, 255, 255, 0.3);
   padding: 5px 10px;
-  flex-shrink: 0;
 
   &:focus {
     box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25);
@@ -209,12 +217,13 @@
 }
 
 .navbar-collapse {
+  grid-column: 2;
+  justify-self: center;
+
   @media (min-width: 1200px) {
-    display: flex !important;
-    flex: 1 1 auto;
-    align-items: center;
-    justify-content: flex-end;
-    min-width: 0; // lets children shrink instead of forcing the navbar wider than the viewport
+    display: flex !important; // lays out the collapse's own child (the nav <ul>), not how the
+    align-items: center;      // collapse itself sits in the outer grid -- that's grid-column/
+    min-width: 0;              // justify-self above. min-width:0 still lets children shrink.
   }
 
   @media (max-width: 1199px) {
@@ -244,8 +253,9 @@
   @media (min-width: 1200px) {
     display: flex;
     align-items: center;
-    // Bootstrap's mx-auto (already on the <ul> in the template) absorbs the flex-collapse's
-    // remaining space evenly, centring the nav list between the brand and the registry pill.
+    // Centring now comes from .navbar-collapse's grid placement (grid-column:2; justify-self:
+    // center) -- .navbar-collapse is sized to this <ul>'s own content, so there's no leftover
+    // space left for auto-margins to absorb.
     flex-wrap: nowrap;
     min-width: 0;
   }

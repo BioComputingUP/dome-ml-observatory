@@ -13,7 +13,8 @@
     "test": "ng test",
     "pretest": "node scripts/sync-schema.js",
     "lint": "ng lint",
-    "sync-schema": "node scripts/sync-schema.js"
+    "sync-schema": "node scripts/sync-schema.js",
+    "sync-news": "python3 scripts/sync_news.py"
   },
   "private": true,
   "packageManager": "npm@11.19.0",

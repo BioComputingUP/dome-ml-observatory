@@ -3,8 +3,9 @@ export interface ContentItem {
   date: string;
   title: string;
   description: string;
-  link: string;
-  linkText: string;
-  linkIcon: string;
+  // Optional -- not every item has an external link to point to (e.g. an internal meeting note).
+  link?: string;
+  linkText?: string;
+  linkIcon?: string;
   tags: string[];
 }

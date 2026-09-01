@@ -1,82 +1,506 @@
 [
-    {
-      "type": "news",
-      "date": "June 15, 2026",
-      "title": "Connecting ELIXIR's AI Ecosystem Workshop Report 2026",
-      "description": "A workshop report documenting the ELIXIR AHM session in Lyon, France (June 9, 2026), attended by over 60 participants. Discussions covered service gaps, unified web presence for AI agents, and actionable recommendations including defining ELIXIR's AI services and establishing best practices resources.",
-      "link": "https://zenodo.org/records/20702255",
-      "linkText": "View on Zenodo",
-      "linkIcon": "icon-external-link-alt",
-      "tags": ["Report", "ELIXIR", "AI", "Workshop"]
-    },
-    {
-      "type": "news",
-      "date": "April 2026",
-      "title": "OSAI Paper Officially Published in Nature Methods",
-      "description": "The Open and Sustainable AI (OSAI) framework paper by Farrell, Psomopoulos, Tosatto et al. has been officially published in Nature Methods, marking a key milestone for AI/ML standards in the life sciences.",
-      "link": "https://www.nature.com/articles/s41592-026-03037-6",
-      "linkText": "Read in Nature Methods",
-      "linkIcon": "icon-external-link-alt",
-      "tags": ["Publication", "Nature Methods", "OSAI", "Sustainability"]
-    },
-    {
-      "type": "event",
-      "date": "March 17, 2026",
-      "title": "DOME Registry & OSAI at OpenPharma March 2026",
-      "description": "Gavin Farrell and Silvio Tosatto presented on the DOME Registry and OSAI, highlighting the importance of AI/ML standards for pharma and life sciences, at the OpenPharma March 2026 event.",
-      "link": "https://zenodo.org/records/19074420",
-      "linkText": "View on Zenodo",
-      "linkIcon": "icon-external-link-alt",
-      "tags": ["Presentation", "OpenPharma", "DOME", "OSAI"]
-    },
-    {
-      "type": "event",
-      "date": "November 3, 2025",
-      "title": "DOME and OSAI featured in BioHackathon Europe 2025",
-      "description": "DOME team members contributed to two key projects at the BioHackathon Europe in Berlin: Project 6, 'Defining the components of an ELIXIR ML ecosystem', and Project 31, 'World DOMEination: Conquering ML metadata, one standard at a time'.",
-      "link": "https://biohackathon-europe.org/projects/",
-      "linkText": "View Projects",
-      "linkIcon": "icon-external-link-alt",
-      "tags": ["BioHackathon", "Workshop", "Ecosystem"]
-    },
-    {
-        "type": "news",
-        "date": "September 3, 2025",
-        "title": "ELIXIR launches AI Ecosystem Focus Group",
-        "description": "ELIXIR has officially launched the AI Ecosystem Focus Group to address the growing importance of Artificial Intelligence in the life sciences and to build on the work of the original Machine Learning Focus Group.",
-        "link": "https://elixir-europe.org/focus-groups/machine-learning",
-        "linkText": "Learn more",
-        "linkIcon": "icon-external-link-alt",
-        "tags": ["Focus Group", "ELIXIR", "AI"]
-      },
-    {
-      "type": "news",
-      "date": "August 10, 2025",
-      "title": "OSAI website launched",
-      "description": "The Open and Sustainable AI (OSAI) website is now live, expanding on the DOME recommendations to provide resources for sustainable AI development in research.",
-      "link": "https://osai.dome-ml.org/",
-      "linkText": "Visit OSAI Website",
-      "linkIcon": "icon-external-link-alt",
-      "tags": ["Launch", "OSAI", "Sustainability"]
-    },
-    {
-        "type": "news",
-        "date": "May 22, 2025",
-        "title": "Open and Sustainable AI in Life Sciences Paper Released",
-        "description": "A new publication led by Gavin Farrell, Fotis Psomopoulos & Silvio Tosatto outlines a framework for creating Open and Sustainable AI (OSAI), building on principles established by the DOME recommendations.",
-        "link": "https://arxiv.org/abs/2505.16619",
-        "linkText": "Read the paper",
-        "linkIcon": "icon-external-link-alt",
-        "tags": ["Publication", "OSAI", "Sustainability"]
-      },
-    {
-        "type": "event",
-        "date": "May 21, 2025",
-        "title": "Presentation on DOME and Sustainable AI at CERN",
-        "description": "Gavin Farrell presented on 'DOME: Life Science ML Best Practices & the AI Ecosystem' at the FAIR and environmentally sustainable ML workshop hosted by CERN.",
-        "link": "https://zenodo.org/records/15477471",
-        "linkText": "View on Zenodo",
-        "linkIcon": "icon-external-link-alt",
-        "tags": ["Presentation", "CERN", "Sustainability"]
-      }
-  ]
+  {
+    "type": "event",
+    "date": "March 20, 2026",
+    "title": "OpenPharma DOME & OSAI talk",
+    "description": "This session with OpenPharma will focus on engaging industry partners within the open science ecosystem for Artificial Intelligence. The talk will highlight best practices and resources provided by the DOME and OSAI initiatives, demonstrating how they can be leveraged to enhance transparency and reproducibility in pharmaceutical AI research.",
+    "link": "https://www.openpharma.blog/",
+    "linkText": "Visit OpenPharma",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Presentation",
+      "Industry",
+      "OpenPharma"
+    ]
+  },
+  {
+    "type": "news",
+    "date": "January 28, 2026",
+    "title": "DOME Registry Zenodo Archival Integration",
+    "description": "The full dataset is now versioned regularly and new releases are captured and backed up via Zenodo automatically at intervals.",
+    "link": "https://zenodo.org/records/18301904",
+    "linkText": "View on Zenodo",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Integration",
+      "Archival",
+      "Zenodo"
+    ]
+  },
+  {
+    "type": "event",
+    "date": "January 15, 2026",
+    "title": "FAIRsharing Annual Webinar 2026",
+    "description": "OSAI DOME adjacent work featured as part of the AI Resources section in FAIRsharing, boosting collaboration in the AI resources ecosystem.",
+    "link": "https://zenodo.org/records/18255924",
+    "linkText": "View on Zenodo",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Webinar",
+      "FAIRsharing",
+      "Collaboration"
+    ]
+  },
+  {
+    "type": "news",
+    "date": "January 14, 2026",
+    "title": "Integrating ML Standards in Research Dissemination",
+    "description": "A new paper by Scott C. Edmunds in the CODATA Data Science Journal highlights DOME and ML standards, discussing their integration into research dissemination workflows.",
+    "link": "https://datascience.codata.org/articles/10.5334/dsj-2026-001",
+    "linkText": "Read the paper",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Publication",
+      "Standards",
+      "CODATA"
+    ]
+  },
+  {
+    "type": "news",
+    "date": "December 20, 2025",
+    "title": "RSQkit DOME Registry software story",
+    "description": "Describes the DOME Registry software best practices and development habits to build sustained and mature software, guiding others in the research infrastructure space.",
+    "link": "https://everse.software/RSQKit/dome_registry_research_software_story",
+    "linkText": "Read the story",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Software",
+      "Best Practices",
+      "RSQkit"
+    ]
+  },
+  {
+    "type": "news",
+    "date": "December 16, 2025",
+    "title": "ELIXIR AI Ecosystem Concept Early Draft",
+    "description": "Early draft of the ELIXIR AI Ecosystem concept, an output write-up from the BioHackathon 2025 projects.",
+    "link": "https://zenodo.org/records/17955257",
+    "linkText": "Read the report",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "BioHackathon",
+      "Ecosystem",
+      "Report"
+    ]
+  },
+  {
+    "type": "news",
+    "date": "December 15, 2025",
+    "title": "DOME Registry 2026 Roadmap Focus",
+    "description": "Roadmap of technical development plans for the DOME Registry, informed by the ELIXIR SAB Meeting in previous months.",
+    "link": "https://zenodo.org/records/17938284",
+    "linkText": "View Roadmap",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Roadmap",
+      "Development",
+      "SAB"
+    ]
+  },
+  {
+    "type": "event",
+    "date": "November 21, 2025",
+    "title": "DOME Registry ELIXIR STEERS Presentation",
+    "description": "Omar Attafi, DOME Registry lead developer, highlighted the DOME Registry infrastructure to ELIXIR Communities during the ELIXIR STEERS project meeting.",
+    "link": "https://elixir-europe.org/about-us/how-funded/eu-projects/steers",
+    "linkText": "Learn more",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Presentation",
+      "ELIXIR",
+      "Infrastructure"
+    ]
+  },
+  {
+    "type": "event",
+    "date": "November 19, 2025",
+    "title": "DOME Registry & OSAI presented at Boehringer Ingelheim",
+    "description": "Prof. Silvio Tosatto presented the DOME Registry and OSAI initiatives at an online webinar for Boehringer Ingelheim, fostering industry engagement and collaboration.",
+    "link": "https://www.boehringer-ingelheim.com/",
+    "linkText": "Visit Boehringer Ingelheim",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Presentation",
+      "Industry",
+      "Webinar"
+    ]
+  },
+  {
+    "type": "news",
+    "date": "November 14, 2025",
+    "title": "DOME Registry in a nutshell video",
+    "description": "Gavin Farrell explains the DOME Registry use and value in an accessible manner via the SCIENCE4ALL programme from UNIPD, IT.",
+    "link": "https://www.youtube.com/shorts/XN8o1YGIpxE?feature=share",
+    "linkText": "Watch video",
+    "linkIcon": "icon-youtube",
+    "tags": [
+      "Video",
+      "Outreach",
+      "Science4All"
+    ]
+  },
+  {
+    "type": "event",
+    "date": "November 3, 2025",
+    "title": "DOME and OSAI featured in BioHackathon Europe 2025",
+    "description": "DOME team members contributed to two key projects at the BioHackathon Europe in Berlin: Project 6, 'Defining the components of an ELIXIR ML ecosystem', and Project 31, 'World DOMEination: Conquering ML metadata, one standard at a time'.",
+    "link": "https://biohackathon-europe.org/projects/",
+    "linkText": "View Projects",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "BioHackathon",
+      "Workshop",
+      "Ecosystem"
+    ]
+  },
+  {
+    "type": "news",
+    "date": "October 27, 2025",
+    "title": "First DOME Registry SAB Meeting",
+    "description": "The first meeting of the DOME Registry Scientific Advisory Board (SAB) took place on October 27th. The board discussed the current status of the registry and made significant progress towards the publication of the DOME Registry technical roadmap.",
+    "tags": [
+      "SAB",
+      "Registry",
+      "Roadmap"
+    ]
+  },
+  {
+    "type": "news",
+    "date": "September 3, 2025",
+    "title": "ELIXIR launches AI Ecosystem Focus Group",
+    "description": "ELIXIR has officially launched the AI Ecosystem Focus Group to address the growing importance of Artificial Intelligence in the life sciences and to build on the work of the original Machine Learning Focus Group.",
+    "link": "https://elixir-europe.org/focus-groups/machine-learning",
+    "linkText": "Learn more",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Focus Group",
+      "ELIXIR",
+      "AI"
+    ]
+  },
+  {
+    "type": "news",
+    "date": "August 10, 2025",
+    "title": "OSAI sister website launched",
+    "description": "The Open and Sustainable AI (OSAI) website is now live, expanding on the DOME recommendations to provide resources for sustainable AI development in research.",
+    "link": "https://osai.dome-ml.org/",
+    "linkText": "Visit OSAI Website",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Launch",
+      "OSAI",
+      "Sustainability"
+    ]
+  },
+  {
+    "type": "event",
+    "date": "July 4, 2025",
+    "title": "DOME Registry presented at ISMB/ECCB 2025",
+    "description": "The DOME Registry was presented at the ISMB/ECCB 2025 conference in San Juan, Puerto Rico. The work, 'DOME Registry Supporting ML transparency and reproducibility in the life sciences', was featured as both a talk and a conference poster.",
+    "link": "https://zenodo.org/records/15807200",
+    "linkText": "View Presentation",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Conference",
+      "ISMB",
+      "ECCB",
+      "Poster"
+    ]
+  },
+  {
+    "type": "event",
+    "date": "June 2, 2025",
+    "title": "ML Ecosystem session at ELIXIR All Hands 2025",
+    "description": "DOME was featured as part of a workshop on the 'ELIXIR ML Ecosystem' during the ELIXIR All Hands meeting in Thessaloniki, Greece.",
+    "link": "https://elixir-europe.org/events/all-hands",
+    "linkText": "Event Details",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Conference",
+      "ELIXIR",
+      "Ecosystem"
+    ]
+  },
+  {
+    "type": "news",
+    "date": "May 22, 2025",
+    "title": "New paper on Open and Sustainable AI in Life Sciences",
+    "description": "A new publication led by Gavin Farrell outlines a framework for creating Open and Sustainable AI (OSAI), building on principles established by the DOME recommendations.",
+    "link": "https://arxiv.org/abs/2505.16619",
+    "linkText": "Read the paper",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Publication",
+      "OSAI",
+      "Sustainability"
+    ]
+  },
+  {
+    "type": "event",
+    "date": "May 21, 2025",
+    "title": "Presentation on DOME and Sustainable AI at CERN",
+    "description": "Gavin Farrell presented on 'DOME: Life Science ML Best Practices & the AI Ecosystem' at the FAIR and environmentally sustainable ML workshop hosted by CERN.",
+    "link": "https://zenodo.org/records/15477471",
+    "linkText": "View on Zenodo",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Presentation",
+      "CERN",
+      "Sustainability"
+    ]
+  },
+  {
+    "type": "news",
+    "date": "May 21, 2025",
+    "title": "Reproducible AI Research: Introducing DOME",
+    "description": "Seonyoung Kim from the Bernard Becker Medical Library at Washington University in St. Louis highlights DOME as a key resource for reproducible AI research in a recent blog post.",
+    "link": "https://becker.wustl.edu/news/reproducible-ai-research-introducing-dome/",
+    "linkText": "Read the blog post",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Community",
+      "Blog",
+      "Libraries"
+    ]
+  },
+  {
+    "type": "event",
+    "date": "May 19-23, 2025",
+    "title": "AI and Machine Learning in Life Sciences Course",
+    "description": "An intensive training course in Aussois featuring experts from ELIXIR nodes (France, Belgium, Switzerland and Greece). Topics covered include ML fundamentals, deep learning, generative models, and regulatory issues (DOME, European AI Act), concluding with a BYOD session.",
+    "link": "https://moodle.france-bioinformatique.fr/course/view.php?id=34",
+    "linkText": "View Course",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Training",
+      "ELIXIR",
+      "Aussois"
+    ]
+  },
+  {
+    "type": "news",
+    "date": "April 1, 2025",
+    "title": "Training available: DOME Registry & Recommendations",
+    "description": "Comprehensive training course available for using the DOME Registry and implementing DOME recommendations in machine learning research workflows.",
+    "link": "https://biodataanalysisgroup.github.io/DOME-Training-Course/",
+    "linkText": "Access Training",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Training",
+      "Resources",
+      "Education"
+    ]
+  },
+  {
+    "type": "news",
+    "date": "March 31, 2025",
+    "title": "ELIXIR encourages publishers to adopt DOME",
+    "description": "Following successful adoption by GigaScience, ELIXIR is encouraging all publishers of life science research to adopt the DOME machine learning recommendations.",
+    "link": "https://elixir-europe.org/news/DOME-publishers",
+    "linkText": "Read the announcement",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Adoption",
+      "Publishing",
+      "ELIXIR"
+    ]
+  },
+  {
+    "type": "news",
+    "date": "February 24, 2025",
+    "title": "DOME Registry Tutorial v2 Published",
+    "description": "An updated video tutorial for the DOME Registry service has been released, guiding users on creating entries for machine learning methods in papers.",
+    "link": "https://www.youtube.com/watch?v=fmVppa9ESw0",
+    "linkText": "Watch on YouTube",
+    "linkIcon": "icon-youtube",
+    "tags": [
+      "Tutorial",
+      "Registry",
+      "Video"
+    ]
+  },
+  {
+    "type": "event",
+    "date": "February 13, 2025",
+    "title": "DOME presented at RDA AI in Action Workshop",
+    "description": "DOME will be presented at the Research Data Alliance (RDA) event \"AI in Action: How Researchers Leverage AI\" in a session focusing on Europe and Americas friendly time zones.",
+    "link": "https://www.rd-alliance.org/event/ai-in-action-how-researchers-leverage-ai-europe-americas-friendly-time/",
+    "linkText": "Event details",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Presentation",
+      "Research Data Alliance"
+    ]
+  },
+  {
+    "type": "news",
+    "date": "December 11, 2024",
+    "title": "DOME Registry paper published in GigaScience",
+    "description": "Our latest paper detailing the DOME Registry implementation has been published in GigaScience journal.",
+    "link": "https://academic.oup.com/gigascience/article/doi/10.1093/gigascience/giae094/7921169",
+    "linkText": "Read the paper",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Publication",
+      "Registry"
+    ]
+  },
+  {
+    "type": "event",
+    "date": "December 5, 2024",
+    "title": "DOME - ML Best Practices Webinar with Australian BioCommons",
+    "description": "Join us for a webinar on Machine Learning Best Practices & Recommendations in collaboration with Australian BioCommons.",
+    "link": "https://www.biocommons.org.au/events/dome-ml",
+    "linkText": "Event details",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Webinar",
+      "Best Practices"
+    ]
+  },
+  {
+    "type": "event",
+    "date": "November 21, 2024",
+    "title": "GigaScience talk on DOME adoption at ICG",
+    "description": "GigaScience presented a talk on DOME adoption at the 19th International Conference on Genomics (ICG).",
+    "link": "https://youtu.be/EQM0GVjPbmQ?si=bZXR5TP38zM_hUyU",
+    "linkText": "Watch recording",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Conference",
+      "Genomics"
+    ]
+  },
+  {
+    "type": "event",
+    "date": "September 24, 2024",
+    "title": "DOME - ML Best Practices Webinar with ELIXIR",
+    "description": "A webinar on Machine Learning Best Practices & Recommendations in collaboration with ELIXIR Europe.",
+    "link": "https://elixir-europe.org/events/dome-machine-learning-best-practices-recommendations-webinar",
+    "linkText": "Event details",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Webinar",
+      "ELIXIR"
+    ]
+  },
+  {
+    "type": "news",
+    "date": "April 10, 2024",
+    "title": "DOME Registry adopted by GigaScience",
+    "description": "We're pleased to announce that GigaScience has adopted the DOME Registry for use in their publication process.",
+    "link": "https://academic.oup.com/gigascience/article/doi/10.1093/gigascience/giae094/7921169",
+    "linkText": "Learn more",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Partnership",
+      "Publishing"
+    ]
+  },
+  {
+    "type": "event",
+    "date": "January 24, 2024",
+    "title": "ELIXIR-UK Community Call on DOME",
+    "description": "Tim Beck introduced the DOME guidelines and their application for health data ML analyses at the ELIXIR-UK Human Data Community Call.",
+    "link": "https://elixiruknode.org/event/dome-recommendations-for-machine-learning/",
+    "linkText": "Event details",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Webinar",
+      "ELIXIR-UK",
+      "Health Data"
+    ]
+  },
+  {
+    "type": "news",
+    "date": "September 1, 2022",
+    "title": "DOME Registry service launched",
+    "description": "The DOME Registry service is now live, providing a technical solution to help implement the DOME Recommendations.",
+    "link": "https://registry.dome-ml.org/intro",
+    "linkText": "Visit the Registry",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Launch",
+      "Registry"
+    ]
+  },
+  {
+    "type": "news",
+    "date": "February 4, 2022",
+    "title": "DOME interpretation for Proteomics published",
+    "description": "A perspective was published in the Journal of Proteome Research interpreting the DOME recommendations for the specific context of proteomics and metabolomics.",
+    "link": "https://pubs.acs.org/doi/10.1021/acs.jproteome.1c00900",
+    "linkText": "Read the perspective",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Publication",
+      "Proteomics",
+      "Metabolomics"
+    ]
+  },
+  {
+    "type": "news",
+    "date": "July 27, 2021",
+    "title": "DOME Recommendations paper published in Nature Methods",
+    "description": "Our foundational paper on the DOME Recommendations has been published in Nature Methods.",
+    "link": "https://www.nature.com/articles/s41592-021-01205-4",
+    "linkText": "Read the paper",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Publication",
+      "Recommendations"
+    ]
+  },
+  {
+    "type": "event",
+    "date": "June 7, 2021",
+    "title": "ELIXIR All Hands Meeting 2021 Workshop",
+    "description": "Workshop on defining the road ahead for machine learning in ELIXIR at the ELIXIR All Hands Meeting 2021.",
+    "link": "https://docs.google.com/document/d/1jV1poS7Jth7OPmZUyOPVH3hy8ZkfFq72x9FvFRRS9y4/export?format=pdf",
+    "linkText": "Workshop materials",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Workshop",
+      "ELIXIR"
+    ]
+  },
+  {
+    "type": "news",
+    "date": "December 10, 2020",
+    "title": "DOME-ML GitHub repository created",
+    "description": "We have created a GitHub repository for the DOME project to foster open collaboration.",
+    "link": "https://github.com/MachineLearning-ELIXIR/dome-ml",
+    "linkText": "View on GitHub",
+    "linkIcon": "icon-github",
+    "tags": [
+      "Development",
+      "Open Source"
+    ]
+  },
+  {
+    "type": "news",
+    "date": "June 25, 2020",
+    "title": "First manuscript deposited to arXiv",
+    "description": "Our first manuscript detailing the DOME framework has been deposited to the arXiv preprint server.",
+    "link": "https://arxiv.org/abs/2006.16189",
+    "linkText": "View on arXiv",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Preprint",
+      "Research"
+    ]
+  },
+  {
+    "type": "news",
+    "date": "October 1, 2019",
+    "title": "ELIXIR Machine Learning Focus Group formed",
+    "description": "The ELIXIR Machine Learning Focus Group has been established with domain experts from across Europe.",
+    "link": "https://elixir-europe.org/focus-groups/machine-learning",
+    "linkText": "Learn more",
+    "linkIcon": "icon-external-link-alt",
+    "tags": [
+      "Focus Group",
+      "ELIXIR"
+    ]
+  }
+]

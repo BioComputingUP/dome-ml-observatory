@@ -14,12 +14,12 @@ interface Integration {
 }
 
 @Component({
-  selector: 'app-integrations',
+  selector: 'app-about-integrations',
   imports: [],
-  templateUrl: './integrations.html',
-  styleUrl: './integrations.scss',
+  templateUrl: './about-integrations.html',
+  styleUrl: './about-integrations.scss',
 })
-export class Integrations {
+export class AboutIntegrations {
   readonly integrations: Integration[] = [
     // ---- Live today ----
     {

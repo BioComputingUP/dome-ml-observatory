@@ -6,7 +6,6 @@ import { SideNav, SideNavItem } from '../../shared/side-nav/side-nav';
   selector: 'app-download-layout',
   imports: [RouterOutlet, SideNav],
   templateUrl: './download-layout.html',
-  styleUrl: './download-layout.scss',
 })
 export class DownloadLayout {
   readonly navItems: SideNavItem[] = [

@@ -36,10 +36,6 @@ export const routes: Routes = [
   },
   { path: 'api', redirectTo: '/download/api', pathMatch: 'full' },
   {
-    path: 'integrations',
-    loadComponent: () => import('./integrations/integrations').then((m) => m.Integrations),
-  },
-  {
     path: 'about',
     loadComponent: () => import('./about/about-layout/about-layout').then((m) => m.AboutLayout),
     children: [
@@ -53,6 +49,11 @@ export const routes: Routes = [
         loadComponent: () => import('./about/about-team/about-team').then((m) => m.AboutTeam),
       },
       {
+        path: 'integrations',
+        loadComponent: () =>
+          import('./about/about-integrations/about-integrations').then((m) => m.AboutIntegrations),
+      },
+      {
         path: 'licensing',
         loadComponent: () => import('./about/about-licensing/about-licensing').then((m) => m.AboutLicensing),
       },
@@ -63,6 +64,7 @@ export const routes: Routes = [
     ],
   },
   { path: 'team', redirectTo: '/about/team', pathMatch: 'full' },
+  { path: 'integrations', redirectTo: '/about/integrations', pathMatch: 'full' },
   { path: 'licensing', redirectTo: '/about/licensing', pathMatch: 'full' },
   { path: 'privacy', redirectTo: '/about/privacy', pathMatch: 'full' },
   {
