@@ -1,0 +1,123 @@
+<div class="container-wide search-page">
+  <h1 class="page-title">Search the AI/ML landscape</h1>
+
+  @if (isPreview()) {
+    <p class="preview-banner" role="status">
+      <strong>Development preview.</strong>
+      Searching a {{ sampleSize() | number }}-record sample, not the full
+      {{ corpusTotal() | number }}-record corpus. Full search arrives with the API.
+    </p>
+  }
+
+  <form class="search-form" role="search" (submit)="$event.preventDefault()">
+    <label for="q" class="visually-hidden">Search titles and abstracts</label>
+    <input
+      id="q"
+      type="search"
+      class="form-control search-input"
+      placeholder="Search titles and abstracts…"
+      [value]="freeText()"
+      (input)="onTextInput($any($event.target).value)"
+    />
+  </form>
+
+  <button
+    type="button"
+    class="filters-toggle"
+    (click)="facetsOpen.set(!facetsOpen())"
+    [attr.aria-expanded]="facetsOpen()"
+    aria-controls="facet-panel"
+  >
+    Filters @if (activeCount()) { ({{ activeCount() }}) }
+  </button>
+
+  <div class="search-layout">
+    <aside id="facet-panel" class="facets" [class.open]="facetsOpen()">
+      <app-facet-panel
+        [filters]="filters()"
+        [stats]="stats()"
+        [vocab]="vocab()"
+        [journals]="journals()"
+        [meshHeadings]="meshHeadings()"
+        [authorKeywords]="authorKeywords()"
+        (filtersChange)="applyFilters($event)"
+      />
+    </aside>
+
+    <section class="results" aria-live="polite">
+      @if (chips().length) {
+        <ul class="chips" aria-label="Active filters">
+          @for (chip of chips(); track chip.label) {
+            <li>
+              <button type="button" class="chip" (click)="clearChip(chip)">
+                {{ chip.label }}
+                <span aria-hidden="true">×</span>
+                <span class="visually-hidden">— remove this filter</span>
+              </button>
+            </li>
+          }
+          <li>
+            <button type="button" class="chip clear-all" (click)="clearAll()">Clear all</button>
+          </li>
+        </ul>
+      }
+
+      <div class="results-bar">
+        <p class="result-count">
+          @if (loading()) {
+            Searching…
+          } @else if (total() === 0) {
+            No results
+          } @else {
+            {{ rangeStart() | number }}–{{ rangeEnd() | number }} of {{ total() | number }}
+          }
+        </p>
+
+        <label class="sort">
+          <span>Sort</span>
+          <select class="form-select" [value]="sort()" (change)="setSort($any($event.target).value)">
+            <option value="relevance">Relevance</option>
+            <option value="year_desc">Newest first</option>
+            <option value="year_asc">Oldest first</option>
+          </select>
+        </label>
+      </div>
+
+      @if (error()) {
+        <div class="state error" role="alert">
+          <p>{{ error() }}</p>
+        </div>
+      } @else if (loading()) {
+        <div class="state">
+          @for (i of [1, 2, 3, 4, 5]; track i) {
+            <div class="skeleton-card" aria-hidden="true"></div>
+          }
+          <p class="visually-hidden">Loading results</p>
+        </div>
+      } @else if (total() === 0) {
+        <div class="state empty">
+          <h2>Nothing matched those filters</h2>
+          <p>
+            Try removing a filter or broadening your search.
+            @if (isPreview()) {
+              Remember this preview only searches {{ sampleSize() | number }} records.
+            }
+          </p>
+          <button type="button" class="cta-button" (click)="clearAll()">Clear all filters</button>
+        </div>
+      } @else {
+        @for (record of items(); track record._id) {
+          <app-result-card [record]="record" />
+        }
+
+        @if (totalPages() > 1) {
+          <nav class="pagination" aria-label="Search results pages">
+            <button type="button" [disabled]="page() <= 1" (click)="goToPage(page() - 1)">Previous</button>
+            <span>Page {{ page() | number }} of {{ totalPages() | number }}</span>
+            <button type="button" [disabled]="page() >= totalPages()" (click)="goToPage(page() + 1)">Next</button>
+          </nav>
+        }
+      }
+    </section>
+  </div>
+</div>

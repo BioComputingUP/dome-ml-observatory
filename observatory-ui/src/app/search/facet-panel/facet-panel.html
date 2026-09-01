@@ -1,0 +1,244 @@
+<div class="facet-panel">
+  <!-- ============ Main filters ============ -->
+  <section class="facet-group" aria-labelledby="fg-main">
+    <h2 id="fg-main" class="facet-group-title">Filters</h2>
+
+    <fieldset class="facet-block">
+      <legend>Classification</legend>
+      @for (c of classifications; track c) {
+        <label class="check">
+          <input
+            type="checkbox"
+            [checked]="isChecked(filters().classification, c)"
+            (change)="toggleInList('classification', c, $any($event.target).checked)"
+          />
+          <span>{{ classificationLabels[c] }}</span>
+          @if (countFor('classification', c); as n) {
+            <span class="count">{{ n | number }}</span>
+          }
+        </label>
+      }
+    </fieldset>
+
+    <fieldset class="facet-block">
+      <legend>Access</legend>
+      <label class="check">
+        <input
+          type="checkbox"
+          [checked]="filters().openAccess === true"
+          (change)="toggleTriState('openAccess', $any($event.target).checked ? true : undefined)"
+        />
+        <span>Open access only</span>
+      </label>
+      <label class="check">
+        <input
+          type="checkbox"
+          [checked]="filters().fulltextAvailable === true"
+          (change)="toggleTriState('fulltextAvailable', $any($event.target).checked ? true : undefined)"
+        />
+        <span>Full text available</span>
+      </label>
+    </fieldset>
+
+    <fieldset class="facet-block">
+      <legend>Year</legend>
+      <div class="year-range">
+        <label>
+          <span class="visually-hidden">Earliest year</span>
+          <input
+            type="number"
+            class="form-control"
+            [attr.min]="yearBounds()?.min"
+            [attr.max]="yearBounds()?.max"
+            [placeholder]="yearBounds()?.min ?? 'From'"
+            [value]="filters().yearMin ?? ''"
+            (change)="setYear('yearMin', $any($event.target).value)"
+          />
+        </label>
+        <span aria-hidden="true">–</span>
+        <label>
+          <span class="visually-hidden">Latest year</span>
+          <input
+            type="number"
+            class="form-control"
+            [attr.min]="yearBounds()?.min"
+            [attr.max]="yearBounds()?.max"
+            [placeholder]="yearBounds()?.max ?? 'To'"
+            [value]="filters().yearMax ?? ''"
+            (change)="setYear('yearMax', $any($event.target).value)"
+          />
+        </label>
+      </div>
+    </fieldset>
+
+    @if (licences().length) {
+      <fieldset class="facet-block">
+        <legend>Licence</legend>
+        @for (lic of licences(); track lic) {
+          <label class="check">
+            <input
+              type="checkbox"
+              [checked]="isChecked(filters().license, lic)"
+              (change)="toggleInList('license', lic, $any($event.target).checked)"
+            />
+            <span>{{ licenceLabel(lic) }}</span>
+            @if (countFor('license', lic); as n) {
+              <span class="count">{{ n | number }}</span>
+            }
+          </label>
+        }
+      </fieldset>
+    }
+  </section>
+
+  <!-- ============ Content descriptors ============ -->
+  <section class="facet-group" aria-labelledby="fg-content">
+    <h2 id="fg-content" class="facet-group-title">Content descriptors</h2>
+
+    <app-facet-typeahead
+      label="Journal"
+      placeholder="Search journals…"
+      [options]="journals()"
+      [selected]="filters().journal ?? []"
+      (selectionChange)="setList('journal', $event)"
+    />
+
+    <app-facet-typeahead
+      label="MeSH headings"
+      placeholder="Search MeSH terms…"
+      [options]="meshHeadings()"
+      [selected]="filters().meshHeadings ?? []"
+      (selectionChange)="setList('meshHeadings', $event)"
+    />
+
+    <app-facet-typeahead
+      label="Author keywords"
+      placeholder="Search keywords…"
+      [options]="authorKeywords()"
+      [selected]="filters().keywordsAuthor ?? []"
+      (selectionChange)="setList('keywordsAuthor', $event)"
+    />
+
+    @if (pubTypes().length) {
+      <fieldset class="facet-block">
+        <legend>Publication type</legend>
+        @for (pt of pubTypes().slice(0, 8); track pt) {
+          <label class="check">
+            <input
+              type="checkbox"
+              [checked]="isChecked(filters().pubTypes, pt)"
+              (change)="toggleInList('pubTypes', pt, $any($event.target).checked)"
+            />
+            <span>{{ pt }}</span>
+            @if (countFor('pubTypes', pt); as n) {
+              <span class="count">{{ n | number }}</span>
+            }
+          </label>
+        }
+      </fieldset>
+    }
+  </section>
+
+  <!-- ============ AI/ML enrichment ============ -->
+  <section class="facet-group enrichment" aria-labelledby="fg-enrich">
+    <h2 id="fg-enrich" class="facet-group-title">AI/ML enrichment</h2>
+
+    <p class="coverage-banner">
+      <strong>Enrichment in progress.</strong>
+      {{ enrichedCount() | number }} of {{ positiveCount() | number }} AI/ML papers enriched so far.
+      These filters only match enriched records.
+    </p>
+
+    <label class="check">
+      <input
+        type="checkbox"
+        [checked]="filters().enrichedOnly === true"
+        (change)="toggleTriState('enrichedOnly', $any($event.target).checked ? true : undefined)"
+      />
+      <span>Only show enriched records</span>
+    </label>
+
+    @if (domainTier1().length) {
+      <fieldset class="facet-block">
+        <legend>Domain — tier 1 <span class="facet-cap">max 1</span></legend>
+        @for (d of domainTier1(); track d) {
+          <label class="check">
+            <input
+              type="checkbox"
+              [checked]="isChecked(filters().domainTier1, d)"
+              (change)="toggleInList('domainTier1', d, $any($event.target).checked)"
+            />
+            <span>{{ d }}</span>
+            @if (countFor('domainTier1', d); as n) {
+              <span class="count">{{ n | number }}</span>
+            }
+          </label>
+        }
+      </fieldset>
+    }
+
+    <app-facet-typeahead
+      label="Domain — tier 2"
+      placeholder="Search EDAM topics…"
+      [options]="domainTier2()"
+      [selected]="filters().domainTier2 ?? []"
+      [maxSelections]="caps().domainTier2"
+      (selectionChange)="setList('domainTier2', $event)"
+    />
+
+    <app-facet-typeahead
+      label="Domain — tier 3"
+      placeholder="Search EDAM topics…"
+      [options]="domainTier3()"
+      [selected]="filters().domainTier3 ?? []"
+      [maxSelections]="caps().domainTier3"
+      (selectionChange)="setList('domainTier3', $event)"
+    />
+
+    @if (paradigms().length) {
+      <fieldset class="facet-block">
+        <legend>Learning paradigm <span class="facet-cap">max {{ caps().learningParadigm }}</span></legend>
+        @for (p of paradigms(); track p) {
+          <label class="check">
+            <input
+              type="checkbox"
+              [checked]="isChecked(filters().learningParadigm, p)"
+              (change)="toggleInList('learningParadigm', p, $any($event.target).checked)"
+            />
+            <span>{{ p }}</span>
+            @if (countFor('learningParadigm', p); as n) {
+              <span class="count">{{ n | number }}</span>
+            }
+          </label>
+        }
+      </fieldset>
+    }
+
+    @if (modelFamilies().length) {
+      <fieldset class="facet-block">
+        <legend>Model family <span class="facet-cap">max {{ caps().modelFamily }}</span></legend>
+        @for (f of modelFamilies(); track f) {
+          <label class="check">
+            <input
+              type="checkbox"
+              [checked]="isChecked(filters().modelFamily, f)"
+              (change)="toggleInList('modelFamily', f, $any($event.target).checked)"
+            />
+            <span>{{ f }}</span>
+            @if (countFor('modelFamily', f); as n) {
+              <span class="count">{{ n | number }}</span>
+            }
+          </label>
+        }
+      </fieldset>
+    }
+
+    <app-facet-typeahead
+      label="Model type"
+      placeholder="Search methods…"
+      [options]="modelTypes()"
+      [selected]="filters().modelType ?? []"
+      (selectionChange)="setList('modelType', $event)"
+    />
+  </section>
+</div>

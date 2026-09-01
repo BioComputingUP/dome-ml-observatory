@@ -1,0 +1,37 @@
+.copy-button {
+  border: none;
+  background: none;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  color: var(--status-neutral);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  line-height: 1;
+
+  &:hover {
+    background-color: var(--status-neutral-bg);
+    color: var(--observatory-primary);
+  }
+}
+
+.copy-state {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+
+  &.copied {
+    color: var(--status-positive);
+  }
+
+  &.failed {
+    color: var(--status-undeterminable);
+  }
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}

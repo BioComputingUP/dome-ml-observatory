@@ -1,0 +1,108 @@
+.page {
+  padding-bottom: var(--space-8);
+  max-width: 900px;
+
+  h1 {
+    color: var(--observatory-primary);
+    font-weight: 700;
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--space-4);
+  }
+}
+
+.notice {
+  background-color: var(--status-undeterminable-bg);
+  color: var(--status-undeterminable);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-5);
+  line-height: 1.6;
+
+  code {
+    background: rgba(0, 0, 0, 0.06);
+    padding: 1px 6px;
+    border-radius: var(--radius-sm);
+  }
+}
+
+.lead {
+  font-size: var(--font-size-lg);
+  color: #444;
+  margin-bottom: var(--space-5);
+  line-height: 1.6;
+}
+
+.section {
+  padding-top: var(--space-5);
+  margin-bottom: var(--space-5);
+  border-top: 1px solid var(--status-neutral-bg);
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--observatory-primary);
+    margin-bottom: var(--space-3);
+
+    code {
+      font-size: var(--font-size-base);
+      font-weight: 600;
+      color: #222;
+    }
+  }
+}
+
+.method {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
+  background-color: var(--status-positive-bg);
+  color: var(--status-positive);
+}
+
+.code-block {
+  background: #1c2b34;
+  color: #e8eef1;
+  border-radius: var(--radius-sm);
+  padding: var(--space-4);
+  font-size: var(--font-size-sm);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.params {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--space-4);
+  font-size: var(--font-size-sm);
+
+  th,
+  td {
+    text-align: left;
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--status-neutral-bg);
+    vertical-align: top;
+  }
+
+  th {
+    color: var(--status-neutral);
+    font-weight: 600;
+  }
+
+  code {
+    background: #f2f4f5;
+    padding: 1px 6px;
+    border-radius: var(--radius-sm);
+  }
+}
+
+.example-label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--status-neutral);
+  margin-bottom: var(--space-2);
+}

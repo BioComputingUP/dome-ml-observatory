@@ -1,0 +1,15 @@
+# compiled output
+/dist
+/node_modules
+
+# Logs -- this app logs to stdout only (see main.ts); nothing should ever write here, but
+# ignore defensively in case a dependency does
+logs
+*.log
+
+# Tests
+/coverage
+
+# Env -- root .gitignore already covers .env unanchored; kept here too for clarity
+.env
+.env.local

@@ -1,0 +1,115 @@
+// Theme Bootstrap's own colour variables to the brand palette *before* it compiles, so every
+// Bootstrap utility (.bg-primary, .text-primary, .btn-primary, focus rings, ...) resolves to
+// Observatory's colours automatically instead of Bootstrap's unthemed defaults.
+@use 'bootstrap/scss/bootstrap' with (
+  $primary: #103344,
+  $secondary: #f66729,
+  $link-color: #103344
+);
+@import url('https://ebi.emblstatic.net/web_guidelines/EBI-Icon-fonts/v1.3/fonts.css');
+
+// Design tokens. Brand colours carried over from the original OSAI-site build, kept for visual
+// continuity with the rest of the DOME-ML family (see internal/ROADMAP.md's "Decisions locked"
+// table). Everything else here is new for Phase 3's page build -- see
+// ~/.claude/plans/helooo-we-have-mossy-falcon.md's "Design principles" for why these exist
+// (spacing/type scale for consistency across many new pages; status colours for the
+// classification/access badges search results and record pages both need).
+:root {
+  // Brand
+  --observatory-primary: #103344; // deep blue -- navbar, footer, headings
+  --observatory-primary-dark: #0b2735; // darker blue -- hover/accent states
+  --observatory-accent: #f66729; // orange -- CTAs, active states
+  --observatory-accent-dark: #d94e13; // orange hover
+
+  // Status colours -- deliberately neutral for "negative" (not an AI/ML paper is a valid,
+  // unremarkable outcome of screening, not an error state) and amber rather than red for
+  // "undeterminable" (uncertain, not wrong).
+  --status-positive: #1b7a4d; // green -- positive classification, open access
+  --status-positive-bg: #e6f4ec;
+  --status-undeterminable: #a5680a; // amber -- undeterminable classification, partial coverage
+  --status-undeterminable-bg: #fbf1de;
+  --status-neutral: #55606b; // grey -- negative classification, closed access
+  --status-neutral-bg: #eef0f2;
+
+  // Spacing scale (4px base)
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  // Type scale
+  --font-size-xs: 0.8rem;
+  --font-size-sm: 0.9rem;
+  --font-size-base: 1.1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 2rem;
+  --font-size-3xl: 2.5rem;
+  --font-size-4xl: 3rem;
+
+  // Radius / shadow
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-pill: 999px;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Lato', sans-serif;
+  font-size: var(--font-size-base);
+}
+
+a {
+  color: var(--observatory-primary);
+
+  // Deliberately keeping Bootstrap's underline-at-rest for prose links -- colour alone is not an
+  // accessible way to signal a link. Hover darkens rather than removing the underline (the ported
+  // OSAI rule did the opposite, so hovering took emphasis away). List/title links that are
+  // obviously interactive from context opt out locally, e.g. .card-title in result-card.scss.
+  &:hover {
+    color: var(--observatory-accent);
+  }
+}
+
+// Visible keyboard-focus ring on every interactive element, mouse clicks excluded -- the old
+// build removed `outline` on link focus with no replacement (a real WCAG failure); this is the
+// fix, applied globally rather than just to <a>, since Phase 3 adds many more interactive
+// controls (search filters, tab buttons, expanders).
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--observatory-accent);
+  outline-offset: 2px;
+}
+
+.container-wide {
+  max-width: 1200px;
+  // Without auto margins this only caps the width and leaves content hugging the left edge on
+  // wide screens -- the ported rule set max-width alone.
+  margin-inline: auto;
+}
+
+.visually-hidden-focusable {
+  &:not(:focus):not(:focus-within) {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+}

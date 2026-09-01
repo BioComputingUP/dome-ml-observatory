@@ -1,0 +1,107 @@
+<div class="container-fluid container-wide news-events-container">
+  <div class="text-center pt-4 pb-2">
+    <h1 class="page-title">News & Events</h1>
+    <p class="lead mb-4">
+      Stay updated with the latest developments, announcements, and upcoming events from DOME
+      Observatory.
+    </p>
+  </div>
+
+  <nav class="content-nav">
+    <ul class="content-nav-list" role="tablist">
+      <li class="content-nav-item" role="presentation">
+        <button
+          type="button"
+          class="content-nav-link"
+          role="tab"
+          [class.active]="isActive('news-section')"
+          [attr.aria-selected]="isActive('news-section')"
+          (click)="showContent($event, 'news-section')"
+        >
+          <i class="icon icon-common icon-newspaper nav-icon"></i>News
+        </button>
+      </li>
+      <li class="content-nav-item" role="presentation">
+        <button
+          type="button"
+          class="content-nav-link"
+          role="tab"
+          [class.active]="isActive('events-section')"
+          [attr.aria-selected]="isActive('events-section')"
+          (click)="showContent($event, 'events-section')"
+        >
+          <i class="icon icon-common icon-calendar nav-icon"></i>Events
+        </button>
+      </li>
+    </ul>
+  </nav>
+
+  @if (loading) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-3">Loading content...</p>
+    </div>
+  }
+
+  @if (error) {
+    <div class="alert alert-danger" role="alert">{{ error }}</div>
+  }
+
+  <section id="news-section" class="content-section" [class.active]="isActive('news-section')">
+    <h2 class="section-heading">Latest News</h2>
+    <div class="row">
+      @for (item of newsItems; track item.title) {
+        <div class="col-md-6">
+          <div class="news-card">
+            <div class="card-date">{{ item.date }}</div>
+            <div class="card-content">
+              <h3 class="card-title">{{ item.title }}</h3>
+              <p class="card-description">{{ item.description }}</p>
+              <a [href]="item.link" target="_blank" rel="noopener" class="card-link">
+                {{ item.linkText }}
+                <i class="icon icon-common {{ item.linkIcon }} card-link-icon"></i>
+              </a>
+              <div class="card-tags">
+                @for (tag of item.tags; track tag) {
+                  <span class="card-tag">{{ tag }}</span>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section
+    id="events-section"
+    class="content-section"
+    [class.active]="isActive('events-section')"
+  >
+    <h2 class="section-heading">Upcoming & Past Events</h2>
+    <div class="row">
+      @for (item of eventItems; track item.title) {
+        <div class="col-md-6">
+          <div class="event-card">
+            <div class="card-date">{{ item.date }}</div>
+            <div class="card-content">
+              <h3 class="card-title">{{ item.title }}</h3>
+              <p class="card-description">{{ item.description }}</p>
+              <a [href]="item.link" target="_blank" rel="noopener" class="card-link">
+                {{ item.linkText }}
+                <i class="icon icon-common {{ item.linkIcon }} card-link-icon"></i>
+              </a>
+              <div class="card-tags">
+                @for (tag of item.tags; track tag) {
+                  <span class="card-tag">{{ tag }}</span>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+</div>

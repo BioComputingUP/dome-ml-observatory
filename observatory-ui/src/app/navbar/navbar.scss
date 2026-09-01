@@ -1,0 +1,256 @@
+// Rebuilt on plain flexbox rather than the old approach (brand and nav-collapse each
+// independently `position: absolute`, centred/placed by hand). That worked for a 3-item nav but
+// broke the moment Phase 3 added 4 more items + the registry pill: the two absolutely-positioned
+// blocks started overlapping around 1024px, silently clipping the "Search" link out of view.
+// Flexbox makes that class of bug structurally impossible -- the brand and the collapse are
+// normal-flow siblings that can never occupy the same space.
+.navbar {
+  background-color: var(--observatory-primary) !important;
+  padding-left: 5%;
+  padding-right: 5%;
+  z-index: 1040;
+  height: 90px;
+  min-height: 90px;
+  display: flex;
+  align-items: center;
+
+  justify-content: space-between;
+
+  // Only apply the wide fixed side padding once there's actually room for it -- confirmed clean
+  // at 1440px+ in screenshots. The 1200-1400px zone below gets its own tighter padding instead
+  // (see the next block) so the two rules never overlap and fight over the same range.
+  @media (min-width: 1400px) {
+    padding-left: 120px;
+    padding-right: 120px;
+  }
+}
+
+@media (min-width: 1200px) and (max-width: 1400px) {
+  .navbar {
+    padding-left: 1.5%;
+    padding-right: 1.5%;
+  }
+
+  .btn-navbar {
+    padding-left: 0.4rem !important;
+    padding-right: 0.4rem !important;
+    margin-left: 0.1rem;
+    margin-right: 0.1rem;
+    font-size: var(--font-size-sm);
+  }
+
+  .nav-item {
+    margin-left: 10px;
+  }
+
+  .registry-link {
+    padding: 0.35rem 0.7rem;
+    font-size: var(--font-size-xs);
+    margin-left: var(--space-3);
+  }
+}
+
+.brand-img {
+  // observatory_logo.svg is a wide horizontal lockup (icon + wordmark), not the square OSAI
+  // badge this height was originally tuned for -- sized down so it doesn't overrun the navbar.
+  height: 2.8rem;
+  min-height: 2.8rem;
+  max-height: 2.8rem;
+}
+
+.nav-item {
+  margin-left: 15px;
+
+  @media (min-width: 1200px) {
+    margin-left: 20px;
+  }
+
+  @media (max-width: 1199px) {
+    margin-left: 0;
+    margin-bottom: 10px;
+  }
+}
+
+.nav-link {
+  color: white;
+  position: relative;
+  padding: 8px 0;
+  transition: all 0.3s ease;
+}
+
+.btn-navbar {
+  color: white !important;
+  margin-left: 0.4rem;
+  margin-right: 0.4rem;
+  padding-left: 0.8rem !important;
+  padding-right: 0.8rem !important;
+  background-color: transparent;
+  border: none;
+  border-radius: 5px;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  display: inline-block;
+  transform-origin: center;
+  font-weight: bold;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: transparent;
+    color: rgba(255, 255, 255, 0.85) !important;
+
+    &::after {
+      width: 100%;
+      opacity: 1;
+      transform: scaleX(1);
+    }
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: rgba(246, 103, 41, 0.7);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    opacity: 0;
+    transform: scaleX(0);
+    transform-origin: center;
+  }
+}
+
+.active {
+  background-color: transparent !important;
+  color: var(--observatory-accent) !important;
+
+  &::after {
+    width: 100%;
+    opacity: 1;
+    transform: scaleX(1);
+    background-color: var(--observatory-accent);
+  }
+}
+
+.navbar-brand {
+  color: white;
+  display: flex;
+  align-items: center;
+  height: 90px;
+  padding: 0;
+  flex-shrink: 0;
+
+  @media (max-width: 576px) {
+    font-size: 0.9rem;
+  }
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.navbar-toggler {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 5px 10px;
+  flex-shrink: 0;
+
+  &:focus {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25);
+    outline: none;
+  }
+
+  @media (min-width: 1200px) {
+    display: none;
+  }
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.85%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+.container-fluid {
+  height: 100%;
+
+  @media (max-width: 1199px) {
+    padding: 10px 15px;
+  }
+}
+
+.navbar-collapse {
+  @media (min-width: 1200px) {
+    display: flex !important;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 0; // lets children shrink instead of forcing the navbar wider than the viewport
+  }
+
+  @media (max-width: 1199px) {
+    position: absolute;
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    background-color: var(--observatory-primary);
+    padding: 10px 15px;
+    margin: 0;
+    border-bottom: 3px solid var(--observatory-accent);
+    z-index: 1030;
+
+    .navbar-nav {
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    .nav-item {
+      text-align: center;
+    }
+  }
+}
+
+.navbar-nav {
+  @media (min-width: 1200px) {
+    display: flex;
+    align-items: center;
+    // Bootstrap's mx-auto (already on the <ul> in the template) absorbs the flex-collapse's
+    // remaining space evenly, centring the nav list between the brand and the registry pill.
+    flex-wrap: nowrap;
+    min-width: 0;
+  }
+}
+
+// Visually distinct from the internal nav items above -- this leaves the app entirely, so it
+// reads as a different kind of link (outlined pill, external-link glyph) rather than blending
+// into the primary nav.
+.registry-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  // .navbar-nav's mx-auto absorbs all free space on both sides -- without an explicit minimum
+  // gap here, its right edge can end up touching this pill at the narrower end of the desktop
+  // range (this is exactly what silently overlapped "News" and the pill at the old 992px breakpoint).
+  margin-left: var(--space-4);
+  flex-shrink: 0;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: var(--radius-pill);
+  padding: 0.4rem 1rem;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: var(--observatory-primary);
+    background-color: white;
+    border-color: white;
+  }
+
+  i {
+    font-size: 0.75rem;
+  }
+
+  @media (max-width: 1199px) {
+    margin: var(--space-3) auto 0;
+  }
+}

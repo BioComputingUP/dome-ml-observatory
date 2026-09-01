@@ -1,0 +1,63 @@
+.outbound {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border: 1px solid var(--status-neutral-bg);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  &:not(.pending):hover {
+    border-color: var(--observatory-accent);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+  }
+
+  &.pending {
+    opacity: 0.65;
+  }
+
+  &.compact {
+    flex-direction: row;
+    align-items: center;
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-pill);
+    font-size: var(--font-size-xs);
+  }
+}
+
+.outbound-label {
+  font-weight: 600;
+  color: var(--observatory-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  i {
+    font-size: 0.7em;
+  }
+}
+
+.outbound-explainer {
+  font-size: var(--font-size-sm);
+  color: var(--status-neutral);
+}
+
+.pending-tag {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-pill);
+  background-color: var(--status-undeterminable-bg);
+  color: var(--status-undeterminable);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}

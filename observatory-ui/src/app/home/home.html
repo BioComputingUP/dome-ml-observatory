@@ -1,0 +1,113 @@
+<div class="home">
+  <!-- ============ Hero: say what this is, and let them search immediately ============ -->
+  <section class="hero">
+    <div class="container-wide">
+      <h1>Find the AI/ML methods papers in the life sciences</h1>
+      <p class="lead">
+        DOME Observatory maps the AI/ML landscape in the life sciences: publication metadata
+        screened and classified by LLM processing, validated by human expert curation, and
+        cross-linked to Europe PMC.
+      </p>
+
+      <form class="hero-search" role="search" (submit)="$event.preventDefault(); search()">
+        <label for="home-q" class="visually-hidden">Search titles and abstracts</label>
+        <input
+          id="home-q"
+          type="search"
+          class="form-control"
+          placeholder="Search titles and abstracts — e.g. random forest, segmentation, proteomics"
+          [value]="query()"
+          (input)="query.set($any($event.target).value)"
+        />
+        <button type="submit" class="hero-search-button">Search</button>
+      </form>
+      <p class="hero-hint">
+        Or <a routerLink="/search">browse everything</a> without a search term.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ Metrics: the headline is the positives, not the screened total ============ -->
+  <section class="metrics">
+    <div class="container-wide">
+      <ul class="metric-row">
+        <li class="metric headline">
+          <span class="metric-value">{{ corpus().positive | number }}</span>
+          <span class="metric-label">AI/ML methods papers</span>
+        </li>
+        <li class="metric">
+          <span class="metric-value">{{ corpus().total | number }}</span>
+          <span class="metric-label">publications screened</span>
+        </li>
+        <li class="metric">
+          <span class="metric-value">{{ corpus().openAccess | number }}</span>
+          <span class="metric-label">open access</span>
+        </li>
+        <li class="metric">
+          <span class="metric-value">{{ corpus().fulltextAvailable | number }}</span>
+          <span class="metric-label">with full text</span>
+        </li>
+        <li class="metric">
+          <span class="metric-value">{{ enriched() | number }}</span>
+          <span class="metric-label">
+            enriched with AI/ML detail
+            @if (enriched() === 0) {
+              <span class="metric-note">(in progress)</span>
+            }
+          </span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ Ways in ============ -->
+  <section class="routes">
+    <div class="container-wide">
+      <div class="route-cards">
+        <a routerLink="/search" class="route-card">
+          <h2>Search &amp; browse</h2>
+          <p>Free-text search with filters for domain, learning paradigm, model family and access.</p>
+        </a>
+        <a routerLink="/download" class="route-card">
+          <h2>Bulk download</h2>
+          <p>Take the whole dataset at once, from a citable archive — no need to page through the API.</p>
+        </a>
+        <a routerLink="/api" class="route-card">
+          <h2>API</h2>
+          <p>Query the corpus programmatically for targeted, lighter-weight requests.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Family band ============ -->
+  <section class="family">
+    <div class="container-wide">
+      <h2>Part of the DOME family</h2>
+      <p class="family-lead">
+        DOME Observatory is built by the UNIPD Biocomputing Lab alongside the DOME Registry and the
+        DOME Recommendations for reporting supervised machine learning in biology.
+      </p>
+      <ul class="family-links">
+        <li>
+          <a href="https://registry.dome-ml.org/" target="_blank" rel="noopener">
+            DOME Registry <i class="icon icon-common icon-external-link-alt" aria-hidden="true"></i>
+          </a>
+          <span>Structured DOME annotations, submitted and reviewed by the community.</span>
+        </li>
+        <li>
+          <a href="https://doi.org/10.1038/s41592-021-01205-4" target="_blank" rel="noopener">
+            The DOME standard <i class="icon icon-common icon-external-link-alt" aria-hidden="true"></i>
+          </a>
+          <span>The original recommendations: Data, Optimisation, Model, Evaluation.</span>
+        </li>
+        <li>
+          <a href="https://dome-ml.org/" target="_blank" rel="noopener">
+            dome-ml.org <i class="icon icon-common icon-external-link-alt" aria-hidden="true"></i>
+          </a>
+          <span>The project home, guidance and community news.</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+</div>

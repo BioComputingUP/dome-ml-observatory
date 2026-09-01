@@ -1,0 +1,26 @@
+# Docker build context = repo root (not observatory-ui/ or observatory-ws/) -- required so each
+# Dockerfile can COPY schema/ alongside its own app. See observatory-ui/Dockerfile's header
+# comment and internal/ROADMAP.md Phase 4 for why. Keep this at repo root, shared by both images
+# (observatory-ws gets its own Dockerfile in Phase 6) -- not duplicated inside either app folder.
+
+# Never needed inside an image -- reinstalled/rebuilt fresh in each build stage
+**/node_modules/
+**/dist/
+**/.angular/
+
+# Version control, editor, OS noise
+.git/
+.gitignore
+.editorconfig
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Private planning notes -- gitignored already, and irrelevant to a build besides
+internal/
+
+# Env/secrets -- never belongs in an image layer
+.env
+.env.local
+*.env

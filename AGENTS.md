@@ -6,113 +6,153 @@ the code, trust the code and update this file.
 
 ## What this is
 
-`dome-ml` — an **Angular 9** single-page app (TypeScript) for the DOME-ML / OSAI project.
-It is largely static content plus one data-driven page (`ai_ecosystem`) that renders a YAML
-registry fetched from another repo. There is no backend in this repo.
+DOME Observatory: a searchable database of AI/ML methods-paper metadata (LLM-classified,
+human-expert-validated, cross-linked to Europe PMC). **Monorepo, two independent apps:**
 
-## Agent skills — use these instead of improvising
+- **`observatory-ui/`** — Angular frontend (Angular 22, standalone components). Talks to the
+  backend only via `HttpClient` calls under `/api`, same-origin through nginx's proxy — see
+  `observatory-ui/nginx.conf`.
+- **`observatory-ws/`** — NestJS backend, read-only API over the record dataset (`GET /api/health`,
+  `/api/records`, `/api/records/:pid`, `/api/stats`, `/api/facets/:field`, Swagger at
+  `/api/docs`). The only thing in this repo that ever opens a connection to Mongo.
 
-This repo ships its own Claude Code skills under [.claude/skills/](.claude/skills/). If
-you're Claude Code (or a tool that reads the same convention), check there before hand-rolling
-a multi-step workflow — they encode the exact sequencing and guardrails this file describes,
-so use them instead of re-deriving the steps.
-
-- **[osai-ecosystem-deploy](.claude/skills/osai-ecosystem-deploy/SKILL.md)** — the canonical
-  pull → commit → push → build → deploy cycle for the ecosystem YAML (wraps
-  `scripts/update_yaml.py` below). Trigger phrases: "pull the OSAI ecosystem", "update the
-  ecosystem list and deploy", "sync ecosystem and push". User-triggered only; it ends with a
-  live production deploy, so it should never run proactively or unprompted.
-
-If your tooling can't load `SKILL.md` files (non-Claude-Code agents), the same steps are
-written out in plain prose inside that file — read it directly, it's just markdown.
+No shared `-core` package between them — overlapping types/shapes are duplicated on each side
+deliberately, not linked. **The backend is the only thing that ever talks to the database.**
+Never give the frontend a database connection string or expose a database port publicly; the
+backend is the entire security boundary. This is a hosting-lab requirement, not a style choice.
 
 ## Environment
 
-- Node: this project pins `lts/fermium` (Node 14) in `.nvmrc`, matching Angular 9 / the
-  `@angular-devkit/build-angular@0.1000.x` toolchain it was built against. Run `nvm use`
-  before installing or building if `nvm` is available. If you're on a newer Node (this
-  environment often has Node 20 by default) and can't switch, be aware some scripts pass
-  `NODE_OPTIONS=--openssl-legacy-provider` specifically to keep the old Webpack/OpenSSL combo
-  working — don't drop that flag from `start`/`build-dev`/`build-prod`.
-- Install deps with `npm ci`, **never `npm install`** — the README calls this out explicitly
-  because a bare install can silently upgrade/break the pinned Angular 9 toolchain. If you
-  need to add or bump a dependency, do it deliberately (edit `package.json`, then
-  `npm install <pkg>@<version>`), not as a side effect of an unrelated task.
-- Python 3 is used only for the two maintenance scripts in `scripts/` (see below). They need
-  `requests` and `pyyaml`.
+- **`observatory-ui/`**: `.nvmrc` pins `lts/krypton` (Node 22 LTS). Run `nvm use` inside
+  `observatory-ui/` before installing or building.
+- **`observatory-ws/`**: `.nvmrc` pins `24.20.0` (Node 24 LTS) — a separate, independent install
+  from the UI's, deliberately not assumed to match it. **Mongoose is pinned to the `8.x` line
+  (`mongoose@^8.19.1`, bundling MongoDB driver ~6.x) and must not be bumped to `9.x`.** Verified
+  directly, 2026-09-01: MongoDB driver `7.x` refuses to connect to the database server at all
+  (`MongoServerSelectionError: ... reports maximum wire version 8, but this version of the
+  Node.js Driver requires at least 9 (MongoDB 4.4)`) — the database server runs MongoDB **4.2.25**, and only
+  driver `6.x` still supports it. `@nestjs/mongoose@11.x`'s own peer range (`^7.0.0 || ^8.0.0`)
+  already blocks `9.x`, but don't assume a future bump is safe without re-checking this against
+  the database server directly first.
+- Install deps with `npm ci`, **never `npm install`**, in whichever app you're working in — a
+  bare install can silently upgrade/break a pinned toolchain (and, in `observatory-ws/`'s case,
+  could silently pull in the incompatible Mongoose major above). If you need to add or bump a
+  dependency, do it deliberately (edit that app's `package.json`, then
+  `npm install <pkg>@<version>` from inside it), not as a side effect of an unrelated task.
 
 ## Common commands
 
+Run from the repo root (delegates into each app via `npm run <script> --prefix <app>` — this
+actually `chdir`s into that app before running, confirmed directly; it is not just a
+package.json/node_modules path override — no npm-workspaces hoisting, each app keeps its own
+independent install) or from inside the app directly — both work:
+
 ```bash
-nvm use && npm ci        # install
-npm run start             # dev server, http://localhost:4200
-npm run build-dev         # dev build -> dist/
-npm run build-prod        # production build -> dist/ (--prod --build-optimizer)
-npm test                  # karma/jasmine unit tests
-npm run lint              # tslint
-npm run deploy-prod-quick # build-prod, then rsync dist/ to the REDACTED-HOST production host
+npm run start             # observatory-ui dev server, http://localhost:4200
+npm run build-dev         # observatory-ui dev build -> observatory-ui/dist/
+npm run build-prod        # observatory-ui production build -> observatory-ui/dist/
+npm test                  # observatory-ui unit tests (Vitest)
+npm run deploy-prod-quick # build-prod, then rsync dist/ to the production host
+
+npm run start:ws          # observatory-ws dev server w/ hot reload, http://localhost:3000
+npm run build:ws          # observatory-ws production build -> observatory-ws/dist/
+npm run test:ws           # observatory-ws unit tests (Jest)
+npm run lint:ws           # observatory-ws ESLint
 ```
 
+`observatory-ui` has its own `npm run lint` (ESLint) and `npm run test` (Vitest) runnable from
+inside that folder; there is no `e2e` script (protractor was removed, dead upstream).
+`observatory-ws` likewise has its own `npm run lint`/`npm test`/`npm run build` runnable directly
+from inside `observatory-ws/`.
+
 `npm run deploy-prod-quick` **pushes straight to the live production server** over rsync with
-`--delete`. Never run it as a side effect of something else, on uncommitted/unreviewed
-changes, or without the user explicitly asking to deploy right now.
+`--delete`. Never run it as a side effect of something else, on uncommitted/unreviewed changes,
+or without the user explicitly asking to deploy right now. Production deployment (Docker or
+otherwise) is ultimately owned by the hosting lab, not by ad-hoc commands run from a laptop. The
+same caution applies to anything that would touch `observatory-ws`'s production config or the database server
+in production — local dev against the database server over the VPN, read-only, is fine and expected (see
+`observatory-ws/.env.example`); writes, schema changes, or touching any other database on that
+host are not.
 
 ## Repo layout
 
-- `src/app/` — one folder per route/feature (`about`, `ai_ecosystem`, `dome_registry`,
-  `guidelines`, `home-page`, `news`, `pathways`, `navbar`, `footer`, `header`, ...). Angular 9
-  style: NgModule-based, no standalone components.
-- `src/components/`, `src/pages/` — a few newer additions that don't follow the
-  per-feature-folder convention above; match whichever pattern the nearest existing sibling
-  uses rather than inventing a third one.
-- `src/assets/data/content-items.json` — hand-maintained news/event feed consumed by the
-  `news` feature. Entries are plain objects (`type`, `date`, `title`, `description`, `link`,
-  `linkText`, `linkIcon`, `tags`); follow the existing shape and keep `date` as a
+- `observatory-ui/src/app/` — one folder per route/feature (`about`, `home-page`, `news`,
+  `navbar`, `footer`, `header`, `not-found-page`, ...).
+- `observatory-ui/src/assets/data/content-items.json` — hand-maintained news/event feed consumed
+  by the `news` feature. Entries are plain objects (`type`, `date`, `title`, `description`,
+  `link`, `linkText`, `linkIcon`, `tags`); follow the existing shape and keep `date` as a
   human-readable string like the surrounding entries, not ISO.
-- `src/assets/ecosystem_components_list.yml` — **generated data, not hand-edited.** It's a
-  mirror of the upstream `data/ecosystem_components_list.yml` in
-  [BioComputingUP/OSAI_ecosystem](https://github.com/BioComputingUP/OSAI_ecosystem), fetched by
-  `scripts/update_yaml.py` and loaded client-side at runtime
-  (`src/app/ai_ecosystem/ai_ecosystem.component.ts`, via `js-yaml`) — it is **not** bundled
-  through `angular.json` assets processing, it's fetched with `HttpClient` at
-  `assets/ecosystem_components_list.yml`. Don't hand-edit it; re-run the script instead.
-- `scripts/update_yaml.py` — pulls the latest ecosystem YAML from GitHub raw and overwrites
-  the local copy, after diffing to skip no-op updates. Run it with plain `python3
-  scripts/update_yaml.py` (needs `requests`, `pyyaml`). For the full publish cycle (commit,
-  push, build, deploy) use the
-  [osai-ecosystem-deploy](.claude/skills/osai-ecosystem-deploy/SKILL.md) skill rather than
-  chaining these steps manually.
-- `scripts/validate_yaml.py` — sanity-parses that YAML file; run after updating it.
-- `scripts/convert_images.py` — image conversion helper for `src/assets/img*`.
+- `observatory-ui/scripts/convert_images.py` — image conversion helper for
+  `observatory-ui/src/assets/img*`. Needs Python 3 with `Pillow` (check the script itself for
+  exact requirements before running).
+- `schema/` — the versioned record schema and its controlled vocabularies (EDAM domain tiers,
+  learning paradigm, model family, model type seed). Source of truth for `observatory-ui`'s
+  search filters/record model and for `observatory-ws`'s Mongoose schema. **Never hand-edit a
+  published `schema/releases/vX.Y.Z/` folder** — use the `schema-version` skill, which also
+  re-syncs `observatory-ui/src/assets/vocab/` (generated, gitignored — don't hand-edit that
+  either). See `schema/README.md`.
+- `schema/generate_facet_stats.py` — writes `schema/stats/facet-stats.json`, which
+  `observatory-ui`'s search page reads for its facet counts and corpus-wide metrics. Two modes:
+  default (counts a local `records.json`, normally the 200-record dev fixture, marks
+  `"source": "fixture"`) and `--from-api <base-url>` (fetches the real aggregation straight from
+  a running `observatory-ws`'s `GET /api/stats`, marks `"source": "full-corpus"`). **Only run
+  `--from-api` once the frontend is actually wired to the real backend (Phase 7)** — regenerating
+  it earlier would show real corpus-wide numbers (e.g. "355,558 results") on a search page still
+  searching the 200-record fixture, exactly the fixture-vs-real mismatch the search page's
+  development-preview banner exists to flag. Until then, keep it in fixture mode.
+- `observatory-ws/src/records/records.query.ts` — the pure, HTTP- and Mongo-free query-building
+  core (filter/sort/pagination logic), deliberately mirroring `observatory-ui/src/app/core/
+  search-params.ts`'s parsing rules field-for-field (e.g. absent `class` param defaults to
+  positive, `class=` explicitly clears it) so a shared search-results URL from the frontend is a
+  valid `/api/records` query string with no translation layer. If you change filter behaviour on
+  one side, check whether the other needs the matching change.
+- `observatory-ws/src/database/content-model.module.ts` — the **only** place the `'Content'`
+  Mongoose model is registered (`records`, `facets`, `stats` modules all import this rather than
+  each calling `MongooseModule.forFeatureAsync` themselves). Registering the same model name from
+  two places on the same connection throws `OverwriteModelError` — don't add a second
+  registration to "fix" a missing-model error in a new feature module; import this instead.
 
 ## Things that have gone wrong before — don't reintroduce these
 
-- **`update_yaml.py` writes timestamped backup files** (`ecosystem_components_list.yml.backup_*`)
-  next to the real file on every run where content changed. `src/assets/*.backup_*` is
-  gitignored (fixed after 8+ of them ended up committed by accident), so `git add` won't pick
-  them up — but they still bite you a second way: `dist/assets/` is a wholesale copy of
-  `src/assets/` at build time, so a leftover backup file gets bundled into the production build
-  and rsynced to the live site even though git never saw it. Delete
-  `src/assets/*.backup_*` before running a prod build/deploy. The
-  [osai-ecosystem-deploy](.claude/skills/osai-ecosystem-deploy/SKILL.md) skill does this for
-  you as one of its steps.
-- **`dist/` is gitignored and must stay that way** — it's a build artifact, not committed. If
-  `git status` ever shows files under `dist/` as trackable, something is wrong (e.g. a stray
-  `git add -A`); undo it, don't commit it.
-- **Don't run `npm install` to "fix" a dependency issue** — this Angular 9 project's lockfile
-  is easy to break with an unpinned install. Use `npm ci`.
+- **`dist/` (in any app) is gitignored and must stay that way** — it's a build artifact, not
+  committed. If `git status` ever shows files under a `dist/` folder as trackable, something is
+  wrong (e.g. a stray `git add -A`); undo it, don't commit it.
+- **Don't run `npm install` to "fix" a dependency issue** in either app — a bare install can
+  silently upgrade a pinned toolchain or (in `observatory-ws/`'s case) the Mongoose major
+  version, which breaks the the database server connection outright (see Environment above). Use `npm ci`.
+- **`observatory-ws`'s Mongo connection uses `lazyConnection: true` plus a `connectionFactory`
+  hook that calls `connection.asPromise().catch(...)`** (see `app.module.ts`) — both parts are
+  load-bearing, confirmed the hard way against a genuinely unreachable the database server: `lazyConnection`
+  alone still crashes the process a few seconds later (Mongoose's internal connection attempt
+  becomes an unhandled promise rejection with nothing awaiting it), and a plain
+  `connection.on('error', ...)` listener does **not** fix that (the rejection and the `'error'`
+  event are two independent things). `@nestjs/mongoose`'s own `onConnectionCreate` option is also
+  a dead end here — its source returns early on the lazy path before ever calling it.
+  `connectionFactory` is the one hook this package calls unconditionally either way. Don't "clean
+  up" this pairing without re-running the VPN-down test (kill the Mongo route, confirm
+  `/api/health` still returns 200 and the process doesn't die) — it's easy to write something that
+  looks equivalent and isn't.
+- This repo previously carried an OSAI-ecosystem YAML-sync feature (`ai_ecosystem` page,
+  `scripts/update_yaml.py`, a matching Claude Code skill). It has been removed entirely — this
+  is now a from-scratch AI/ML paper-metadata database, not a copy of the OSAI site. If you find
+  references to it anywhere, they're stale; remove them rather than trying to restore the
+  feature.
 
 ## Making changes safely
 
-- Match the existing Angular 9 idioms already in the file you're editing (constructor
-  injection, `ngOnInit`, RxJS subscribe patterns) rather than introducing newer
-  Angular/RxJS patterns (standalone components, `inject()`, signals) that don't exist
-  anywhere else in this codebase and won't compile against this toolchain.
-- Run `npm run lint` and `npm test` before considering a change done, and `npm run build-prod`
-  before anything that will be deployed — this project has no CI, so these local checks are
-  the only gate.
-- Keep content edits (news items, ecosystem YAML, about-page copy, images) and code edits
-  as separate, clearly-described commits where practical — this repo's history is mostly
-  small, focused commits and mixed "code + random content" commits are harder to review/revert.
-- Never run `npm run deploy-prod-quick` (or manually rsync to `REDACTED-HOST`) without the user
-  explicitly asking for a deploy in the current request.
+- Match the existing idioms already in the file you're editing rather than mixing patterns
+  within the same feature.
+- Run the test suite for whichever app you touched before considering a change done
+  (`observatory-ui`: `npm test` + `npm run lint` + `npm run build-prod`; `observatory-ws`:
+  `npm run test:ws` + `npm run lint:ws` + `npm run build:ws` from the repo root, or the
+  equivalents from inside `observatory-ws/`) — this project has no CI yet, so these local checks
+  are the only gate. For `observatory-ws` changes touching Mongo queries, also actually run it
+  (`npm run start:ws`) against the database server over the VPN and hit the affected endpoint with `curl` —
+  several real bugs in this backend (wrong collection name, a Mongo-driver version that silently
+  can't connect to the database server at all, a boot sequence that looked fine but crashed the whole process
+  the moment Mongo was unreachable) were only caught by actually running it, not by tests or a
+  clean build.
+- Keep content edits (news items, about-page copy, images) and code edits as separate,
+  clearly-described commits where practical.
+- Never run `npm run deploy-prod-quick`, or anything touching the production/database hosts,
+  without the user explicitly asking for that action in the current request.

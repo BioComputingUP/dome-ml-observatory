@@ -1,0 +1,23 @@
+<article class="result-card">
+  <h3 class="card-title">
+    <a [routerLink]="['/record', record()._id]">{{ title() }}</a>
+  </h3>
+
+  @if (meta()) {
+    <p class="card-meta">{{ meta() }}</p>
+  }
+
+  @if (snippet()) {
+    <p class="card-snippet">{{ snippet() }}</p>
+  }
+
+  <app-status-badge [record]="record()" />
+
+  @if (links().length) {
+    <div class="card-outbound" aria-label="Find this elsewhere">
+      @for (link of links(); track link.label) {
+        <app-outbound-link [link]="link" [compact]="true" />
+      }
+    </div>
+  }
+</article>

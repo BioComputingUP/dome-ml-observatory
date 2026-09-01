@@ -1,0 +1,198 @@
+{
+  "generated": "2026-09-01T10:35:56+00:00",
+  "schema_version": "1.1.0",
+  "source": "fixture",
+  "records_counted": 200,
+  "corpus": {
+    "total": 827061,
+    "positive": 355558,
+    "negative": 464581,
+    "undeterminable": 6922,
+    "openAccess": 548412,
+    "fulltextAvailable": 615151,
+    "enriched": 0
+  },
+  "corpus_provenance": "corpus figures measured directly against dome_observatory.Content on the database server via a read-only aggregation (GET /api/stats), 2026-09-01 -- see observatory-ws/src/stats/stats.service.ts",
+  "facets": {
+    "classification": [
+      {
+        "value": "positive",
+        "count": 150
+      },
+      {
+        "value": "negative",
+        "count": 35
+      },
+      {
+        "value": "undeterminable",
+        "count": 15
+      }
+    ],
+    "license": [
+      {
+        "value": "cc by",
+        "count": 96
+      },
+      {
+        "value": "",
+        "count": 75
+      },
+      {
+        "value": "cc by-nc-nd",
+        "count": 21
+      },
+      {
+        "value": "cc by-nc",
+        "count": 5
+      },
+      {
+        "value": "cc by-nc-sa",
+        "count": 3
+      }
+    ],
+    "pubTypes": [
+      {
+        "value": "Journal Article",
+        "count": 165
+      },
+      {
+        "value": "research-article",
+        "count": 121
+      },
+      {
+        "value": "Preprint",
+        "count": 30
+      },
+      {
+        "value": "Research Support, Non-U.S. Gov't",
+        "count": 19
+      },
+      {
+        "value": "review-article",
+        "count": 12
+      },
+      {
+        "value": "Research Support, N.I.H., Extramural",
+        "count": 11
+      },
+      {
+        "value": "Review",
+        "count": 10
+      },
+      {
+        "value": "Evaluation Study",
+        "count": 5
+      },
+      {
+        "value": "Research Support, U.S. Gov't, Non-P.H.S.",
+        "count": 4
+      },
+      {
+        "value": "Comparative Study",
+        "count": 3
+      },
+      {
+        "value": "Systematic Review",
+        "count": 2
+      },
+      {
+        "value": "Letter",
+        "count": 2
+      },
+      {
+        "value": "English Abstract",
+        "count": 1
+      },
+      {
+        "value": "Meta-Analysis",
+        "count": 1
+      },
+      {
+        "value": "Published Erratum",
+        "count": 1
+      },
+      {
+        "value": "correction",
+        "count": 1
+      },
+      {
+        "value": "Research Support, U.S. Gov't, P.H.S.",
+        "count": 1
+      },
+      {
+        "value": "Abstract",
+        "count": 1
+      },
+      {
+        "value": "Clinical Trial",
+        "count": 1
+      },
+      {
+        "value": "Editorial",
+        "count": 1
+      },
+      {
+        "value": "methods-article",
+        "count": 1
+      },
+      {
+        "value": "Scoping Review",
+        "count": 1
+      },
+      {
+        "value": "Randomized Controlled Trial",
+        "count": 1
+      },
+      {
+        "value": "Multicenter Study",
+        "count": 1
+      },
+      {
+        "value": "Observational Study",
+        "count": 1
+      }
+    ],
+    "domainTier1": [
+      {
+        "value": "",
+        "count": 196
+      },
+      {
+        "value": "Chemistry",
+        "count": 2
+      },
+      {
+        "value": "Omics",
+        "count": 2
+      }
+    ],
+    "learningParadigm": [
+      {
+        "value": "supervised",
+        "count": 4
+      },
+      {
+        "value": "unsupervised",
+        "count": 1
+      }
+    ],
+    "modelFamily": [
+      {
+        "value": "deep learning",
+        "count": 7
+      },
+      {
+        "value": "dimensionality reduction",
+        "count": 1
+      },
+      {
+        "value": "representation learning",
+        "count": 1
+      }
+    ],
+    "yearRange": {
+      "min": 1993,
+      "max": 2026
+    }
+  }
+}

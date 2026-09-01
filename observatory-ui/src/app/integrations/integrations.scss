@@ -1,0 +1,134 @@
+.page {
+  padding-bottom: var(--space-8);
+
+  h1 {
+    color: var(--observatory-primary);
+    font-weight: 700;
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--space-3);
+  }
+}
+
+.lead {
+  max-width: 780px;
+  font-size: var(--font-size-lg);
+  color: #444;
+  margin-bottom: var(--space-4);
+  line-height: 1.6;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+  font-size: var(--font-size-sm);
+  color: var(--status-neutral);
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--status-neutral-bg);
+}
+
+.dir {
+  font-weight: 700;
+  color: var(--observatory-primary);
+  margin-right: var(--space-1);
+}
+
+.section {
+  margin-bottom: var(--space-7);
+
+  h2 {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--observatory-primary);
+    margin-bottom: var(--space-2);
+  }
+}
+
+.section-note {
+  font-size: var(--font-size-sm);
+  color: var(--status-neutral);
+  margin-bottom: var(--space-4);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-4);
+}
+
+.card {
+  border: 1px solid var(--status-neutral-bg);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+
+  &.planned {
+    opacity: 0.85;
+    border-style: dashed;
+  }
+
+  header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+  }
+
+  h3 {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--observatory-primary);
+    margin: 0;
+  }
+
+  dt {
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--status-neutral);
+    margin-top: var(--space-3);
+
+    &:first-of-type {
+      margin-top: 0;
+    }
+  }
+
+  dd {
+    margin: var(--space-1) 0 0;
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+  }
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+.tag {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+.dir-tag {
+  background-color: var(--status-neutral-bg);
+  color: var(--observatory-primary);
+}
+
+.protocol-tag {
+  background-color: #eef2f7;
+  color: #445;
+}
+
+.planned-tag {
+  background-color: var(--status-undeterminable-bg);
+  color: var(--status-undeterminable);
+}

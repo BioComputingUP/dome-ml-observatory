@@ -1,0 +1,14 @@
+<button type="button" class="copy-button" (click)="copy()" [attr.aria-label]="'Copy ' + label()">
+  @if (copied()) {
+    <span class="copy-state copied">Copied</span>
+  } @else if (failed()) {
+    <span class="copy-state failed">Copy failed</span>
+  } @else {
+    <i class="icon icon-common icon-copy" aria-hidden="true"></i>
+    <span class="visually-hidden">Copy {{ label() }}</span>
+  }
+</button>
+<span class="visually-hidden" role="status" aria-live="polite">
+  @if (copied()) { {{ label() }} copied to clipboard }
+  @if (failed()) { Could not copy {{ label() }} to clipboard }
+</span>

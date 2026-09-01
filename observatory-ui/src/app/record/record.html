@@ -1,0 +1,193 @@
+<div class="container-wide record-page">
+  @if (loading()) {
+    <p class="loading">Loading record…</p>
+  } @else if (!found()) {
+    <div class="not-found">
+      <h1>Record not found</h1>
+      <p>No record matches that identifier. It may have been removed, or the link may be wrong.</p>
+      <a routerLink="/search" class="cta-button">Back to search</a>
+    </div>
+  } @else {
+    <article>
+      <!-- ============ Core facts first ============ -->
+      <header class="record-header">
+        <a routerLink="/search" class="back-link">← Back to search</a>
+        <h1>{{ rec().publication_metadata.title }}</h1>
+        @if (rec().publication_metadata.authors) {
+          <p class="authors">{{ rec().publication_metadata.authors }}</p>
+        }
+        @if (meta()) {
+          <p class="meta">{{ meta() }}</p>
+        }
+        <app-status-badge [record]="rec()" />
+      </header>
+
+      @if (abstractHtml()) {
+        <section class="record-section">
+          <h2>Abstract</h2>
+          <div class="abstract" [innerHTML]="abstractHtml()"></div>
+        </section>
+      }
+
+      <!-- ============ The point of the page ============ -->
+      <section class="record-section find-elsewhere">
+        <h2>Find this elsewhere</h2>
+        <p class="section-note">
+          DOME Observatory holds metadata. These are the resources that hold the article, its full
+          text, and its associated assets.
+        </p>
+
+        @if (links().length) {
+          <div class="link-grid">
+            @for (link of links(); track link.label) {
+              <app-outbound-link [link]="link" />
+            }
+          </div>
+        }
+
+        <h3 class="planned-heading">Planned cross-links</h3>
+        <p class="section-note">
+          These destinations are reserved in the record schema and will populate once the
+          cross-linking pass runs.
+        </p>
+        <div class="link-grid">
+          @for (link of planned(); track link.label) {
+            <app-outbound-link [link]="link" />
+          }
+        </div>
+      </section>
+
+      <!-- ============ Identifiers ============ -->
+      <section class="record-section">
+        <h2>Identifiers</h2>
+        <dl class="identifiers">
+          @for (id of identifiers(); track id.label) {
+            <div class="identifier-row">
+              <dt>{{ id.label }}</dt>
+              <dd>
+                <code>{{ id.value }}</code>
+                <app-copy-button [value]="id.value" [label]="id.label" />
+              </dd>
+            </div>
+          }
+        </dl>
+      </section>
+
+      <!-- ============ Access ============ -->
+      <section class="record-section">
+        <h2>Access</h2>
+        <dl class="identifiers">
+          <div class="identifier-row">
+            <dt>Open access</dt>
+            <dd>{{ rec().source.access.open_access ? 'Yes' : 'No' }}</dd>
+          </div>
+          <div class="identifier-row">
+            <dt>Licence</dt>
+            <dd>{{ rec().source.access.license || 'Not recorded' }}</dd>
+          </div>
+          <div class="identifier-row">
+            <dt>Full text</dt>
+            <dd>{{ rec().source.access.fulltext_available ? 'Available' : 'Not available' }}</dd>
+          </div>
+        </dl>
+      </section>
+
+      <!-- ============ Classification: machine-generated, and said so ============ -->
+      <section class="record-section">
+        <h2>
+          Screening decision
+          <span class="machine-tag">Machine-generated</span>
+        </h2>
+        <p class="verdict">
+          {{
+            rec().llm_classification.classification === 'positive'
+              ? 'Classified as an AI/ML methods paper.'
+              : rec().llm_classification.classification === 'negative'
+                ? 'Screened out — not an AI/ML methods paper.'
+                : 'Undeterminable from the available metadata.'
+          }}
+        </p>
+        @if (rec().llm_classification.rationale) {
+          <blockquote class="rationale">{{ rec().llm_classification.rationale }}</blockquote>
+        }
+
+        <button
+          type="button"
+          class="expander"
+          (click)="showProvenance.set(!showProvenance())"
+          [attr.aria-expanded]="showProvenance()"
+        >
+          {{ showProvenance() ? 'Hide' : 'Show' }} how this was produced
+        </button>
+
+        @if (showProvenance()) {
+          <dl class="identifiers provenance">
+            <div class="identifier-row">
+              <dt>Model</dt>
+              <dd>{{ rec().llm_classification.model_id || 'Not recorded' }}</dd>
+            </div>
+            <div class="identifier-row">
+              <dt>Prompt version</dt>
+              <dd>{{ rec().llm_classification.prompt_version || 'Not recorded' }}</dd>
+            </div>
+            <div class="identifier-row">
+              <dt>Criteria hash</dt>
+              <dd><code>{{ rec().llm_classification.ruleset_sha256 || 'Not recorded' }}</code></dd>
+            </div>
+            <div class="identifier-row">
+              <dt>Run at</dt>
+              <dd>{{ rec().llm_classification.timestamp || 'Not recorded' }}</dd>
+            </div>
+          </dl>
+        }
+      </section>
+
+      <!-- ============ Enrichment ============ -->
+      <section class="record-section">
+        <h2>
+          AI/ML enrichment
+          @if (enriched()) {
+            <span class="machine-tag">Machine-generated</span>
+          }
+        </h2>
+
+        @if (enriched()) {
+          @for (group of enrichmentTags(); track group.label) {
+            <div class="tag-group">
+              <h3>{{ group.label }}</h3>
+              <ul class="tag-list">
+                @for (value of group.values; track value) {
+                  <li>
+                    <a [routerLink]="['/search']" [queryParams]="tagQueryParams(group.param, value)">
+                      {{ value }}
+                    </a>
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+        } @else {
+          <p class="not-enriched">
+            This record has not been enriched yet. Domain, learning paradigm, model family and
+            model type are assigned by a separate pass that is still in progress across the corpus.
+          </p>
+        }
+      </section>
+
+      <!-- ============ Cite ============ -->
+      <section class="record-section">
+        <h2>Cite this record</h2>
+        <div class="cite-buttons">
+          <button type="button" class="cite-button" (click)="showCitation('bibtex')">BibTeX</button>
+          <button type="button" class="cite-button" (click)="showCitation('ris')">RIS</button>
+        </div>
+        @if (citationFormat()) {
+          <div class="citation">
+            <pre>{{ citationText() }}</pre>
+            <app-copy-button [value]="citationText()" [label]="citationFormat() === 'bibtex' ? 'BibTeX' : 'RIS'" />
+          </div>
+        }
+      </section>
+    </article>
+  }
+</div>

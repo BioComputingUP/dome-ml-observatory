@@ -1,0 +1,48 @@
+<div class="container-wide page">
+  <h1>Team</h1>
+  <p class="lead">The people building and running DOME Observatory.</p>
+
+  <section class="section">
+    <h2>Core team</h2>
+    <div class="member-grid">
+      @for (m of core; track m.name) {
+        <article class="member-card">
+          <img [src]="m.photo" [alt]="m.name" class="member-photo" />
+          <h3>{{ m.name }}</h3>
+          <p class="role">{{ m.role }}</p>
+          <p class="affiliation">{{ m.affiliation }}</p>
+          <div class="links">
+            @if (m.orcid) {
+              <a [href]="'https://orcid.org/' + m.orcid" target="_blank" rel="noopener" title="ORCID">
+                <i class="icon icon-common icon-external-link-alt" aria-hidden="true"></i> ORCID
+              </a>
+            }
+            @if (m.github) {
+              <a [href]="'https://github.com/' + m.github" target="_blank" rel="noopener" title="GitHub">
+                <i class="icon icon-common icon-github" aria-hidden="true"></i> GitHub
+              </a>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Scientific Advisory Board</h2>
+    <p class="section-note">
+      Provide independent strategic advice and critical evaluation from internationally recognized
+      experts.
+    </p>
+    <div class="member-grid">
+      @for (m of advisory; track m.name) {
+        <article class="member-card">
+          <img [src]="m.photo" [alt]="m.name" class="member-photo" />
+          <h3>{{ m.name }}</h3>
+          <p class="role">{{ m.focus }}</p>
+          <p class="affiliation">{{ m.affiliation }}</p>
+        </article>
+      }
+    </div>
+  </section>
+</div>

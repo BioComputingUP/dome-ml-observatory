@@ -1,0 +1,39 @@
+.not-found-container {
+  padding: 3rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.error-code {
+  font-size: 8rem;
+  font-weight: 700;
+  color: var(--observatory-accent);
+}
+
+.error-title {
+  color: var(--observatory-primary);
+  font-weight: 600;
+}
+
+.cta-button {
+  background-color: white;
+  color: var(--observatory-accent);
+  border: 2px solid var(--observatory-accent);
+  padding: 0.75rem 2rem;
+  border-radius: 4px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-decoration: none !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &:hover {
+    background-color: var(--observatory-accent);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(246, 103, 41, 0.3);
+    text-decoration: none !important;
+  }
+}

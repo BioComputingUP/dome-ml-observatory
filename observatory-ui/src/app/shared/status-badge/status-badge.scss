@@ -1,0 +1,31 @@
+.status-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.badge-chip {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  white-space: nowrap;
+
+  &.tone-positive {
+    background-color: var(--status-positive-bg);
+    color: var(--status-positive);
+  }
+
+  &.tone-undeterminable {
+    background-color: var(--status-undeterminable-bg);
+    color: var(--status-undeterminable);
+  }
+
+  &.tone-neutral {
+    background-color: var(--status-neutral-bg);
+    color: var(--status-neutral);
+  }
+}

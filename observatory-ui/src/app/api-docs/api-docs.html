@@ -1,0 +1,64 @@
+<div class="container-wide page">
+  <h1>API</h1>
+
+  <div class="notice" role="status">
+    <strong>In development.</strong>
+    The API is not live yet — this page documents the planned contract so integrations can be
+    designed against it now. It ships with the <code>observatory-ws</code> backend; a Swagger/
+    OpenAPI explorer will replace this static reference once it does.
+  </div>
+
+  <p class="lead">
+    A read-only REST API over the same corpus <a routerLink="/search">Search</a> uses. Good for
+    targeted queries and small numbers of records; for the whole corpus, use
+    <a routerLink="/download">bulk download</a> instead so requests stay light for everyone.
+  </p>
+
+  <section class="section">
+    <h2>Base URL</h2>
+    <pre class="code-block">https://observatory.dome-ml.org/api</pre>
+  </section>
+
+  @for (endpoint of endpoints; track endpoint.path) {
+    <section class="section endpoint">
+      <h2>
+        <span class="method">{{ endpoint.method }}</span>
+        <code>{{ endpoint.path }}</code>
+      </h2>
+      <p>{{ endpoint.summary }}</p>
+
+      @if (endpoint.params) {
+        <table class="params">
+          <thead>
+            <tr>
+              <th scope="col">Parameter</th>
+              <th scope="col">Type</th>
+              <th scope="col">Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of endpoint.params; track p.name) {
+              <tr>
+                <td><code>{{ p.name }}</code></td>
+                <td>{{ p.type }}</td>
+                <td>{{ p.note }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+
+      <p class="example-label">Example response</p>
+      <pre class="code-block">{{ endpoint.example }}</pre>
+    </section>
+  }
+
+  <section class="section">
+    <h2>Fair use</h2>
+    <p>
+      No hard rate limit is set yet, but please don't page through <code>/api/records</code> to
+      reconstruct the full corpus — that's exactly what <a routerLink="/download">bulk download</a>
+      exists to avoid, and it's faster for you too.
+    </p>
+  </section>
+</div>

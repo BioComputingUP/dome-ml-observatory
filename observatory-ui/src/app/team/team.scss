@@ -1,0 +1,94 @@
+.page {
+  padding-bottom: var(--space-8);
+
+  h1 {
+    color: var(--observatory-primary);
+    font-weight: 700;
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--space-2);
+  }
+}
+
+.lead {
+  font-size: var(--font-size-lg);
+  color: #444;
+  margin-bottom: var(--space-4);
+}
+
+.section {
+  margin-bottom: var(--space-7);
+
+  h2 {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--observatory-primary);
+    margin-bottom: var(--space-2);
+  }
+}
+
+.section-note {
+  font-size: var(--font-size-sm);
+  color: var(--status-neutral);
+  margin-bottom: var(--space-4);
+  max-width: 680px;
+}
+
+.member-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-5);
+}
+
+.member-card {
+  text-align: center;
+  padding: var(--space-4);
+  border: 1px solid var(--status-neutral-bg);
+  border-radius: var(--radius-md);
+
+  h3 {
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--observatory-primary);
+    margin-bottom: var(--space-1);
+  }
+}
+
+.member-photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: var(--space-3);
+  border: 3px solid var(--observatory-accent);
+}
+
+.role {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: #444;
+  margin-bottom: var(--space-1);
+  min-height: 2.6em;
+}
+
+.affiliation {
+  font-size: var(--font-size-xs);
+  color: var(--status-neutral);
+  margin-bottom: var(--space-2);
+}
+
+.links {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+  font-size: var(--font-size-xs);
+
+  a {
+    text-decoration: none;
+    color: var(--observatory-primary);
+    font-weight: 600;
+
+    &:hover {
+      color: var(--observatory-accent);
+    }
+  }
+}

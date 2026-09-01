@@ -1,0 +1,118 @@
+# Contributing to DOME Observatory
+
+Thank you for your interest in contributing to DOME Observatory. This project, hosted by the
+**UNIPD Biocomputing Lab**, provides a searchable database of AI/ML methods-paper metadata --
+records classified by LLM processing and validated by human expert curation, cross-linked to
+Europe PMC.
+
+We primarily use a GitHub-based workflow. Contributions are made via Pull Requests (PRs), which
+are reviewed and merged by the UNIPD lead developer. For general enquiries or coordination before
+starting a large contribution, you can reach the team at **contact@dome-ml.org**.
+
+## On this page
+* [How to Contribute](#how-to-contribute)
+    * [Reporting Issues or Suggesting Improvements](#reporting-issues-or-suggesting-improvements)
+    * [Submitting Changes via Pull Requests](#submitting-changes-via-pull-requests)
+* [What to Contribute](#what-to-contribute)
+* [What Not to Contribute](#what-not-to-contribute)
+* [Contribution Licensing](#contribution-licensing)
+* [Review Process](#review-process)
+
+---
+
+## How to Contribute
+
+### Reporting Issues or Suggesting Improvements
+If you find a bug, spot an incorrect or missing record, or have an idea for improving the site or
+API:
+
+1. **Check existing issues:** See if someone has already reported the same item or made a similar
+   suggestion.
+2. **Create a new issue:** If not, please
+   [create a new issue](https://github.com/BioComputingUP/dome-ml-observatory/issues).
+    * Provide a clear title and description.
+    * For bug reports, include steps to reproduce the issue.
+    * For complex suggestions, feel free to email **contact@dome-ml.org** to discuss the roadmap.
+
+### Submitting Changes via Pull Requests
+This is the preferred way to modify the frontend, backend, or documentation.
+
+1. **Fork the Repository:** Create your own copy of the
+   [DOME Observatory repository](https://github.com/BioComputingUP/dome-ml-observatory) on
+   GitHub.
+2. **Create a Local Branch:** In your fork, create a new branch for your changes.
+    ```bash
+    git checkout -b feature/add-record-filter
+    ```
+3. **Make Your Changes:**
+    * This is a monorepo -- `observatory-ui/` (Angular frontend) and `observatory-ws/` (NestJS
+      backend) are independent apps with their own `package.json` and dependencies. Work inside
+      the one relevant to your change, and match the existing style in whichever you touch.
+    * See each app's own README for its local dev setup.
+4. **Commit Your Changes:**
+    ```bash
+    git add .
+    git commit -m "feat: add year-range filter to record search"
+    ```
+    (Use clear, descriptive commit messages starting with a prefix like `feat:`, `fix:`, or
+    `docs:`.)
+5. **Push to Your Fork:**
+    ```bash
+    git push origin feature/add-record-filter
+    ```
+6. **Open a Pull Request:**
+    * Navigate to the original DOME Observatory repository on GitHub.
+    * Click the "New Pull Request" button.
+    * Provide a clear title and a brief description of your changes.
+    * Submit the Pull Request for review.
+
+---
+
+## What to Contribute
+We welcome contributions that add or improve:
+
+* **Frontend:** Search/browse UX, accessibility, and general Angular code quality in
+  `observatory-ui/`.
+* **Backend:** New read-only query/filter capabilities, performance improvements, and test
+  coverage in `observatory-ws/`.
+* **Schema:** Well-justified additions or corrections to the record schema, with a matching
+  changelog entry.
+* **Documentation:** Improvements to the README, API documentation, or setup instructions.
+* **Bug Fixes:** Resolving issues in either app or in the way they integrate.
+
+Corrections to a *specific record's* metadata (rather than the code) should go through an issue
+rather than a PR, since records are curated data, not hand-edited files in this repo.
+
+---
+
+## What Not to Contribute
+* Off-topic content that does not align with the goal of a FAIR, well-curated AI/ML paper
+  metadata database.
+* Proprietary code or resources that do not permit open-access sharing.
+* Anything that would give the frontend, or any code outside `observatory-ws/`, direct access to
+  the MongoDB instance -- the backend is the only thing that talks to the database, by design.
+* Changes to core infrastructure or deployment configuration without prior discussion via an
+  Issue or email -- production deployment is handled by the lab.
+* Promotional material or advertisements.
+
+---
+
+## Contribution Licensing
+By contributing to this project, you agree that your contributions will be licensed under the
+project's **CC-BY-4.0** license (see [`LICENSE.md`](LICENSE.md)). All contributed content must
+respect the copyrights and intellectual property of others.
+
+---
+
+## Review Process
+The **UNIPD lead developer** will review all Pull Requests.
+* We aim to provide feedback on contributions promptly.
+* Requests for changes or clarifications may be made via comments on the Pull Request.
+* Once the PR is approved and passes any automated checks, the UNIPD lead developer will merge it
+  into the `main` branch.
+
+For any questions regarding the review process or if you need to report an urgent issue, please
+contact **contact@dome-ml.org**.
+
+We appreciate your effort in helping the UNIPD Biocomputing Lab build a robust, FAIR resource for
+the AI/ML-in-life-sciences community.

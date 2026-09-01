@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use DOME Observatory, please cite it as software below. There is no accompanying
+  publication yet -- this file will be updated with a preferred-citation entry once one exists."
+authors:
+  - family-names: Farrell
+    given-names: Gavin
+    orcid: "https://orcid.org/0000-0001-5166-8551"
+title: "DOME Observatory"
+version: 0.1.0
+date-released: 2026-08-31
+url: "https://observatory.dome-ml.org/"
+repository-code: "https://github.com/BioComputingUP/dome-ml-observatory"

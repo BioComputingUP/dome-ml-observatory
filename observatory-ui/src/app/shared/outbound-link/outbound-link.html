@@ -1,0 +1,28 @@
+@if (link().url) {
+  <a
+    [href]="link().url"
+    target="_blank"
+    rel="noopener"
+    class="outbound"
+    [class.compact]="compact()"
+  >
+    <span class="outbound-label">
+      {{ link().label }}
+      <i class="icon icon-common icon-external-link-alt" aria-hidden="true"></i>
+      <span class="visually-hidden">(opens in a new tab)</span>
+    </span>
+    @if (!compact()) {
+      <span class="outbound-explainer">{{ link().explainer }}</span>
+    }
+  </a>
+} @else {
+  <div class="outbound pending" [class.compact]="compact()">
+    <span class="outbound-label">
+      {{ link().label }}
+      <span class="pending-tag">Not yet linked</span>
+    </span>
+    @if (!compact()) {
+      <span class="outbound-explainer">{{ link().explainer }}</span>
+    }
+  </div>
+}

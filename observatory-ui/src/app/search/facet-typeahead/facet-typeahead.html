@@ -1,0 +1,58 @@
+<div class="facet-typeahead">
+  <label class="facet-label" [attr.for]="'ta-' + label()">
+    {{ label() }}
+    @if (maxSelections() !== undefined) {
+      <span class="facet-cap">max {{ maxSelections() }}</span>
+    }
+  </label>
+
+  @if (selected().length) {
+    <ul class="selected-list">
+      @for (item of selected(); track item) {
+        <li class="selected-chip">
+          {{ item }}
+          <button type="button" (click)="remove(item)" [attr.aria-label]="'Remove ' + item">×</button>
+        </li>
+      }
+    </ul>
+  }
+
+  @if (atLimit()) {
+    <p class="cap-note">Maximum of {{ maxSelections() }} selected. Remove one to choose another.</p>
+  } @else {
+    <input
+      [id]="'ta-' + label()"
+      type="text"
+      class="form-control facet-input"
+      role="combobox"
+      aria-autocomplete="list"
+      [attr.aria-expanded]="open()"
+      [attr.aria-controls]="'ta-list-' + label()"
+      [placeholder]="placeholder()"
+      [value]="query()"
+      (input)="onInput($any($event.target).value)"
+      (focus)="open.set(true)"
+      (blur)="onBlur()"
+    />
+
+    @if (open() && matches().length) {
+      <ul class="option-list" role="listbox" [id]="'ta-list-' + label()">
+        @for (option of matches(); track option) {
+          <li>
+            <button
+              type="button"
+              role="option"
+              class="option"
+              [attr.aria-selected]="false"
+              (click)="add(option)"
+            >
+              {{ option }}
+            </button>
+          </li>
+        }
+      </ul>
+    } @else if (open() && query().trim()) {
+      <p class="no-match">No match for “{{ query() }}”.</p>
+    }
+  }
+</div>

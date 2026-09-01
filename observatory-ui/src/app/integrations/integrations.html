@@ -1,0 +1,72 @@
+<div class="container-wide page">
+  <h1>Integrations &amp; standards</h1>
+  <p class="lead">
+    DOME Observatory is a discovery hub — its value is in connecting to the resources that hold
+    the full article, code, data and structured annotations. Below is what's live today and
+    what's planned, each marked by direction and protocol.
+  </p>
+
+  <div class="legend">
+    <span><span class="dir">→</span> we point out — a one-way link from a record to another resource</span>
+    <span><span class="dir">⇄</span> bidirectional — data flows both ways once built</span>
+  </div>
+
+  <section class="section">
+    <h2>Live</h2>
+    <div class="cards">
+      @for (i of integrations; track i.name) {
+        @if (i.status === 'live') {
+          <article class="card">
+            <header>
+              <h3>{{ i.name }}</h3>
+              <div class="tags">
+                <span class="tag dir-tag">{{ i.direction === 'both' ? '⇄' : '→' }}</span>
+                <span class="tag protocol-tag">{{ i.protocol }}</span>
+              </div>
+            </header>
+            <dl>
+              <dt>What it is</dt>
+              <dd>{{ i.what }}</dd>
+              <dt>How Observatory integrates</dt>
+              <dd>{{ i.how }}</dd>
+              <dt>Benefit</dt>
+              <dd>{{ i.benefit }}</dd>
+            </dl>
+          </article>
+        }
+      }
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Planned</h2>
+    <p class="section-note">
+      Reserved in the schema or roadmapped, not yet live. Listed openly so the direction of travel
+      is visible, not just the finished state.
+    </p>
+    <div class="cards">
+      @for (i of integrations; track i.name) {
+        @if (i.status === 'planned') {
+          <article class="card planned">
+            <header>
+              <h3>{{ i.name }}</h3>
+              <div class="tags">
+                <span class="tag dir-tag">{{ i.direction === 'both' ? '⇄' : '→' }}</span>
+                <span class="tag protocol-tag">{{ i.protocol }}</span>
+                <span class="tag planned-tag">Planned</span>
+              </div>
+            </header>
+            <dl>
+              <dt>What it is</dt>
+              <dd>{{ i.what }}</dd>
+              <dt>How Observatory would integrate</dt>
+              <dd>{{ i.how }}</dd>
+              <dt>Benefit</dt>
+              <dd>{{ i.benefit }}</dd>
+            </dl>
+          </article>
+        }
+      }
+    </div>
+  </section>
+</div>

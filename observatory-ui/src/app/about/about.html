@@ -1,0 +1,94 @@
+<div class="container-wide page">
+  <h1>About DOME Observatory</h1>
+
+  <p class="lead">
+    DOME Observatory is a searchable database of AI/ML methods-paper metadata: records screened
+    and classified by LLM processing, validated by human expert curation, and cross-linked to
+    <a href="https://europepmc.org/" target="_blank" rel="noopener">Europe PMC</a>. It maps the
+    AI/ML landscape in the life sciences at scale — currently
+    {{ corpus().total | number }} publications screened,
+    {{ corpus().positive | number }} of them classified as genuine AI/ML methods papers.
+  </p>
+
+  <p>
+    It is part of the <a href="https://dome-ml.org/" target="_blank" rel="noopener">DOME-ML</a>
+    family, alongside the
+    <a href="https://registry.dome-ml.org/" target="_blank" rel="noopener">DOME Registry</a>, and
+    is developed by the UNIPD Biocomputing Lab.
+  </p>
+
+  <section class="section">
+    <h2>How the corpus is built</h2>
+    <ol class="method-steps">
+      <li>
+        <strong>Screening.</strong> Every publication is classified by an LLM as
+        <em>positive</em> (a genuine AI/ML methods paper), <em>negative</em>, or
+        <em>undeterminable</em>, with a written rationale kept alongside the verdict. This
+        decision is machine-generated — see <a routerLink="/record/8b720ad0-8cf7-5304-a016-3b15feae2815">any record page</a>
+        for the model, prompt version and rationale behind a given classification.
+      </li>
+      <li>
+        <strong>Enrichment.</strong> A separate pass tags positively-classified records with EDAM
+        domain, learning paradigm, model family and model type, drawn from published controlled
+        vocabularies. This is the more expensive step and is still in progress across the corpus —
+        the <a routerLink="/search">search page</a> shows live coverage.
+      </li>
+      <li>
+        <strong>Human validation.</strong> Curators review classification and enrichment output
+        against the source criteria, rather than accepting model output uncritically.
+      </li>
+    </ol>
+  </section>
+
+  <section class="section">
+    <h2>Limitations, stated plainly</h2>
+    <ul class="limitations">
+      <li>Classification and enrichment are LLM-generated. They are validated, not infallible —
+        treat a record's tags as a strong starting point, not ground truth.</li>
+      <li>Enrichment coverage is partial while that pass is still running across the corpus; most
+        records currently show "not yet enriched" rather than a full tag set.</li>
+      <li><code>citation_count</code> is reserved in the schema but has never been populated for
+        this corpus — it is not silently zero, it is genuinely absent.</li>
+      <li>Cross-links to the DOME Registry, Hugging Face, Kaggle and Zenodo are reserved fields,
+        not yet populated for any record — see <a routerLink="/integrations">Integrations</a> for
+        what's live versus planned.</li>
+    </ul>
+  </section>
+
+  <section class="section">
+    <h2>Key publications</h2>
+    <ul class="publications">
+      <li>
+        <p class="pub-title">DOME: recommendations for machine learning validation in biology</p>
+        <p class="pub-meta">
+          Walsh I, Fishman D, Garcia-Gasulla D, Titma T, Pollastri G, The ELIXIR Machine Learning
+          focus group, Harrow J, Psomopoulos FE, Tosatto SCE. <em>Nature Methods</em> (2021).
+        </p>
+        <a href="https://doi.org/10.1038/s41592-021-01205-4" target="_blank" rel="noopener">
+          doi.org/10.1038/s41592-021-01205-4
+        </a>
+      </li>
+      <li>
+        <p class="pub-title">DOME Registry: implementing community-wide recommendations for reporting machine learning in biology</p>
+        <p class="pub-meta">
+          Attafi OA, Clementel D, Kyritsis K, Capriotti E, Farrell G, Fragkouli SC, Castro LJ,
+          Hatos A, Lenaerts T, Mazurenko S, Mozaffari S, Pradelli F, Ruch P, Savojardo C, Turina P,
+          Zambelli F, Piovesan D, Monzon AM, Psomopoulos F, Tosatto SCE.
+          <em>GigaScience</em> (2024).
+        </p>
+        <a href="https://doi.org/10.1093/gigascience/giae094" target="_blank" rel="noopener">
+          doi.org/10.1093/gigascience/giae094
+        </a>
+      </li>
+    </ul>
+  </section>
+
+  <section class="section cta-section">
+    <h2>Get involved</h2>
+    <p>
+      See <a routerLink="/team">who's behind this</a>, how to
+      <a routerLink="/licensing">cite the data</a>, or
+      <a href="https://github.com/BioComputingUP/dome-ml-observatory" target="_blank" rel="noopener">contribute on GitHub</a>.
+    </p>
+  </section>
+</div>
