@@ -1,4 +1,8 @@
 .side-nav-floating {
+  // Fixed width rather than stretching to fill its grid column -- styles.scss's .section-layout
+  // sizes that column to exactly this (minmax(240px, 1fr)) so it never actually needs to grow
+  // wider, but pinning it explicitly keeps the card's own size predictable regardless.
+  width: 240px;
   position: sticky;
   // 90px = navbar height (navbar.scss) -- settles just below the fixed bar instead of under it.
   top: calc(90px + var(--space-5));
@@ -7,7 +11,10 @@
   box-shadow: var(--shadow-md);
   padding: var(--space-4) var(--space-3);
 
-  @media (max-width: 991px) {
+  // Matches .section-layout's collapse-to-single-column breakpoint in styles.scss -- below this,
+  // there isn't room for the symmetric flanks that keep content genuinely centred, so this and
+  // the grid both fall back to a full-width single column with the pill-bar below instead.
+  @media (max-width: 1299px) {
     display: none;
   }
 }
@@ -57,7 +64,7 @@
 .side-nav-pillbar {
   display: none;
 
-  @media (max-width: 991px) {
+  @media (max-width: 1299px) {
     display: flex;
     background-color: var(--observatory-primary);
     border-radius: var(--radius-md);

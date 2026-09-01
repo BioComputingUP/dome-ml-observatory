@@ -53,7 +53,7 @@
     <section id="news-section" class="content-section" [class.active]="isActive('news-section')">
       <h2 class="section-heading">Latest News</h2>
       <div class="row">
-        @for (item of newsItems(); track item.title) {
+        @for (item of pagedNewsItems(); track item.title) {
           <div class="col-md-6">
             <div class="news-card">
               <div class="card-date">{{ item.date }}</div>
@@ -76,6 +76,19 @@
           </div>
         }
       </div>
+      @if (newsTotalPages() > 1) {
+        <nav class="pagination" aria-label="News pages">
+          <button type="button" [disabled]="newsPage() <= 1" (click)="goToNewsPage(newsPage() - 1)">Previous</button>
+          <span>Page {{ newsPage() | number }} of {{ newsTotalPages() | number }}</span>
+          <button
+            type="button"
+            [disabled]="newsPage() >= newsTotalPages()"
+            (click)="goToNewsPage(newsPage() + 1)"
+          >
+            Next
+          </button>
+        </nav>
+      }
     </section>
 
     <section
@@ -85,7 +98,7 @@
     >
       <h2 class="section-heading">Upcoming & Past Events</h2>
       <div class="row">
-        @for (item of eventItems(); track item.title) {
+        @for (item of pagedEventItems(); track item.title) {
           <div class="col-md-6">
             <div class="event-card">
               <div class="card-date">{{ item.date }}</div>
@@ -108,6 +121,21 @@
           </div>
         }
       </div>
+      @if (eventsTotalPages() > 1) {
+        <nav class="pagination" aria-label="Events pages">
+          <button type="button" [disabled]="eventsPage() <= 1" (click)="goToEventsPage(eventsPage() - 1)">
+            Previous
+          </button>
+          <span>Page {{ eventsPage() | number }} of {{ eventsTotalPages() | number }}</span>
+          <button
+            type="button"
+            [disabled]="eventsPage() >= eventsTotalPages()"
+            (click)="goToEventsPage(eventsPage() + 1)"
+          >
+            Next
+          </button>
+        </nav>
+      }
     </section>
   </div>
 </div>

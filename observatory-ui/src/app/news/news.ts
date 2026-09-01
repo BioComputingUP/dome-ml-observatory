@@ -1,4 +1,5 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -10,8 +11,13 @@ interface ContentState {
   error: string;
 }
 
+// 6 per page -- 3 rows of the existing col-md-6 two-up card grid, so a page break always lands
+// on a full row rather than leaving a lone card dangling.
+const PAGE_SIZE = 6;
+
 @Component({
   selector: 'app-news',
+  imports: [DecimalPipe],
   templateUrl: './news.html',
   styleUrl: './news.scss',
 })
@@ -44,6 +50,21 @@ export class News {
     (this.contentState()?.items ?? []).filter((item) => item.type === 'event'),
   );
 
+  readonly newsPage = signal(1);
+  readonly eventsPage = signal(1);
+
+  readonly newsTotalPages = computed(() => Math.max(1, Math.ceil(this.newsItems().length / PAGE_SIZE)));
+  readonly eventsTotalPages = computed(() => Math.max(1, Math.ceil(this.eventItems().length / PAGE_SIZE)));
+
+  readonly pagedNewsItems = computed(() => {
+    const page = this.newsPage();
+    return this.newsItems().slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  });
+  readonly pagedEventItems = computed(() => {
+    const page = this.eventsPage();
+    return this.eventItems().slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  });
+
   showContent(event: Event, contentId: string): void {
     event.preventDefault();
     this.activeSection = contentId;
@@ -54,5 +75,15 @@ export class News {
 
   isActive(sectionId: string): boolean {
     return this.activeSection === sectionId;
+  }
+
+  goToNewsPage(page: number): void {
+    this.newsPage.set(Math.min(Math.max(1, page), this.newsTotalPages()));
+    document.getElementById('news-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  goToEventsPage(page: number): void {
+    this.eventsPage.set(Math.min(Math.max(1, page), this.eventsTotalPages()));
+    document.getElementById('events-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 }

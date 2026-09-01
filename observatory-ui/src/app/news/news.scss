@@ -145,3 +145,33 @@
 .nav-icon {
   margin-right: 0.5rem;
 }
+
+// Matches search.scss's .pagination exactly -- same control, same look, wherever it appears.
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  font-size: var(--font-size-sm);
+
+  button {
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--observatory-primary);
+    border-radius: var(--radius-sm);
+    background: white;
+    color: var(--observatory-primary);
+    font-weight: 600;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    &:not(:disabled):hover {
+      background-color: var(--observatory-primary);
+      color: white;
+    }
+  }
+}

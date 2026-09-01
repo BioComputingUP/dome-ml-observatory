@@ -103,26 +103,44 @@ textarea:focus-visible,
   margin-inline: auto;
 }
 
-// Shared side-nav + content two-column layout, used by both the Download and About sections
+// Shared side-nav + content layout, used by both the Download and About sections
 // (download-layout.html / about-layout.html). Lives here rather than in either component's own
 // stylesheet because Angular's default view encapsulation scopes component styles to elements
 // that component's own template renders -- a class shared across two unrelated components has to
 // live at this global level, same as .container-wide above.
+//
+// A plain 2-column grid (side-nav | content) centres the CONTENT COLUMN within the leftover space
+// after the side-nav, not the content itself within the page -- so the content's own true centre
+// sits to the right of the page's true centre by half the side-nav's width, which reads as
+// lopsided/dead-space-heavy on the left. Fixed with a symmetric 3-column grid instead: two equal
+// minmax(240px,1fr) flanks guarantee identical widths always (240px is the side-nav card's own
+// width, so this is the real floor, not an arbitrary one -- see the flank-vs-content math this was
+// checked against), so the middle content track is mathematically centred on the whole grid --
+// and therefore on the page -- regardless of the side-nav. The side-nav itself docks to the right
+// edge of the left flank (justify-self:end on app-side-nav below), so growing that flank (it never
+// actually needs to beyond its 240px floor while .container-wide caps at 1400px, but the mechanism
+// holds if that ever changes) just adds margin to the side-nav's own left, not a gap to content.
 .section-layout {
   display: grid;
-  grid-template-columns: 240px 1fr;
-  gap: var(--space-7);
+  grid-template-columns: minmax(240px, 1fr) minmax(0, 1040px) minmax(240px, 1fr);
+  column-gap: var(--space-6);
   align-items: start;
   padding-top: var(--space-6);
   padding-bottom: var(--space-8);
 
-  @media (max-width: 991px) {
+  @media (max-width: 1299px) {
     grid-template-columns: 1fr;
     padding-top: var(--space-5);
   }
 }
 
+app-side-nav {
+  grid-column: 1;
+  justify-self: end;
+}
+
 .section-content {
+  grid-column: 2;
   min-width: 0;
 }
 

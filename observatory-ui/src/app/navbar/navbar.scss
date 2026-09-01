@@ -60,21 +60,29 @@
 .brand-wordmark {
   display: flex;
   flex-direction: column;
+  // Centres DOME and OBSERVATORY on each other -- equal space either side of the narrower line
+  // -- instead of both flush against the same left edge, which is what "equidistant left to
+  // right" means here.
+  align-items: center;
   line-height: 1.05;
 }
 
+// dome-ml.org (dome-ml-ui, the actual DOME-ML site) loads Lato as its real body font --
+// confirmed in its src/index.html and src/styles.scss -- unlike the Registry, which declares
+// Inter in SCSS but never actually links it as a webfont. Lato is also already Observatory's own
+// body font (src/styles.scss), so this needs no extra Google Fonts import.
 .brand-wordmark-dome {
-  font-family: 'Inter', 'Lato', sans-serif;
-  font-size: 2.25rem;
+  font-family: 'Lato', sans-serif;
+  font-size: 1.6rem;
   font-weight: 800;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
   color: #ffffff;
 }
 
 .brand-wordmark-observatory {
-  font-family: 'Inter', 'Lato', sans-serif;
-  font-size: 0.7rem;
-  font-weight: 600;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
   letter-spacing: 0.08em;
   color: var(--observatory-accent);
   margin-top: 0.15rem;
@@ -87,11 +95,11 @@
   }
 
   .brand-wordmark-dome {
-    font-size: 1.7rem;
+    font-size: 1.25rem;
   }
 
   .brand-wordmark-observatory {
-    font-size: 0.55rem;
+    font-size: 0.65rem;
   }
 }
 
@@ -227,6 +235,13 @@
   }
 
   @media (max-width: 1199px) {
+    // Reset the grid placement from above -- left over, an absolutely positioned grid item can
+    // still take its "grid area" (column 2's area, off-centre once the brand outweighs the empty
+    // toggler column) as its containing block/static-position fallback, undermining the
+    // left:50%/translateX(-50%) centring below with asymmetric dead space. Spanning every column
+    // makes its containing block the full navbar again, exactly like before grid existed.
+    grid-column: 1 / -1;
+    justify-self: stretch;
     position: absolute;
     top: 90px;
     left: 50%;
