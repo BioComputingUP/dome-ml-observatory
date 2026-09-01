@@ -23,11 +23,26 @@ export class RecordPage {
   private readonly sanitizer = inject(DomSanitizer);
 
   readonly loading = signal(true);
+  /** True when the last lookup failed for a reason other than "no such record" (a 503, a network
+   *  error) -- RecordsService.getByPid() already resolves 404/400 to a plain `undefined`, so
+   *  anything reaching this catchError is a genuine outage, not a missing pid. Kept distinct from
+   *  `!found()` so the page can tell a reader "try again shortly" instead of "this doesn't exist"
+   *  when the record might well exist and Mongo just isn't reachable right now. */
+  readonly unavailable = signal(false);
 
   private readonly record = toSignal(
     this.route.paramMap.pipe(
       map((params) => params.get('pid') ?? ''),
-      switchMap((pid) => this.records.getByPid(pid).pipe(catchError(() => of(undefined)))),
+      switchMap((pid) => {
+        this.loading.set(true);
+        this.unavailable.set(false);
+        return this.records.getByPid(pid).pipe(
+          catchError(() => {
+            this.unavailable.set(true);
+            return of(undefined);
+          }),
+        );
+      }),
       map((record) => {
         this.loading.set(false);
         return record;

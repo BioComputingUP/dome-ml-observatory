@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 import { firstValueFrom } from 'rxjs';
-import { RecordsService, CORPUS_STATS } from './records.service';
+import { RecordsService, CORPUS_STATS, SearchResult } from './records.service';
 import { AiMlRecord } from './record.model';
 
 function makeRecord(overrides: Partial<AiMlRecord> = {}): AiMlRecord {
@@ -23,23 +23,6 @@ describe('RecordsService', () => {
   let service: RecordsService;
   let httpMock: HttpTestingController;
 
-  const fixture: AiMlRecord[] = [
-    makeRecord({ _id: 'rf-2024', publication_metadata: { ...makeRecord().publication_metadata, year: 2024, journal: 'Journal A' } }),
-    makeRecord({
-      _id: 'negative-2020',
-      publication_metadata: { ...makeRecord().publication_metadata, title: 'An unrelated clinical trial', abstract: 'A retrospective cohort study of patient outcomes.', year: 2020, journal: 'Journal B' },
-      llm_classification: { ...makeRecord().llm_classification, classification: 'negative' },
-      content_filters: { ...makeRecord().content_filters, domain_tier1: null, domain_tier2: [], learning_paradigm: [], model_family: [], model_type: [] },
-      source: { ...makeRecord().source, access: { open_access: false, license: null, fulltext_available: false } },
-    }),
-    makeRecord({
-      _id: 'closed-access-2022',
-      publication_metadata: { ...makeRecord().publication_metadata, title: 'Deep learning for imaging', abstract: 'We apply a convolutional neural network to classify medical images.', year: 2022, journal: 'Journal A' },
-      source: { ...makeRecord().source, access: { open_access: false, license: null, fulltext_available: true } },
-      content_filters: { ...makeRecord().content_filters, model_family: ['deep learning'], model_type: ['convolutional neural network'] },
-    }),
-  ];
-
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting()],
@@ -50,107 +33,146 @@ describe('RecordsService', () => {
 
   afterEach(() => httpMock.verify());
 
-  function flushFixture() {
-    httpMock.expectOne('assets/data/sample-records.json').flush(fixture);
-  }
-
-  it('returns the real, hardcoded corpus-wide stats, not fixture-derived numbers', () => {
+  it('returns the fallback corpus-wide stats synchronously, before any request resolves', () => {
     expect(service.getStats()).toEqual(CORPUS_STATS);
     expect(service.getStats().positive).toBe(355_558);
   });
 
-  it('free-text search matches title/abstract case-insensitively', async () => {
-    const result$ = service.search({ q: 'RANDOM FOREST', filters: {}, sort: 'relevance', page: 1, pageSize: 10 });
-    const promise = firstValueFrom(result$);
-    flushFixture();
-    const result = await promise;
-    expect(result.items.map((r) => r._id)).toEqual(['rf-2024']);
-  });
-
-  it('filters by classification', async () => {
-    const result$ = service.search({ filters: { classification: ['negative'] }, sort: 'relevance', page: 1, pageSize: 10 });
-    const promise = firstValueFrom(result$);
-    flushFixture();
-    const result = await promise;
-    expect(result.items.map((r) => r._id)).toEqual(['negative-2020']);
-  });
-
-  it('filters by open access', async () => {
-    const result$ = service.search({ filters: { openAccess: false }, sort: 'relevance', page: 1, pageSize: 10 });
-    const promise = firstValueFrom(result$);
-    flushFixture();
-    const result = await promise;
-    expect(result.items.map((r) => r._id).sort()).toEqual(['closed-access-2022', 'negative-2020']);
-  });
-
-  it('filters by year range', async () => {
-    const result$ = service.search({ filters: { yearMin: 2023 }, sort: 'relevance', page: 1, pageSize: 10 });
-    const promise = firstValueFrom(result$);
-    flushFixture();
-    const result = await promise;
-    expect(result.items.map((r) => r._id)).toEqual(['rf-2024']);
-  });
-
-  it('filters by model_family (enrichment field)', async () => {
-    const result$ = service.search({ filters: { modelFamily: ['deep learning'] }, sort: 'relevance', page: 1, pageSize: 10 });
-    const promise = firstValueFrom(result$);
-    flushFixture();
-    const result = await promise;
-    expect(result.items.map((r) => r._id)).toEqual(['closed-access-2022']);
-  });
-
-  it('enrichedOnly excludes records the enrichment pass has not touched', async () => {
-    const result$ = service.search({ filters: { enrichedOnly: true }, sort: 'relevance', page: 1, pageSize: 10 });
-    const promise = firstValueFrom(result$);
-    flushFixture();
-    const result = await promise;
-    // fixture helper leaves llm_enrichment.provider null on every record -- none pass
-    expect(result.items).toEqual([]);
-  });
-
-  it('composes multiple filters with AND semantics', async () => {
-    const result$ = service.search({
-      filters: { classification: ['positive'], journal: ['Journal A'] },
-      sort: 'relevance',
-      page: 1,
-      pageSize: 10,
+  describe('search()', () => {
+    it('requests GET /api/records with no q/class params for a fully-default query', async () => {
+      const promise = firstValueFrom(service.search({ filters: {}, sort: 'relevance', page: 1, pageSize: 25 }));
+      const req = httpMock.expectOne((r) => r.url === '/api/records');
+      expect(req.request.params.has('q')).toBe(false);
+      expect(req.request.params.has('class')).toBe(false);
+      expect(req.request.params.get('pageSize')).toBe('25');
+      req.flush({ items: [], total: 0, totalRelation: 'eq', page: 1, pageSize: 25 } satisfies SearchResult);
+      await promise;
     });
-    const promise = firstValueFrom(result$);
-    flushFixture();
-    const result = await promise;
-    expect(result.items.map((r) => r._id).sort()).toEqual(['closed-access-2022', 'rf-2024']);
+
+    it('sends an explicitly-cleared classification as the literal empty param, not omitted', async () => {
+      const promise = firstValueFrom(
+        service.search({ filters: { classification: [] }, sort: 'relevance', page: 1, pageSize: 25 }),
+      );
+      const req = httpMock.expectOne((r) => r.url === '/api/records');
+      expect(req.request.params.has('class')).toBe(true);
+      expect(req.request.params.get('class')).toBe('');
+      req.flush({ items: [], total: 827_061, totalRelation: 'eq', page: 1, pageSize: 25 } satisfies SearchResult);
+      await promise;
+    });
+
+    it('sends an explicit classification list as a comma-separated param', async () => {
+      const promise = firstValueFrom(
+        service.search({ filters: { classification: ['negative', 'undeterminable'] }, sort: 'relevance', page: 1, pageSize: 25 }),
+      );
+      const req = httpMock.expectOne((r) => r.url === '/api/records');
+      expect(req.request.params.get('class')).toBe('negative,undeterminable');
+      req.flush({ items: [], total: 0, totalRelation: 'eq', page: 1, pageSize: 25 } satisfies SearchResult);
+      await promise;
+    });
+
+    it('carries an open-ended year lower bound as "2020-"', async () => {
+      const promise = firstValueFrom(
+        service.search({ filters: { yearMin: 2020 }, sort: 'relevance', page: 1, pageSize: 25 }),
+      );
+      const req = httpMock.expectOne((r) => r.url === '/api/records');
+      expect(req.request.params.get('year')).toBe('2020-');
+      req.flush({ items: [], total: 0, totalRelation: 'eq', page: 1, pageSize: 25 } satisfies SearchResult);
+      await promise;
+    });
+
+    it('omits page at 1 and sends it explicitly beyond that', async () => {
+      const promiseFirst = firstValueFrom(service.search({ filters: {}, sort: 'relevance', page: 1, pageSize: 25 }));
+      const reqFirst = httpMock.expectOne((r) => r.url === '/api/records');
+      expect(reqFirst.request.params.has('page')).toBe(false);
+      reqFirst.flush({ items: [], total: 0, totalRelation: 'eq', page: 1, pageSize: 25 } satisfies SearchResult);
+      await promiseFirst;
+
+      const promiseLater = firstValueFrom(service.search({ filters: {}, sort: 'relevance', page: 5, pageSize: 25 }));
+      const reqLater = httpMock.expectOne((r) => r.url === '/api/records');
+      expect(reqLater.request.params.get('page')).toBe('5');
+      reqLater.flush({ items: [], total: 0, totalRelation: 'eq', page: 5, pageSize: 25 } satisfies SearchResult);
+      await promiseLater;
+    });
+
+    it('passes totalRelation through untouched', async () => {
+      const promise = firstValueFrom(service.search({ filters: {}, sort: 'relevance', page: 1, pageSize: 25 }));
+      const req = httpMock.expectOne((r) => r.url === '/api/records');
+      req.flush({
+        items: [makeRecord()],
+        total: 10_000,
+        totalRelation: 'gte',
+        page: 1,
+        pageSize: 25,
+      } satisfies SearchResult);
+      const result = await promise;
+      expect(result.totalRelation).toBe('gte');
+      expect(result.total).toBe(10_000);
+    });
   });
 
-  it('sorts by year descending', async () => {
-    const result$ = service.search({ filters: {}, sort: 'year_desc', page: 1, pageSize: 10 });
-    const promise = firstValueFrom(result$);
-    flushFixture();
-    const result = await promise;
-    expect(result.items.map((r) => r.publication_metadata.year)).toEqual([2024, 2022, 2020]);
+  describe('getByPid()', () => {
+    it('requests GET /api/records/:pid and returns the record on success', async () => {
+      const promise = firstValueFrom(service.getByPid('rf-2024'));
+      const req = httpMock.expectOne('/api/records/rf-2024');
+      req.flush(makeRecord({ _id: 'rf-2024' }));
+      const record = await promise;
+      expect(record?._id).toBe('rf-2024');
+    });
+
+    it('resolves to undefined on a 404, rather than throwing', async () => {
+      const promise = firstValueFrom(service.getByPid('does-not-exist'));
+      const req = httpMock.expectOne('/api/records/does-not-exist');
+      req.flush({ message: 'No record with id does-not-exist', error: 'Not Found', statusCode: 404 }, { status: 404, statusText: 'Not Found' });
+      expect(await promise).toBeUndefined();
+    });
+
+    it('resolves to undefined on a 400 (malformed pid), rather than throwing', async () => {
+      const promise = firstValueFrom(service.getByPid('not-a-uuid'));
+      const req = httpMock.expectOne('/api/records/not-a-uuid');
+      req.flush({ message: 'Invalid record id: expected a UUID', error: 'Bad Request', statusCode: 400 }, { status: 400, statusText: 'Bad Request' });
+      expect(await promise).toBeUndefined();
+    });
+
+    it('propagates a 503 as an error instead of collapsing it to undefined', async () => {
+      const promise = firstValueFrom(service.getByPid('rf-2024'));
+      const req = httpMock.expectOne('/api/records/rf-2024');
+      req.flush(
+        { message: 'Database temporarily unavailable -- please retry shortly.', error: 'Service Unavailable', statusCode: 503 },
+        { status: 503, statusText: 'Service Unavailable' },
+      );
+      await expect(promise).rejects.toMatchObject({ status: 503 });
+    });
   });
 
-  it('paginates and reports the true total separately from page size', async () => {
-    const result$ = service.search({ filters: {}, sort: 'relevance', page: 1, pageSize: 2 });
-    const promise = firstValueFrom(result$);
-    flushFixture();
-    const result = await promise;
-    expect(result.items.length).toBe(2);
-    expect(result.total).toBe(3);
+  describe('facetValues()', () => {
+    it('requests the typeahead endpoint with q and a fixed limit', async () => {
+      const promise = firstValueFrom(service.facetValues('journal', 'nat'));
+      const req = httpMock.expectOne((r) => r.url === '/api/facets/journal');
+      expect(req.request.params.get('q')).toBe('nat');
+      expect(req.request.params.get('limit')).toBe('20');
+      req.flush(['Nature', 'Nature Methods']);
+      expect(await promise).toEqual(['Nature', 'Nature Methods']);
+    });
   });
 
-  it('getByPid finds a record by its PID', async () => {
-    const result$ = service.getByPid('rf-2024');
-    const promise = firstValueFrom(result$);
-    flushFixture();
-    const record = await promise;
-    expect(record?._id).toBe('rf-2024');
-  });
+  describe('getFacetStats()', () => {
+    it('fetches GET /api/stats once and shares it across subscribers', async () => {
+      const stats = {
+        generated: '2026-09-01T00:00:00Z',
+        schema_version: '1.1.0',
+        source: 'full-corpus' as const,
+        records_counted: 827_061,
+        corpus: { total: 827_061, positive: 355_558, negative: 464_581, undeterminable: 6_922, openAccess: 548_412, fulltextAvailable: 615_151, enriched: 0 },
+        corpus_provenance: 'test',
+        facets: { classification: [], license: [], pubTypes: [], domainTier1: [], learningParadigm: [], modelFamily: [], yearRange: null },
+      };
+      const first = firstValueFrom(service.getFacetStats());
+      httpMock.expectOne('/api/stats').flush(stats);
+      expect((await first).corpus.positive).toBe(355_558);
 
-  it('getByPid returns undefined for an unknown PID rather than throwing', async () => {
-    const result$ = service.getByPid('does-not-exist');
-    const promise = firstValueFrom(result$);
-    flushFixture();
-    const record = await promise;
-    expect(record).toBeUndefined();
+      // A second subscriber must not trigger a second HTTP request -- shareReplay caches it.
+      const second = await firstValueFrom(service.getFacetStats());
+      expect(second.corpus.positive).toBe(355_558);
+    });
   });
 });

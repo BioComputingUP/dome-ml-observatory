@@ -98,7 +98,7 @@
     <app-facet-typeahead
       label="Journal"
       placeholder="Search journals…"
-      [options]="journals()"
+      [searchFn]="journalSearch()"
       [selected]="filters().journal ?? []"
       (selectionChange)="setList('journal', $event)"
     />
@@ -106,18 +106,25 @@
     <app-facet-typeahead
       label="MeSH headings"
       placeholder="Search MeSH terms…"
-      [options]="meshHeadings()"
+      [searchFn]="meshSearch()"
       [selected]="filters().meshHeadings ?? []"
       (selectionChange)="setList('meshHeadings', $event)"
     />
 
-    <app-facet-typeahead
-      label="Author keywords"
-      placeholder="Search keywords…"
-      [options]="authorKeywords()"
-      [selected]="filters().keywordsAuthor ?? []"
-      (selectionChange)="setList('keywordsAuthor', $event)"
-    />
+    <div class="facet-block author-keywords">
+      <label for="fp-kw">
+        Author keywords
+        <span class="facet-hint">Comma-separated, exact match — no suggestions for this field.</span>
+      </label>
+      <input
+        id="fp-kw"
+        type="text"
+        class="form-control"
+        placeholder="e.g. random forest, sepsis"
+        [value]="(filters().keywordsAuthor ?? []).join(', ')"
+        (change)="setKeywords($any($event.target).value)"
+      />
+    </div>
 
     @if (pubTypes().length) {
       <fieldset class="facet-block">

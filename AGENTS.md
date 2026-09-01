@@ -91,15 +91,17 @@ host are not.
   published `schema/releases/vX.Y.Z/` folder** — use the `schema-version` skill, which also
   re-syncs `observatory-ui/src/assets/vocab/` (generated, gitignored — don't hand-edit that
   either). See `schema/README.md`.
-- `schema/generate_facet_stats.py` — writes `schema/stats/facet-stats.json`, which
-  `observatory-ui`'s search page reads for its facet counts and corpus-wide metrics. Two modes:
-  default (counts a local `records.json`, normally the 200-record dev fixture, marks
-  `"source": "fixture"`) and `--from-api <base-url>` (fetches the real aggregation straight from
-  a running `observatory-ws`'s `GET /api/stats`, marks `"source": "full-corpus"`). **Only run
-  `--from-api` once the frontend is actually wired to the real backend (Phase 7)** — regenerating
-  it earlier would show real corpus-wide numbers (e.g. "355,558 results") on a search page still
-  searching the 200-record fixture, exactly the fixture-vs-real mismatch the search page's
-  development-preview banner exists to flag. Until then, keep it in fixture mode.
+- `schema/generate_facet_stats.py` — writes `schema/stats/facet-stats.json`. **Not a UI input as
+  of Phase 7**: `observatory-ui`'s search page now reads facet counts and corpus-wide metrics live
+  from `observatory-ws`'s `GET /api/stats` (`RecordsService.getFacetStats()`), not this file. The
+  script still exists for offline/fixture-mode work (regenerating a snapshot against
+  `observatory-ui/fixtures/sample-records.json` with no `observatory-ws` running) and its
+  `--from-api <base-url>` mode is still useful as a manual sanity-check against a running backend,
+  it just no longer feeds anything the app reads.
+- `observatory-ui/fixtures/sample-records.json` — the 200-record dev fixture. Lives outside
+  `src/assets/` on purpose (Phase 7) so it doesn't ship in production builds; nothing in the
+  running app reads it directly any more (search hits the real API), but
+  `generate_facet_stats.py`'s default mode and anyone testing offline still use it.
 - `observatory-ws/src/records/records.query.ts` — the pure, HTTP- and Mongo-free query-building
   core (filter/sort/pagination logic), deliberately mirroring `observatory-ui/src/app/core/
   search-params.ts`'s parsing rules field-for-field (e.g. absent `class` param defaults to

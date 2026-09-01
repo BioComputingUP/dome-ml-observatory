@@ -1,15 +1,16 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, debounceTime, distinctUntilChanged, switchMap, catchError, of, map, startWith } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Subject, debounceTime, distinctUntilChanged, switchMap, catchError, of, map } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { RecordsService, SearchFilters, SearchQuery, SortOrder } from '../core/records.service';
-import { AiMlRecord } from '../core/record.model';
+import { RecordsService, SearchFilters, SearchQuery, SearchResult, SortOrder } from '../core/records.service';
 import {
   paramsToQuery,
   queryToParams,
   activeFilterCount,
   isDefaultClassification,
+  MAX_RESULT_WINDOW,
 } from '../core/search-params';
 import { FacetPanel } from './facet-panel/facet-panel';
 import { ResultCard } from './result-card/result-card';
@@ -19,9 +20,11 @@ interface ActiveChip {
   clear: Partial<SearchFilters>;
 }
 
+const EMPTY_RESULT: SearchResult = { items: [], total: 0, totalRelation: 'eq', page: 1, pageSize: 25 };
+
 @Component({
   selector: 'app-search',
-  imports: [FacetPanel, ResultCard, DecimalPipe],
+  imports: [FacetPanel, ResultCard, DecimalPipe, RouterLink],
   templateUrl: './search.html',
   styleUrl: './search.scss',
 })
@@ -45,6 +48,11 @@ export class Search {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
+  /** True while a free-text search against the real corpus is in flight -- q searches are the
+   *  slow path (measured against the database server: ~4-10s depending on term rarity, see
+   *  internal/ROADMAP.md Phase 5's timing table), unlike filter-only searches which stay fast. */
+  readonly searchingFullText = computed(() => this.loading() && this.freeText().length > 0);
+
   private readonly results = toSignal(
     this.route.queryParams.pipe(
       map((params) => paramsToQuery(params)),
@@ -53,9 +61,9 @@ export class Search {
         this.loading.set(true);
         this.error.set(null);
         return this.records.search(query).pipe(
-          catchError(() => {
-            this.error.set('Could not load results. Please try again.');
-            return of({ items: [] as AiMlRecord[], total: 0, page: 1, pageSize: 25 });
+          catchError((err: unknown) => {
+            this.error.set(searchErrorMessage(err));
+            return of(EMPTY_RESULT);
           }),
         );
       }),
@@ -64,44 +72,46 @@ export class Search {
         return result;
       }),
     ),
-    { initialValue: { items: [] as AiMlRecord[], total: 0, page: 1, pageSize: 25 } },
+    { initialValue: EMPTY_RESULT },
   );
 
   readonly items = computed(() => this.results().items);
   readonly total = computed(() => this.results().total);
+  readonly totalRelation = computed(() => this.results().totalRelation);
+
+  /** 'gte' always means exactly MAX_RESULT_WINDOW (10,000) -- an uncertain lower bound, not an
+   *  exact count. Render "10,000+", never a bare number -- see records.service.ts. */
+  readonly totalLabel = computed(() =>
+    this.totalRelation() === 'gte' ? `${this.total().toLocaleString()}+` : this.total().toLocaleString(),
+  );
 
   readonly rangeStart = computed(() => (this.total() === 0 ? 0 : (this.page() - 1) * this.query().pageSize + 1));
   readonly rangeEnd = computed(() => Math.min(this.page() * this.query().pageSize, this.total()));
-  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.total() / this.query().pageSize)));
+
+  /** observatory-ws hard-rejects page * pageSize > MAX_RESULT_WINDOW (400, not a clamp) -- the
+   *  pager must never offer a page that would 400. Capped independently of the (possibly
+   *  uncertain, possibly much larger) total. */
+  readonly totalPages = computed(() => {
+    const pageSize = this.query().pageSize;
+    const byTotal = Math.max(1, Math.ceil(this.total() / pageSize));
+    const byWindow = Math.floor(MAX_RESULT_WINDOW / pageSize);
+    return Math.min(byTotal, byWindow);
+  });
+
+  /** True when the real result count would need more pages than the browsable window allows --
+   *  drives an honest "browse caps at N; use Download for the rest" note near the pager. */
+  readonly cappedByResultWindow = computed(
+    () => this.totalRelation() === 'gte' || Math.ceil(this.total() / this.query().pageSize) > this.totalPages(),
+  );
 
   readonly stats = toSignal(this.records.getFacetStats().pipe(catchError(() => of(null))), { initialValue: null });
   readonly vocab = toSignal(this.records.getVocabularies().pipe(catchError(() => of(null))), { initialValue: null });
 
-  /** True while the search runs on the development fixture rather than the real corpus -- drives
-   *  the preview banner, and disappears on its own once Phase 5 regenerates stats from Mongo. */
-  readonly isPreview = computed(() => this.stats()?.source !== 'full-corpus');
-  readonly corpusTotal = computed(() => this.stats()?.corpus.total ?? 0);
-  readonly sampleSize = computed(() => this.stats()?.records_counted ?? 0);
-
-  /** Distinct values for the facets with no controlled vocabulary, derived from loaded data. */
-  private readonly allRecords = toSignal(
-    this.records.search({ filters: {}, sort: 'relevance', page: 1, pageSize: 100000 }).pipe(
-      map((r) => r.items),
-      catchError(() => of([] as AiMlRecord[])),
-      startWith([] as AiMlRecord[]),
-    ),
-    { initialValue: [] as AiMlRecord[] },
-  );
-
-  readonly journals = computed(() =>
-    unique(this.allRecords().map((r) => r.publication_metadata.journal).filter(Boolean) as string[]),
-  );
-  readonly meshHeadings = computed(() =>
-    unique(this.allRecords().flatMap((r) => r.content_filters.mesh_headings)),
-  );
-  readonly authorKeywords = computed(() =>
-    unique(this.allRecords().flatMap((r) => r.content_filters.keywords_author)),
-  );
+  /** Bound once, passed down to FacetPanel -> FacetTypeahead: journal and MeSH have no controlled
+   *  vocabulary and too many corpus-wide values to ship as a static list, so their typeaheads
+   *  query observatory-ws's /api/facets/:field cache live instead. */
+  readonly journalSearch = (q: string) => this.records.facetValues('journal', q);
+  readonly meshSearch = (q: string) => this.records.facetValues('mesh_headings', q);
 
   readonly activeCount = computed(() => activeFilterCount(this.filters()));
   readonly facetsOpen = signal(false);
@@ -162,8 +172,10 @@ export class Search {
   private readonly textInput$ = new Subject<string>();
 
   constructor() {
-    // Typing shouldn't push a history entry per keystroke -- debounce, then replace.
-    this.textInput$.pipe(debounceTime(300), distinctUntilChanged()).subscribe((value) => {
+    // Typing shouldn't push a history entry per keystroke -- debounce, then replace. 500ms (not
+    // 300ms): free-text now hits the real corpus (~4-10s for a full search, see
+    // searchingFullText above), so there's no benefit to firing sooner.
+    this.textInput$.pipe(debounceTime(500), distinctUntilChanged()).subscribe((value) => {
       this.navigate({ ...this.query(), q: value || undefined, page: 1 }, true);
     });
   }
@@ -207,6 +219,19 @@ export class Search {
   }
 }
 
-function unique(values: string[]): string[] {
-  return [...new Set(values)].sort((a, b) => a.localeCompare(b));
+/** message is a plain string for hand-thrown Nest exceptions but string[] for ValidationPipe
+ *  failures (see observatory-ws/src/records/dto/search-records.dto.ts) -- handle both. */
+function searchErrorMessage(err: unknown): string {
+  if (!(err instanceof HttpErrorResponse)) {
+    return 'Could not load results. Please try again.';
+  }
+  if (err.status === 503) {
+    return 'Database temporarily unavailable — please retry shortly.';
+  }
+  if (err.status === 400) {
+    const msg: unknown = err.error?.message;
+    if (Array.isArray(msg)) return msg.join(' ');
+    if (typeof msg === 'string') return msg;
+  }
+  return 'Could not load results. Please try again.';
 }

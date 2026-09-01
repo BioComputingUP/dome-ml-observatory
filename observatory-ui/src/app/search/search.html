@@ -1,14 +1,6 @@
 <div class="container-wide search-page">
   <h1 class="page-title">Search the AI/ML landscape</h1>
 
-  @if (isPreview()) {
-    <p class="preview-banner" role="status">
-      <strong>Development preview.</strong>
-      Searching a {{ sampleSize() | number }}-record sample, not the full
-      {{ corpusTotal() | number }}-record corpus. Full search arrives with the API.
-    </p>
-  }
-
   <form class="search-form" role="search" (submit)="$event.preventDefault()">
     <label for="q" class="visually-hidden">Search titles and abstracts</label>
     <input
@@ -37,9 +29,8 @@
         [filters]="filters()"
         [stats]="stats()"
         [vocab]="vocab()"
-        [journals]="journals()"
-        [meshHeadings]="meshHeadings()"
-        [authorKeywords]="authorKeywords()"
+        [journalSearch]="journalSearch"
+        [meshSearch]="meshSearch"
         (filtersChange)="applyFilters($event)"
       />
     </aside>
@@ -66,10 +57,13 @@
         <p class="result-count">
           @if (loading()) {
             Searching…
+            @if (searchingFullText()) {
+              <span class="search-hint">Searching the full corpus — this can take a few seconds.</span>
+            }
           } @else if (total() === 0) {
             No results
           } @else {
-            {{ rangeStart() | number }}–{{ rangeEnd() | number }} of {{ total() | number }}
+            {{ rangeStart() | number }}–{{ rangeEnd() | number }} of {{ totalLabel() }}
           }
         </p>
 
@@ -97,12 +91,7 @@
       } @else if (total() === 0) {
         <div class="state empty">
           <h2>Nothing matched those filters</h2>
-          <p>
-            Try removing a filter or broadening your search.
-            @if (isPreview()) {
-              Remember this preview only searches {{ sampleSize() | number }} records.
-            }
-          </p>
+          <p>Try removing a filter or broadening your search.</p>
           <button type="button" class="cta-button" (click)="clearAll()">Clear all filters</button>
         </div>
       } @else {
@@ -116,6 +105,13 @@
             <span>Page {{ page() | number }} of {{ totalPages() | number }}</span>
             <button type="button" [disabled]="page() >= totalPages()" (click)="goToPage(page() + 1)">Next</button>
           </nav>
+          @if (cappedByResultWindow() && page() >= totalPages()) {
+            <p class="window-cap-note">
+              Browsing is capped at {{ totalPages() | number }} pages to keep results fast on an
+              unindexed corpus. For the full result set, see
+              <a routerLink="/download">Download</a>.
+            </p>
+          }
         }
       }
     </section>

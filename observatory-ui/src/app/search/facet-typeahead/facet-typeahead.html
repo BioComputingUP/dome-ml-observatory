@@ -31,7 +31,7 @@
       [placeholder]="placeholder()"
       [value]="query()"
       (input)="onInput($any($event.target).value)"
-      (focus)="open.set(true)"
+      (focus)="onFocus()"
       (blur)="onBlur()"
     />
 

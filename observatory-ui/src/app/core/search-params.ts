@@ -8,11 +8,17 @@
  * unit tests should pin down. See search-params.spec.ts.
  */
 
+import { HttpParams } from '@angular/common/http';
 import { Classification } from './record.model';
 import { SearchFilters, SearchQuery, SortOrder } from './records.service';
 
 export const DEFAULT_PAGE_SIZE = 25;
 export const DEFAULT_SORT: SortOrder = 'relevance';
+/** Mirrors observatory-ws's records.query.ts MAX_RESULT_WINDOW exactly: page * pageSize beyond
+ *  this is a hard 400 there, not a clamp -- duplicated here (no shared `-core`, see AGENTS.md) so
+ *  the pager can stop offering pages that would 400 rather than showing that error after the
+ *  fact. Also the reason 'gte' counts always land on exactly 10,000 -- see records.service.ts. */
+export const MAX_RESULT_WINDOW = 10_000;
 
 /**
  * The corpus is 355,558 AI/ML methods papers plus 464,581 records screened out as not-AI/ML.
@@ -161,6 +167,29 @@ export function queryToParams(query: SearchQuery): Record<string, string | null>
     [PARAM.classification]: classificationParam(f.classification),
   };
   return out;
+}
+
+/**
+ * The wire request for GET /api/records. Built directly on queryToParams -- observatory-ws's
+ * records.query.ts parses these exact same param names with the exact same defaulting rules
+ * (see records.query.spec.ts), so this is serialisation, not translation:
+ *
+ *  - `null` (anything at its default) is dropped so the backend applies the identical default
+ *    itself, rather than the two copies of "what's the default" silently drifting apart.
+ *  - `''` is KEPT. That's queryToParams's signal for an explicitly cleared classification, and on
+ *    the wire it must arrive as the literal `class=` -- the one thing that tells the backend's
+ *    resolveClassification() "match every classification" instead of "class absent -> positive
+ *    only". Dropping it here would silently narrow every cleared search back to positives.
+ *  - `pageSize` is appended directly from the query, not from queryToParams: DEFAULT_PAGE_SIZE is
+ *    a UI constant that never appears in the URL (see PARAM above), but the API has no page-size
+ *    default of its own to fall back to and needs it sent explicitly every time.
+ */
+export function queryToHttpParams(query: SearchQuery): HttpParams {
+  let params = new HttpParams().set('pageSize', String(query.pageSize));
+  for (const [key, value] of Object.entries(queryToParams(query))) {
+    if (value !== null) params = params.set(key, value);
+  }
+  return params;
 }
 
 function joinOrNull(values: string[] | undefined): string | null {

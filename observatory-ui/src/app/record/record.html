@@ -1,6 +1,12 @@
 <div class="container-wide record-page">
   @if (loading()) {
     <p class="loading">Loading record…</p>
+  } @else if (unavailable()) {
+    <div class="not-found unavailable" role="alert">
+      <h1>Temporarily unavailable</h1>
+      <p>The database couldn't be reached just now. This record may well exist — please retry shortly.</p>
+      <a routerLink="/search" class="cta-button">Back to search</a>
+    </div>
   } @else if (!found()) {
     <div class="not-found">
       <h1>Record not found</h1>

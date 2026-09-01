@@ -9,15 +9,6 @@
   margin-bottom: var(--space-4);
 }
 
-.preview-banner {
-  background-color: var(--status-undeterminable-bg);
-  color: var(--status-undeterminable);
-  border-radius: var(--radius-sm);
-  padding: var(--space-3) var(--space-4);
-  font-size: var(--font-size-sm);
-  margin-bottom: var(--space-4);
-}
-
 .search-form {
   margin-bottom: var(--space-4);
 }
@@ -127,6 +118,24 @@
   font-size: var(--font-size-sm);
   color: var(--status-neutral);
   font-variant-numeric: tabular-nums;
+}
+
+.search-hint {
+  display: block;
+  font-size: var(--font-size-xs);
+  color: var(--status-neutral);
+  margin-top: var(--space-1);
+}
+
+.window-cap-note {
+  font-size: var(--font-size-xs);
+  color: var(--status-neutral);
+  text-align: center;
+  margin-top: var(--space-3);
+
+  a {
+    color: var(--observatory-accent);
+  }
 }
 
 .sort {

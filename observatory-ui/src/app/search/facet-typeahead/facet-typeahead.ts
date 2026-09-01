@@ -1,11 +1,18 @@
 import { Component, computed, input, output, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Observable, Subject, catchError, debounceTime, distinctUntilChanged, of, switchMap } from 'rxjs';
 
 /**
  * Searchable multi-select for the high-cardinality facets.
  *
- * Needed because a checkbox list is genuinely impossible for these: the 200-record dev fixture
- * alone has 127 distinct journals and 478 distinct MeSH headings, and the full corpus runs to
- * tens of thousands. EDAM tier 2/3 (121/125 terms) and model type (76) are the same story.
+ * Two modes, chosen by whether `searchFn` is set:
+ *  - **Local** (the default): filters the static `options` list client-side. Used for the
+ *    vocabulary-driven facets (EDAM tier 2/3, model type) -- small, fixed lists that never need a
+ *    network round trip.
+ *  - **Remote**: `searchFn` is called (debounced 250ms, cancelling any in-flight request via
+ *    switchMap) instead of filtering `options`. Used for journal and MeSH headings -- corpus-wide
+ *    cardinalities in the tens of thousands, served from observatory-ws's /api/facets/:field
+ *    in-memory boot cache rather than shipped to the browser as a static list.
  *
  * `maxSelections` enforces the vocabularies' own `max_tags` caps (tier1 1, tier2 2, tier3 3,
  * paradigm 2, family 3) so the UI can't produce a filter combination the enrichment vocabulary
@@ -19,16 +26,21 @@ import { Component, computed, input, output, signal } from '@angular/core';
 })
 export class FacetTypeahead {
   readonly label = input.required<string>();
-  readonly options = input.required<string[]>();
+  readonly options = input<string[]>([]);
   readonly selected = input<string[]>([]);
   readonly placeholder = input<string>('Type to search…');
   /** Undefined means unlimited. */
   readonly maxSelections = input<number | undefined>(undefined);
+  /** Set for the remote-search facets (journal, MeSH); left null for local, vocabulary-backed
+   *  ones. See the class doc above. */
+  readonly searchFn = input<((q: string) => Observable<string[]>) | null>(null);
 
   readonly selectionChange = output<string[]>();
 
   readonly query = signal('');
   readonly open = signal(false);
+  private readonly remoteMatches = signal<string[]>([]);
+  private readonly query$ = new Subject<string>();
 
   readonly atLimit = computed(() => {
     const max = this.maxSelections();
@@ -36,12 +48,30 @@ export class FacetTypeahead {
   });
 
   readonly matches = computed(() => {
-    const q = this.query().trim().toLowerCase();
     const chosen = new Set(this.selected());
+    if (this.searchFn()) {
+      return this.remoteMatches().filter((o) => !chosen.has(o));
+    }
+    const q = this.query().trim().toLowerCase();
     return this.options()
       .filter((o) => !chosen.has(o) && (q === '' || o.toLowerCase().includes(q)))
       .slice(0, 20);
   });
+
+  constructor() {
+    this.query$
+      .pipe(
+        debounceTime(250),
+        distinctUntilChanged(),
+        switchMap((q) => {
+          const fn = this.searchFn();
+          if (!fn) return of([] as string[]);
+          return fn(q).pipe(catchError(() => of([] as string[])));
+        }),
+        takeUntilDestroyed(),
+      )
+      .subscribe((values) => this.remoteMatches.set(values));
+  }
 
   add(option: string): void {
     if (this.atLimit()) return;
@@ -57,6 +87,14 @@ export class FacetTypeahead {
   onInput(value: string): void {
     this.query.set(value);
     this.open.set(true);
+    if (this.searchFn()) this.query$.next(value);
+  }
+
+  onFocus(): void {
+    this.open.set(true);
+    // Remote mode has nothing to show until the first request resolves -- fire one for the
+    // current (possibly empty) query so opening the list isn't just blank.
+    if (this.searchFn()) this.query$.next(this.query());
   }
 
   /** Blur closes the list, but only after a click on an option has had a chance to register. */

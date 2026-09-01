@@ -1,9 +1,10 @@
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, forkJoin, map, shareReplay } from 'rxjs';
+import { Observable, catchError, forkJoin, of, shareReplay, throwError } from 'rxjs';
 import { AiMlRecord, Classification } from './record.model';
 import { DomainVocab, ModellingBranchVocab, ModelTypeSeedVocab, Vocabularies } from './vocab.model';
 import { CorpusStats, FacetStats } from './facet-stats.model';
+import { queryToHttpParams } from './search-params';
 
 export interface SearchFilters {
   yearMin?: number;
@@ -39,16 +40,20 @@ export interface SearchQuery {
 export interface SearchResult {
   items: AiMlRecord[];
   total: number;
+  /** 'eq' is an exact count. 'gte' means the exact count timed out on the database server's un-indexed
+   *  collection and `total` is a cheap lower bound instead (always exactly 10,000) -- render it
+   *  as "10,000+", never a bare number. See observatory-ws/src/records/count.service.ts. */
+  totalRelation: 'eq' | 'gte';
   page: number;
   pageSize: number;
 }
 
 /**
- * Real, known corpus-wide numbers. NOT derived from the ~200-record dev fixture (which is a
- * curated sample, not a proportional one) -- the home page metric row must show the real figures
- * regardless of fixture size. Phase 7 replaces this with a live query against the real database
- * (observatory-ws's GET /api/stats, built in Phase 5); until then these are the one place that
- * corpus-wide truth is hardcoded, so update here (and only here) if the corpus numbers change.
+ * Fallback corpus-wide numbers, painted instantly so the home/about/download metric rows never
+ * show a zero flash while GET /api/stats is in flight, and shown as-is if that call fails
+ * outright. RecordsService.getFacetStats() is the primary source now (Phase 7) -- these values
+ * are a snapshot, not live, and will drift from the real corpus over time; update here only if
+ * they drift enough to be misleading as a fallback.
  *
  * Corrected 2026-09-01 (Phase 5) from a direct read-only aggregation against the database server
  * (dome_observatory.Content via GET /api/stats), replacing the prior dome-triage export tallies,
@@ -61,26 +66,27 @@ export const CORPUS_STATS: CorpusStats = {
   positive: 355_558,
   negative: 464_581,
   undeterminable: 6_922,
-  /** Measured against the live collection, 2026-09-01 -- see observatory-ws/src/stats/stats.service.ts. */
   openAccess: 548_412,
-  /** Measured against the live collection, 2026-09-01 -- see observatory-ws/src/stats/stats.service.ts. */
   fulltextAvailable: 615_151,
-  /** No enrichment run has landed yet -- update once Gavin's batch is in Mongo (see roadmap). */
+  /** No enrichment run had landed as of the snapshot above -- getFacetStats() carries the live
+   *  figure; this fallback only matters while that call hasn't resolved yet. */
   enriched: 0,
 };
+
+/** Facet fields observatory-ws serves a typeahead for -- keeps the string literal in one place
+ *  rather than repeated at every call site. Deliberately excludes keywords_author: see
+ *  observatory-ws/src/facets/facets.service.ts (694,411 distinct values on the live corpus). */
+export type TypeaheadFacetField = 'journal' | 'mesh_headings' | 'pub_types' | 'license';
+
+const FACET_TYPEAHEAD_LIMIT = 20;
 
 @Injectable({ providedIn: 'root' })
 export class RecordsService {
   private readonly http = inject(HttpClient);
 
-  /** Fetched once, shared -- fixture-backed today, swapped for an /api call in Phase 5/7. The
-   *  public method signatures below are the contract that swap has to preserve. */
-  private readonly records$: Observable<AiMlRecord[]> = this.http
-    .get<AiMlRecord[]>('assets/data/sample-records.json')
-    .pipe(shareReplay({ bufferSize: 1, refCount: false }));
-
-  /** Fetched once, shared -- see schema/README.md for where these files come from
-   *  (observatory-ui/scripts/sync-schema.js copies them out of schema/releases/$(CURRENT)/vocab/). */
+  /** Fetched once, shared -- `schema/` (via observatory-ui/scripts/sync-schema.js) is the source
+   *  of truth for controlled vocabularies, not the API: there is no /api/vocab endpoint, and
+   *  these values only change when a schema release ships, not per query. */
   private readonly vocabularies$: Observable<Vocabularies> = forkJoin({
     domain: this.http.get<DomainVocab>('assets/vocab/domain.json'),
     modellingBranch: this.http.get<ModellingBranchVocab>('assets/vocab/modelling-branch.json'),
@@ -91,91 +97,54 @@ export class RecordsService {
     return this.vocabularies$;
   }
 
-  /** Precomputed facet counts + real corpus figures. Generated per data update by
-   *  schema/generate_facet_stats.py, never aggregated per query -- see that script's docstring.
-   *  Phase 5 swaps the source for a cached stats document; this signature does not change. */
+  /** Live corpus-wide figures + precomputed facet counts, computed by a single cached aggregation
+   *  server-side (observatory-ws/src/stats/stats.service.ts, 24h TTL) -- never aggregated
+   *  per-search here. Shared across the app session so repeat page visits don't refetch; a full
+   *  reload picks up any change within the server's own cache window. */
   private readonly facetStats$: Observable<FacetStats> = this.http
-    .get<FacetStats>('assets/data/facet-stats.json')
+    .get<FacetStats>('/api/stats')
     .pipe(shareReplay({ bufferSize: 1, refCount: false }));
 
   getFacetStats(): Observable<FacetStats> {
     return this.facetStats$;
   }
 
-  /** Synchronous fallback for the corpus figures. Prefer getFacetStats() where an Observable is
-   *  workable -- it carries the same numbers plus per-facet counts, from a file regenerated with
-   *  the data rather than hardcoded here. */
-  getStats() {
+  /** Synchronous fallback for the corpus figures -- see CORPUS_STATS. Prefer getFacetStats()
+   *  where an Observable is workable; it carries the same numbers, live from Mongo. */
+  getStats(): CorpusStats {
     return CORPUS_STATS;
   }
 
+  /** GET /api/records. Not cached -- unlike vocab/stats, results genuinely differ per query, and
+   *  the corpus is too large to hold client-side. queryToHttpParams (search-params.ts) is the
+   *  entire translation layer: observatory-ws's records.query.ts parses the exact same param
+   *  names and defaulting rules, so this is just "serialise the query", not "build a request". */
   search(query: SearchQuery): Observable<SearchResult> {
-    return this.records$.pipe(
-      map((all) => {
-        let items = all.filter((r) => matchesFilters(r, query.filters));
-        if (query.q?.trim()) {
-          items = items.filter((r) => matchesFreeText(r, query.q!));
-        }
-        items = sortRecords(items, query.sort);
+    return this.http.get<SearchResult>('/api/records', { params: queryToHttpParams(query) });
+  }
 
-        const total = items.length;
-        const start = (query.page - 1) * query.pageSize;
-        const page = items.slice(start, start + query.pageSize);
-        return { items: page, total, page: query.page, pageSize: query.pageSize };
+  /** GET /api/records/:pid. A missing or malformed pid (404/400) resolves to `undefined`,
+   *  preserving this method's existing "not found is a normal, non-error result" contract --
+   *  callers that only care about presence don't need to catch anything. Every other failure
+   *  (503 Mongo-unavailable, a network error) is left to propagate as an actual Observable error,
+   *  so a caller that needs to tell "not found" apart from "temporarily unavailable" (the record
+   *  page does) can catch it separately instead of both collapsing to the same undefined. */
+  getByPid(pid: string): Observable<AiMlRecord | undefined> {
+    return this.http.get<AiMlRecord>(`/api/records/${encodeURIComponent(pid)}`).pipe(
+      catchError((err: HttpErrorResponse) => {
+        if (err.status === 404 || err.status === 400) return of(undefined);
+        return throwError(() => err);
       }),
     );
   }
 
-  getByPid(pid: string): Observable<AiMlRecord | undefined> {
-    return this.records$.pipe(map((all) => all.find((r) => r._id === pid)));
+  /** GET /api/facets/:field -- typeahead suggestions from observatory-ws's in-memory boot cache
+   *  (no Mongo round trip per keystroke). `field` is intentionally a bare string, not
+   *  TypeaheadFacetField, at the call boundary: the backend is the source of truth for which
+   *  fields are allowed (400s on anything else) and callers already only ever pass a literal. */
+  facetValues(field: TypeaheadFacetField, q: string): Observable<string[]> {
+    return this.http.get<string[]>(`/api/facets/${field}`, {
+      params: { q, limit: String(FACET_TYPEAHEAD_LIMIT) },
+    });
   }
-}
-
-function matchesFreeText(record: AiMlRecord, q: string): boolean {
-  const needle = q.trim().toLowerCase();
-  const title = record.publication_metadata.title?.toLowerCase() ?? '';
-  const abstract = record.publication_metadata.abstract?.toLowerCase() ?? '';
-  return title.includes(needle) || abstract.includes(needle);
-}
-
-function matchesFilters(record: AiMlRecord, filters: SearchFilters): boolean {
-  const pm = record.publication_metadata;
-  const cf = record.content_filters;
-  const access = record.source.access;
-  const cls = record.llm_classification.classification;
-
-  if (filters.yearMin != null && (pm.year == null || pm.year < filters.yearMin)) return false;
-  if (filters.yearMax != null && (pm.year == null || pm.year > filters.yearMax)) return false;
-  if (filters.classification?.length && (!cls || !filters.classification.includes(cls))) return false;
-  if (filters.openAccess != null && access.open_access !== filters.openAccess) return false;
-  if (filters.fulltextAvailable != null && access.fulltext_available !== filters.fulltextAvailable) return false;
-  if (filters.license?.length && !filters.license.includes(access.license ?? '')) return false;
-  if (filters.journal?.length && !filters.journal.includes(pm.journal ?? '')) return false;
-  if (filters.meshHeadings?.length && !hasAnyOverlap(cf.mesh_headings, filters.meshHeadings)) return false;
-  if (filters.pubTypes?.length && !hasAnyOverlap(cf.pub_types, filters.pubTypes)) return false;
-  if (filters.keywordsAuthor?.length && !hasAnyOverlap(cf.keywords_author, filters.keywordsAuthor)) return false;
-  if (filters.enrichedOnly && record.llm_enrichment.provider === null) return false;
-  if (filters.domainTier1?.length && (!cf.domain_tier1 || !filters.domainTier1.includes(cf.domain_tier1))) return false;
-  if (filters.domainTier2?.length && !hasAnyOverlap(cf.domain_tier2, filters.domainTier2)) return false;
-  if (filters.domainTier3?.length && !hasAnyOverlap(cf.domain_tier3, filters.domainTier3)) return false;
-  if (filters.learningParadigm?.length && !hasAnyOverlap(cf.learning_paradigm, filters.learningParadigm)) return false;
-  if (filters.modelFamily?.length && !hasAnyOverlap(cf.model_family, filters.modelFamily)) return false;
-  if (filters.modelType?.length && !hasAnyOverlap(cf.model_type, filters.modelType)) return false;
-
-  return true;
-}
-
-function hasAnyOverlap(haystack: string[], needles: string[]): boolean {
-  return needles.some((n) => haystack.includes(n));
-}
-
-function sortRecords(items: AiMlRecord[], sort: SortOrder): AiMlRecord[] {
-  const copy = [...items];
-  if (sort === 'year_desc') {
-    copy.sort((a, b) => (b.publication_metadata.year ?? 0) - (a.publication_metadata.year ?? 0));
-  } else if (sort === 'year_asc') {
-    copy.sort((a, b) => (a.publication_metadata.year ?? 0) - (b.publication_metadata.year ?? 0));
-  }
-  // 'relevance' keeps fixture order today; Phase 5's /api does real relevance ranking server-side.
-  return copy;
 }

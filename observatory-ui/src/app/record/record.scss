@@ -250,6 +250,10 @@
     color: var(--observatory-primary);
     margin-bottom: var(--space-3);
   }
+
+  &.unavailable h1 {
+    color: var(--status-undeterminable);
+  }
 }
 
 .cta-button {

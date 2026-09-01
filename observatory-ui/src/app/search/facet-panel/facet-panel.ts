@@ -1,5 +1,6 @@
 import { Component, computed, input, output } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
+import { Observable } from 'rxjs';
 import { SearchFilters } from '../../core/records.service';
 import { FacetStats } from '../../core/facet-stats.model';
 import { Vocabularies } from '../../core/vocab.model';
@@ -21,10 +22,11 @@ export class FacetPanel {
   readonly filters = input.required<SearchFilters>();
   readonly stats = input<FacetStats | null>(null);
   readonly vocab = input<Vocabularies | null>(null);
-  /** Distinct values present in the loaded data, for the facets with no controlled vocabulary. */
-  readonly journals = input<string[]>([]);
-  readonly meshHeadings = input<string[]>([]);
-  readonly authorKeywords = input<string[]>([]);
+  /** Journal and MeSH have no controlled vocabulary and too many distinct corpus-wide values to
+   *  ship as a static list (tens of thousands each) -- these back their typeaheads with a live
+   *  lookup (RecordsService.facetValues) instead, passed down from the parent search page. */
+  readonly journalSearch = input<((q: string) => Observable<string[]>) | null>(null);
+  readonly meshSearch = input<((q: string) => Observable<string[]>) | null>(null);
 
   readonly filtersChange = output<Partial<SearchFilters>>();
 
@@ -103,5 +105,17 @@ export class FacetPanel {
 
   setList(key: keyof SearchFilters, values: string[]): void {
     this.filtersChange.emit({ [key]: values.length ? values : undefined } as Partial<SearchFilters>);
+  }
+
+  /** Author keywords has no typeahead at all (observatory-ws deliberately excludes it -- 694,411
+   *  distinct values on the live corpus, see facets.service.ts): comma-separated free text,
+   *  exact match against content_filters.keywords_author, same split/trim rule as the URL param
+   *  itself (search-params.ts's splitList). */
+  setKeywords(raw: string): void {
+    const values = raw
+      .split(',')
+      .map((v) => v.trim())
+      .filter(Boolean);
+    this.filtersChange.emit({ keywordsAuthor: values.length ? values : undefined });
   }
 }

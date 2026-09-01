@@ -1,6 +1,7 @@
 import {
   paramsToQuery,
   queryToParams,
+  queryToHttpParams,
   activeFilterCount,
   isDefaultClassification,
   DEFAULT_PAGE_SIZE,
@@ -181,6 +182,41 @@ describe('search-params', () => {
       expect(isDefaultClassification(['positive', 'negative'])).toBe(false);
       expect(isDefaultClassification([])).toBe(false);
       expect(isDefaultClassification(undefined)).toBe(false);
+    });
+  });
+
+  describe('queryToHttpParams', () => {
+    const base: SearchQuery = { filters: {}, sort: 'relevance', page: 1, pageSize: 25 };
+
+    it('drops every param queryToParams reports as null (at-default)', () => {
+      const params = queryToHttpParams(base);
+      const dropped = ['q', 'oa', 'ft', 'year', 'lic', 'jrnl', 'mesh', 'kw', 'ptype', 'd1', 'd2', 'd3', 'para', 'fam', 'mt', 'enriched', 'sort', 'page', 'class'];
+      expect(dropped.filter((key) => params.has(key))).toEqual([]);
+    });
+
+    it('always sends pageSize, which is never part of the URL itself', () => {
+      expect(queryToHttpParams(base).get('pageSize')).toBe('25');
+      expect(queryToHttpParams({ ...base, pageSize: 100 }).get('pageSize')).toBe('100');
+    });
+
+    it('keeps an explicitly-cleared classification as the literal empty string, not dropped', () => {
+      const params = queryToHttpParams({ ...base, filters: { classification: [] } });
+      expect(params.has('class')).toBe(true);
+      expect(params.get('class')).toBe('');
+      // The wire form must be exactly "class=" -- confirms toString() doesn't silently drop it.
+      expect(params.toString().split('&')).toContain('class=');
+    });
+
+    it('carries every other non-default filter through as its queryToParams string', () => {
+      const params = queryToHttpParams({
+        ...base,
+        q: 'transformer',
+        filters: { classification: ['positive', 'negative'], yearMin: 2020, journal: ['Nature'] },
+      });
+      expect(params.get('q')).toBe('transformer');
+      expect(params.get('class')).toBe('positive,negative');
+      expect(params.get('year')).toBe('2020-');
+      expect(params.get('jrnl')).toBe('Nature');
     });
   });
 });

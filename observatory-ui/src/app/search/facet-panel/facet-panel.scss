@@ -67,6 +67,30 @@
   font-variant-numeric: tabular-nums;
 }
 
+.author-keywords {
+  margin-bottom: var(--space-4);
+
+  label {
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--observatory-primary);
+    margin-bottom: var(--space-2);
+  }
+
+  .facet-hint {
+    display: block;
+    font-weight: 400;
+    font-size: var(--font-size-xs);
+    color: var(--status-neutral);
+    margin-top: var(--space-1);
+  }
+
+  input {
+    font-size: var(--font-size-sm);
+  }
+}
+
 .coverage-banner {
   background-color: var(--status-undeterminable-bg);
   color: var(--status-undeterminable);

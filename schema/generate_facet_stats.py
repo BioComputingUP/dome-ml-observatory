@@ -1,19 +1,23 @@
 #!/usr/bin/env python3
-"""Generates schema/stats/facet-stats.json -- the precomputed facet counts the search UI reads.
+"""Generates schema/stats/facet-stats.json.
 
-Why precomputed: the corpus is updated 6-12 times a year in monthly/bimonthly triage batches, so
-it is almost static. Aggregating facet counts over 827k documents on every query would be the most
-expensive thing on the search page, for data that changes six times a year. This script runs once
-per data update instead; the UI just reads the resulting file.
+As of Phase 7, this file is NOT a UI input: observatory-ui reads facet/corpus stats live from
+observatory-ws's GET /api/stats (the same aggregation this script's --from-api mode fetches from),
+via RecordsService.getFacetStats() -- see internal/ROADMAP.md's Phase 7 entry. This script now
+exists for two things: (1) regenerating a fixture-mode snapshot against the dev fixture for anyone
+working on schema/generate_facet_stats.py or the fixture itself offline, with no ws running, and
+(2) as the one place that originally measured the CORPUS dict below, kept as a record even though
+nothing reads it live anymore.
 
 Two modes:
 - Default (no flags, or --records): derives per-facet counts from a local records.json file (the
-  200-record dev fixture by default) and marks them `"source": "fixture"`. The `corpus` block is
-  still the REAL full-corpus figures either way -- see the CORPUS dict below.
-- --from-api <base-url> (Phase 5 onward): fetches the already-computed aggregation straight from
-  observatory-ws's GET /api/stats (stdlib urllib only -- no dependency added to this folder) and
-  writes it verbatim, marked `"source": "full-corpus"`. The aggregation logic lives exactly once,
-  in observatory-ws/src/stats/stats.service.ts -- this mode is a thin fetch-and-write, not a
+  200-record dev fixture at observatory-ui/fixtures/sample-records.json by default) and marks them
+  `"source": "fixture"`. The `corpus` block is still the REAL full-corpus figures either way -- see
+  the CORPUS dict below.
+- --from-api <base-url>: fetches the already-computed aggregation straight from observatory-ws's
+  GET /api/stats (stdlib urllib only -- no dependency added to this folder) and writes it verbatim,
+  marked `"source": "full-corpus"`. The aggregation logic lives exactly once, in
+  observatory-ws/src/stats/stats.service.ts -- this mode is a thin fetch-and-write, not a
   reimplementation, so the two can never drift apart. Requires the ws running and reachable (e.g.
   `npm run start:dev` in observatory-ws/, or the VPN to the database server for a real corpus run).
 
@@ -34,7 +38,7 @@ from pathlib import Path
 
 SCHEMA_DIR = Path(__file__).parent
 REPO_ROOT = SCHEMA_DIR.parent
-DEFAULT_RECORDS = REPO_ROOT / "observatory-ui" / "src" / "assets" / "data" / "sample-records.json"
+DEFAULT_RECORDS = REPO_ROOT / "observatory-ui" / "fixtures" / "sample-records.json"
 OUT_PATH = SCHEMA_DIR / "stats" / "facet-stats.json"
 
 # Real full-corpus figures. Used only by the fixture-file mode below -- --from-api mode gets its
