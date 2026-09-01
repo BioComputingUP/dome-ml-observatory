@@ -1,0 +1,30 @@
+<nav class="side-nav-floating" [attr.aria-label]="ariaLabel()">
+  <ul class="side-nav-list">
+    @for (item of items(); track item.route) {
+      <li>
+        <a
+          class="side-nav-link"
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <i class="icon icon-common {{ item.icon }}" aria-hidden="true"></i>
+          <span>{{ item.label }}</span>
+        </a>
+      </li>
+    }
+  </ul>
+</nav>
+
+<nav class="side-nav-pillbar" [attr.aria-label]="ariaLabel()">
+  @for (item of items(); track item.route) {
+    <a
+      class="side-nav-pill-link"
+      [routerLink]="item.route"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      {{ item.label }}
+    </a>
+  }
+</nav>

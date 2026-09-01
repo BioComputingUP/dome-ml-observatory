@@ -16,32 +16,55 @@ export const routes: Routes = [
   },
   {
     path: 'download',
-    loadComponent: () => import('./download/download').then((m) => m.Download),
+    loadComponent: () => import('./download/download-layout/download-layout').then((m) => m.DownloadLayout),
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./download/download-overview/download-overview').then((m) => m.DownloadOverview),
+      },
+      {
+        path: 'bulk',
+        loadComponent: () => import('./download/download-bulk/download-bulk').then((m) => m.DownloadBulk),
+      },
+      {
+        path: 'api',
+        loadComponent: () => import('./download/download-api/download-api').then((m) => m.DownloadApi),
+      },
+    ],
   },
-  {
-    path: 'api',
-    loadComponent: () => import('./api-docs/api-docs').then((m) => m.ApiDocs),
-  },
+  { path: 'api', redirectTo: '/download/api', pathMatch: 'full' },
   {
     path: 'integrations',
     loadComponent: () => import('./integrations/integrations').then((m) => m.Integrations),
   },
   {
     path: 'about',
-    loadComponent: () => import('./about/about').then((m) => m.About),
+    loadComponent: () => import('./about/about-layout/about-layout').then((m) => m.AboutLayout),
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () => import('./about/about-overview/about-overview').then((m) => m.AboutOverview),
+      },
+      {
+        path: 'team',
+        loadComponent: () => import('./about/about-team/about-team').then((m) => m.AboutTeam),
+      },
+      {
+        path: 'licensing',
+        loadComponent: () => import('./about/about-licensing/about-licensing').then((m) => m.AboutLicensing),
+      },
+      {
+        path: 'privacy',
+        loadComponent: () => import('./about/about-privacy/about-privacy').then((m) => m.AboutPrivacy),
+      },
+    ],
   },
-  {
-    path: 'team',
-    loadComponent: () => import('./team/team').then((m) => m.Team),
-  },
-  {
-    path: 'licensing',
-    loadComponent: () => import('./licensing/licensing').then((m) => m.Licensing),
-  },
-  {
-    path: 'privacy',
-    loadComponent: () => import('./privacy/privacy').then((m) => m.Privacy),
-  },
+  { path: 'team', redirectTo: '/about/team', pathMatch: 'full' },
+  { path: 'licensing', redirectTo: '/about/licensing', pathMatch: 'full' },
+  { path: 'privacy', redirectTo: '/about/privacy', pathMatch: 'full' },
   {
     path: 'news',
     loadComponent: () => import('./news/news').then((m) => m.News),

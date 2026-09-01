@@ -1,4 +1,4 @@
-<div class="container-wide page">
+<div class="page">
   <h1>API</h1>
 
   <div class="notice" role="status">
@@ -11,7 +11,7 @@
   <p class="lead">
     A read-only REST API over the same corpus <a routerLink="/search">Search</a> uses. Good for
     targeted queries and small numbers of records; for the whole corpus, use
-    <a routerLink="/download">bulk download</a> instead so requests stay light for everyone.
+    <a routerLink="/download/bulk">bulk download</a> instead so requests stay light for everyone.
   </p>
 
   <section class="section">
@@ -57,7 +57,7 @@
     <h2>Fair use</h2>
     <p>
       No hard rate limit is set yet, but please don't page through <code>/api/records</code> to
-      reconstruct the full corpus — that's exactly what <a routerLink="/download">bulk download</a>
+      reconstruct the full corpus — that's exactly what <a routerLink="/download/bulk">bulk download</a>
       exists to avoid, and it's faster for you too.
     </p>
   </section>

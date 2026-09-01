@@ -43,19 +43,50 @@
     margin-left: 10px;
   }
 
-  .registry-link {
-    padding: 0.35rem 0.7rem;
-    font-size: var(--font-size-xs);
-    margin-left: var(--space-3);
-  }
 }
 
-.brand-img {
-  // observatory_logo.svg is a wide horizontal lockup (icon + wordmark), not the square OSAI
-  // badge this height was originally tuned for -- sized down so it doesn't overrun the navbar.
-  height: 2.8rem;
-  min-height: 2.8rem;
-  max-height: 2.8rem;
+.brand-mark {
+  height: 3.6rem;
+  width: 3.6rem;
+  flex-shrink: 0;
+}
+
+.brand-wordmark {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.brand-wordmark-dome {
+  font-family: 'Inter', 'Lato', sans-serif;
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: #ffffff;
+}
+
+.brand-wordmark-observatory {
+  font-family: 'Inter', 'Lato', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--observatory-accent);
+  margin-top: 0.15rem;
+}
+
+@media (max-width: 576px) {
+  .brand-mark {
+    height: 2.6rem;
+    width: 2.6rem;
+  }
+
+  .brand-wordmark-dome {
+    font-size: 1.7rem;
+  }
+
+  .brand-wordmark-observatory {
+    font-size: 0.55rem;
+  }
 }
 
 .nav-item {
@@ -136,6 +167,7 @@
   color: white;
   display: flex;
   align-items: center;
+  gap: var(--space-3);
   height: 90px;
   padding: 0;
   flex-shrink: 0;
@@ -216,41 +248,5 @@
     // remaining space evenly, centring the nav list between the brand and the registry pill.
     flex-wrap: nowrap;
     min-width: 0;
-  }
-}
-
-// Visually distinct from the internal nav items above -- this leaves the app entirely, so it
-// reads as a different kind of link (outlined pill, external-link glyph) rather than blending
-// into the primary nav.
-.registry-link {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  // .navbar-nav's mx-auto absorbs all free space on both sides -- without an explicit minimum
-  // gap here, its right edge can end up touching this pill at the narrower end of the desktop
-  // range (this is exactly what silently overlapped "News" and the pill at the old 992px breakpoint).
-  margin-left: var(--space-4);
-  flex-shrink: 0;
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: var(--radius-pill);
-  padding: 0.4rem 1rem;
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-
-  &:hover {
-    color: var(--observatory-primary);
-    background-color: white;
-    border-color: white;
-  }
-
-  i {
-    font-size: 0.75rem;
-  }
-
-  @media (max-width: 1199px) {
-    margin: var(--space-3) auto 0;
   }
 }

@@ -17,12 +17,12 @@ interface AdvisoryMember {
 }
 
 @Component({
-  selector: 'app-team',
+  selector: 'app-about-team',
   imports: [],
-  templateUrl: './team.html',
-  styleUrl: './team.scss',
+  templateUrl: './about-team.html',
+  styleUrl: './about-team.scss',
 })
-export class Team {
+export class AboutTeam {
   readonly core: Member[] = [
     {
       name: 'Gavin Farrell',

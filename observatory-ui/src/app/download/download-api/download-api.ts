@@ -10,12 +10,12 @@ interface Endpoint {
 }
 
 @Component({
-  selector: 'app-api-docs',
+  selector: 'app-download-api',
   imports: [RouterLink],
-  templateUrl: './api-docs.html',
-  styleUrl: './api-docs.scss',
+  templateUrl: './download-api.html',
+  styleUrl: './download-api.scss',
 })
-export class ApiDocs {
+export class DownloadApi {
   readonly endpoints: Endpoint[] = [
     {
       method: 'GET',

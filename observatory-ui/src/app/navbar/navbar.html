@@ -1,7 +1,11 @@
 <div class="container-fluid">
   <nav class="navbar navbar-expand-xl navbar-light">
     <a routerLink="/" class="navbar-brand" title="DOME Observatory home">
-      <img alt="DOME Observatory" src="assets/img/observatory_logo.svg" class="brand-img img-fluid" />
+      <img alt="" src="assets/img/logo-white-static.svg" class="brand-mark" />
+      <span class="brand-wordmark">
+        <span class="brand-wordmark-dome">DOME</span>
+        <span class="brand-wordmark-observatory">OBSERVATORY</span>
+      </span>
     </a>
     <button
       class="navbar-toggler"
@@ -14,6 +18,17 @@
     </button>
     <div class="collapse navbar-collapse" [class.show]="!isCollapsed">
       <ul class="navbar-nav mx-auto">
+        <li class="nav-item">
+          <a
+            class="nav-item nav-link btn-navbar"
+            routerLink="/"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            title="Home"
+            (click)="collapseNav()"
+            >Home</a
+          >
+        </li>
         <li class="nav-item">
           <a
             class="nav-item nav-link btn-navbar"
@@ -32,16 +47,6 @@
             title="Bulk download"
             (click)="collapseNav()"
             >Download</a
-          >
-        </li>
-        <li class="nav-item">
-          <a
-            class="nav-item nav-link btn-navbar"
-            routerLinkActive="active"
-            routerLink="api"
-            title="API & documentation"
-            (click)="collapseNav()"
-            >API</a
           >
         </li>
         <li class="nav-item">
@@ -71,21 +76,10 @@
             routerLink="news"
             title="News & Events"
             (click)="collapseNav()"
-            >News</a
+            >News & Events</a
           >
         </li>
       </ul>
-      <a
-        href="https://registry.dome-ml.org/"
-        target="_blank"
-        rel="noopener"
-        class="registry-link"
-        title="Open the DOME Registry in a new tab"
-        (click)="collapseNav()"
-      >
-        DOME Registry
-        <i class="icon icon-common icon-external-link-alt" aria-hidden="true"></i>
-      </a>
     </div>
   </nav>
 </div>

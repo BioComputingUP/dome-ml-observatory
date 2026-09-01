@@ -3,15 +3,15 @@ import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
-import { RecordsService } from '../core/records.service';
+import { RecordsService } from '../../core/records.service';
 
 @Component({
-  selector: 'app-about',
+  selector: 'app-about-overview',
   imports: [RouterLink, DecimalPipe],
-  templateUrl: './about.html',
-  styleUrl: './about.scss',
+  templateUrl: './about-overview.html',
+  styleUrl: './about-overview.scss',
 })
-export class About {
+export class AboutOverview {
   private readonly records = inject(RecordsService);
 
   private readonly stats = toSignal(this.records.getFacetStats().pipe(catchError(() => of(null))), {

@@ -1,4 +1,4 @@
-<div class="container-wide page">
+<div class="page">
   <h1>Bulk download</h1>
   <p class="lead">
     The whole dataset in one file. This is the recommended way to take the corpus at scale —
@@ -9,7 +9,7 @@
     <strong>The archive is not published yet.</strong>
     Bulk releases will be deposited to Zenodo with a citable DOI. Until the first deposit exists,
     use <a routerLink="/search">Search</a> to explore the corpus, or the
-    <a routerLink="/api">API</a> for programmatic access to specific records.
+    <a routerLink="/download/api">API</a> for programmatic access to specific records.
   </div>
 
   <section class="section">
@@ -35,7 +35,7 @@
       </div>
       <div class="spec-row">
         <dt>Licence</dt>
-        <dd>CC BY 4.0 — see <a routerLink="/licensing">Licensing &amp; citation</a>.</dd>
+        <dd>CC BY 4.0 — see <a routerLink="/about/licensing">Licensing &amp; citation</a>.</dd>
       </div>
       <div class="spec-row">
         <dt>Update cadence</dt>
@@ -45,22 +45,6 @@
         </dd>
       </div>
     </dl>
-  </section>
-
-  <section class="section">
-    <h2>Which route should you use?</h2>
-    <div class="route-compare">
-      <div class="route">
-        <h3>Bulk download</h3>
-        <p class="route-for">For: whole-corpus analysis, local indexing, reproducible snapshots.</p>
-        <p>One file, one request, no rate limits, and a DOI you can cite in a paper.</p>
-      </div>
-      <div class="route">
-        <h3><a routerLink="/api">API</a></h3>
-        <p class="route-for">For: targeted queries, a handful of records, live lookups in a tool.</p>
-        <p>Lighter-weight requests against current data. Please don't page it to pull the whole corpus — that's what the archive is for.</p>
-      </div>
-    </div>
   </section>
 
   <section class="section">

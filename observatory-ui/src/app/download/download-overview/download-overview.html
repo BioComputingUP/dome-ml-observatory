@@ -1,0 +1,48 @@
+<div class="page">
+  <h1>Getting the data</h1>
+  <p class="lead">
+    Every record in DOME Observatory is available to take out of the browser — either as one
+    archive covering the whole corpus, or through a read-only API for targeted queries. This page
+    explains the difference so you can pick the right one before you start.
+  </p>
+
+  <section class="section">
+    <h2>Two ways to access the corpus</h2>
+    <div class="route-compare">
+      <div class="route">
+        <h3><a routerLink="/download/bulk">Bulk download</a></h3>
+        <p class="route-for">For: whole-corpus analysis, local indexing, reproducible snapshots.</p>
+        <p>
+          One file, one request, no rate limits, and a DOI you can cite in a paper. This is the
+          recommended way to take the corpus at scale — it's faster for you than paging an API,
+          and it keeps load off the service for everyone else.
+        </p>
+        <p><a routerLink="/download/bulk">See what a release contains &rarr;</a></p>
+      </div>
+      <div class="route">
+        <h3><a routerLink="/download/api">API</a></h3>
+        <p class="route-for">For: targeted queries, a handful of records, live lookups in a tool.</p>
+        <p>
+          Lighter-weight requests against current data — good for looking up specific records or
+          integrating a search into another tool. Please don't page it to pull the whole corpus;
+          that's what the archive is for.
+        </p>
+        <p><a routerLink="/download/api">See the API reference &rarr;</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Also worth knowing: Europe PMC</h2>
+    <p>
+      DOME Observatory's records are cross-linked to
+      <a href="https://europepmc.org/" target="_blank" rel="noopener">Europe PMC</a> — it's the
+      underlying source the corpus is built from (see
+      <a routerLink="/about">how the corpus is built</a>). That makes it a viable complementary
+      source in its own right: if you need the full text or metadata of a specific publication
+      rather than its DOME classification and enrichment, or you're looking for coverage beyond
+      what's currently screened here, Europe PMC's own search and API are worth using directly
+      alongside Observatory's bulk archive and API.
+    </p>
+  </section>
+</div>

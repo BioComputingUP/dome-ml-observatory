@@ -1,0 +1,86 @@
+.side-nav-floating {
+  position: sticky;
+  // 90px = navbar height (navbar.scss) -- settles just below the fixed bar instead of under it.
+  top: calc(90px + var(--space-5));
+  background-color: #ffffff;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-4) var(--space-3);
+
+  @media (max-width: 991px) {
+    display: none;
+  }
+}
+
+.side-nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.side-nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  color: var(--observatory-primary);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: rgba(246, 103, 41, 0.1);
+    color: var(--observatory-accent);
+  }
+
+  &.active {
+    background-color: var(--observatory-primary);
+    color: #ffffff;
+  }
+
+  i {
+    color: var(--observatory-accent);
+  }
+
+  &.active i {
+    color: #ffffff;
+  }
+}
+
+// Mobile fallback: the same horizontal pill-bar pattern already used on the News page
+// (news.scss's .content-nav), so the interaction reads as familiar rather than novel.
+.side-nav-pillbar {
+  display: none;
+
+  @media (max-width: 991px) {
+    display: flex;
+    background-color: var(--observatory-primary);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    margin-bottom: var(--space-5);
+  }
+}
+
+.side-nav-pill-link {
+  flex: 1;
+  text-align: center;
+  padding: var(--space-3);
+  color: #ffffff;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+
+  &.active {
+    background-color: var(--observatory-accent);
+  }
+
+  &:hover:not(.active) {
+    background-color: rgba(246, 103, 41, 0.2);
+  }
+}
