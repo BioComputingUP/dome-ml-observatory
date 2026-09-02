@@ -1,29 +1,55 @@
 <div class="home">
   <!-- ============ Hero: say what this is, and let them search immediately ============ -->
   <section class="hero">
-    <div class="container-wide">
-      <h1>Find the AI/ML methods papers in the life sciences</h1>
+    <svg
+      class="hero-constellation"
+      viewBox="0 0 1600 520"
+      preserveAspectRatio="xMidYMid slice"
+      aria-hidden="true"
+      focusable="false"
+    >
+      @for (edge of constellationEdges; track $index) {
+        <line [attr.x1]="edge.x1" [attr.y1]="edge.y1" [attr.x2]="edge.x2" [attr.y2]="edge.y2" class="constellation-edge" />
+      }
+      @for (node of constellationNodes; track $index) {
+        @if (node.accent) {
+          <circle [attr.cx]="node.x" [attr.cy]="node.y" [attr.r]="node.r + 6" class="constellation-halo" />
+        }
+        <circle
+          [attr.cx]="node.x"
+          [attr.cy]="node.y"
+          [attr.r]="node.r"
+          class="constellation-node"
+          [class.constellation-node-accent]="node.accent"
+        />
+      }
+    </svg>
+
+    <div class="container-wide hero-content">
+      <h1>DOME Observatory</h1>
       <p class="lead">
-        DOME Observatory maps the AI/ML landscape in the life sciences: publication metadata
-        screened and classified by LLM processing, validated by human expert curation, and
-        cross-linked to Europe PMC.
+        A curated resource to help researchers discover relevant AI/ML methods publications.
       </p>
 
       <form class="hero-search" role="search" (submit)="$event.preventDefault(); search()">
         <label for="home-q" class="visually-hidden">Search titles, abstracts and authors</label>
-        <input
-          id="home-q"
-          type="search"
-          class="form-control"
-          placeholder="Search titles, abstracts and authors — e.g. random forest sepsis, Tosatto"
-          [value]="query()"
-          (input)="query.set($any($event.target).value)"
-        />
+        <div class="hero-search-field">
+          <i class="icon icon-common icon-search hero-search-icon" aria-hidden="true"></i>
+          <input
+            id="home-q"
+            type="search"
+            placeholder="Search titles, abstracts and authors"
+            [value]="query()"
+            (input)="query.set($any($event.target).value)"
+          />
+        </div>
         <button type="submit" class="hero-search-button">Search</button>
       </form>
-      <p class="hero-hint">
-        Or <a routerLink="/search">browse everything</a> without a search term.
-      </p>
+
+      <a routerLink="/search" class="hero-browse">
+        <i class="icon icon-common icon-browse" aria-hidden="true"></i>
+        Browse everything without a search term
+      </a>
     </div>
   </section>
 
@@ -32,29 +58,24 @@
     <div class="container-wide">
       <ul class="metric-row">
         <li class="metric headline">
+          <span class="metric-icon"><i class="icon icon-common icon-classification" aria-hidden="true"></i></span>
           <span class="metric-value">{{ corpus().positive | number }}</span>
           <span class="metric-label">AI/ML methods papers</span>
         </li>
         <li class="metric">
+          <span class="metric-icon"><i class="icon icon-common icon-filter" aria-hidden="true"></i></span>
           <span class="metric-value">{{ corpus().total | number }}</span>
           <span class="metric-label">publications screened</span>
         </li>
         <li class="metric">
-          <span class="metric-value">{{ corpus().openAccess | number }}</span>
-          <span class="metric-label">open access</span>
-        </li>
-        <li class="metric">
-          <span class="metric-value">{{ corpus().fulltextAvailable | number }}</span>
+          <span class="metric-icon"><i class="icon icon-common icon-documentation" aria-hidden="true"></i></span>
+          <span class="metric-value">{{ searchSpace().fulltextAvailable | number }}</span>
           <span class="metric-label">with full text</span>
         </li>
         <li class="metric">
-          <span class="metric-value">{{ enriched() | number }}</span>
-          <span class="metric-label">
-            enriched with AI/ML detail
-            @if (enriched() === 0) {
-              <span class="metric-note">(in progress)</span>
-            }
-          </span>
+          <span class="metric-icon"><i class="icon icon-common icon-tags" aria-hidden="true"></i></span>
+          <span class="metric-value">{{ searchSpace().enriched | number }}</span>
+          <span class="metric-label">enriched with AI/ML detail</span>
         </li>
       </ul>
     </div>
@@ -63,18 +84,25 @@
   <!-- ============ Ways in ============ -->
   <section class="routes">
     <div class="container-wide">
+      <h2>Access the corpus</h2>
       <div class="route-cards">
         <a routerLink="/search" class="route-card">
-          <h2>Search &amp; browse</h2>
+          <span class="route-card-icon"><i class="icon icon-common icon-search" aria-hidden="true"></i></span>
+          <h3>Search &amp; browse</h3>
           <p>Free-text search with filters for domain, learning paradigm, model family and access.</p>
-        </a>
-        <a routerLink="/download/bulk" class="route-card">
-          <h2>Bulk download</h2>
-          <p>Take the whole dataset at once, from a citable archive — no need to page through the API.</p>
+          <span class="route-card-cta">Open search <i class="icon icon-common icon-arrow-right" aria-hidden="true"></i></span>
         </a>
         <a routerLink="/download/api" class="route-card">
-          <h2>API</h2>
+          <span class="route-card-icon"><i class="icon icon-common icon-cogs" aria-hidden="true"></i></span>
+          <h3>API</h3>
           <p>Query the corpus programmatically for targeted, lighter-weight requests.</p>
+          <span class="route-card-cta">View API docs <i class="icon icon-common icon-arrow-right" aria-hidden="true"></i></span>
+        </a>
+        <a routerLink="/download/bulk" class="route-card">
+          <span class="route-card-icon"><i class="icon icon-common icon-download" aria-hidden="true"></i></span>
+          <h3>Bulk download</h3>
+          <p>Take the whole dataset at once, from a citable archive — no need to page through the API.</p>
+          <span class="route-card-cta">Get the dataset <i class="icon icon-common icon-arrow-right" aria-hidden="true"></i></span>
         </a>
       </div>
     </div>
@@ -83,29 +111,34 @@
   <!-- ============ Family band ============ -->
   <section class="family">
     <div class="container-wide">
-      <h2>Part of the DOME family</h2>
-      <p class="family-lead">
-        DOME Observatory is built by the UNIPD Biocomputing Lab alongside the DOME Registry and the
-        DOME Recommendations for reporting supervised machine learning in biology.
-      </p>
-      <ul class="family-links">
+      <h2>The DOME family of resources</h2>
+      <ul class="family-cards">
         <li>
-          <a href="https://registry.dome-ml.org/" target="_blank" rel="noopener">
-            DOME Registry <i class="icon icon-common icon-external-link-alt" aria-hidden="true"></i>
+          <a href="https://dome-ml.org/guidelines" target="_blank" rel="noopener" class="family-card">
+            <span class="family-card-logo">
+              <img src="assets/img/dome-recommendations-mark.png" width="480" height="226" alt="DOME Recommendations" loading="lazy" />
+            </span>
+            <h3>DOME Recommendations <i class="icon icon-common icon-external-link-alt" aria-hidden="true"></i></h3>
+            <p>The DOME reporting standard: Data, Optimisation, Model, Evaluation.</p>
           </a>
-          <span>Structured DOME annotations, submitted and reviewed by the community.</span>
         </li>
         <li>
-          <a href="https://doi.org/10.1038/s41592-021-01205-4" target="_blank" rel="noopener">
-            The DOME standard <i class="icon icon-common icon-external-link-alt" aria-hidden="true"></i>
+          <a href="https://registry.dome-ml.org/" target="_blank" rel="noopener" class="family-card">
+            <span class="family-card-logo">
+              <img src="assets/img/DOME_Registry_Rounded-cropped.svg" width="466" height="104" alt="DOME Registry" loading="lazy" />
+            </span>
+            <h3>DOME Registry <i class="icon icon-common icon-external-link-alt" aria-hidden="true"></i></h3>
+            <p>Structured DOME annotations, submitted and reviewed by the community.</p>
           </a>
-          <span>The original recommendations: Data, Optimisation, Model, Evaluation.</span>
         </li>
         <li>
-          <a href="https://dome-ml.org/" target="_blank" rel="noopener">
-            dome-ml.org <i class="icon icon-common icon-external-link-alt" aria-hidden="true"></i>
+          <a href="https://osai.dome-ml.org/" target="_blank" rel="noopener" class="family-card">
+            <span class="family-card-logo">
+              <img src="assets/img/OSAI_logo.png" width="455" height="218" alt="OSAI" loading="lazy" />
+            </span>
+            <h3>OSAI <i class="icon icon-common icon-external-link-alt" aria-hidden="true"></i></h3>
+            <p>Open Sustainable Artificial Intelligence.</p>
           </a>
-          <span>The project home, guidance and community news.</span>
         </li>
       </ul>
     </div>

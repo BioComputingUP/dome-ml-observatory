@@ -1,13 +1,24 @@
+// ============ Hero ============
+
 .hero {
+  position: relative;
+  overflow: hidden;
   padding: var(--space-8) 0 var(--space-7);
   text-align: center;
+  // A faint radial wash so the hero stops reading as flat white, independent of the constellation.
+  background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(16, 51, 68, 0.04), transparent 70%);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
 
   h1 {
     color: var(--observatory-primary);
-    font-weight: 700;
-    font-size: var(--font-size-3xl);
-    line-height: 1.2;
-    margin-bottom: var(--space-4);
+    font-weight: 800;
+    font-size: var(--font-size-4xl);
+    line-height: 1.15;
+    margin-bottom: var(--space-3);
 
     @media (max-width: 767px) {
       font-size: var(--font-size-2xl);
@@ -15,29 +26,140 @@
   }
 }
 
+// Decorative node/edge backdrop -- fades out toward the centre (where the headline/search sit)
+// and toward the bottom (where the metrics band begins), so it never competes with content.
+// Hidden on narrow viewports: there are no hero flanks left to fill once the layout stacks.
+.hero-constellation {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  -webkit-mask-image:
+    radial-gradient(ellipse 46% 78% at 50% 42%, transparent 40%, #000 100%),
+    linear-gradient(to bottom, #000 75%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    radial-gradient(ellipse 46% 78% at 50% 42%, transparent 40%, #000 100%),
+    linear-gradient(to bottom, #000 75%, transparent 100%);
+  mask-composite: intersect;
+
+  @media (max-width: 767px) {
+    display: none;
+  }
+}
+
+.constellation-edge {
+  stroke: var(--observatory-primary);
+  stroke-opacity: 0.16;
+  stroke-width: 1.25;
+}
+
+.constellation-node {
+  fill: var(--observatory-primary);
+  fill-opacity: 0.22;
+}
+
+.constellation-node-accent {
+  fill: var(--observatory-accent);
+  fill-opacity: 0.55;
+}
+
+.constellation-halo {
+  fill: var(--observatory-accent);
+  fill-opacity: 0.12;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: constellation-pulse 8s ease-in-out infinite;
+  }
+}
+
+@keyframes constellation-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 .lead {
-  max-width: 780px;
+  max-width: 620px;
   margin: 0 auto var(--space-6);
   color: #444;
+  font-size: var(--font-size-lg);
   line-height: 1.6;
 }
+
+// ============ Search ============
 
 .hero-search {
   display: flex;
   gap: var(--space-2);
   max-width: 720px;
-  margin: 0 auto var(--space-3);
-
-  input {
-    flex: 1;
-    padding: var(--space-3) var(--space-4);
-    font-size: var(--font-size-base);
-    border-radius: var(--radius-md);
-    min-width: 0;
-  }
+  margin: 0 auto var(--space-4);
 
   @media (max-width: 575px) {
     flex-direction: column;
+  }
+}
+
+.hero-search-field {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  background-color: var(--surface-card);
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  box-shadow: inset 0 1px 2px rgba(16, 51, 68, 0.06);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:focus-within {
+    border-color: var(--observatory-accent);
+    box-shadow:
+      inset 0 1px 2px rgba(16, 51, 68, 0.06),
+      0 0 0 3px rgba(246, 103, 41, 0.18);
+  }
+}
+
+.hero-search-icon {
+  flex-shrink: 0;
+  margin-left: var(--space-4);
+  color: var(--status-neutral);
+  font-size: 0.95em;
+}
+
+.hero-search-field input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-base);
+  color: var(--observatory-primary);
+  outline: none;
+
+  &::placeholder {
+    // ~20% lighter than --status-neutral (#55606b) -- a search field reads as empty, not filled,
+    // when its placeholder is clearly lighter than real input text.
+    color: #7b858e;
+  }
+
+  // The placeholder was always example text, never an inserted value -- this just makes the field
+  // visually read as blank and ready the moment it's focused, matching the search page's own field.
+  &:focus::placeholder {
+    color: transparent;
+  }
+
+  // Field owns its own focus treatment via .hero-search-field:focus-within above; suppress the
+  // global outline-ring so the pill border/glow is the only focus signal (avoids stacking rings).
+  &:focus-visible {
+    outline: none;
   }
 }
 
@@ -45,7 +167,7 @@
   flex-shrink: 0;
   padding: var(--space-3) var(--space-6);
   border: 2px solid var(--observatory-accent);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-pill);
   background-color: var(--observatory-accent);
   color: white;
   font-weight: 600;
@@ -58,10 +180,33 @@
   }
 }
 
-.hero-hint {
+.hero-browse {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-5);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  color: var(--observatory-primary);
   font-size: var(--font-size-sm);
-  color: var(--status-neutral);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s ease;
+
+  i {
+    font-size: 0.9em;
+  }
+
+  &:hover {
+    border-color: var(--observatory-accent);
+    color: var(--observatory-accent);
+  }
 }
+
+// ============ Metrics ============
+// All four tiles the same size and vertically centred (grid rows stretch to equal height by
+// default; each tile centres its own content within that height) -- previously the headline tile
+// was visually larger than the rest and centring wasn't guaranteed.
 
 .metrics {
   background-color: var(--observatory-primary);
@@ -70,48 +215,103 @@
 }
 
 .metric-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--space-6);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   list-style: none;
   padding: 0;
   margin: 0;
+
+  @media (max-width: 991px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: var(--space-5);
+  }
+
+  @media (max-width: 575px) {
+    grid-template-columns: 1fr;
+    row-gap: var(--space-5);
+  }
 }
 
 .metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  min-width: 140px;
+  padding: 0 var(--space-4);
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
 
-  &.headline .metric-value {
-    font-size: var(--font-size-3xl);
+  &:first-child {
+    border-left: 0;
+  }
+
+  @media (max-width: 991px) {
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    padding-top: var(--space-5);
+
+    &:nth-child(-n + 2) {
+      border-top: 0;
+      padding-top: 0;
+    }
+  }
+
+  @media (max-width: 575px) {
+    &:nth-child(2) {
+      border-top: 1px solid rgba(255, 255, 255, 0.14);
+      padding-top: var(--space-5);
+    }
+  }
+}
+
+.metric-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: var(--space-3);
+  border-radius: var(--radius-pill);
+  background-color: rgba(255, 255, 255, 0.1);
+  font-size: 1.15rem;
+
+  .metric.headline & {
+    background-color: rgba(246, 103, 41, 0.22);
     color: var(--observatory-accent);
   }
 }
 
 .metric-value {
   display: block;
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-2xl);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
+
+  .metric.headline & {
+    color: var(--observatory-accent);
+  }
 }
 
 .metric-label {
   display: block;
   font-size: var(--font-size-sm);
-  opacity: 0.85;
+  opacity: 0.92;
   margin-top: var(--space-1);
 }
 
-.metric-note {
-  display: block;
-  font-size: var(--font-size-xs);
-  opacity: 0.75;
-}
+// ============ Ways in ============
 
 .routes {
   padding: var(--space-7) 0;
+
+  h2 {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--observatory-primary);
+    margin-bottom: var(--space-4);
+    text-align: center;
+  }
 }
 
 .route-cards {
@@ -121,15 +321,16 @@
 }
 
 .route-card {
-  display: block;
+  display: flex;
+  flex-direction: column;
   padding: var(--space-5);
-  border: 1px solid var(--status-neutral-bg);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
   text-decoration: none;
   transition: all 0.2s ease;
 
-  h2 {
+  h3 {
     font-size: var(--font-size-lg);
     font-weight: 700;
     color: var(--observatory-primary);
@@ -137,8 +338,107 @@
   }
 
   p {
+    flex: 1;
     font-size: var(--font-size-sm);
     color: #444;
+    margin: 0 0 var(--space-3);
+  }
+
+  &:hover {
+    border-color: var(--observatory-accent);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+}
+
+.route-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius-md);
+  background-color: var(--status-neutral-bg);
+  color: var(--observatory-primary);
+  font-size: 1.3rem;
+
+  .route-card:hover & {
+    background-color: var(--observatory-accent);
+    color: white;
+  }
+}
+
+.route-card-cta {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--observatory-accent);
+
+  i {
+    margin-left: var(--space-1);
+    font-size: 0.75em;
+    transition: transform 0.2s ease;
+  }
+
+  .route-card:hover & i {
+    transform: translateX(3px);
+  }
+}
+
+// ============ Family band ============
+
+.family {
+  padding: var(--space-7) 0 var(--space-8);
+  background-color: var(--surface-page);
+
+  h2 {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--observatory-primary);
+    margin-bottom: var(--space-5);
+    text-align: center;
+  }
+}
+
+.family-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-4);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.family-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-5);
+  height: 100%;
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  h3 {
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--observatory-primary);
+    margin-bottom: var(--space-2);
+
+    i {
+      margin-left: var(--space-1);
+      font-size: 0.7em;
+      color: var(--status-neutral);
+    }
+  }
+
+  p {
+    font-size: var(--font-size-sm);
+    color: var(--status-neutral);
     margin: 0;
   }
 
@@ -149,54 +449,17 @@
   }
 }
 
-.family {
-  padding: var(--space-7) 0 var(--space-8);
-  background-color: #f8f9fa;
+.family-card-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 64px;
+  margin-bottom: var(--space-4);
 
-  h2 {
-    font-size: var(--font-size-xl);
-    font-weight: 700;
-    color: var(--observatory-primary);
-    margin-bottom: var(--space-3);
-  }
-}
-
-.family-lead {
-  max-width: 780px;
-  color: #444;
-  margin-bottom: var(--space-5);
-}
-
-.family-links {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: var(--space-4);
-  list-style: none;
-  padding: 0;
-  margin: 0;
-
-  li {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-  }
-
-  a {
-    font-weight: 600;
-    text-decoration: none;
-
-    i {
-      font-size: 0.7em;
-    }
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-
-  span {
-    font-size: var(--font-size-sm);
-    color: var(--status-neutral);
+  img {
+    max-height: 100%;
+    max-width: 220px;
+    object-fit: contain;
   }
 }
 

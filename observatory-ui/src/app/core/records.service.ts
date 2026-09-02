@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, forkJoin, of, shareReplay, throwError } from 'rxjs';
 import { AiMlRecord, Classification } from './record.model';
 import { DomainVocab, ModellingBranchVocab, ModelTypeSeedVocab, Vocabularies } from './vocab.model';
-import { CorpusStats, FacetStats } from './facet-stats.model';
+import { CorpusStats, FacetStats, SearchSpaceStats } from './facet-stats.model';
 import { queryToHttpParams } from './search-params';
 
 export interface SearchFilters {
@@ -78,6 +78,18 @@ export const CORPUS_STATS: CorpusStats = {
   enriched: 0,
 };
 
+/** Positives-scoped fallback (classification: positive only) -- same role and provenance as
+ *  CORPUS_STATS above: painted instantly so the home metric row never flashes zeros while
+ *  GET /api/stats is in flight. Measured against dome_observatory.Content on the database server via
+ *  GET /api/stats, 2026-09-02. */
+export const SEARCH_SPACE_STATS: SearchSpaceStats = {
+  total: 355_558,
+  fulltextAvailable: 229_325,
+  openAccess: 204_335,
+  enriched: 0,
+  yearRange: { min: 1963, max: 2027 },
+};
+
 /** Facet fields observatory-ws serves a typeahead for -- keeps the string literal in one place
  *  rather than repeated at every call site. Deliberately excludes keywords_author: see
  *  observatory-ws/src/facets/facets.service.ts (694,411 distinct values on the live corpus). */
@@ -118,6 +130,13 @@ export class RecordsService {
    *  where an Observable is workable; it carries the same numbers, live from Mongo. */
   getStats(): CorpusStats {
     return CORPUS_STATS;
+  }
+
+  /** Synchronous fallback for the positives-scoped figures -- see SEARCH_SPACE_STATS. Prefer
+   *  getFacetStats().search_space where an Observable is workable; it carries the same numbers,
+   *  live from Mongo. */
+  getSearchSpaceStats(): SearchSpaceStats {
+    return SEARCH_SPACE_STATS;
   }
 
   /** GET /api/records. Not cached -- unlike vocab/stats, results genuinely differ per query, and

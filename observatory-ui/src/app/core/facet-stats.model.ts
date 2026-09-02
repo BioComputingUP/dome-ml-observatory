@@ -35,6 +35,19 @@ export interface CorpusStats {
   enriched: number;
 }
 
+/** Everything scoped to `classification: positive` -- the actual searchable set, as opposed to
+ *  CorpusStats above which stays corpus-wide (all 827k screened publications) so pages can still
+ *  tell the honest "we screen and track the negatives too" story. Mirrors observatory-ws's
+ *  SearchSpaceStats (src/stats/stats.service.ts); the API has always served this block, it just
+ *  wasn't declared here until the home page needed positives-scoped figures. */
+export interface SearchSpaceStats {
+  total: number;
+  fulltextAvailable: number;
+  openAccess: number;
+  enriched: number;
+  yearRange: YearRange | null;
+}
+
 export interface FacetStats {
   generated: string;
   schema_version: string;
@@ -48,6 +61,7 @@ export interface FacetStats {
   records_counted: number;
   corpus: CorpusStats;
   corpus_provenance: string;
+  search_space: SearchSpaceStats;
   facets: {
     classification: FacetCount[];
     license: FacetCount[];

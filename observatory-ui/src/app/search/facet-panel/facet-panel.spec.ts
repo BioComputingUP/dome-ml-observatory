@@ -23,6 +23,13 @@ const STATS_WITH_YEAR_RANGE: FacetStats = {
     enriched: 0,
   },
   corpus_provenance: 'test fixture',
+  search_space: {
+    total: 355_558,
+    fulltextAvailable: 229_325,
+    openAccess: 204_335,
+    enriched: 0,
+    yearRange: { min: 1963, max: 2027 },
+  },
   facets: {
     classification: [],
     license: [],
