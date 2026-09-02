@@ -10,6 +10,12 @@ import {
   ParsedFilters,
   parseSearchParams,
   tokenizeQuery,
+  searchTerms,
+  termPattern,
+  parseAuthorName,
+  authorClause,
+  buildPromotedFilter,
+  rankPromoted,
 } from './records.query';
 
 /** A filters object with every field left at its "untouched" default -- individual tests spread
@@ -373,5 +379,169 @@ describe('canonicalCacheKey', () => {
       yearMin: 2020,
     };
     expect(canonicalCacheKey(filters)).toBe(canonicalCacheKey(filters));
+  });
+});
+
+describe('searchTerms', () => {
+  it('drops single-character terms, which cost a full regex pass and narrow nothing', () => {
+    expect(searchTerms('Farrell G')).toEqual(['Farrell']);
+    expect(searchTerms('a b cell')).toEqual(['cell']);
+  });
+
+  it('strips trailing sentence punctuation before the length floor applies', () => {
+    // Regression: "G." is two characters, so it survived the floor and turned an author search into
+    // "surname AND a token ending in G." -- 7 hits where "Farrell G" gave 94.
+    expect(searchTerms('Farrell G.')).toEqual(['Farrell']);
+    expect(searchTerms('Farrell, G')).toEqual(['Farrell']);
+    expect(searchTerms('random forest.')).toEqual(['random', 'forest']);
+  });
+
+  it('leaves ordinary multi-word queries alone', () => {
+    expect(searchTerms('random forest sepsis')).toEqual(['random', 'forest', 'sepsis']);
+  });
+});
+
+describe('termPattern', () => {
+  it('word-anchors a single term', () => {
+    expect(termPattern('cell')).toBe('\\bcell');
+  });
+
+  it('escapes regex metacharacters in user input', () => {
+    expect(termPattern('c.ll')).toBe('\\bc\\.ll');
+  });
+
+  it('lets a phrase span inline markup, which real titles carry', () => {
+    // "<i>In Vitro</i> Fertilization" must match the phrase "in vitro"; a literal space never would.
+    const re = new RegExp(termPattern('in vitro'), 'i');
+    expect(re.test('Outcome of <i>In Vitro</i> Fertilization Cycles')).toBe(true);
+  });
+
+  it('lets a phrase span a hyphen', () => {
+    expect(new RegExp(termPattern('random forest'), 'i').test('a random-forest model')).toBe(true);
+  });
+
+  it('still requires the words to be adjacent', () => {
+    expect(new RegExp(termPattern('random forest'), 'i').test('random survival forest')).toBe(
+      false,
+    );
+  });
+});
+
+describe('parseAuthorName', () => {
+  it('recognises the surname+initials form the corpus stores and the UI asks for', () => {
+    expect(parseAuthorName('Farrell G')).toEqual({ surname: 'Farrell', initials: 'G' });
+    expect(parseAuthorName('Farrell G.')).toEqual({ surname: 'Farrell', initials: 'G' });
+    expect(parseAuthorName('Farrell, G')).toEqual({ surname: 'Farrell', initials: 'G' });
+    expect(parseAuthorName('Tosatto SCE')).toEqual({ surname: 'Tosatto', initials: 'SCE' });
+  });
+
+  it('handles non-ASCII surnames', () => {
+    expect(parseAuthorName('Grønning AGB')).toEqual({ surname: 'Grønning', initials: 'AGB' });
+  });
+
+  it('does NOT claim ordinary topical queries -- lowercase initials are the guard', () => {
+    // Treating "single cell" as an author would spend a whole extra collection scan proving it
+    // matches nothing.
+    expect(parseAuthorName('random forest')).toBeUndefined();
+    expect(parseAuthorName('single cell')).toBeUndefined();
+    expect(parseAuthorName('deep learning')).toBeUndefined();
+    expect(parseAuthorName('farrell g')).toBeUndefined();
+  });
+
+  it('does not claim queries that are not two tokens', () => {
+    expect(parseAuthorName('Farrell')).toBeUndefined();
+    expect(parseAuthorName('Farrell G Attafi O')).toBeUndefined();
+  });
+});
+
+describe('authorClause', () => {
+  const matches = (authors: string, name: { surname: string; initials: string }) => {
+    const clause = authorClause(name) as {
+      'publication_metadata.authors': { $regex: string; $options: string };
+    };
+    const spec = clause['publication_metadata.authors'];
+    return new RegExp(spec.$regex, spec.$options).test(authors);
+  };
+  const farrellG = { surname: 'Farrell', initials: 'G' };
+
+  it('matches the author at the start, middle and end of the list', () => {
+    expect(matches('Farrell G, Attafi OA, Fragkouli S', farrellG)).toBe(true);
+    expect(matches('Halford E, Farrell G, Dixon A', farrellG)).toBe(true);
+    expect(matches('Halford E, Dixon A, Farrell G.', farrellG)).toBe(true);
+  });
+
+  it('allows the initials to extend, as PubMed author search does', () => {
+    expect(matches('Halford E, Farrell GP, Dixon A', farrellG)).toBe(true);
+  });
+
+  it('does not match a different surname that merely contains it', () => {
+    expect(matches('Satija R, Farrell JA, Regev A', farrellG)).toBe(false);
+    expect(matches("Hou J, O'Farrell M, Veddegjerde R", farrellG)).toBe(false);
+    expect(matches('Farrelly CM.', farrellG)).toBe(false);
+  });
+});
+
+describe('buildPromotedFilter', () => {
+  const filters = (raw: Record<string, string>) => parseSearchParams(raw).filters;
+
+  it('returns null when there is no free text to promote on', () => {
+    expect(buildPromotedFilter(filters({}))).toBeNull();
+    expect(buildPromotedFilter(filters({ oa: 'true' }))).toBeNull();
+  });
+
+  it('promotes exact author matches for an author-shaped query', () => {
+    const promoted = JSON.stringify(buildPromotedFilter(filters({ q: 'Farrell G' })));
+    expect(promoted).toContain('publication_metadata.authors');
+    expect(promoted).not.toContain('publication_metadata.abstract');
+  });
+
+  it('promotes title matches for anything else, never abstract-only ones', () => {
+    const promoted = JSON.stringify(buildPromotedFilter(filters({ q: 'random forest' })));
+    expect(promoted).toContain('publication_metadata.title');
+    expect(promoted).not.toContain('publication_metadata.abstract');
+  });
+
+  it('carries the other filters, so promotion never widens what matches', () => {
+    const promoted = JSON.stringify(
+      buildPromotedFilter(filters({ q: 'random forest', oa: 'true', year: '2020-' })),
+    );
+    expect(promoted).toContain('source.access.open_access');
+    expect(promoted).toContain('publication_metadata.year');
+    expect(promoted).toContain('llm_classification.classification');
+  });
+
+  it('keeps the cheap classification clause first, as buildMongoFilter does', () => {
+    const promoted = buildPromotedFilter(filters({ q: 'random forest' })) as { $and: object[] };
+    expect(Object.keys(promoted.$and[0])).toEqual(['llm_classification.classification']);
+  });
+});
+
+describe('rankPromoted', () => {
+  const row = (id: string, title: string) => ({ _id: id, publication_metadata: { title } });
+
+  it('puts a phrase match ahead of the same words apart, and both ahead of any order', () => {
+    const rows = [
+      row('any-order', 'Forest cover predicted by random sampling'),
+      row('in-order', 'A random survival forest model'),
+      row('phrase', 'A random forest classifier'),
+    ];
+    expect(rankPromoted(rows, 'random forest')).toEqual(['phrase', 'in-order', 'any-order']);
+  });
+
+  it('matches a phrase across inline markup', () => {
+    const rows = [
+      row('plain', 'Vitro studies of in something'),
+      row('marked', 'An <i>in vitro</i> assay'),
+    ];
+    expect(rankPromoted(rows, 'in vitro')[0]).toBe('marked');
+  });
+
+  it('preserves input order when nothing separates the rows -- keeps paging stable', () => {
+    const rows = [row('a', 'Alpha'), row('b', 'Beta'), row('c', 'Gamma')];
+    expect(rankPromoted(rows, 'transformer')).toEqual(['a', 'b', 'c']);
+  });
+
+  it('tolerates a missing title', () => {
+    expect(rankPromoted([{ _id: 'x' }], 'random forest')).toEqual(['x']);
   });
 });

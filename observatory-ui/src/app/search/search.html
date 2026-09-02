@@ -22,8 +22,9 @@
         <button type="submit" class="search-field-button">Search</button>
       </form>
       <p class="search-author-hint">
-        Authors are indexed as surname and initials, e.g. Farrell G. Search by surname (Farrell),
-        not a full name.
+        Authors are indexed as surname and initials — search <strong>Farrell G</strong> for that
+        author's own papers, or just <strong>Farrell</strong> for the wider set. Full names don't
+        match. Use "quotation marks" to keep words together as a phrase.
       </p>
     </div>
   </section>
@@ -97,7 +98,7 @@
             <label class="sort">
               <span>Sort</span>
               <select class="form-select" [value]="sort()" (change)="setSort($any($event.target).value)">
-                <option value="relevance">Default order</option>
+                <option value="relevance">{{ freeText() ? 'Best match' : 'Default order' }}</option>
                 <option value="year_desc">Newest first</option>
                 <option value="year_asc">Oldest first</option>
                 <option value="citations_desc">Most cited</option>

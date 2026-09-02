@@ -120,6 +120,81 @@ export function tokenizeQuery(q: string): string[] {
   return terms;
 }
 
+/** A term this short is a stray initial or article: it costs a full regex pass per document and
+ *  narrows nothing. Dropping it is what makes an author query like "Farrell G" behave -- the bare
+ *  "G" clause matched almost everything while doubling the query's cost. */
+const MIN_TERM_LENGTH = 2;
+
+/**
+ * Terms actually worth putting in the filter.
+ *
+ * Trailing sentence punctuation is stripped first, and that is load-bearing rather than cosmetic:
+ * without it "Farrell G." tokenises to ["Farrell", "G."], the two-character "G." survives the
+ * length floor, and the search becomes "surname AND a token ending in G." -- which matched 7
+ * documents where "Farrell G" matched 94. Two spellings of the same author's name have to return
+ * the same thing.
+ */
+export function searchTerms(q: string): string[] {
+  return tokenizeQuery(q)
+    .map((term) => term.replace(/[.,;:]+$/, ''))
+    .filter((term) => term.length >= MIN_TERM_LENGTH);
+}
+
+/**
+ * Word separator inside a phrase. A literal space fails on the corpus's real text: titles carry
+ * inline markup, so "in vitro" is stored as "<i>In Vitro</i>" and a plain-space phrase regex never
+ * matches it. Hyphenation ("random-forest") breaks it the same way. Measured *faster* than the
+ * naive form on the database server (1,225ms vs 1,572ms for "in vitro"), because it fails earlier on non-matches.
+ */
+const PHRASE_GAP = '(?:<[^>]*>|[\\s\\-\u2013\u2014])+';
+
+/**
+ * `\b`-anchored pattern for one term. Word-start only, so "cell" still matches "cells"/"cellular"
+ * -- measured to cut false hits like "excellent"/"parcellation" from 61,288 to 46,141 for a
+ * ~10-20% time cost. A multi-word (quoted) term becomes a markup-tolerant phrase.
+ */
+export function termPattern(term: string): string {
+  const words = term.trim().split(/\s+/).map(escapeRegex);
+  return `\\b${words.join(PHRASE_GAP)}`;
+}
+
+export interface AuthorName {
+  surname: string;
+  initials: string;
+}
+
+/**
+ * Recognises the "surname + initials" form the corpus stores authors in ("Farrell G", "Farrell G.",
+ * "Farrell, G", "Tosatto SCE") -- the exact format the search page's own hint tells users to type.
+ *
+ * The initials must be UPPERCASE in the raw input. That is what keeps ordinary two-word topical
+ * queries out: "random forest" and "single cell" are not author names, and treating them as one
+ * would spend a whole extra collection scan proving it. Lowercase "farrell g" simply falls through
+ * to the ordinary term path, which still finds the surname.
+ *
+ * A false positive here is cheap but not free: this only ever drives the promotion tier (see
+ * buildPromotedFilter), never what a search matches, so a wrong guess costs one scan and changes
+ * no results.
+ */
+const AUTHOR_QUERY_RE = /^(\p{L}[\p{L}'\u2019-]+)\s*,?\s+([A-Z]{1,4})\.?$/u;
+
+export function parseAuthorName(q: string): AuthorName | undefined {
+  const match = AUTHOR_QUERY_RE.exec(q.trim());
+  if (!match) return undefined;
+  return { surname: match[1], initials: match[2] };
+}
+
+/**
+ * Matches one author exactly within the comma-separated authors string
+ * ("Liang L, Liang H, He M, Zhang H, Ke P."). Anchored on a comma or the string edge at both ends
+ * so "Farrell G" cannot match inside another name, and allowing the initials to extend
+ * ("Farrell G" also matches "Farrell GP") the way PubMed's author search does.
+ */
+export function authorClause(name: AuthorName): FilterQuery<RecordDocument> {
+  const pattern = `(^|,\\s*)${escapeRegex(name.surname)}\\s+${escapeRegex(name.initials)}[A-Za-z]*\\.?\\s*(,|\\.?$)`;
+  return { 'publication_metadata.authors': { $regex: pattern, $options: 'i' } };
+}
+
 function parseBool(value: string | undefined): boolean | undefined {
   if (value === 'true') return true;
   if (value === 'false') return false;
@@ -226,49 +301,52 @@ function licenseInClause(license: string[]): (string | null)[] {
   return license.includes('') ? [...license, null] : license;
 }
 
-/**
- * Reproduces observatory-ui's matchesFilters() (records.service.ts) as a Mongo filter, field for
- * field -- see internal/ROADMAP.md Phase 5's filter translation table. `$in` against an array
- * field is Mongo's native any-element-matches semantics, which is exactly hasAnyOverlap().
- */
-export function buildMongoFilter(filters: ParsedFilters): FilterQuery<RecordDocument> {
-  const clauses: FilterQuery<RecordDocument>[] = [];
+const TITLE = 'publication_metadata.title';
+const ABSTRACT = 'publication_metadata.abstract';
+const AUTHORS = 'publication_metadata.authors';
 
-  // Classification goes FIRST, before the expensive free-text regex below -- measured directly
-  // against the database server: the identical filter with this clause first vs. last is 2,566ms vs. 5,809ms
-  // (more than 2x) on a zero-match query, because Mongo's un-indexed collection scan can then
-  // short-circuit the regex entirely for the majority of documents (the 464,581 non-positive ones
-  // on the default filter) via this cheap equality check first. Don't reorder this without
-  // re-measuring -- it looks like a no-op change and isn't.
-  if (filters.classification.length) {
-    clauses.push({
+/**
+ * Classification goes FIRST, before the expensive free-text regex -- measured directly against
+ * the database server: the identical filter with this clause first vs. last is 2,566ms vs. 5,809ms (more than
+ * 2x) on a zero-match query, because Mongo's un-indexed collection scan can then short-circuit the
+ * regex entirely for the majority of documents (the 464,581 non-positive ones on the default
+ * filter) via this cheap equality check first. Don't reorder this without re-measuring -- it looks
+ * like a no-op change and isn't.
+ */
+function classificationClauses(filters: ParsedFilters): FilterQuery<RecordDocument>[] {
+  if (!filters.classification.length) return [];
+  return [
+    {
       'llm_classification.classification':
         filters.classification.length === 1
           ? { $eq: filters.classification[0] }
           : { $in: filters.classification },
-    });
-  }
+    },
+  ];
+}
 
-  if (filters.q) {
-    // AND-of-terms, not one literal phrase: a user typing "random forest sepsis" means all three
-    // words, in any order, not that exact substring -- which appears in zero documents and used
-    // to force a full 827k-document scan to prove it (measured: 5.1s, then a false-positive 503
-    // from MongoUnavailableFilter for what was actually a healthy, just-slow query). Each term is
-    // \b-anchored (word-start only, so "cell" still matches "cells"/"cellular") -- measured to cut
-    // false hits like "excellent"/"parcellation" matching "cell" from 61,288 to 46,141, for a
-    // ~10-20% time cost. Matches across title, abstract AND author -- author search is new here.
-    const terms = tokenizeQuery(filters.q);
-    for (const term of terms) {
-      const pattern = `\\b${escapeRegex(term)}`;
-      clauses.push({
-        $or: [
-          { 'publication_metadata.title': { $regex: pattern, $options: 'i' } },
-          { 'publication_metadata.abstract': { $regex: pattern, $options: 'i' } },
-          { 'publication_metadata.authors': { $regex: pattern, $options: 'i' } },
-        ],
-      });
-    }
-  }
+/**
+ * AND-of-terms, not one literal phrase: a user typing "random forest sepsis" means all three words,
+ * in any order, not that exact substring -- which appears in zero documents and used to force a
+ * full 827k-document scan to prove it (measured: 5.1s, then a false-positive 503 for what was
+ * actually a healthy, just-slow query). Matches across title, abstract AND author.
+ */
+function freeTextClauses(filters: ParsedFilters): FilterQuery<RecordDocument>[] {
+  if (!filters.q) return [];
+  return searchTerms(filters.q).map((term) => {
+    const pattern = termPattern(term);
+    return {
+      $or: [
+        { [TITLE]: { $regex: pattern, $options: 'i' } },
+        { [ABSTRACT]: { $regex: pattern, $options: 'i' } },
+        { [AUTHORS]: { $regex: pattern, $options: 'i' } },
+      ],
+    };
+  });
+}
+
+function structuredClauses(filters: ParsedFilters): FilterQuery<RecordDocument>[] {
+  const clauses: FilterQuery<RecordDocument>[] = [];
 
   if (filters.openAccess !== undefined)
     clauses.push({ 'source.access.open_access': filters.openAccess });
@@ -328,7 +406,93 @@ export function buildMongoFilter(filters: ParsedFilters): FilterQuery<RecordDocu
     clauses.push({ 'content_filters.model_type': { $in: filters.modelType } });
   if (filters.enrichedOnly) clauses.push({ 'llm_enrichment.provider': { $ne: null } });
 
+  return clauses;
+}
+
+/**
+ * Reproduces observatory-ui's matchesFilters() (records.service.ts) as a Mongo filter, field for
+ * field -- see internal/ROADMAP.md Phase 5's filter translation table. `$in` against an array
+ * field is Mongo's native any-element-matches semantics, which is exactly hasAnyOverlap().
+ */
+export function buildMongoFilter(filters: ParsedFilters): FilterQuery<RecordDocument> {
+  const clauses = [
+    ...classificationClauses(filters),
+    ...freeTextClauses(filters),
+    ...structuredClauses(filters),
+  ];
   return clauses.length ? { $and: clauses } : {};
+}
+
+/**
+ * The narrower "these are the ones you actually meant" tier, used to order results -- never to
+ * decide which ones match. It is a strict subset of buildMongoFilter's result for the same
+ * filters, which is what lets RecordsService put it in front of the rest without changing the
+ * total or breaking pagination.
+ *
+ * Two shapes, in priority order:
+ *  - an author-shaped query ("Farrell G") promotes exact author matches;
+ *  - anything else promotes documents carrying every term IN THE TITLE, on the reasoning that
+ *    people search by title and an incidental abstract mention is a weaker signal.
+ *
+ * Returns null when there is nothing to promote, and the caller skips the extra query entirely.
+ */
+export function buildPromotedFilter(filters: ParsedFilters): FilterQuery<RecordDocument> | null {
+  if (!filters.q) return null;
+
+  const author = parseAuthorName(filters.q);
+  const promoted: FilterQuery<RecordDocument>[] = author
+    ? [authorClause(author)]
+    : searchTerms(filters.q).map((term) => ({
+        [TITLE]: { $regex: termPattern(term), $options: 'i' },
+      }));
+
+  if (!promoted.length) return null;
+
+  return {
+    $and: [...classificationClauses(filters), ...promoted, ...structuredClauses(filters)],
+  };
+}
+
+/** One promoted candidate, as the projection in RecordsService fetches it. */
+export interface PromotedRow {
+  _id: string;
+  publication_metadata?: { title?: string | null };
+}
+
+/**
+ * Orders the promoted tier. Everything reaching here already matched the promoted filter, so this
+ * only separates degrees of "matched in the title":
+ *
+ *   0  the words appear together as a phrase   ("Random Forest classifier")
+ *   1  the words appear in order, apart        ("Random survival Forest models")
+ *   2  the words appear, in any order          ("Forest cover from Random sampling")
+ *
+ * Single-term and author-shaped queries have nothing to separate, so everything ties at 0 and the
+ * `_id` tiebreak carries the order. That tiebreak is what makes this stable across pages: the same
+ * query always produces the same sequence, so page 2 never repeats or drops a row from page 1.
+ *
+ * Costs nothing extra at the database: the promoted query already projects the title, so this is
+ * pure in-process work over at most PROMOTE_CAP rows.
+ */
+export function rankPromoted(rows: PromotedRow[], q: string): string[] {
+  const terms = searchTerms(q);
+  const ranked = rows.map((row, index) => ({
+    id: row._id,
+    index,
+    rank: promotedRank(row.publication_metadata?.title ?? '', terms),
+  }));
+  // Sort is not guaranteed stable across every engine for large inputs, so the original index is
+  // an explicit tiebreak rather than an assumption -- rows arrive in _id order.
+  ranked.sort((a, b) => a.rank - b.rank || a.index - b.index);
+  return ranked.map((r) => r.id);
+}
+
+function promotedRank(title: string, terms: string[]): number {
+  if (terms.length < 2 || !title) return 0;
+  if (new RegExp(termPattern(terms.join(' ')), 'i').test(title)) return 0;
+  // Titles are ~150 characters, so the wildcard between terms is bounded and cheap.
+  if (new RegExp(terms.map(termPattern).join('[\\s\\S]*'), 'i').test(title)) return 1;
+  return 2;
 }
 
 /**

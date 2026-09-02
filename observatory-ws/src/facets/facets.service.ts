@@ -31,6 +31,56 @@ const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;
 
 /**
+ * How well a suggestion matches what was typed. Lower is better.
+ *
+ * A plain `includes()` filter over an alphabetically-sorted cache put
+ * "2013 ACM Conference on Bioinformatics, Computational Biology and Biomedical Informatics..."
+ * above "Bioinformatics (Oxford, England)" for the query "bioinformatics" -- the journal whose name
+ * *starts* with what you typed was pushed off the end of the list by conference proceedings that
+ * merely contain the word. Nobody searches that way.
+ *
+ * Prefix beats word-start beats substring, which is how every typeahead people are used to behaves.
+ */
+function matchRank(value: string, needle: string): number {
+  const lower = value.toLowerCase();
+  if (lower === needle) return 0;
+  if (lower.startsWith(needle)) return 1;
+  // \b would also fire mid-token on punctuation ("proteomics & bioinformatics" is a genuine
+  // word-start, "non-bioinformatics" is not); a space or an opening bracket is the honest test.
+  if (new RegExp(`[\\s([]${escapeForRegex(needle)}`).test(lower)) return 2;
+  return 3;
+}
+
+function escapeForRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Ranks the cached values against what was typed and returns the best `limit` of them.
+ *
+ * Exported (and pure) so the ordering rules can be tested directly -- FacetsService itself needs a
+ * Mongo model and a boot-time cache load, neither of which says anything about ranking.
+ */
+export function rankFacetMatches(values: string[], needle: string, limit: number): string[] {
+  // Rank, then take -- taking first would discard the best matches before they were compared.
+  // The cache is a few thousand entries per field, so ranking all of them costs nothing measurable
+  // and still needs no Mongo round trip per keystroke.
+  return values
+    .filter((v) => v.toLowerCase().includes(needle))
+    .map((value) => ({ value, rank: matchRank(value, needle) }))
+    .sort(
+      (a, b) =>
+        a.rank - b.rank ||
+        // Shorter first at equal rank: "Bioinformatics (Oxford, England)" is a likelier target
+        // than "Bioinformatics Research and Applications11th International Symposium...".
+        a.value.length - b.value.length ||
+        a.value.localeCompare(b.value),
+    )
+    .slice(0, limit)
+    .map((m) => m.value);
+}
+
+/**
  * Builds an in-memory value cache per allowed field at boot, scoped to the positives, and serves
  * every /api/facets/:field request from it -- no Mongo round trip per keystroke. Cardinalities are
  * small enough (a few thousand journals, a few dozen publication types, single-digit licences)
@@ -83,8 +133,8 @@ export class FacetsService implements OnModuleInit {
     }
     const values = this.cache.get(field) ?? [];
     const needle = q?.trim().toLowerCase();
-    const matches = needle ? values.filter((v) => v.toLowerCase().includes(needle)) : values;
     const boundedLimit = Math.min(Math.max(limit ?? DEFAULT_LIMIT, 1), MAX_LIMIT);
-    return matches.slice(0, boundedLimit);
+    if (!needle) return values.slice(0, boundedLimit);
+    return rankFacetMatches(values, needle, boundedLimit);
   }
 }
