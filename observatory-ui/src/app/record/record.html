@@ -18,7 +18,7 @@
       <!-- ============ Core facts first ============ -->
       <header class="record-header">
         <a routerLink="/search" class="back-link">← Back to search</a>
-        <h1>{{ rec().publication_metadata.title }}</h1>
+        <h1 [innerHTML]="titleHtml()"></h1>
         @if (rec().publication_metadata.authors) {
           <p class="authors">{{ rec().publication_metadata.authors }}</p>
         }

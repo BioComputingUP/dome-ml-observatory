@@ -1,6 +1,10 @@
 <article class="result-card">
   <h3 class="card-title">
-    <a [routerLink]="['/record', record()._id]">{{ title() }}</a>
+    @if (hasTitle()) {
+      <a [routerLink]="['/record', record()._id]" [innerHTML]="titleHtml()"></a>
+    } @else {
+      <a [routerLink]="['/record', record()._id]">Untitled record</a>
+    }
   </h3>
 
   <dl class="card-facts">

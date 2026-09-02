@@ -5,6 +5,7 @@
  */
 
 import { AiMlRecord } from './record.model';
+import { plainText } from './rich-text';
 
 /** "Liang L, Liang H, He M." -> ["Liang L", "Liang H", "He M"] */
 export function splitAuthors(authors: string | null): string[] {
@@ -22,7 +23,7 @@ export function bibtexKey(record: AiMlRecord): string {
   const surname = firstAuthor.split(/\s+/)[0].toLowerCase().replace(/[^a-z]/g, '') || 'anon';
   const year = record.publication_metadata.year ?? 'nd';
   const firstWord =
-    record.publication_metadata.title
+    plainText(record.publication_metadata.title)
       ?.split(/\s+/)
       .find((w) => w.replace(/[^a-zA-Z]/g, '').length > 3)
       ?.toLowerCase()
@@ -40,7 +41,9 @@ export function toBibtex(record: AiMlRecord): string {
 
   const authors = splitAuthors(pm.authors);
   if (authors.length) lines.push(`  author = {${authors.map(bibtexEscape).join(' and ')}},`);
-  if (pm.title) lines.push(`  title = {${bibtexEscape(pm.title)}},`);
+  // Titles carry inline markup ("non-<i>ab initio</i>"); strip it rather than shipping tags
+  // into someone's reference manager. Same reason the RIS branch below strips its abstract.
+  if (pm.title) lines.push(`  title = {${bibtexEscape(plainText(pm.title))}},`);
   if (pm.journal) lines.push(`  journal = {${bibtexEscape(pm.journal)}},`);
   if (pm.year != null) lines.push(`  year = {${pm.year}},`);
   if (record.identifiers.doi) lines.push(`  doi = {${record.identifiers.doi}},`);
@@ -57,12 +60,12 @@ export function toRis(record: AiMlRecord): string {
   const pm = record.publication_metadata;
   const lines: string[] = ['TY  - JOUR'];
   for (const author of splitAuthors(pm.authors)) lines.push(`AU  - ${author}`);
-  if (pm.title) lines.push(`TI  - ${pm.title}`);
+  if (pm.title) lines.push(`TI  - ${plainText(pm.title)}`);
   if (pm.journal) lines.push(`JO  - ${pm.journal}`);
   if (pm.year != null) lines.push(`PY  - ${pm.year}`);
   if (record.identifiers.doi) lines.push(`DO  - ${record.identifiers.doi}`);
   if (record.identifiers.pmid) lines.push(`AN  - ${record.identifiers.pmid}`);
-  if (pm.abstract) lines.push(`AB  - ${pm.abstract.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()}`);
+  if (pm.abstract) lines.push(`AB  - ${plainText(pm.abstract)}`);
   lines.push('ER  - ');
   return lines.join('\n');
 }

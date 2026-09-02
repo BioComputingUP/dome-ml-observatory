@@ -1,11 +1,11 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map, switchMap, catchError, of } from 'rxjs';
 import { RecordsService } from '../core/records.service';
 import { AiMlRecord, isEnriched } from '../core/record.model';
 import { modelTypeLabel } from '../core/facet-labels';
+import { plainText, richAbstract, richTitle } from '../core/rich-text';
 import { outboundLinks, plannedLinks } from '../core/outbound-links';
 import { toBibtex, toRis } from '../core/citation';
 import { StatusBadge } from '../shared/status-badge/status-badge';
@@ -21,7 +21,6 @@ import { CopyButton } from '../shared/copy-button/copy-button';
 export class RecordPage {
   private readonly route = inject(ActivatedRoute);
   private readonly records = inject(RecordsService);
-  private readonly sanitizer = inject(DomSanitizer);
 
   readonly loading = signal(true);
   /** True when the last lookup failed for a reason other than "no such record" (a 503, a network
@@ -61,14 +60,19 @@ export class RecordPage {
   });
 
   /**
-   * Corpus abstracts carry structural markup ("<h4>Background</h4>"), so rendering it keeps the
-   * structure the authors wrote. Angular's sanitizer strips anything executable first -- this is
-   * curated corpus text, not user input, but sanitising costs nothing and removes the question.
+   * Corpus titles and abstracts carry markup -- inline emphasis in both, structured-abstract
+   * headings and bare repository URLs in abstracts. rich-text.ts normalises that (JATS mapped to
+   * HTML, attributes dropped, URLs linkified); binding the plain string with [innerHTML] then lets
+   * Angular's own sanitizer run over the result.
+   *
+   * This deliberately does NOT use bypassSecurityTrustHtml, which the previous version called while
+   * its comment claimed the sanitizer was running -- bypassing is precisely what stops it running.
    */
-  readonly abstractHtml = computed<SafeHtml | null>(() => {
-    const abstract = this.rec()?.publication_metadata.abstract;
-    return abstract ? this.sanitizer.bypassSecurityTrustHtml(abstract) : null;
-  });
+  readonly titleHtml = computed(() => richTitle(this.rec().publication_metadata.title));
+  readonly titleText = computed(
+    () => plainText(this.rec().publication_metadata.title) || 'Untitled record',
+  );
+  readonly abstractHtml = computed(() => richAbstract(this.rec()?.publication_metadata.abstract));
 
   readonly links = computed(() => outboundLinks(this.rec()));
   readonly planned = computed(() => plannedLinks(this.rec()));

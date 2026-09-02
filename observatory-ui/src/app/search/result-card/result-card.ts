@@ -2,6 +2,7 @@ import { Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AiMlRecord } from '../../core/record.model';
 import { outboundLinks } from '../../core/outbound-links';
+import { richTitle, truncatePlain } from '../../core/rich-text';
 import { StatusBadge } from '../../shared/status-badge/status-badge';
 import { OutboundLinkItem } from '../../shared/outbound-link/outbound-link';
 
@@ -16,16 +17,17 @@ const SNIPPET_LENGTH = 240;
 export class ResultCard {
   readonly record = input.required<AiMlRecord>();
 
-  readonly title = computed(() => this.record().publication_metadata.title ?? 'Untitled record');
+  /** Titles carry inline emphasis ("non-<i>ab initio</i>", "CO<sub>2</sub>"), which interpolation
+   *  rendered as literal tag text. Bound with [innerHTML] so Angular sanitises the normalised
+   *  string -- see core/rich-text.ts. */
+  readonly titleHtml = computed(() => richTitle(this.record().publication_metadata.title));
+  readonly hasTitle = computed(() => Boolean(this.record().publication_metadata.title));
 
-  /** Abstracts carry embedded markup ("<h4>Background</h4>"); the card wants plain text, so tags
-   *  are stripped rather than rendered. The record page renders the structured version. */
-  readonly snippet = computed(() => {
-    const abstract = this.record().publication_metadata.abstract;
-    if (!abstract) return null;
-    const plain = abstract.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-    return plain.length > SNIPPET_LENGTH ? `${plain.slice(0, SNIPPET_LENGTH).trimEnd()}…` : plain;
-  });
+  /** The card wants plain text: truncating the marked-up abstract would cut mid-tag. Truncation
+   *  therefore happens on the stripped form. The record page renders the structured version. */
+  readonly snippet = computed(() =>
+    truncatePlain(this.record().publication_metadata.abstract, SNIPPET_LENGTH),
+  );
 
   // Labelled rows (Authors: / Journal: / Year:) rather than one "authors · journal · year" line
   // -- each is its own fact and reads faster labelled than run together, and it's what makes
