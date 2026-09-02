@@ -1,18 +1,14 @@
-.page {
-  padding-bottom: var(--space-8);
-
-  h1 {
-    color: var(--observatory-primary);
-    font-weight: 700;
-    font-size: var(--font-size-2xl);
-    margin-bottom: var(--space-3);
-  }
+h1 {
+  color: var(--observatory-primary);
+  font-weight: 700;
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--space-3);
 }
 
 .lead {
   max-width: 780px;
   font-size: var(--font-size-lg);
-  color: #444;
+  color: var(--status-neutral);
   margin-bottom: var(--space-4);
   line-height: 1.6;
 }
@@ -23,9 +19,6 @@
   gap: var(--space-5);
   font-size: var(--font-size-sm);
   color: var(--status-neutral);
-  margin-bottom: var(--space-6);
-  padding-bottom: var(--space-4);
-  border-bottom: 1px solid var(--status-neutral-bg);
 }
 
 .dir {
@@ -34,15 +27,12 @@
   margin-right: var(--space-1);
 }
 
-.section {
-  margin-bottom: var(--space-7);
-
-  h2 {
-    font-size: var(--font-size-xl);
-    font-weight: 700;
-    color: var(--observatory-primary);
-    margin-bottom: var(--space-2);
-  }
+// .card-header (icon+heading row, resets h2 margin to 0) comes from the shared primitives in
+// styles.scss.
+h2 {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--observatory-primary);
 }
 
 .section-note {
@@ -57,12 +47,11 @@
   gap: var(--space-4);
 }
 
-.card {
-  border: 1px solid var(--status-neutral-bg);
-  border-radius: var(--radius-md);
-  padding: var(--space-5);
-  box-shadow: var(--shadow-sm);
-
+// .info-panel (background/border/radius/shadow) comes from the shared primitives in styles.scss
+// -- named .integration-card rather than the bare .card also defined there, since that one
+// carries a hover-lift affordance meant for genuinely clickable cards, and these are static
+// informational articles with no link of their own.
+.integration-card {
   &.planned {
     opacity: 0.85;
     border-style: dashed;
@@ -124,11 +113,6 @@
 }
 
 .protocol-tag {
-  background-color: #eef2f7;
-  color: #445;
-}
-
-.planned-tag {
-  background-color: var(--status-undeterminable-bg);
-  color: var(--status-undeterminable);
+  background-color: var(--surface-sunken);
+  color: var(--observatory-primary);
 }

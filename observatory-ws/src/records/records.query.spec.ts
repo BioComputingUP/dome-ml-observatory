@@ -76,6 +76,11 @@ describe('parseSearchParams', () => {
     expect(parseSearchParams({ sort: 'year_desc' }).sort).toBe('year_desc');
   });
 
+  it('accepts both citation sort values', () => {
+    expect(parseSearchParams({ sort: 'citations_desc' }).sort).toBe('citations_desc');
+    expect(parseSearchParams({ sort: 'citations_asc' }).sort).toBe('citations_asc');
+  });
+
   it('parses every remaining list filter (d1-mt, jrnl, lic, kw, ptype)', () => {
     const { filters } = parseSearchParams({
       lic: 'cc by',
@@ -330,6 +335,20 @@ describe('buildSortSpec', () => {
     });
     expect(buildSortSpec('year_asc')).toEqual({
       'publication_metadata.year': 1,
+      _id: 1,
+    });
+  });
+
+  // citation_count is null for every record today (schema v1.1.0 forward-compatible placeholder)
+  // -- this pins the wiring, not a claim that citation counts exist yet. See records.query.ts's
+  // buildSortSpec doc comment.
+  it('adds an _id tiebreak to both citation sorts', () => {
+    expect(buildSortSpec('citations_desc')).toEqual({
+      'publication_metadata.citation_count': -1,
+      _id: 1,
+    });
+    expect(buildSortSpec('citations_asc')).toEqual({
+      'publication_metadata.citation_count': 1,
       _id: 1,
     });
   });

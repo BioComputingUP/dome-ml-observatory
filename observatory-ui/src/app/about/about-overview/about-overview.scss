@@ -1,42 +1,60 @@
-.page {
-  max-width: 860px;
-  margin-inline: auto;
-
-  h1 {
-    color: var(--observatory-primary);
-    font-weight: 700;
-    font-size: var(--font-size-2xl);
-    margin-bottom: var(--space-4);
-  }
+h1 {
+  color: var(--observatory-primary);
+  font-weight: 700;
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--space-4);
 }
 
 .lead {
   font-size: var(--font-size-lg);
-  color: #444;
+  color: var(--status-neutral);
   line-height: 1.6;
   margin-bottom: var(--space-4);
 }
 
-.section {
-  padding-top: var(--space-5);
-  margin-bottom: var(--space-5);
-  border-top: 1px solid var(--status-neutral-bg);
+// .card-header (icon+heading row) comes from the shared primitives in styles.scss. Each of these
+// used to be its own white .info-panel card boxed on a white page -- now every band below IS the
+// section, alternating background with its neighbour (styles.scss's .band system) instead.
+.card-header {
+  margin-bottom: var(--space-4);
 
   h2 {
     font-size: var(--font-size-lg);
     font-weight: 700;
     color: var(--observatory-primary);
-    margin-bottom: var(--space-3);
   }
 }
 
 .method-steps {
-  padding-left: var(--space-5);
+  list-style: none;
+  margin: 0;
+  padding: 0;
 
   li {
-    margin-bottom: var(--space-3);
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+    margin-bottom: var(--space-4);
     line-height: 1.6;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
+}
+
+.step-num {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-pill);
+  background-color: rgba(246, 103, 41, 0.12);
+  color: var(--observatory-accent-dark);
+  font-weight: 700;
+  font-size: var(--font-size-sm);
 }
 
 .limitations {
@@ -45,11 +63,11 @@
   li {
     margin-bottom: var(--space-2);
     line-height: 1.6;
-    color: #444;
+    color: var(--status-neutral);
   }
 
   code {
-    background: #f2f4f5;
+    background: var(--surface-sunken);
     padding: 1px 6px;
     border-radius: var(--radius-sm);
   }
@@ -61,10 +79,15 @@
 
   li {
     padding: var(--space-4) 0;
-    border-bottom: 1px solid #f2f4f5;
+    border-bottom: 1px solid var(--border-default);
 
     &:last-child {
       border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    &:first-child {
+      padding-top: 0;
     }
   }
 }
@@ -77,13 +100,6 @@
 
 .pub-meta {
   font-size: var(--font-size-sm);
-  color: #444;
+  color: var(--status-neutral);
   margin-bottom: var(--space-2);
-}
-
-.cta-section {
-  background-color: #f8f9fa;
-  border-radius: var(--radius-md);
-  padding: var(--space-5);
-  border-top: none;
 }

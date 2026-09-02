@@ -5,7 +5,13 @@ import { Observable, Subject, debounceTime } from 'rxjs';
 import { SearchFilters } from '../../core/records.service';
 import { FacetStats } from '../../core/facet-stats.model';
 import { Vocabularies } from '../../core/vocab.model';
+import { PUB_TYPE_LABELS, pubTypeLabel, sentenceCase } from '../../core/facet-labels';
 import { FacetTypeahead } from '../facet-typeahead/facet-typeahead';
+
+/** https://www.nlm.nih.gov/mesh/meshhome.html -- the canonical browser for the MeSH vocabulary
+ *  these headings are drawn from. Not deep-linkable per-term (MeSH's own UI needs a descriptor ID
+ *  we don't carry), so every heading points at the same home page rather than a broken search. */
+const MESH_BROWSER_URL = 'https://www.nlm.nih.gov/mesh/meshhome.html';
 
 /** Values a user can pick for licence. '' is the single "no licence recorded" bucket -- the
  *  underlying data has both null and '' for this, unified in RecordsService, and it would be
@@ -32,8 +38,18 @@ export class FacetPanel {
 
   readonly filtersChange = output<Partial<SearchFilters>>();
 
+  /** Bound to the template so it can call the shared label helpers directly. */
+  readonly pubTypeLabel = pubTypeLabel;
+  readonly sentenceCase = sentenceCase;
+  readonly meshBrowserUrl = MESH_BROWSER_URL;
+
   readonly licences = computed(() => this.stats()?.facets.license.map((l) => l.value) ?? []);
-  readonly pubTypes = computed(() => this.stats()?.facets.pubTypes.map((p) => p.value) ?? []);
+  /** Filtered to the curated allowlist (facet-labels.ts) -- the API facet carries 89 distinct
+   *  values, most of them raw MeSH grant-source tags or Crossref/JATS duplicates that are
+   *  meaningless as a filter. Order is preserved from the API's descending-count order. */
+  readonly pubTypes = computed(
+    () => this.stats()?.facets.pubTypes.map((p) => p.value).filter((v) => v in PUB_TYPE_LABELS) ?? [],
+  );
   /** The searchable years -- scoped to the positives (observatory-ws's /api/stats now computes
    *  this from classification: positive only, not the whole corpus), so these are the actual
    *  bounds of what a search on this page can return, e.g. 1963-2027, not the corpus-wide
@@ -170,17 +186,5 @@ export class FacetPanel {
 
   setList(key: keyof SearchFilters, values: string[]): void {
     this.filtersChange.emit({ [key]: values.length ? values : undefined } as Partial<SearchFilters>);
-  }
-
-  /** Author keywords has no typeahead at all (observatory-ws deliberately excludes it -- 694,411
-   *  distinct values on the live corpus, see facets.service.ts): comma-separated free text,
-   *  exact match against content_filters.keywords_author, same split/trim rule as the URL param
-   *  itself (search-params.ts's splitList). */
-  setKeywords(raw: string): void {
-    const values = raw
-      .split(',')
-      .map((v) => v.trim())
-      .filter(Boolean);
-    this.filtersChange.emit({ keywordsAuthor: values.length ? values : undefined });
   }
 }

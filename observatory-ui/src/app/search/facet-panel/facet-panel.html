@@ -76,14 +76,14 @@
             <span class="active-value">{{ countOf('pubTypes') }}</span>
           }
         </summary>
-        @for (pt of pubTypes().slice(0, 8); track pt) {
+        @for (pt of pubTypes(); track pt) {
           <label class="check">
             <input
               type="checkbox"
               [checked]="isChecked(filters().pubTypes, pt)"
               (change)="toggleInList('pubTypes', pt, $any($event.target).checked)"
             />
-            <span>{{ pt }}</span>
+            <span>{{ pubTypeLabel(pt) }}</span>
             @if (countFor('pubTypes', pt); as n) {
               <span class="count">{{ n | number }}</span>
             }
@@ -98,22 +98,8 @@
         placeholder="Search MeSH terms…"
         [searchFn]="meshSearch()"
         [selected]="filters().meshHeadings ?? []"
+        [labelHref]="meshBrowserUrl"
         (selectionChange)="setList('meshHeadings', $event)"
-      />
-    </div>
-
-    <div class="facet-block author-keywords">
-      <label for="fp-kw">
-        Author keywords
-        <span class="facet-hint">Comma-separated, exact match — no suggestions for this field.</span>
-      </label>
-      <input
-        id="fp-kw"
-        type="text"
-        class="form-control"
-        placeholder="e.g. random forest, sepsis"
-        [value]="(filters().keywordsAuthor ?? []).join(', ')"
-        (change)="setKeywords($any($event.target).value)"
       />
     </div>
 
@@ -148,8 +134,10 @@
 
     <p class="coverage-banner">
       <strong>Enrichment in progress.</strong>
-      {{ enrichedCount() | number }} of {{ positiveCount() | number }} AI/ML papers enriched so far.
-      These filters only match enriched records.
+      <span class="coverage-count">
+        {{ enrichedCount() | number }} of {{ positiveCount() | number }} AI/ML papers enriched so far.
+        These filters only match enriched records.
+      </span>
     </p>
 
     <label class="check">
@@ -208,7 +196,7 @@
               [checked]="isChecked(filters().learningParadigm, p)"
               (change)="toggleInList('learningParadigm', p, $any($event.target).checked)"
             />
-            <span>{{ p }}</span>
+            <span>{{ sentenceCase(p) }}</span>
             @if (countFor('learningParadigm', p); as n) {
               <span class="count">{{ n | number }}</span>
             }
@@ -227,7 +215,7 @@
               [checked]="isChecked(filters().modelFamily, f)"
               (change)="toggleInList('modelFamily', f, $any($event.target).checked)"
             />
-            <span>{{ f }}</span>
+            <span>{{ sentenceCase(f) }}</span>
             @if (countFor('modelFamily', f); as n) {
               <span class="count">{{ n | number }}</span>
             }

@@ -4,7 +4,7 @@ import { escapeRegex } from '../common/escape-regex';
 import { RecordDocument } from './schemas/record.schema';
 
 export type Classification = 'positive' | 'negative' | 'undeterminable';
-export type SortOrder = 'relevance' | 'year_desc' | 'year_asc';
+export type SortOrder = 'relevance' | 'year_desc' | 'year_asc' | 'citations_desc' | 'citations_asc';
 
 /**
  * Every query param observatory-ui's search-params.ts (queryToParams) can emit, as the raw
@@ -78,7 +78,13 @@ export const DEFAULT_CLASSIFICATION: Classification[] = ['positive'];
  *  the database server's un-indexed collection structurally unreachable -- see internal/ROADMAP.md Phase 5. */
 export const MAX_RESULT_WINDOW = 10_000;
 
-const SORTS: SortOrder[] = ['relevance', 'year_desc', 'year_asc'];
+const SORTS: SortOrder[] = [
+  'relevance',
+  'year_desc',
+  'year_asc',
+  'citations_desc',
+  'citations_asc',
+];
 const CLASSIFICATIONS: Classification[] = ['positive', 'negative', 'undeterminable'];
 
 function splitList(value: string | undefined): string[] | undefined {
@@ -328,12 +334,21 @@ export function buildMongoFilter(filters: ParsedFilters): FilterQuery<RecordDocu
 /**
  * `relevance` sorts by `_id` -- the only indexed field on the database server's Content collection today (see
  * internal/ROADMAP.md). It's not a relevance ranking (there is none server-side yet), just a
- * stable, deep-pagination-safe default ordering; year sorts add `_id` as a tiebreak so page 2
- * never repeats or skips a row that shares a year with the page boundary.
+ * stable, deep-pagination-safe default ordering; year and citation sorts add `_id` as a tiebreak
+ * so page 2 never repeats or skips a row that shares a sort value with the page boundary.
+ *
+ * `citations_desc`/`citations_asc` sort on `publication_metadata.citation_count`, which is
+ * `null` for every record in the corpus today (schema v1.1.0: a forward-compatible placeholder,
+ * never populated upstream -- see record.model.ts). Wired now so the option works the moment that
+ * field is populated in a future data update, without needing a second code change then; until
+ * then every document ties on `null` and the `_id` tiebreak makes the result identical to
+ * `relevance`.
  */
 export function buildSortSpec(sort: SortOrder): Record<string, 1 | -1> {
   if (sort === 'year_desc') return { 'publication_metadata.year': -1, _id: 1 };
   if (sort === 'year_asc') return { 'publication_metadata.year': 1, _id: 1 };
+  if (sort === 'citations_desc') return { 'publication_metadata.citation_count': -1, _id: 1 };
+  if (sort === 'citations_asc') return { 'publication_metadata.citation_count': 1, _id: 1 };
   return { _id: 1 };
 }
 

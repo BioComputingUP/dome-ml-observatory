@@ -21,6 +21,11 @@
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
+  // Brackets the navbar the same way footer.scss's border-top brackets the footer -- the
+  // navbar's blue now ends in an overt line instead of just stopping, so a coloured band
+  // immediately below it (search's hero, home's hero) reads as a distinct surface starting right
+  // there rather than being separated from the navbar by a dead white gap.
+  border-bottom: 3px solid var(--observatory-accent);
 
   // Only apply the wide fixed side padding once there's actually room for it -- confirmed clean
   // at 1440px+ in screenshots. The 1200-1400px zone below gets its own tighter padding instead

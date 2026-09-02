@@ -23,6 +23,7 @@ const STATS_WITH_YEAR_RANGE: FacetStats = {
     enriched: 0,
   },
   corpus_provenance: 'test fixture',
+  last_classification: { timestamp: '2026-08-27T22:44:56.416265+00:00', enriched_timestamp: null },
   search_space: {
     total: 355_558,
     fulltextAvailable: 229_325,

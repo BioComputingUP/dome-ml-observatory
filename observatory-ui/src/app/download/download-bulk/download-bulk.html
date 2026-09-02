@@ -1,20 +1,24 @@
-<div class="page">
-  <h1>Bulk download</h1>
-  <p class="lead">
-    The whole dataset in one file. This is the recommended way to take the corpus at scale —
-    it's faster for you than paging an API, and it keeps load off the service for everyone else.
-  </p>
+<div class="band">
+  <div class="band-inner">
+    <h1>Bulk download</h1>
+    <p class="lead">
+      The whole dataset in one file. This is the recommended way to take the corpus at scale —
+      it's faster for you than paging an API, and it keeps load off the service for everyone else.
+    </p>
 
-  <div class="notice" role="status">
-    <strong>The archive is not published yet.</strong>
-    Bulk releases will be deposited to Zenodo with a citable DOI. Until the first deposit exists,
-    use <a routerLink="/search">Search</a> to explore the corpus, or the
-    <a routerLink="/download/api">API</a> for programmatic access to specific records.
+    <div class="notice" role="status">
+      <strong>The archive is not published yet.</strong>
+      Bulk releases will be deposited to Zenodo with a citable DOI. Until the first deposit exists,
+      use <a routerLink="/search">Search</a> to explore the corpus, or the
+      <a routerLink="/download/api">API</a> for programmatic access to specific records.
+    </div>
   </div>
+</div>
 
-  <section class="section">
+<div class="band band-tint">
+  <div class="band-inner">
     <h2>What a release will contain</h2>
-    <dl class="spec">
+    <dl class="spec info-panel">
       <div class="spec-row">
         <dt>Format</dt>
         <dd>
@@ -45,14 +49,16 @@
         </dd>
       </div>
     </dl>
-  </section>
+  </div>
+</div>
 
-  <section class="section">
+<div class="band">
+  <div class="band-inner">
     <h2>Citing a release</h2>
     <p>
       Cite the specific Zenodo DOI of the release you used, not just the site — that's what makes
       an analysis reproducible, since the corpus grows with each update. Citation details will
       appear here once the first deposit is made.
     </p>
-  </section>
+  </div>
 </div>

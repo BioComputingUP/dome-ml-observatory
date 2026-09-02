@@ -4,27 +4,27 @@
        with no separation; this gives the search itself a clear, distinct "start here" surface. -->
   <section class="search-header">
     <div class="container-wide">
-      <h1 class="page-title">Search AI/ML Methods Papers</h1>
+      <h1 class="page-title">Search for AI/ML Methods Publications</h1>
 
-      <form class="search-form" role="search" (submit)="$event.preventDefault()">
+      <form class="search-form" role="search" (submit)="$event.preventDefault(); searchNow(queryInput.value)">
         <label for="q" class="visually-hidden">Search titles, abstracts and authors</label>
-        <input
-          id="q"
-          type="search"
-          class="form-control search-input"
-          placeholder="Search titles, abstracts and authors — e.g. random forest sepsis, Tosatto"
-          [value]="freeText()"
-          (input)="onTextInput($any($event.target).value)"
-        />
+        <div class="search-field">
+          <i class="icon icon-common icon-search search-field-icon" aria-hidden="true"></i>
+          <input
+            id="q"
+            #queryInput
+            type="search"
+            placeholder="Search titles, abstracts and authors"
+            [value]="freeText()"
+            (input)="onTextInput($any($event.target).value)"
+          />
+        </div>
+        <button type="submit" class="search-field-button">Search</button>
       </form>
       <p class="search-author-hint">
-        Authors are indexed as recorded — surname and initials, e.g. “Tosatto SCE” — so search by
-        surname (“Tosatto”), not a full name.
+        Authors are indexed as surname and initials, e.g. Farrell G. Search by surname (Farrell),
+        not a full name.
       </p>
-
-      @if (searchSpaceNote()) {
-        <p class="search-space-note">{{ searchSpaceNote() }}</p>
-      }
     </div>
   </section>
 
@@ -83,15 +83,35 @@
             }
           </p>
 
-          <label class="sort">
-            <span>Sort</span>
-            <select class="form-select" [value]="sort()" (change)="setSort($any($event.target).value)">
-              <option value="relevance">Default order</option>
-              <option value="year_desc">Newest first</option>
-              <option value="year_asc">Oldest first</option>
-            </select>
-          </label>
+          <div class="results-bar-controls">
+            @if (lastClassifiedAt(); as lastClassifiedAt) {
+              <a
+                routerLink="/about/processing"
+                class="last-classified"
+                title="How and when the corpus is classified and enriched"
+              >
+                Last classified {{ lastClassifiedAt | date: 'd MMM y' }}
+              </a>
+            }
+
+            <label class="sort">
+              <span>Sort</span>
+              <select class="form-select" [value]="sort()" (change)="setSort($any($event.target).value)">
+                <option value="relevance">Default order</option>
+                <option value="year_desc">Newest first</option>
+                <option value="year_asc">Oldest first</option>
+                <option value="citations_desc">Most cited</option>
+                <option value="citations_asc">Fewest cited</option>
+              </select>
+            </label>
+          </div>
         </div>
+
+        @if (citationSortActive()) {
+          <p class="citation-sort-note">
+            Citation counts are not yet populated for this corpus; this ordering takes effect once they land.
+          </p>
+        }
 
         @if (error()) {
           <div class="state error" role="alert">

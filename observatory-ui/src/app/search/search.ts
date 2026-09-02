@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, catchError, of, map } from 'rxjs';
@@ -12,8 +12,18 @@ import {
   DEFAULT_CLASSIFICATION,
   MAX_RESULT_WINDOW,
 } from '../core/search-params';
+import { pubTypeLabel, sentenceCase } from '../core/facet-labels';
 import { FacetPanel } from './facet-panel/facet-panel';
 import { ResultCard } from './result-card/result-card';
+
+/** Per-facet display transform for chip labels -- must match what the facet panel itself renders
+ *  for the same value (facet-labels.ts), or a chip and its corresponding checkbox would disagree
+ *  on what a filter is called. Facets not listed here render the raw value unchanged. */
+const CHIP_VALUE_DISPLAY: Partial<Record<keyof SearchFilters, (v: string) => string>> = {
+  pubTypes: pubTypeLabel,
+  learningParadigm: sentenceCase,
+  modelFamily: sentenceCase,
+};
 
 interface ActiveChip {
   label: string;
@@ -24,7 +34,7 @@ const EMPTY_RESULT: SearchResult = { items: [], total: 0, totalRelation: 'eq', p
 
 @Component({
   selector: 'app-search',
-  imports: [FacetPanel, ResultCard, DecimalPipe, RouterLink],
+  imports: [FacetPanel, ResultCard, DecimalPipe, DatePipe, RouterLink],
   templateUrl: './search.html',
   styleUrl: './search.scss',
 })
@@ -111,20 +121,15 @@ export class Search {
   readonly stats = toSignal(this.records.getFacetStats().pipe(catchError(() => of(null))), { initialValue: null });
   readonly vocab = toSignal(this.records.getVocabularies().pipe(catchError(() => of(null))), { initialValue: null });
 
-  /** The permanent "what am I actually searching" line under the search bar -- the corpus is
-   *  827,061 screened publications, but the useful, searchable resource is the 355,558 AI/ML
-   *  methods papers; this says so plainly rather than leaving classification as a silent, hidden
-   *  filter (see facet-panel.ts, which no longer offers it as a control at all). Numbers come
-   *  live from /api/stats, not hardcoded, so they never drift from what a search can return. */
-  readonly searchSpaceNote = computed(() => {
-    const corpus = this.stats()?.corpus;
-    if (!corpus) return null;
-    return (
-      `Searching ${corpus.positive.toLocaleString()} AI/ML methods papers. ` +
-      `A further ${corpus.negative.toLocaleString()} screened publications were classified as ` +
-      `not AI/ML methods and are excluded.`
-    );
-  });
+  /** Live from /api/stats -- not hardcoded, not the cache's own `generated` timestamp (which
+   *  changes every 24h regardless of whether the corpus moved). Absent until a classification run
+   *  has actually landed, so the results-bar link only renders once there's a real date to show. */
+  readonly lastClassifiedAt = computed(() => this.stats()?.last_classification?.timestamp ?? null);
+
+  /** citation_count is null for every record today (see records.service.ts's SortOrder doc) --
+   *  this drives the honest "not yet populated" note rather than letting the sort look like it
+   *  did nothing for no reason. */
+  readonly citationSortActive = computed(() => this.sort() === 'citations_desc' || this.sort() === 'citations_asc');
 
   /** Bound once, passed down to FacetPanel -> FacetTypeahead: journal and MeSH have no controlled
    *  vocabulary and too many corpus-wide values to ship as a static list, so their typeaheads
@@ -171,9 +176,11 @@ export class Search {
       { key: 'modelType', label: 'Method' },
     ];
     for (const facet of listFacets) {
+      const display = CHIP_VALUE_DISPLAY[facet.key];
       for (const value of (f[facet.key] as string[] | undefined) ?? []) {
+        const shown = value ? (display ? display(value) : value) : 'none recorded';
         chips.push({
-          label: `${facet.label}: ${value || 'none recorded'}`,
+          label: `${facet.label}: ${shown}`,
           clear: {
             [facet.key]: ((f[facet.key] as string[]).filter((v) => v !== value) as string[]).length
               ? (f[facet.key] as string[]).filter((v) => v !== value)
@@ -198,6 +205,13 @@ export class Search {
 
   onTextInput(value: string): void {
     this.textInput$.next(value);
+  }
+
+  /** Search button / Enter key: skip the 500ms debounce above and navigate on the field's
+   *  current value right away -- an accelerator for anyone who'd rather not wait it out, not a
+   *  replacement for live search (typing alone still searches on its own). */
+  searchNow(value: string): void {
+    this.navigate({ ...this.query(), q: value || undefined, page: 1 }, true);
   }
 
   applyFilters(patch: Partial<SearchFilters>): void {

@@ -146,7 +146,22 @@ textarea:focus-visible,
   padding-top: var(--space-6);
   padding-bottom: var(--space-8);
 
-  @media (max-width: 1299px) {
+  // Tablet / narrow-desktop tier. The symmetric 3-column grid above needs two 240px flanks
+  // just to keep the content column centred, which stops leaving a workable content width
+  // well before the pill strip below is actually necessary. Here we deliberately trade that
+  // flank-symmetry trick for a plain nav+content pair -- but centre the PAIR as a unit (via
+  // max-width + auto margins) rather than letting a bare 2-column grid stretch content to
+  // fill whatever's left of the viewport, which is exactly the "content reads off-centre"
+  // problem the 3-column grid above exists to avoid.
+  @media (max-width: 1299px) and (min-width: 992px) {
+    grid-template-columns: 240px minmax(0, 1fr);
+    max-width: 940px; // 240px nav + column-gap + a still-comfortable content column
+    margin-inline: auto;
+  }
+
+  // Mobile / narrow tablet: no room left for a persistent 240px nav column at all -- side-nav
+  // switches to the horizontal pill strip instead (side-nav.scss), so collapse to one column.
+  @media (max-width: 991px) {
     grid-template-columns: 1fr;
     padding-top: var(--space-5);
   }
@@ -155,11 +170,262 @@ textarea:focus-visible,
 app-side-nav {
   grid-column: 1;
   justify-self: end;
+
+  // Reset the grid placement from above -- left over, a grid item can still take its "grid
+  // area" as a static-position/track fallback even once the template it was placed against
+  // no longer has that many columns, leaving it shrink-wrapped and pinned to one side instead
+  // of spanning the single collapsed column. This is the exact bug that produced the reported
+  // "bunches on the left with a band of white dead space": .section-content below was making
+  // the same mistake, each leaving a phantom implicit column for the other. Spanning every
+  // column and stretching makes the pill strip's containing block the full row again, same as
+  // the equivalent fix already applied to the navbar's own mobile collapse (navbar.scss).
+  @media (max-width: 991px) {
+    grid-column: 1 / -1;
+    justify-self: stretch;
+  }
 }
 
 .section-content {
   grid-column: 2;
   min-width: 0;
+
+  @media (max-width: 991px) {
+    grid-column: 1 / -1;
+  }
+}
+
+// ============ Section colour blocking (About / Download sub-pages) ============
+// Reuses home.scss's own mechanism (an outer element owns the background and vertical padding, an
+// inner element owns the reading measure) rather than the near-invisible
+// `border-top: 1px solid var(--status-neutral-bg)` hairline these pages used before, or boxing
+// every section in a white `.card` on an already-white page. Bands butt directly against each
+// other with no margin/radius between them -- the colour change IS the divider. `.band-inner` is
+// narrower than `.section-content`'s 1040px track deliberately (860px, matching the reading
+// measure these pages already used) so long lines of prose stay comfortable while the colour
+// itself still reaches the full column width.
+.band {
+  padding: var(--space-7) var(--space-5);
+}
+
+.band-tint {
+  background-color: var(--surface-page);
+}
+
+.band-sunken {
+  background-color: var(--surface-sunken);
+}
+
+.band-brand {
+  background-color: var(--observatory-primary);
+  color: #ffffff;
+
+  h1, h2, h3 {
+    color: #ffffff;
+  }
+}
+
+.band-accent {
+  background-color: rgba(246, 103, 41, 0.06);
+}
+
+// Amber "not live yet" tone -- same token as the rest of the site's undeterminable/pending
+// status colour (badge-chip.tone-undeterminable, the enrichment coverage banner), reused here for
+// a whole section that's describing something planned rather than active.
+.band-warn {
+  background-color: var(--status-undeterminable-bg);
+}
+
+.band-inner {
+  max-width: 860px;
+  margin-inline: auto;
+}
+
+// ============ Shared card / icon-badge / status-pill / search-field primitives ============
+// Used by About and Download so their pages pick up the home page's card language (rounded
+// icon badges, restrained accent, hover lift instead of underlines) from one place, rather
+// than each page hand-rolling its own near-identical .page/.section CSS the way both already
+// did before this. Deliberately kept separate from home.scss's own .route-card/.family-card
+// (which look the same) rather than merging the two -- home just shipped and shouldn't have to
+// take on risk from a shared-class refactor to get pages that come after it caught up.
+.card {
+  display: block;
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5);
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: var(--observatory-accent);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+
+  h2,
+  h3 {
+    margin: 0;
+  }
+}
+
+.icon-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background-color: var(--status-neutral-bg);
+  color: var(--observatory-primary);
+  font-size: 1.3rem;
+
+  .card:hover & {
+    background-color: var(--observatory-accent);
+    color: #ffffff;
+  }
+}
+
+.card-cta {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--observatory-accent);
+
+  i {
+    margin-left: var(--space-1);
+    font-size: 0.75em;
+    transition: transform 0.2s ease;
+  }
+
+  .card:hover & i {
+    transform: translateX(3px);
+  }
+}
+
+// Pill-shaped search field + button, matching home.scss's .hero-search-field/.hero-search-button
+// so the search page's own search bar looks and behaves like the one on the home page instead
+// of a plain Bootstrap .form-control. Kept separate from home.scss's copy (same visual spec,
+// different class names) rather than having home.html switch to these -- home just shipped and
+// a mechanical class-rename refactor there isn't worth the risk for what's currently a single
+// other consumer.
+.search-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: var(--surface-card);
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  box-shadow: inset 0 1px 2px rgba(16, 51, 68, 0.06);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:focus-within {
+    border-color: var(--observatory-accent);
+    box-shadow:
+      inset 0 1px 2px rgba(16, 51, 68, 0.06),
+      0 0 0 3px rgba(246, 103, 41, 0.18);
+  }
+}
+
+.search-field-icon {
+  flex-shrink: 0;
+  margin-left: var(--space-4);
+  color: var(--status-neutral);
+  font-size: 0.95em;
+}
+
+.search-field input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-base);
+  color: var(--observatory-primary);
+  outline: none;
+
+  &::placeholder {
+    color: #7b858e;
+  }
+
+  // Placeholder is example text, not a value -- reads as blank the moment the field is focused,
+  // rather than lingering until the first character is typed.
+  &:focus::placeholder {
+    color: transparent;
+  }
+
+  &:focus-visible {
+    outline: none; // the field owns focus treatment via :focus-within above
+  }
+}
+
+// Sibling of .search-field, not nested inside it -- mirrors home's .hero-search-button sitting
+// beside .hero-search-field as its own pill, just at a smaller scale for this page.
+.search-field-button {
+  flex-shrink: 0;
+  padding: var(--space-2) var(--space-5);
+  border: 2px solid var(--observatory-accent);
+  border-radius: var(--radius-pill);
+  background-color: var(--observatory-accent);
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: var(--observatory-accent-dark);
+    border-color: var(--observatory-accent-dark);
+  }
+}
+
+// Status pill, tone-coded consistently with search/record pages (shared/status-badge/status-
+// badge.scss defines the same classes for its own record-derived badges; duplicated here rather
+// than imported since that component's API is hardwired to AiMlRecord fields and isn't reusable
+// for a plain caption like "Planned" or "Not yet active" -- only its visual pattern is shared).
+// Tone choice matters: neutral grey for a normal/inactive state, amber for "not yet live" -- not
+// red, since "not yet built" is a roadmap fact, not an error.
+.badge-chip {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  white-space: nowrap;
+
+  &.tone-positive {
+    background-color: var(--status-positive-bg);
+    color: var(--status-positive);
+  }
+
+  &.tone-undeterminable {
+    background-color: var(--status-undeterminable-bg);
+    color: var(--status-undeterminable);
+  }
+
+  &.tone-neutral {
+    background-color: var(--status-neutral-bg);
+    color: var(--status-neutral);
+  }
+}
+
+// Same surface as .card, minus the hover lift -- for content that just needs visual
+// separation from the page (an API endpoint reference, a spec table) but isn't itself
+// clickable. Reusing .card's hover motion there would read as a false affordance.
+.info-panel {
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5);
 }
 
 .visually-hidden-focusable {

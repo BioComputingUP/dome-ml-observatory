@@ -66,6 +66,11 @@ describe('search-params', () => {
     it('ignores a whitespace-only free-text query', () => {
       expect(paramsToQuery({ q: '   ' }).q).toBeUndefined();
     });
+
+    it('round-trips both citation sort values', () => {
+      expect(paramsToQuery({ sort: 'citations_desc' }).sort).toBe('citations_desc');
+      expect(paramsToQuery({ sort: 'citations_asc' }).sort).toBe('citations_asc');
+    });
   });
 
   describe('queryToParams', () => {

@@ -3,7 +3,11 @@
 .hero {
   position: relative;
   overflow: hidden;
-  padding: var(--space-8) 0 var(--space-7);
+  // Top padding cut from --space-8 (4rem) to --space-6 (2rem): main no longer carries Bootstrap's
+  // pt-4 (see app.html), and the navbar now brackets itself with an orange border-bottom
+  // (navbar.scss) -- the headline should sit close under that line, not float in a white gap.
+  // Bottom padding kept at --space-7 to still buffer against the blue metrics band below.
+  padding: var(--space-6) 0 var(--space-7);
   text-align: center;
   // A faint radial wash so the hero stops reading as flat white, independent of the constellation.
   background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(16, 51, 68, 0.04), transparent 70%);

@@ -1,47 +1,69 @@
-<div class="page">
-  <h1>About DOME Observatory</h1>
+<div class="band">
+  <div class="band-inner">
+    <h1>About DOME Observatory</h1>
 
-  <p class="lead">
-    DOME Observatory is a searchable database of AI/ML methods-paper metadata: records screened
-    and classified by LLM processing, validated by human expert curation, and cross-linked to
-    <a href="https://europepmc.org/" target="_blank" rel="noopener">Europe PMC</a>. It maps the
-    AI/ML landscape in the life sciences at scale — currently
-    {{ corpus().total | number }} publications screened,
-    {{ corpus().positive | number }} of them classified as genuine AI/ML methods papers.
-  </p>
+    <p class="lead">
+      DOME Observatory is a searchable database of AI/ML methods-paper metadata: records screened
+      and classified by LLM processing, validated by human expert curation, and cross-linked to
+      <a href="https://europepmc.org/" target="_blank" rel="noopener">Europe PMC</a>. It maps the
+      AI/ML landscape in the life sciences at scale — currently
+      {{ corpus().total | number }} publications screened,
+      {{ corpus().positive | number }} of them classified as genuine AI/ML methods papers.
+    </p>
 
-  <p>
-    It is part of the <a href="https://dome-ml.org/" target="_blank" rel="noopener">DOME-ML</a>
-    family, alongside the
-    <a href="https://registry.dome-ml.org/" target="_blank" rel="noopener">DOME Registry</a>, and
-    is developed by the UNIPD Biocomputing Lab.
-  </p>
+    <p>
+      It is part of the <a href="https://dome-ml.org/" target="_blank" rel="noopener">DOME-ML</a>
+      family, alongside the
+      <a href="https://registry.dome-ml.org/" target="_blank" rel="noopener">DOME Registry</a>, and
+      is developed by the UNIPD Biocomputing Lab.
+    </p>
+  </div>
+</div>
 
-  <section class="section">
-    <h2>How the corpus is built</h2>
+<div class="band band-tint">
+  <div class="band-inner">
+    <div class="card-header">
+      <span class="icon-badge"><i class="icon icon-common icon-cogs" aria-hidden="true"></i></span>
+      <h2>How the corpus is built</h2>
+    </div>
     <ol class="method-steps">
       <li>
-        <strong>Screening.</strong> Every publication is classified by an LLM as
-        <em>positive</em> (a genuine AI/ML methods paper), <em>negative</em>, or
-        <em>undeterminable</em>, with a written rationale kept alongside the verdict. This
-        decision is machine-generated — see <a routerLink="/record/8b720ad0-8cf7-5304-a016-3b15feae2815">any record page</a>
-        for the model, prompt version and rationale behind a given classification.
+        <span class="step-num" aria-hidden="true">1</span>
+        <div>
+          <strong>Screening.</strong> Every publication is classified by an LLM as
+          <em>positive</em> (a genuine AI/ML methods paper), <em>negative</em>, or
+          <em>undeterminable</em>, with a written rationale kept alongside the verdict. This
+          decision is machine-generated — see <a routerLink="/record/8b720ad0-8cf7-5304-a016-3b15feae2815">any record page</a>
+          for the model, prompt version and rationale behind a given classification, or the
+          <a routerLink="/about/processing">processing timeline</a> for when each batch ran.
+        </div>
       </li>
       <li>
-        <strong>Enrichment.</strong> A separate pass tags positively-classified records with EDAM
-        domain, learning paradigm, model family and model type, drawn from published controlled
-        vocabularies. This is the more expensive step and is still in progress across the corpus —
-        the <a routerLink="/search">search page</a> shows live coverage.
+        <span class="step-num" aria-hidden="true">2</span>
+        <div>
+          <strong>Enrichment.</strong> A separate pass tags positively-classified records with EDAM
+          domain, learning paradigm, model family and model type, drawn from published controlled
+          vocabularies. This is the more expensive step and is still in progress across the corpus —
+          the <a routerLink="/search">search page</a> shows live coverage.
+        </div>
       </li>
       <li>
-        <strong>Human validation.</strong> Curators review classification and enrichment output
-        against the source criteria, rather than accepting model output uncritically.
+        <span class="step-num" aria-hidden="true">3</span>
+        <div>
+          <strong>Human validation.</strong> Curators review classification and enrichment output
+          against the source criteria, rather than accepting model output uncritically.
+        </div>
       </li>
     </ol>
-  </section>
+  </div>
+</div>
 
-  <section class="section">
-    <h2>Limitations, stated plainly</h2>
+<div class="band">
+  <div class="band-inner">
+    <div class="card-header">
+      <span class="icon-badge"><i class="icon icon-common icon-filter" aria-hidden="true"></i></span>
+      <h2>Limitations, stated plainly</h2>
+    </div>
     <ul class="limitations">
       <li>Classification and enrichment are LLM-generated. They are validated, not infallible —
         treat a record's tags as a strong starting point, not ground truth.</li>
@@ -53,10 +75,15 @@
         not yet populated for any record — see <a routerLink="/about/integrations">Integrations</a> for
         what's live versus planned.</li>
     </ul>
-  </section>
+  </div>
+</div>
 
-  <section class="section">
-    <h2>Key publications</h2>
+<div class="band band-tint">
+  <div class="band-inner">
+    <div class="card-header">
+      <span class="icon-badge"><i class="icon icon-common icon-book" aria-hidden="true"></i></span>
+      <h2>Key publications</h2>
+    </div>
     <ul class="publications">
       <li>
         <p class="pub-title">DOME: recommendations for machine learning validation in biology</p>
@@ -81,13 +108,18 @@
         </a>
       </li>
     </ul>
-  </section>
+  </div>
+</div>
 
-  <section class="section cta-section">
-    <h2>Get involved</h2>
+<div class="band band-accent">
+  <div class="band-inner">
+    <div class="card-header">
+      <span class="icon-badge"><i class="icon icon-common icon-github" aria-hidden="true"></i></span>
+      <h2>Get involved</h2>
+    </div>
     <p>
       <a href="https://github.com/BioComputingUP/dome-ml-observatory" target="_blank" rel="noopener">Contribute on GitHub</a>.
       Who's behind this and how to cite the data are in the menu on the left.
     </p>
-  </section>
+  </div>
 </div>

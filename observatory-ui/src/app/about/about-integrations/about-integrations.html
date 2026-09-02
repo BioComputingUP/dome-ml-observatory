@@ -1,22 +1,29 @@
-<div class="page">
-  <h1>Integrations &amp; standards</h1>
-  <p class="lead">
-    DOME Observatory is a discovery hub — its value is in connecting to the resources that hold
-    the full article, code, data and structured annotations. Below is what's live today and
-    what's planned, each marked by direction and protocol.
-  </p>
+<div class="band">
+  <div class="band-inner">
+    <h1>Integrations &amp; standards</h1>
+    <p class="lead">
+      DOME Observatory is a discovery hub — its value is in connecting to the resources that hold
+      the full article, code, data and structured annotations. Below is what's live today and
+      what's planned, each marked by direction and protocol.
+    </p>
 
-  <div class="legend">
-    <span><span class="dir">→</span> we point out — a one-way link from a record to another resource</span>
-    <span><span class="dir">⇄</span> bidirectional — data flows both ways once built</span>
+    <div class="legend">
+      <span><span class="dir">→</span> we point out — a one-way link from a record to another resource</span>
+      <span><span class="dir">⇄</span> bidirectional — data flows both ways once built</span>
+    </div>
   </div>
+</div>
 
-  <section class="section">
-    <h2>Live</h2>
+<div class="band band-tint">
+  <div class="band-inner">
+    <div class="card-header">
+      <span class="icon-badge"><i class="icon icon-common icon-database" aria-hidden="true"></i></span>
+      <h2>Live</h2>
+    </div>
     <div class="cards">
       @for (i of integrations; track i.name) {
         @if (i.status === 'live') {
-          <article class="card">
+          <article class="integration-card info-panel">
             <header>
               <h3>{{ i.name }}</h3>
               <div class="tags">
@@ -36,10 +43,15 @@
         }
       }
     </div>
-  </section>
+  </div>
+</div>
 
-  <section class="section">
-    <h2>Planned</h2>
+<div class="band">
+  <div class="band-inner">
+    <div class="card-header">
+      <span class="icon-badge"><i class="icon icon-common icon-calendar" aria-hidden="true"></i></span>
+      <h2>Planned</h2>
+    </div>
     <p class="section-note">
       Reserved in the schema or roadmapped, not yet live. Listed openly so the direction of travel
       is visible, not just the finished state.
@@ -47,13 +59,13 @@
     <div class="cards">
       @for (i of integrations; track i.name) {
         @if (i.status === 'planned') {
-          <article class="card planned">
+          <article class="integration-card info-panel planned">
             <header>
               <h3>{{ i.name }}</h3>
               <div class="tags">
                 <span class="tag dir-tag">{{ i.direction === 'both' ? '⇄' : '→' }}</span>
                 <span class="tag protocol-tag">{{ i.protocol }}</span>
-                <span class="tag planned-tag">Planned</span>
+                <span class="badge-chip tone-undeterminable">Planned</span>
               </div>
             </header>
             <dl>
@@ -68,5 +80,5 @@
         }
       }
     </div>
-  </section>
+  </div>
 </div>

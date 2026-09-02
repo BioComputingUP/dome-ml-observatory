@@ -164,6 +164,7 @@ describe('RecordsService', () => {
         records_counted: 827_061,
         corpus: { total: 827_061, positive: 355_558, negative: 464_581, undeterminable: 6_922, openAccess: 548_412, fulltextAvailable: 615_151, enriched: 0 },
         corpus_provenance: 'test',
+        last_classification: { timestamp: '2026-08-27T22:44:56.416265+00:00', enriched_timestamp: null },
         search_space: { total: 355_558, fulltextAvailable: 229_325, openAccess: 204_335, enriched: 0, yearRange: { min: 1963, max: 2027 } },
         facets: { classification: [], license: [], pubTypes: [], domainTier1: [], learningParadigm: [], modelFamily: [], yearRange: null },
       };

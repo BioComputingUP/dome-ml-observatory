@@ -31,6 +31,10 @@ export class FacetTypeahead {
   readonly placeholder = input<string>('Type to search…');
   /** Undefined means unlimited. */
   readonly maxSelections = input<number | undefined>(undefined);
+  /** When set, the label renders as an external link to this URL instead of plain text --
+   *  currently only MeSH headings uses this, linking to the NLM MeSH browser. Left unset for
+   *  every other facet, which have no equivalent external home to point at. */
+  readonly labelHref = input<string | null>(null);
   /** Set for the remote-search facets (journal, MeSH); left null for local, vocabulary-backed
    *  ones. See the class doc above. */
   readonly searchFn = input<((q: string) => Observable<string[]>) | null>(null);

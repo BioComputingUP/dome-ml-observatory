@@ -1,13 +1,8 @@
-.page {
-  max-width: 900px;
-  margin-inline: auto;
-
-  h1 {
-    color: var(--observatory-primary);
-    font-weight: 700;
-    font-size: var(--font-size-2xl);
-    margin-bottom: var(--space-4);
-  }
+h1 {
+  color: var(--observatory-primary);
+  font-weight: 700;
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--space-4);
 }
 
 .notice {
@@ -27,21 +22,33 @@
 
 .lead {
   font-size: var(--font-size-lg);
-  color: #444;
+  color: var(--status-neutral);
   margin-bottom: var(--space-5);
   line-height: 1.6;
 }
 
-.section {
-  padding-top: var(--space-5);
-  margin-bottom: var(--space-5);
-  border-top: 1px solid var(--status-neutral-bg);
+h2 {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--observatory-primary);
+  margin-bottom: var(--space-4);
+}
 
-  h2 {
+// Give each endpoint real presence instead of just another hairline-separated text block -- this
+// is the "no colour, all white, undifferentiated" part of the page the redesign targets.
+// .info-panel (background/border/radius/shadow) comes from the shared primitives in styles.scss.
+.endpoint {
+  margin-bottom: var(--space-4);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  h3 {
     display: flex;
     align-items: center;
     gap: var(--space-3);
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-base);
     font-weight: 700;
     color: var(--observatory-primary);
     margin-bottom: var(--space-3);
@@ -49,7 +56,7 @@
     code {
       font-size: var(--font-size-base);
       font-weight: 600;
-      color: #222;
+      color: var(--observatory-primary);
     }
   }
 }
@@ -84,7 +91,7 @@
   td {
     text-align: left;
     padding: var(--space-2) var(--space-3);
-    border-bottom: 1px solid var(--status-neutral-bg);
+    border-bottom: 1px solid var(--border-default);
     vertical-align: top;
   }
 
@@ -94,7 +101,7 @@
   }
 
   code {
-    background: #f2f4f5;
+    background: var(--surface-sunken);
     padding: 1px 6px;
     border-radius: var(--radius-sm);
   }

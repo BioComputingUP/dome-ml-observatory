@@ -10,6 +10,7 @@ import { SideNav, SideNavItem } from '../../shared/side-nav/side-nav';
 export class AboutLayout {
   readonly navItems: SideNavItem[] = [
     { label: 'Overview', icon: 'icon-bullseye', route: '/about' },
+    { label: 'Processing timeline', icon: 'icon-calendar', route: '/about/processing' },
     { label: 'Team', icon: 'icon-user', route: '/about/team' },
     { label: 'Integrations', icon: 'icon-sitemap', route: '/about/integrations' },
     { label: 'Licensing & Citation', icon: 'icon-copy', route: '/about/licensing' },

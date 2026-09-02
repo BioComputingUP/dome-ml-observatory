@@ -140,17 +140,26 @@ export class RecordsService {
         .exec();
     }
 
-    // Year sorts: MongoDB 4.2's find().sort() has no allowDiskUse and a 32MB in-memory sort
-    // ceiling -- confirmed failing past ~skip 9,000 on this collection (see
-    // internal/ROADMAP.md Phase 5). The aggregation pipeline below sorts only {_id, year} (a few
-    // dozen bytes/doc instead of ~3.5KB), with allowDiskUse as a second line of defence, then
-    // re-fetches the full documents by _id and restores the sorted order in JS -- measured 1.6s
-    // vs. 5.4s for sorting full documents via aggregation, and it never hits the find() ceiling.
+    // Year/citation sorts: MongoDB 4.2's find().sort() has no allowDiskUse and a 32MB in-memory
+    // sort ceiling -- confirmed failing past ~skip 9,000 on this collection (see
+    // internal/ROADMAP.md Phase 5). The aggregation pipeline below sorts only the handful of
+    // fields a non-_id sort might need (a few dozen bytes/doc instead of ~3.5KB), with
+    // allowDiskUse as a second line of defence, then re-fetches the full documents by _id and
+    // restores the sorted order in JS -- measured 1.6s vs. 5.4s for sorting full documents via
+    // aggregation, and it never hits the find() ceiling. Projecting both year and citation_count
+    // unconditionally (rather than branching on which sort is active) costs nothing measurable and
+    // keeps this one pipeline shape valid for every non-'relevance' SortOrder, present and future.
     const sortSpec = buildSortSpec(sort);
     const idRows = await this.model
       .aggregate<{ _id: string }>([
         { $match: filter },
-        { $project: { _id: 1, 'publication_metadata.year': 1 } },
+        {
+          $project: {
+            _id: 1,
+            'publication_metadata.year': 1,
+            'publication_metadata.citation_count': 1,
+          },
+        },
         { $sort: sortSpec },
         { $skip: skip },
         { $limit: limit },

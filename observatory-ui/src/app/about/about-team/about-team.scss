@@ -1,27 +1,22 @@
-.page {
-  h1 {
-    color: var(--observatory-primary);
-    font-weight: 700;
-    font-size: var(--font-size-2xl);
-    margin-bottom: var(--space-2);
-  }
+h1 {
+  color: var(--observatory-primary);
+  font-weight: 700;
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--space-2);
 }
 
 .lead {
   font-size: var(--font-size-lg);
-  color: #444;
+  color: var(--status-neutral);
   margin-bottom: var(--space-4);
 }
 
-.section {
-  margin-bottom: var(--space-7);
-
-  h2 {
-    font-size: var(--font-size-xl);
-    font-weight: 700;
-    color: var(--observatory-primary);
-    margin-bottom: var(--space-2);
-  }
+// .card-header (icon+heading row, resets h2 margin to 0) comes from the shared primitives in
+// styles.scss.
+h2 {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--observatory-primary);
 }
 
 .section-note {
@@ -37,11 +32,12 @@
   gap: var(--space-5);
 }
 
+// .info-panel (background/border/radius/shadow) comes from the shared primitives in
+// styles.scss -- not .card, since a member card isn't itself clickable (only its ORCID/GitHub
+// links are), so it shouldn't carry .card's hover-lift as a false affordance.
 .member-card {
   text-align: center;
   padding: var(--space-4);
-  border: 1px solid var(--status-neutral-bg);
-  border-radius: var(--radius-md);
 
   h3 {
     font-size: var(--font-size-base);
@@ -63,7 +59,7 @@
 .role {
   font-size: var(--font-size-sm);
   font-weight: 600;
-  color: #444;
+  color: var(--status-neutral);
   margin-bottom: var(--space-1);
   min-height: 2.6em;
 }

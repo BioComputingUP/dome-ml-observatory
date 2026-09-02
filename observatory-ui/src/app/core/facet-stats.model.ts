@@ -48,6 +48,15 @@ export interface SearchSpaceStats {
   yearRange: YearRange | null;
 }
 
+/** The real data date, as opposed to FacetStats.generated below (a cache-fill timestamp that
+ *  changes every 24h regardless of whether the corpus moved). Both are ISO-8601 strings, null
+ *  until the corresponding pass (classification / enrichment) has landed on at least one record.
+ *  Mirrors observatory-ws's stats.service.ts LastClassification. */
+export interface LastClassification {
+  timestamp: string | null;
+  enriched_timestamp: string | null;
+}
+
 export interface FacetStats {
   generated: string;
   schema_version: string;
@@ -61,6 +70,7 @@ export interface FacetStats {
   records_counted: number;
   corpus: CorpusStats;
   corpus_provenance: string;
+  last_classification: LastClassification;
   search_space: SearchSpaceStats;
   facets: {
     classification: FacetCount[];

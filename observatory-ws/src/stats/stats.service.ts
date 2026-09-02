@@ -26,6 +26,15 @@ export interface SearchSpaceStats {
   yearRange: { min: number; max: number } | null;
 }
 
+/** The real data date, as opposed to FacetStats.generated below (a cache-fill timestamp that
+ *  changes every 24h regardless of whether the corpus moved). Both timestamps are `$max` over the
+ *  corresponding llm_*.timestamp field, ISO-8601 strings that sort correctly lexically -- null
+ *  until the corresponding pass has landed on at least one record. */
+export interface LastClassification {
+  timestamp: string | null;
+  enriched_timestamp: string | null;
+}
+
 export interface FacetStats {
   generated: string;
   schema_version: string;
@@ -41,6 +50,7 @@ export interface FacetStats {
     enriched: number;
   };
   corpus_provenance: string;
+  last_classification: LastClassification;
   search_space: SearchSpaceStats;
   facets: {
     /** Corpus-wide, not positives-scoped like every other facet below -- see shapeFacetStats's
@@ -135,6 +145,8 @@ interface RawCorpusResult {
   openAccess: number;
   fulltextAvailable: number;
   enriched: number;
+  lastClassifiedAt: string | null;
+  lastEnrichedAt: string | null;
 }
 
 interface RawSearchSpaceResult {
@@ -198,6 +210,12 @@ function buildCorpusPipeline() {
             $cond: [{ $ne: ['$llm_enrichment.provider', null] }, 1, 0],
           },
         },
+        // ISO-8601 strings (e.g. "2026-08-27T22:44:56.416265+00:00") sort correctly under $max as
+        // plain string comparison -- no date parsing needed. null on every document until that
+        // record's pass has actually run, so $max naturally ignores untouched records and yields
+        // null only when NO record in the whole corpus has run through that pass yet.
+        lastClassifiedAt: { $max: '$llm_classification.timestamp' },
+        lastEnrichedAt: { $max: '$llm_enrichment.timestamp' },
       },
     },
   ];
@@ -309,6 +327,10 @@ function shapeFacetStats(
     records_counted: corpus.total,
     corpus,
     corpus_provenance: 'Computed live from dome_observatory.Content on the database server via GET /api/stats.',
+    last_classification: {
+      timestamp: rawCorpus?.lastClassifiedAt ?? null,
+      enriched_timestamp: rawCorpus?.lastEnrichedAt ?? null,
+    },
     search_space: {
       total: totals?.total ?? 0,
       fulltextAvailable: totals?.fulltextAvailable ?? 0,

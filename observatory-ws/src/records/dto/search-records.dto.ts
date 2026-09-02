@@ -122,11 +122,15 @@ export class SearchRecordsDto {
   enriched?: string;
 
   @ApiPropertyOptional({
-    enum: ['relevance', 'year_desc', 'year_asc'],
+    description:
+      'citations_desc/citations_asc sort on publication_metadata.citation_count, which is null ' +
+      'for every record in the current corpus (a forward-compatible schema placeholder) -- wired ' +
+      'now so the option works unchanged once that field is populated.',
+    enum: ['relevance', 'year_desc', 'year_asc', 'citations_desc', 'citations_asc'],
     default: 'relevance',
   })
   @IsOptional()
-  @IsIn(['relevance', 'year_desc', 'year_asc'])
+  @IsIn(['relevance', 'year_desc', 'year_asc', 'citations_desc', 'citations_asc'])
   sort?: string;
 
   @ApiPropertyOptional({ description: '1-indexed page number.', default: '1' })

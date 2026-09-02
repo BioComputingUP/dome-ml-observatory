@@ -139,28 +139,6 @@ details.facet-block {
   font-variant-numeric: tabular-nums;
 }
 
-.author-keywords {
-  label {
-    display: block;
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-    color: var(--observatory-primary);
-    margin-bottom: var(--space-2);
-  }
-
-  .facet-hint {
-    display: block;
-    font-weight: 400;
-    font-size: var(--font-size-xs);
-    color: var(--status-neutral);
-    margin-top: var(--space-1);
-  }
-
-  input {
-    font-size: var(--font-size-sm);
-  }
-}
-
 .coverage-banner {
   background-color: var(--status-undeterminable-bg);
   color: var(--status-undeterminable);
@@ -169,6 +147,11 @@ details.facet-block {
   font-size: var(--font-size-xs);
   line-height: 1.5;
   margin-bottom: var(--space-3);
+}
+
+.coverage-count {
+  display: block;
+  margin-top: var(--space-1);
 }
 
 // Year picker -- a plain text input (not type="number") with custom steppers. The browser-native

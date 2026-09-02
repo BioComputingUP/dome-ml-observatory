@@ -17,38 +17,33 @@
   font-weight: 700;
   font-size: var(--font-size-2xl);
   margin-bottom: var(--space-4);
+  text-align: center;
 }
 
+// .search-field / .search-field-icon / .search-field-button come from the shared primitives in
+// styles.scss -- the same pill-shaped field the home page hero search uses, scaled for sitting
+// above a results list instead of in a hero band.
 .search-form {
-  margin-bottom: var(--space-2);
-}
+  display: flex;
+  gap: var(--space-2);
+  max-width: 720px;
+  margin: 0 auto var(--space-2);
 
-.search-input {
-  width: 100%;
-  padding: var(--space-3) var(--space-4);
-  font-size: var(--font-size-lg);
-  border: 2px solid transparent;
-  border-radius: var(--radius-md);
-
-  &:focus-visible {
-    // Overrides the global outline-ring focus style: on the dark blue band a white input's own
-    // border is a clearer focus signal than an offset outline, which reads muddy against the
-    // adjacent dark background.
-    outline: none;
-    border-color: var(--observatory-accent);
+  @media (max-width: 575px) {
+    flex-direction: column;
   }
 }
 
-.search-author-hint {
-  margin: 0 0 var(--space-2);
-  font-size: var(--font-size-xs);
-  color: rgba(255, 255, 255, 0.75);
+.search-field {
+  flex: 1;
+  min-width: 0;
 }
 
-.search-space-note {
+.search-author-hint {
   margin: 0;
-  font-size: var(--font-size-sm);
-  color: rgba(255, 255, 255, 0.92);
+  font-size: var(--font-size-xs);
+  color: rgba(255, 255, 255, 0.75);
+  text-align: center;
 }
 
 .search-body {
@@ -170,6 +165,31 @@
   a {
     color: var(--observatory-accent);
   }
+}
+
+// Groups the last-classified link and the sort control together on the right, so .results-bar's
+// own space-between still puts the result count hard left regardless of whether the link renders.
+.results-bar-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.last-classified {
+  font-size: var(--font-size-xs);
+  color: var(--status-neutral);
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--observatory-accent);
+  }
+}
+
+.citation-sort-note {
+  font-size: var(--font-size-xs);
+  color: var(--status-neutral);
+  margin: calc(-1 * var(--space-2)) 0 var(--space-4);
 }
 
 .sort {

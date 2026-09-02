@@ -27,7 +27,11 @@ export interface SearchFilters {
   enrichedOnly?: boolean;
 }
 
-export type SortOrder = 'relevance' | 'year_desc' | 'year_asc';
+/** citations_desc/citations_asc sort on publication_metadata.citation_count, which is null for
+ *  every record in the current corpus (a forward-compatible schema placeholder) -- wired now so
+ *  the option works unchanged once that field is populated. See search.html's not-yet-populated
+ *  note, shown whenever one of these is the active sort. */
+export type SortOrder = 'relevance' | 'year_desc' | 'year_asc' | 'citations_desc' | 'citations_asc';
 
 export interface SearchQuery {
   q?: string;

@@ -1,6 +1,14 @@
 <div class="facet-typeahead">
   <label class="facet-label" [attr.for]="'ta-' + label()">
-    {{ label() }}
+    @if (labelHref(); as href) {
+      <a [href]="href" target="_blank" rel="noopener" class="facet-label-link">
+        {{ label() }}
+        <i class="icon icon-common icon-external-link-alt" aria-hidden="true"></i>
+        <span class="visually-hidden">(opens in a new tab)</span>
+      </a>
+    } @else {
+      {{ label() }}
+    }
     @if (maxSelections() !== undefined) {
       <span class="facet-cap">max {{ maxSelections() }}</span>
     }

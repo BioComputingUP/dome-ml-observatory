@@ -1,13 +1,8 @@
-.page {
-  max-width: 800px;
-  margin-inline: auto;
-
-  h1 {
-    color: var(--observatory-primary);
-    font-weight: 700;
-    font-size: var(--font-size-2xl);
-    margin-bottom: var(--space-1);
-  }
+h1 {
+  color: var(--observatory-primary);
+  font-weight: 700;
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--space-1);
 }
 
 .updated {
@@ -18,53 +13,42 @@
 
 .lead {
   font-size: var(--font-size-base);
-  color: #444;
+  color: var(--status-neutral);
   margin-bottom: var(--space-4);
   line-height: 1.6;
 }
 
-.section {
-  padding-top: var(--space-4);
-  margin-bottom: var(--space-4);
-  border-top: 1px solid var(--status-neutral-bg);
+// Nine short clauses read as heavier when each gets its own bordered card than when alternating
+// backgrounds (styles.scss's .band system, same one About/Download share) just separate them by
+// rhythm -- the "Planned" clause below additionally gets .band-warn (amber) instead of the plain
+// alternation, so "not live yet" stays called out consistently with the amber tone used elsewhere
+// on the site (badge-chip.tone-undeterminable) rather than just blending into the ambient tint.
+h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--observatory-primary);
+  margin-bottom: var(--space-3);
+}
+
+p, ul, address {
   line-height: 1.6;
+}
 
-  h2 {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    flex-wrap: wrap;
-    font-size: var(--font-size-lg);
-    font-weight: 700;
-    color: var(--observatory-primary);
-    margin-bottom: var(--space-3);
-  }
+ul {
+  padding-left: var(--space-5);
 
-  &.planned {
-    background-color: #f8f9fa;
-    border-top: none;
-    border-radius: var(--radius-md);
-    padding: var(--space-5);
-  }
-
-  ul {
-    padding-left: var(--space-5);
-
-    li {
-      margin-bottom: var(--space-2);
-    }
+  li {
+    margin-bottom: var(--space-2);
   }
 }
 
-.status-tag {
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 2px var(--space-2);
-  border-radius: var(--radius-pill);
-  background-color: var(--status-undeterminable-bg);
-  color: var(--status-undeterminable);
+.section-icon {
+  color: var(--observatory-accent);
+  font-size: 0.9em;
 }
 
 address {

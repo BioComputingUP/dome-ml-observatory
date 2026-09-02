@@ -1,4 +1,7 @@
 .record-page {
+  // main no longer carries Bootstrap's pt-4 (see app.html) -- this page has no hero/header band
+  // of its own to supply top spacing, so it needs its own now.
+  padding-top: var(--space-5);
   padding-bottom: var(--space-8);
   max-width: 900px;
 }

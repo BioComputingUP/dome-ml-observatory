@@ -28,7 +28,7 @@ export const MAX_RESULT_WINDOW = 10_000;
  */
 export const DEFAULT_CLASSIFICATION: Classification[] = ['positive'];
 
-const SORTS: SortOrder[] = ['relevance', 'year_desc', 'year_asc'];
+const SORTS: SortOrder[] = ['relevance', 'year_desc', 'year_asc', 'citations_desc', 'citations_asc'];
 const CLASSIFICATIONS: Classification[] = ['positive', 'negative', 'undeterminable'];
 
 /** Query-param names, kept short for readable/shareable URLs. */
