@@ -140,14 +140,18 @@ h2 {
   flex-wrap: wrap;
 }
 
-// Height-constrained rather than boxed square: several of these are wide wordmarks (FAIRsharing,
-// Zenodo), and forcing them into a 40x40 contain box shrank them to ~13px tall and illegible.
-// Capping height and letting width run to a maximum keeps square marks square and wordmarks
-// readable in the same row.
+// Height-constrained rather than boxed square: several of these are wide wordmarks (PMC,
+// FAIRsharing, Zenodo, DOME Registry), and forcing them into a 40x40 contain box shrank them to
+// ~13px tall and illegible. Capping height and letting width run to a maximum keeps square marks
+// square and wordmarks readable in the same row.
+//
+// max-width is 116px, not 76px: PMC's wordmark is 5.1:1, so 76px capped it at 15px tall and it was
+// still unreadable. 116px puts the widest mark here at ~23px tall. The header row wraps, so the
+// extra width costs nothing at narrow widths.
 .integration-logo {
   flex-shrink: 0;
   width: auto;
-  max-width: 76px;
+  max-width: 116px;
   height: 40px;
   object-fit: contain;
   object-position: left center;
