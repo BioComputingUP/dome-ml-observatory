@@ -34,7 +34,7 @@
             @if (i.logo) {
               <img [src]="i.logo" [alt]="i.name + ' logo'" class="integration-logo" />
             } @else {
-              <span class="integration-lettermark" aria-hidden="true">{{ i.initials || initials(i.name) }}</span>
+              <span class="integration-lettermark" aria-hidden="true">{{ initials(i.name) }}</span>
             }
             <div class="integration-title">
               <h3>{{ i.name }}</h3>
@@ -79,7 +79,7 @@
             @if (i.logo) {
               <img [src]="i.logo" [alt]="i.name + ' logo'" class="integration-logo" />
             } @else {
-              <span class="integration-lettermark" aria-hidden="true">{{ i.initials || initials(i.name) }}</span>
+              <span class="integration-lettermark" aria-hidden="true">{{ initials(i.name) }}</span>
             }
             <div class="integration-title">
               <h3>{{ i.name }}</h3>

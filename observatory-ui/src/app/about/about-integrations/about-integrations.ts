@@ -15,15 +15,14 @@ interface Integration {
    *  tile (about-integrations.html) so the grid never has a broken image -- sourced opportunistically
    *  from each service's own brand assets, not every integration has one available yet. */
   logo?: string;
-  /** Overrides the initials() fallback. Needed where the derived initials would collide (PMC and
-   *  "Publisher (DOI)" both reduce to "P") or where the service is known by an acronym its own
-   *  name doesn't spell out. */
-  initials?: string;
 }
 
 const INTEGRATIONS: Integration[] = [
   // ---- Live today ----
   {
+    // No logo: Europe PMC does not publish its wordmark as a standalone file (the site renders it
+    // inline), so this one intentionally uses the lettermark tile. Drop an asset in here if the
+    // lab has one -- nothing else needs to change.
     name: 'Europe PMC',
     status: 'live',
     direction: 'out',
@@ -40,7 +39,7 @@ const INTEGRATIONS: Integration[] = [
     what: 'PubMed Central — hosted full-text articles.',
     how: 'Records with a PMCID link to the complete open-access article and figures.',
     benefit: 'The full text, not just the metadata Observatory holds.',
-    initials: 'PMC',
+    logo: 'assets/img/pmc-logo.svg',
   },
   {
     name: 'Publisher (DOI)',
@@ -50,7 +49,7 @@ const INTEGRATIONS: Integration[] = [
     what: 'The version of record at the original publisher.',
     how: "Every record with a DOI resolves via doi.org to the publisher's page.",
     benefit: 'The canonical, citable version of the article.',
-    initials: 'DOI',
+    logo: 'assets/img/doi-logo.svg',
   },
   {
     name: 'Zenodo',
@@ -144,8 +143,8 @@ export class AboutIntegrations {
 
   /** First letter(s) for the lettermark fallback tile, shown when an integration has no logo
    *  asset yet. "DOME Registry" -> "DR" (first letter of each word, capped at 2) so multi-word
-   *  names stay legible rather than colliding on one letter. An entry's own `initials` wins over
-   *  this, for the cases where derivation would still collide. */
+   *  names stay legible rather than colliding on one letter. Only reached by entries with no logo
+   *  asset -- currently Europe PMC alone. */
   initials(name: string): string {
     return name
       .replace(/\(.*?\)/g, '')
