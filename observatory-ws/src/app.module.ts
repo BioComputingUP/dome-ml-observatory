@@ -19,9 +19,10 @@ import { StatsModule } from './stats/stats.module';
       validate,
     }),
 
-    // Generous, good-neighbour limit -- the database server hosts six other production databases and this
-    // collection has no secondary indexes yet (see internal/ROADMAP.md), so a runaway client loop
-    // is worth blocking here rather than letting it degrade the whole host.
+    // 300 req/min per IP. Sized to the shared database host's capacity: it carries several other
+    // production databases and this collection has no secondary indexes yet (see
+    // internal/ROADMAP.md), so a runaway client loop has to be capped here rather than allowed to
+    // degrade the host. Documented publicly in swagger.ts and on /download/api.
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 300 }]),
 
     MongooseModule.forRootAsync({

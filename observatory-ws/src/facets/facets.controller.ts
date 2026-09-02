@@ -1,9 +1,21 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiServiceUnavailableResponse,
+  ApiTags,
+  ApiTooManyRequestsResponse,
+} from '@nestjs/swagger';
 import { FacetsService } from './facets.service';
 import { FacetSearchDto } from './dto/facet-search.dto';
 
 @ApiTags('facets')
+@ApiTooManyRequestsResponse({
+  description: 'Rate limit exceeded (300 requests/minute/IP) -- back off and retry.',
+})
+@ApiServiceUnavailableResponse({
+  description: 'The corpus database is unreachable -- safe to retry with backoff.',
+})
 @Controller('facets')
 export class FacetsController {
   constructor(private readonly facetsService: FacetsService) {}

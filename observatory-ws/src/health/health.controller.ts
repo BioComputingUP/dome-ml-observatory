@@ -1,5 +1,5 @@
 import { Controller, Get, Inject, ServiceUnavailableException } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiServiceUnavailableResponse, ApiTags } from '@nestjs/swagger';
 import { InjectConnection } from '@nestjs/mongoose';
 import { Connection, ConnectionStates } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
@@ -22,6 +22,7 @@ export class HealthController {
    * readiness checklist item 6 and the VPN-drop verification step.
    */
   @Get()
+  @ApiOperation({ summary: 'Liveness probe. Never touches the database.' })
   liveness(): { status: 'ok' } {
     return { status: 'ok' };
   }
@@ -32,6 +33,10 @@ export class HealthController {
    * Docker HEALTHCHECK itself, which must stay liveness-only.
    */
   @Get('ready')
+  @ApiOperation({ summary: 'Readiness probe -- confirms the database connection is live.' })
+  @ApiServiceUnavailableResponse({
+    description: 'The database connection is not ready or a ping failed.',
+  })
   async readiness(): Promise<{
     status: 'ok';
     mongo: { db: string; collection: string; estimatedCount: number };
