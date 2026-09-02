@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" role="img" aria-label="OAI-PMH">
+  <title>OAI-PMH</title>
+  <!-- The Open Archives Initiative publishes no official vector logo, so this is our own mark for
+       the protocol rather than a reproduction of a brand asset. It reuses the octagonal aperture
+       and node-graph idiom from observatory_logo.svg, in the site palette, so it sits alongside
+       the real third-party logos in the integrations grid without pretending to be one:
+       a repository on the left, records harvested rightwards into an aggregator node. -->
+
+  <!-- Repository: a stack of records. -->
+  <g fill="none" stroke="#103344" stroke-width="2.4" stroke-linecap="round">
+    <rect x="6" y="22" width="24" height="36" rx="3" />
+    <line x1="12" y1="32" x2="24" y2="32" />
+    <line x1="12" y1="40" x2="24" y2="40" />
+    <line x1="12" y1="48" x2="20" y2="48" />
+  </g>
+
+  <!-- Harvest path: three records in flight, orange, gaining momentum left to right. -->
+  <g fill="#f66729">
+    <circle cx="37" cy="40" r="2.2" opacity="0.45" />
+    <circle cx="44" cy="40" r="2.6" opacity="0.7" />
+    <circle cx="51" cy="40" r="3" />
+  </g>
+
+  <!-- Aggregator: the aperture octagon, matching the family mark. -->
+  <g stroke="#103344" stroke-width="2.4" fill="none" stroke-linejoin="round">
+    <polygon points="74,40 68.4,54.1 56,59.9 43.6,54.1 38,40 43.6,25.9 56,20.1 68.4,25.9" />
+  </g>
+  <circle cx="56" cy="40" r="5" fill="#f66729" />
+</svg>

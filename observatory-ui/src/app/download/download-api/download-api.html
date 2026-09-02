@@ -1,32 +1,42 @@
 <div class="band">
   <div class="band-inner">
     <h1>API</h1>
-
-    <div class="notice" role="status">
-      <strong>In development.</strong>
-      The API is not live yet — this page documents the planned contract so integrations can be
-      designed against it now. It ships with the <code>observatory-ws</code> backend; a Swagger/
-      OpenAPI explorer will replace this static reference once it does.
-    </div>
-
     <p class="lead">
       A read-only REST API over the same corpus <a routerLink="/search">Search</a> uses. Good for
       targeted queries and small numbers of records; for the whole corpus, use
       <a routerLink="/download/bulk">bulk download</a> instead so requests stay light for everyone.
+    </p>
+
+    <div class="explorer-cta-row">
+      <a [href]="swaggerUrl" target="_blank" rel="noopener" class="cta-pill cta-pill-accent">
+        <i class="icon icon-common icon-external-link-alt" aria-hidden="true"></i>
+        Open the interactive API explorer
+      </a>
+      <a [href]="openApiSpecUrl" target="_blank" rel="noopener" class="cta-pill cta-pill-primary">
+        <i class="icon icon-common icon-code" aria-hidden="true"></i>
+        Raw OpenAPI spec
+      </a>
+    </div>
+    <p class="spec-note">
+      The API is documented as an OpenAPI 3.0 contract. The explorer is a Swagger UI rendering of
+      that same document; the raw spec is the machine-readable source, suitable for generating a
+      client.
     </p>
   </div>
 </div>
 
 <div class="band band-tint">
   <div class="band-inner">
-    <h2>Base URL</h2>
-    <pre class="code-block">https://observatory.dome-ml.org/api</pre>
+    <h2><i class="icon icon-common icon-terminal" aria-hidden="true"></i>Base URL</h2>
+    <div class="code-block-row">
+      <pre class="code-block">https://observatory.dome-ml.org/api</pre>
+    </div>
   </div>
 </div>
 
 <div class="band">
   <div class="band-inner">
-    <h2>Endpoints</h2>
+    <h2><i class="icon icon-common icon-cogs" aria-hidden="true"></i>Endpoints</h2>
     @for (endpoint of endpoints; track endpoint.path) {
       <section class="endpoint info-panel">
         <h3>
@@ -36,24 +46,26 @@
         <p>{{ endpoint.summary }}</p>
 
         @if (endpoint.params) {
-          <table class="params">
-            <thead>
-              <tr>
-                <th scope="col">Parameter</th>
-                <th scope="col">Type</th>
-                <th scope="col">Notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (p of endpoint.params; track p.name) {
+          <div class="params-scroll">
+            <table class="params">
+              <thead>
                 <tr>
-                  <td><code>{{ p.name }}</code></td>
-                  <td>{{ p.type }}</td>
-                  <td>{{ p.note }}</td>
+                  <th scope="col">Parameter</th>
+                  <th scope="col">Type</th>
+                  <th scope="col">Notes</th>
                 </tr>
-              }
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                @for (p of endpoint.params; track p.name) {
+                  <tr>
+                    <td><code>{{ p.name }}</code></td>
+                    <td>{{ p.type }}</td>
+                    <td>{{ p.note }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
         }
 
         <p class="example-label">Example response</p>
@@ -65,11 +77,29 @@
 
 <div class="band band-tint">
   <div class="band-inner">
-    <h2>Fair use</h2>
-    <p>
-      No hard rate limit is set yet, but please don't page through <code>/api/records</code> to
-      reconstruct the full corpus — that's exactly what <a routerLink="/download/bulk">bulk download</a>
-      exists to avoid, and it's faster for you too.
+    <h2><i class="icon icon-common icon-shield-alt" aria-hidden="true"></i>Fair use &amp; limits</h2>
+    <p class="limits-intro">
+      These limits are enforced server-side and apply to every client.
     </p>
+    <div class="limits-grid">
+      @for (limit of limits; track limit.title) {
+        <div class="limit-card info-panel">
+          <span class="icon-badge"><i class="icon icon-common {{ limit.icon }}" aria-hidden="true"></i></span>
+          <h3>{{ limit.title }}</h3>
+          <p class="limit-value">{{ limit.value }}</p>
+          <p class="limit-detail">{{ limit.detail }}</p>
+        </div>
+      }
+    </div>
+
+    <div class="recommendations info-panel">
+      <h3><i class="icon icon-common icon-lightbulb" aria-hidden="true"></i>Recommendations</h3>
+      <ul>
+        <li>Pulling the whole corpus? Use the <a routerLink="/download/bulk">bulk archive</a> instead of paging — it is faster for you and lighter on the service.</li>
+        <li>Request up to <code>pageSize=100</code> per call to cut down round trips.</li>
+        <li>On a <code>429</code> or <code>503</code>, back off exponentially rather than retrying immediately.</li>
+        <li>Cache <code>/api/stats</code> client-side — it only changes when the server-side cache refreshes, at most once a day.</li>
+      </ul>
+    </div>
   </div>
 </div>

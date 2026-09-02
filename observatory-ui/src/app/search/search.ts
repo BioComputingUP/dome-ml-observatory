@@ -12,7 +12,7 @@ import {
   DEFAULT_CLASSIFICATION,
   MAX_RESULT_WINDOW,
 } from '../core/search-params';
-import { pubTypeLabel, sentenceCase } from '../core/facet-labels';
+import { modelTypeLabel, pubTypeLabel, sentenceCase } from '../core/facet-labels';
 import { FacetPanel } from './facet-panel/facet-panel';
 import { ResultCard } from './result-card/result-card';
 
@@ -23,6 +23,7 @@ const CHIP_VALUE_DISPLAY: Partial<Record<keyof SearchFilters, (v: string) => str
   pubTypes: pubTypeLabel,
   learningParadigm: sentenceCase,
   modelFamily: sentenceCase,
+  modelType: modelTypeLabel,
 };
 
 interface ActiveChip {

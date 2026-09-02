@@ -13,7 +13,7 @@ p {
 }
 
 h2 {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-xl);
   font-weight: 700;
   color: var(--observatory-primary);
 }
@@ -38,4 +38,11 @@ code {
 .note {
   font-size: var(--font-size-sm);
   color: var(--status-neutral);
+
+  // The "Preprint forthcoming" chip leads the paragraph it belongs to, so it needs to sit on the
+  // text baseline rather than on the line box's top edge.
+  .badge-chip {
+    vertical-align: middle;
+    margin-right: var(--space-2);
+  }
 }

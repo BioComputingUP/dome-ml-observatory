@@ -8,47 +8,88 @@
       site is traceable.
     </p>
 
-    @if (lastClassifiedAt(); as lastClassified) {
-      <p class="last-run">
-        Corpus last classified <strong>{{ lastClassified | date: 'd MMMM y' }}</strong>, computed
-        live from the database.
-        @if (lastEnrichedAt(); as lastEnriched) {
-          Last enrichment run <strong>{{ lastEnriched | date: 'd MMMM y' }}</strong>.
-        } @else {
-          The enrichment pass has not completed a run yet.
-        }
-      </p>
-    }
+    <div class="stat-pills">
+      @if (lastClassifiedAt(); as lastClassified) {
+        <div class="stat-pill">
+          <i class="icon icon-common icon-calendar-check" aria-hidden="true"></i>
+          <div>
+            <span class="stat-pill-value">{{ lastClassified | date: 'd MMM y' }}</span>
+            <span class="stat-pill-label">Last classified</span>
+          </div>
+        </div>
+      }
+      @if (lastEnrichedAt(); as lastEnriched) {
+        <div class="stat-pill">
+          <i class="icon icon-common icon-tags" aria-hidden="true"></i>
+          <div>
+            <span class="stat-pill-value">{{ lastEnriched | date: 'd MMM y' }}</span>
+            <span class="stat-pill-label">Last enriched</span>
+          </div>
+        </div>
+      } @else {
+        <div class="stat-pill stat-pill-pending">
+          <i class="icon icon-common icon-hourglass-half" aria-hidden="true"></i>
+          <div>
+            <span class="stat-pill-value">Not yet run</span>
+            <span class="stat-pill-label">Enrichment pass</span>
+          </div>
+        </div>
+      }
+    </div>
   </div>
 </div>
 
 <div class="band band-tint">
   <div class="band-inner">
-    <h2>Round 1 — initial classification batch</h2>
+    <h2><i class="icon icon-common icon-flag-checkered" aria-hidden="true"></i>Classification rounds</h2>
+
     <div class="round-card info-panel">
+      <div class="round-header">
+        <span class="round-badge">1</span>
+        <h3>Initial classification batch</h3>
+        <span class="badge-chip tone-positive">Complete</span>
+      </div>
+
       <dl class="round-facts">
         <div>
-          <dt>Source</dt>
-          <dd>
-            <a href="https://europepmc.org/" target="_blank" rel="noopener">Europe PMC</a>
-          </dd>
+          <dt><i class="icon icon-common icon-link" aria-hidden="true"></i>Source</dt>
+          <dd><a href="https://europepmc.org/" target="_blank" rel="noopener">Europe PMC</a></dd>
         </div>
         <div>
-          <dt>Search space</dt>
+          <dt><i class="icon icon-common icon-search" aria-hidden="true"></i>Search space</dt>
           <dd>
             "Artificial intelligence" and "machine learning" as search terms, deduplicated across
             Europe PMC's full index of roughly 50 million articles.
           </dd>
         </div>
         <div>
-          <dt>Processed this round</dt>
+          <dt><i class="icon icon-common icon-database" aria-hidden="true"></i>Processed</dt>
           <dd>Approximately 850,000 candidate publications retrieved and screened.</dd>
         </div>
         <div>
-          <dt>Classification model</dt>
+          <dt><i class="icon icon-common icon-microchip" aria-hidden="true"></i>Model</dt>
           <dd>DeepSeek v4 Flash, prompt version v1.</dd>
         </div>
       </dl>
+
+      <div class="outcome-grid">
+        <div class="outcome-tile tone-positive">
+          <span class="outcome-value">{{ corpus().positive | number }}</span>
+          <span class="outcome-label">Positive</span>
+        </div>
+        <div class="outcome-tile tone-neutral">
+          <span class="outcome-value">{{ corpus().negative | number }}</span>
+          <span class="outcome-label">Negative</span>
+        </div>
+        <div class="outcome-tile tone-undeterminable">
+          <span class="outcome-value">{{ corpus().undeterminable | number }}</span>
+          <span class="outcome-label">Undeterminable</span>
+        </div>
+        <div class="outcome-tile tone-primary">
+          <span class="outcome-value">{{ corpus().total | number }}</span>
+          <span class="outcome-label">Total screened</span>
+        </div>
+      </div>
 
       <p class="round-note">
         Every publication is classified as <em>positive</em> (a genuine AI/ML methods paper),
@@ -64,52 +105,74 @@
 
 <div class="band">
   <div class="band-inner">
-    <h2>Round 1 result</h2>
+    <h2><i class="icon icon-common icon-tags" aria-hidden="true"></i>Enrichment</h2>
+
     <div class="round-card info-panel">
-      <dl class="round-facts">
+      <div class="round-header">
+        <span class="icon-badge round-badge-icon"><i class="icon icon-common icon-tags" aria-hidden="true"></i></span>
+        <h3>Domain &amp; method tagging</h3>
+        <span class="badge-chip tone-undeterminable">Not yet run</span>
+      </div>
+
+      <p class="round-intro">
+        A separate pass tags each positively-classified record with EDAM domain, learning
+        paradigm, model family and model type. This section gains its own dated fields — model,
+        prompt version and batch size — once the first enrichment batch completes.
+      </p>
+
+      <dl class="round-facts round-facts-pending">
         <div>
-          <dt>Positive</dt>
-          <dd>{{ corpus().positive | number }} publications classified as AI/ML methods papers.</dd>
+          <dt><i class="icon icon-common icon-microchip" aria-hidden="true"></i>Model</dt>
+          <dd>—</dd>
         </div>
         <div>
-          <dt>Negative</dt>
-          <dd>{{ corpus().negative | number }} publications screened out as not AI/ML methods.</dd>
+          <dt><i class="icon icon-common icon-code-branch" aria-hidden="true"></i>Prompt version</dt>
+          <dd>—</dd>
         </div>
         <div>
-          <dt>Undeterminable</dt>
-          <dd>{{ corpus().undeterminable | number }} publications held for a future pass.</dd>
+          <dt><i class="icon icon-common icon-database" aria-hidden="true"></i>Batch size</dt>
+          <dd>—</dd>
         </div>
         <div>
-          <dt>Total screened</dt>
-          <dd>{{ corpus().total | number }} publications.</dd>
+          <dt><i class="icon icon-common icon-calendar" aria-hidden="true"></i>Run date</dt>
+          <dd>—</dd>
         </div>
       </dl>
+
+      <div class="coverage">
+        <div class="coverage-header">
+          <span class="coverage-label">Enrichment coverage</span>
+          <span class="coverage-value">{{ corpus().enriched | number }} of {{ corpus().positive | number }} positive records ({{ enrichedPercent() }}%)</span>
+        </div>
+        <div class="coverage-bar">
+          <div class="coverage-bar-fill" [style.width.%]="enrichedPercent()"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
 <div class="band band-tint">
   <div class="band-inner">
-    <h2>Enrichment</h2>
-    <p>
-      A separate pass tags each positively-classified record with EDAM domain, learning paradigm,
-      model family and model type. As of the last database update,
-      <strong>{{ corpus().enriched | number }}</strong> of the
-      {{ corpus().positive | number }} positive records have been enriched. This section will gain
-      its own dated round card — model, prompt version and batch size — once the first enrichment
-      batch completes.
+    <h2><i class="icon icon-common icon-rocket" aria-hidden="true"></i>Future rounds</h2>
+    <p class="future-intro">
+      Later processing rounds will each get their own dated card above, recording the same facts:
+      source, search space, volume processed, and result. This page is updated by hand alongside
+      each round; it is not automatically generated.
     </p>
-  </div>
-</div>
-
-<div class="band band-accent">
-  <div class="band-inner">
-    <h2>Future rounds</h2>
-    <p>
-      Later processing rounds — additional Europe PMC pulls, a second pass over the
-      undeterminable set, or enrichment batches — will each get their own dated card above,
-      recording the same facts: source, search space, volume processed, and result. This page is
-      updated by hand alongside each round; it is not automatically generated.
-    </p>
+    <ul class="future-list">
+      <li>
+        <i class="icon icon-common icon-cloud-download-alt" aria-hidden="true"></i>
+        Additional Europe PMC pulls, expanding the screened corpus.
+      </li>
+      <li>
+        <i class="icon icon-common icon-redo" aria-hidden="true"></i>
+        A second pass over the undeterminable set, potentially using full text where available.
+      </li>
+      <li>
+        <i class="icon icon-common icon-tags" aria-hidden="true"></i>
+        Enrichment batches, tagging positively-classified records with domain and method.
+      </li>
+    </ul>
   </div>
 </div>

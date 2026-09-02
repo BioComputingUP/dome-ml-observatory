@@ -28,4 +28,9 @@ export class AboutProcessing {
   readonly corpus = computed(() => this.stats()?.corpus ?? this.records.getStats());
   readonly lastClassifiedAt = computed(() => this.stats()?.last_classification?.timestamp ?? null);
   readonly lastEnrichedAt = computed(() => this.stats()?.last_classification?.enriched_timestamp ?? null);
+
+  readonly enrichedPercent = computed(() => {
+    const { enriched, positive } = this.corpus();
+    return positive > 0 ? Math.round((enriched / positive) * 100) : 0;
+  });
 }

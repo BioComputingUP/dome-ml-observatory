@@ -18,7 +18,7 @@
     <ul class="selected-list">
       @for (item of selected(); track item) {
         <li class="selected-chip">
-          {{ item }}
+          {{ displayFn()(item) }}
           <button type="button" (click)="remove(item)" [attr.aria-label]="'Remove ' + item">×</button>
         </li>
       }
@@ -54,7 +54,7 @@
               [attr.aria-selected]="false"
               (click)="add(option)"
             >
-              {{ option }}
+              {{ displayFn()(option) }}
             </button>
           </li>
         }

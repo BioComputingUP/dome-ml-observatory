@@ -1,22 +1,89 @@
 <div class="band">
-  <div class="band-inner">
-    <h1>About DOME Observatory</h1>
+  <div class="band-inner hero">
+    <div class="hero-copy">
+      <h1>About DOME Observatory</h1>
 
-    <p class="lead">
-      DOME Observatory is a searchable database of AI/ML methods-paper metadata: records screened
-      and classified by LLM processing, validated by human expert curation, and cross-linked to
-      <a href="https://europepmc.org/" target="_blank" rel="noopener">Europe PMC</a>. It maps the
-      AI/ML landscape in the life sciences at scale — currently
-      {{ corpus().total | number }} publications screened,
-      {{ corpus().positive | number }} of them classified as genuine AI/ML methods papers.
-    </p>
+      <p class="lead">
+        A searchable database of AI/ML methods-paper metadata, mapping the AI/ML landscape in the
+        life sciences at scale.
+      </p>
 
-    <p>
-      It is part of the <a href="https://dome-ml.org/" target="_blank" rel="noopener">DOME-ML</a>
-      family, alongside the
-      <a href="https://registry.dome-ml.org/" target="_blank" rel="noopener">DOME Registry</a>, and
-      is developed by the UNIPD Biocomputing Lab.
-    </p>
+      <p>
+        Records are drawn from
+        <a href="https://europepmc.org/" target="_blank" rel="noopener">Europe PMC</a>, classified
+        by LLM screening, tagged against published controlled vocabularies, and validated by
+        expert human curation.
+      </p>
+
+      <p>
+        DOME Observatory is part of the
+        <a href="https://dome-ml.org/" target="_blank" rel="noopener">DOME-ML</a> family, alongside
+        the <a href="https://registry.dome-ml.org/" target="_blank" rel="noopener">DOME Registry</a>,
+        and is developed by the
+        <a href="https://biocomputingup.it/" target="_blank" rel="noopener">BioComputing UP lab</a>
+        at the University of Padua.
+      </p>
+    </div>
+
+    <!-- Hand-drawn rather than a charting library: this is a fixed five-stage pipeline, not data.
+         Geometry and palette follow assets/img/observatory_logo.svg's node-graph/aperture motif so
+         the figure reads as part of the same family as the mark in the navbar. -->
+    <figure class="hero-figure">
+      <svg
+        class="pipeline"
+        viewBox="0 0 260 400"
+        role="img"
+        aria-labelledby="pipeline-title pipeline-desc"
+      >
+        <title id="pipeline-title">How DOME Observatory builds its corpus</title>
+        <desc id="pipeline-desc">
+          A five-stage pipeline: publications are sourced from Europe PMC, screened by an LLM,
+          enriched with controlled-vocabulary tags, validated by human curators, and published as a
+          searchable corpus of {{ corpus().total | number }} screened publications, of which
+          {{ corpus().positive | number }} are classified as AI/ML methods papers.
+        </desc>
+
+        <!-- Connector spine, drawn first so nodes sit over it. -->
+        <line class="spine" x1="42" y1="46" x2="42" y2="354" />
+
+        <g class="stage">
+          <circle class="node" cx="42" cy="46" r="13" />
+          <circle class="node-core" cx="42" cy="46" r="4" />
+          <text class="stage-label" x="70" y="42">Europe PMC</text>
+          <text class="stage-sub" x="70" y="58">Source metadata</text>
+        </g>
+
+        <g class="stage">
+          <circle class="node" cx="42" cy="123" r="13" />
+          <circle class="node-core" cx="42" cy="123" r="4" />
+          <text class="stage-label" x="70" y="119">LLM screening</text>
+          <text class="stage-sub" x="70" y="135">Positive · negative · undeterminable</text>
+        </g>
+
+        <g class="stage">
+          <circle class="node" cx="42" cy="200" r="13" />
+          <circle class="node-core" cx="42" cy="200" r="4" />
+          <text class="stage-label" x="70" y="196">Enrichment</text>
+          <text class="stage-sub" x="70" y="212">EDAM domain · paradigm · model</text>
+        </g>
+
+        <g class="stage">
+          <circle class="node" cx="42" cy="277" r="13" />
+          <circle class="node-core" cx="42" cy="277" r="4" />
+          <text class="stage-label" x="70" y="273">Human validation</text>
+          <text class="stage-sub" x="70" y="289">Expert curator review</text>
+        </g>
+
+        <!-- Terminal node: the only filled one, and the only place live counts appear. -->
+        <g class="stage stage-terminal">
+          <circle class="node node-filled" cx="42" cy="354" r="13" />
+          <path class="node-glyph" d="M37 354 h10 M42 349 v10" />
+          <text class="stage-label" x="70" y="344">Searchable corpus</text>
+          <text class="stage-count" x="70" y="362">{{ corpus().total | number }} screened</text>
+          <text class="stage-count" x="70" y="378">{{ corpus().positive | number }} AI/ML methods papers</text>
+        </g>
+      </svg>
+    </figure>
   </div>
 </div>
 
@@ -29,30 +96,32 @@
     <ol class="method-steps">
       <li>
         <span class="step-num" aria-hidden="true">1</span>
-        <div>
-          <strong>Screening.</strong> Every publication is classified by an LLM as
-          <em>positive</em> (a genuine AI/ML methods paper), <em>negative</em>, or
-          <em>undeterminable</em>, with a written rationale kept alongside the verdict. This
-          decision is machine-generated — see <a routerLink="/record/8b720ad0-8cf7-5304-a016-3b15feae2815">any record page</a>
-          for the model, prompt version and rationale behind a given classification, or the
-          <a routerLink="/about/processing">processing timeline</a> for when each batch ran.
-        </div>
+        <h3>Screening</h3>
+        <p>
+          Every publication is classified by an LLM as <em>positive</em> (a genuine AI/ML methods
+          paper), <em>negative</em>, or <em>undeterminable</em>, with a written rationale kept
+          alongside the verdict. Each <a routerLink="/search">record page</a> carries the model,
+          prompt version and rationale behind its own classification; the
+          <a routerLink="/about/processing">processing timeline</a> shows when each batch ran.
+        </p>
       </li>
       <li>
         <span class="step-num" aria-hidden="true">2</span>
-        <div>
-          <strong>Enrichment.</strong> A separate pass tags positively-classified records with EDAM
-          domain, learning paradigm, model family and model type, drawn from published controlled
-          vocabularies. This is the more expensive step and is still in progress across the corpus —
-          the <a routerLink="/search">search page</a> shows live coverage.
-        </div>
+        <h3>Enrichment</h3>
+        <p>
+          A separate pass tags positively-classified records with EDAM domain, learning paradigm,
+          model family and model type, drawn from published controlled vocabularies. This is the
+          more expensive step and is still in progress across the corpus — the
+          <a routerLink="/search">search page</a> shows live coverage.
+        </p>
       </li>
       <li>
         <span class="step-num" aria-hidden="true">3</span>
-        <div>
-          <strong>Human validation.</strong> Curators review classification and enrichment output
-          against the source criteria, rather than accepting model output uncritically.
-        </div>
+        <h3>Human validation</h3>
+        <p>
+          Curators review classification and enrichment output against the source criteria, rather
+          than accepting model output uncritically.
+        </p>
       </li>
     </ol>
   </div>
@@ -65,12 +134,13 @@
       <h2>Limitations, stated plainly</h2>
     </div>
     <ul class="limitations">
-      <li>Classification and enrichment are LLM-generated. They are validated, not infallible —
-        treat a record's tags as a strong starting point, not ground truth.</li>
+      <li>Classification and enrichment are LLM-generated. The methodology was manually evaluated
+        against a benchmark of 6,000 publications hand-annotated as positive or negative, reaching
+        over 90% consensus with the expert human curator after conflict resolution on disagreeing
+        annotations. Accuracy is therefore high-confidence at corpus scale, but an individual
+        record's tags remain a strong starting point rather than a guarantee.</li>
       <li>Enrichment coverage is partial while that pass is still running across the corpus; most
         records currently show "not yet enriched" rather than a full tag set.</li>
-      <li><code>citation_count</code> is reserved in the schema but has never been populated for
-        this corpus — it is not silently zero, it is genuinely absent.</li>
       <li>Cross-links to the DOME Registry, Hugging Face, Kaggle and Zenodo are reserved fields,
         not yet populated for any record — see <a routerLink="/about/integrations">Integrations</a> for
         what's live versus planned.</li>
@@ -107,11 +177,29 @@
           doi.org/10.1093/gigascience/giae094
         </a>
       </li>
+      <li>
+        <p class="pub-title">Open and sustainable AI: challenges, opportunities and the road ahead in the life sciences</p>
+        <p class="pub-meta">
+          Farrell G, Adamidi E, Andrade Buono R, Anton M, Attafi OA, Capella-Gutierrez S,
+          Capriotti E, Castro LJ, Cirillo D, Crossman L, Dessimoz C, Dimopoulos A,
+          Fernandez-Diaz R, Fragkouli SC, Goble C, Gu W, Hancock JM, Khanteymoori A, Lenaerts T,
+          Liberante FG, Maccallum P, Monzon AM, Palmblad M, Poveda L, Radulescu O, Shields DC,
+          Sufi S, Vergoulis T, Psomopoulos F, Tosatto SCE. <em>Nature Methods</em> (2026).
+        </p>
+        <a href="https://doi.org/10.1038/s41592-026-03037-6" target="_blank" rel="noopener">
+          doi.org/10.1038/s41592-026-03037-6
+        </a>
+      </li>
     </ul>
+
+    <p class="pub-note">
+      The corpus itself is derived from Europe PMC, which has its own citation —
+      see <a routerLink="/about/licensing">Licensing &amp; Citation</a> for the full attribution.
+    </p>
   </div>
 </div>
 
-<div class="band band-accent">
+<div class="band">
   <div class="band-inner">
     <div class="card-header">
       <span class="icon-badge"><i class="icon icon-common icon-github" aria-hidden="true"></i></span>

@@ -1,0 +1,34 @@
+h1 {
+  color: var(--observatory-primary);
+  font-weight: 700;
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--space-3);
+}
+
+.lead {
+  font-size: var(--font-size-lg);
+  color: var(--status-neutral);
+  line-height: 1.6;
+  margin-bottom: 0;
+
+  strong {
+    color: var(--observatory-primary);
+  }
+}
+
+// .card-header (icon+heading row) and .member-grid/.member-card/etc come from the shared
+// primitives in styles.scss -- the advisory-board grid here is the identical component
+// about-team.html uses for the core team, promoted global for exactly this reuse.
+h2 {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--observatory-primary);
+}
+
+.section-note {
+  font-size: var(--font-size-sm);
+  color: var(--status-neutral);
+  line-height: 1.6;
+  margin-bottom: var(--space-5);
+  max-width: 720px;
+}

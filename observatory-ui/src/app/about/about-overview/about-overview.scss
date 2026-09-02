@@ -16,45 +16,174 @@ h1 {
 // used to be its own white .info-panel card boxed on a white page -- now every band below IS the
 // section, alternating background with its neighbour (styles.scss's .band system) instead.
 .card-header {
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-3);
 
   h2 {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-xl);
     font-weight: 700;
     color: var(--observatory-primary);
   }
 }
 
+// ---- Hero: prose beside the pipeline figure ----
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: var(--space-7);
+  align-items: center;
+
+  @media (max-width: 991px) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-5);
+  }
+}
+
+.hero-copy p {
+  line-height: 1.6;
+}
+
+.hero-figure {
+  margin: 0;
+}
+
+.pipeline {
+  width: 100%;
+  height: auto;
+  max-width: 300px;
+
+  // Every stroke/fill is declared here rather than as SVG presentation attributes so the figure
+  // tracks the brand tokens instead of hard-coding hexes into the markup.
+  .spine {
+    stroke: var(--border-strong);
+    stroke-width: 1.5;
+    stroke-dasharray: 3 5;
+  }
+
+  .node {
+    fill: var(--surface-card);
+    stroke: var(--observatory-primary);
+    stroke-width: 1.5;
+  }
+
+  .node-core {
+    fill: var(--observatory-accent);
+  }
+
+  .node-filled {
+    fill: var(--observatory-accent);
+    stroke: var(--observatory-accent-dark);
+  }
+
+  .node-glyph {
+    stroke: #ffffff;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  .stage-label {
+    fill: var(--observatory-primary);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .stage-sub {
+    fill: var(--status-neutral);
+    font-size: 8.5px;
+  }
+
+  .stage-count {
+    fill: var(--observatory-accent-dark);
+    font-size: 9px;
+    font-weight: 700;
+  }
+
+  // The hero band is white, so on a tinted neighbour the terminal node would otherwise float --
+  // the mobile stack keeps the same proportions by just letting the viewBox scale.
+  @media (max-width: 991px) {
+    max-width: 320px;
+    margin-inline: auto;
+    display: block;
+  }
+}
+
+// ---- "How the corpus is built": a connected sequence, not a bullet list ----
+// Three stages on one row at desktop, each a card on the page's surface, joined by a dashed rule
+// that runs behind them. Collapses to a vertical rail on narrow screens with the same connector
+// running down the left, so the sequence still reads as a sequence.
 .method-steps {
   list-style: none;
   margin: 0;
   padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-5);
+  position: relative;
+
+  // The connector. Sits behind the cards (z-index) and spans the gaps between them.
+  &::before {
+    content: '';
+    position: absolute;
+    top: calc(var(--space-5) + 14px);
+    left: var(--space-5);
+    right: var(--space-5);
+    border-top: 2px dashed var(--border-strong);
+    z-index: 0;
+  }
 
   li {
-    display: flex;
-    gap: var(--space-3);
-    align-items: flex-start;
-    margin-bottom: var(--space-4);
+    position: relative;
+    z-index: 1;
+    background-color: var(--surface-card);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-5);
     line-height: 1.6;
+  }
 
-    &:last-child {
-      margin-bottom: 0;
+  h3 {
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--observatory-primary);
+    margin: var(--space-3) 0 var(--space-2);
+  }
+
+  p {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--status-neutral);
+  }
+
+  @media (max-width: 991px) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+
+    // Vertical rail: the connector runs down the left, aligned with the step pips.
+    &::before {
+      top: var(--space-5);
+      bottom: var(--space-5);
+      left: calc(var(--space-5) + 13px);
+      right: auto;
+      border-top: none;
+      border-left: 2px dashed var(--border-strong);
     }
   }
 }
 
 .step-num {
-  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 28px;
   height: 28px;
   border-radius: var(--radius-pill);
-  background-color: rgba(246, 103, 41, 0.12);
-  color: var(--observatory-accent-dark);
+  background-color: var(--observatory-accent);
+  color: #ffffff;
   font-weight: 700;
   font-size: var(--font-size-sm);
+  // Solid ring in the card's own background so the dashed connector visibly terminates at the
+  // pip rather than running underneath it.
+  box-shadow: 0 0 0 4px var(--surface-card);
 }
 
 .limitations {
@@ -102,4 +231,10 @@ h1 {
   font-size: var(--font-size-sm);
   color: var(--status-neutral);
   margin-bottom: var(--space-2);
+}
+
+.pub-note {
+  margin: var(--space-5) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--status-neutral);
 }

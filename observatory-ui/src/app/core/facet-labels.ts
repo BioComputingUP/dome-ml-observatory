@@ -42,3 +42,30 @@ export function pubTypeLabel(value: string): string {
 export function sentenceCase(value: string): string {
   return value.length ? value.charAt(0).toUpperCase() + value.slice(1) : value;
 }
+
+/**
+ * Display casing for model_type -- deliberately its own function rather than reusing
+ * sentenceCase, because unlike modelling-branch.json's closed, all-lowercase-first vocabulary,
+ * model_type is OPEN free text (schema/releases/.../ai-ml-landscape.schema.json): the 76-term
+ * seed list is coverage assurance only, and a record can carry any verbatim string a paper used,
+ * not just a seed term. So this has to be safe for arbitrary input, and has to leave
+ * already-correctly-cased method names alone rather than blindly capitalising every value's
+ * first letter: sentenceCase would turn "k-means" into "K-means" and "t-SNE" into "T-SNE", both
+ * wrong, and would leave "XGBoost" alone only by coincidence of already starting uppercase.
+ *
+ * Display-only, exactly like sentenceCase: the wire value (search-params.ts's `mt` param) and
+ * the backend's exact, case-sensitive Mongo match (records.query.ts) both use the raw string.
+ */
+export function modelTypeLabel(value: string): string {
+  if (!value) return value;
+  // Already capitalised (brand names, acronyms, eponyms already spelled with a capital) --
+  // e.g. XGBoost, LightGBM, CatBoost, AdaBoost, DBSCAN, HDBSCAN, BIRCH, UMAP, BERT, GPT, YOLO,
+  // MaxEnt, U-Net, ResNet, Q-learning, Gaussian process, Bayesian network, naive Bayes (only
+  // its second word is capitalised, but that's still true after this check runs unchanged).
+  if (value.charAt(0) !== value.charAt(0).toLowerCase()) return value;
+  // A single lowercase letter before a hyphen is part of the method's name, not a capitalisation
+  // slip -- k-means, k-nearest neighbors, t-SNE, one-class SVM (the "one" here isn't a single
+  // letter, so this only guards the genuine single-letter cases).
+  if (/^[a-z]-/.test(value)) return value;
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}

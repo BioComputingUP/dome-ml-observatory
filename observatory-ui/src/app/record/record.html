@@ -162,10 +162,10 @@
             <div class="tag-group">
               <h3>{{ group.label }}</h3>
               <ul class="tag-list">
-                @for (value of group.values; track value) {
+                @for (tag of group.values; track tag.value) {
                   <li>
-                    <a [routerLink]="['/search']" [queryParams]="tagQueryParams(group.param, value)">
-                      {{ value }}
+                    <a [routerLink]="['/search']" [queryParams]="tagQueryParams(group.param, tag.value)">
+                      {{ tag.display }}
                     </a>
                   </li>
                 }

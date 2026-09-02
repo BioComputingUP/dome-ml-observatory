@@ -8,37 +8,101 @@ h1 {
 .lead {
   font-size: var(--font-size-lg);
   color: var(--status-neutral);
-  margin-bottom: var(--space-5);
+  margin-bottom: 0;
   line-height: 1.6;
-}
-
-.notice {
-  background-color: var(--status-undeterminable-bg);
-  color: var(--status-undeterminable);
-  border-radius: var(--radius-md);
-  padding: var(--space-4) var(--space-5);
-  margin-bottom: var(--space-6);
-  line-height: 1.6;
-
-  a {
-    color: inherit;
-    font-weight: 600;
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
 }
 
 h2 {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-xl);
   font-weight: 700;
   color: var(--observatory-primary);
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
 }
 
 // .info-panel (background/border/radius/shadow) comes from the shared primitives in styles.scss.
+.release-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+// The identity block (logo, DOI, download CTA) is the page's primary action, so it gets its own
+// tinted strip inside the card rather than sitting flush with the spec list below it.
+.release-identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-4) var(--space-5);
+  background-color: var(--surface-page);
+  border-radius: var(--radius-md);
+}
+
+.zenodo-logo-link {
+  display: block;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  transition: opacity 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    opacity: 0.85;
+  }
+}
+
+.zenodo-logo {
+  display: block;
+  height: 48px;
+  width: auto;
+}
+
+.doi-block {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.doi-label {
+  display: block;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--status-neutral);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: var(--space-1);
+}
+
+.doi-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.doi-value {
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--observatory-primary);
+  text-decoration: none;
+  word-break: break-all;
+
+  &:hover {
+    color: var(--observatory-accent);
+    text-decoration: underline;
+  }
+}
+
+// Geometry and colour come from .cta-pill / .cta-pill-accent in styles.scss -- only the
+// flex-shrink guard (this one sits in a flex row beside the Zenodo logo) and a slightly larger
+// glyph are local.
+.download-cta {
+  flex-shrink: 0;
+
+  i {
+    font-size: 1.1em;
+  }
+}
+
 .spec {
   margin: 0;
 }
@@ -59,10 +123,18 @@ h2 {
   }
 
   dt {
-    flex: 0 0 140px;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex: 0 0 160px;
     font-weight: 600;
     color: var(--status-neutral);
     font-size: var(--font-size-sm);
+
+    i {
+      color: var(--observatory-accent);
+      font-size: 0.95em;
+    }
   }
 
   dd {
@@ -74,5 +146,56 @@ h2 {
       padding: 1px 6px;
       border-radius: var(--radius-sm);
     }
+  }
+}
+
+.citation-intro {
+  line-height: 1.6;
+  margin-bottom: var(--space-5);
+  max-width: 720px;
+}
+
+.citation-block {
+  margin-bottom: var(--space-5);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.citation-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.citation-title {
+  font-weight: 700;
+  color: var(--observatory-primary);
+  font-size: var(--font-size-sm);
+}
+
+.code-block {
+  background: #1c2b34;
+  color: #e8eef1;
+  border-radius: var(--radius-sm);
+  padding: var(--space-4);
+  font-size: var(--font-size-sm);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+  flex: 1;
+}
+
+.code-block-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+
+  app-copy-button {
+    flex-shrink: 0;
+    margin-top: var(--space-1);
   }
 }

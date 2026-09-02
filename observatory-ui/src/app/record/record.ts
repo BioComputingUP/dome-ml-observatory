@@ -5,6 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map, switchMap, catchError, of } from 'rxjs';
 import { RecordsService } from '../core/records.service';
 import { AiMlRecord, isEnriched } from '../core/record.model';
+import { modelTypeLabel } from '../core/facet-labels';
 import { outboundLinks, plannedLinks } from '../core/outbound-links';
 import { toBibtex, toRis } from '../core/citation';
 import { StatusBadge } from '../shared/status-badge/status-badge';
@@ -85,13 +86,28 @@ export class RecordPage {
 
   readonly enrichmentTags = computed(() => {
     const cf = this.rec().content_filters;
+    const tag = (value: string, display = value) => ({ value, display });
     return [
-      { label: 'Domain (tier 1)', values: cf.domain_tier1 ? [cf.domain_tier1] : [], param: 'd1' },
-      { label: 'Domain (tier 2)', values: cf.domain_tier2, param: 'd2' },
-      { label: 'Domain (tier 3)', values: cf.domain_tier3, param: 'd3' },
-      { label: 'Learning paradigm', values: cf.learning_paradigm, param: 'para' },
-      { label: 'Model family', values: cf.model_family, param: 'fam' },
-      { label: 'Model type', values: cf.model_type, param: 'mt' },
+      {
+        label: 'Domain (tier 1)',
+        values: cf.domain_tier1 ? [tag(cf.domain_tier1)] : [],
+        param: 'd1',
+      },
+      { label: 'Domain (tier 2)', values: cf.domain_tier2.map((v) => tag(v)), param: 'd2' },
+      { label: 'Domain (tier 3)', values: cf.domain_tier3.map((v) => tag(v)), param: 'd3' },
+      {
+        label: 'Learning paradigm',
+        values: cf.learning_paradigm.map((v) => tag(v)),
+        param: 'para',
+      },
+      { label: 'Model family', values: cf.model_family.map((v) => tag(v)), param: 'fam' },
+      // Display-only title-casing (facet-labels.ts) -- the query param below still routes on
+      // the raw value, matching the search page's own Method chips and model_type facet.
+      {
+        label: 'Model type',
+        values: cf.model_type.map((v) => tag(v, modelTypeLabel(v))),
+        param: 'mt',
+      },
     ].filter((g) => g.values.length);
   });
 

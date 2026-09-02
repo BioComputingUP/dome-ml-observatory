@@ -12,6 +12,7 @@ export class AboutLayout {
     { label: 'Overview', icon: 'icon-bullseye', route: '/about' },
     { label: 'Processing timeline', icon: 'icon-calendar', route: '/about/processing' },
     { label: 'Team', icon: 'icon-user', route: '/about/team' },
+    { label: 'Governance', icon: 'icon-classification', route: '/about/governance' },
     { label: 'Integrations', icon: 'icon-sitemap', route: '/about/integrations' },
     { label: 'Licensing & Citation', icon: 'icon-copy', route: '/about/licensing' },
     { label: 'Privacy Policy', icon: 'icon-lock', route: '/about/privacy' },

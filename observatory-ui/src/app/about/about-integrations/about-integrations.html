@@ -7,9 +7,16 @@
       what's planned, each marked by direction and protocol.
     </p>
 
-    <div class="legend">
-      <span><span class="dir">→</span> we point out — a one-way link from a record to another resource</span>
-      <span><span class="dir">⇄</span> bidirectional — data flows both ways once built</span>
+    <div class="legend info-panel">
+      <span class="legend-title">Direction</span>
+      <span class="legend-item">
+        <span class="tag dir-tag"><span aria-hidden="true">→</span> Links out</span>
+        <span class="legend-text">A one-way link from a record to another resource.</span>
+      </span>
+      <span class="legend-item">
+        <span class="tag dir-tag"><span aria-hidden="true">⇄</span> Bidirectional</span>
+        <span class="legend-text">Data flows both ways once built.</span>
+      </span>
     </div>
   </div>
 </div>
@@ -18,29 +25,38 @@
   <div class="band-inner">
     <div class="card-header">
       <span class="icon-badge"><i class="icon icon-common icon-database" aria-hidden="true"></i></span>
-      <h2>Live</h2>
+      <h2>Live integrations</h2>
     </div>
     <div class="cards">
-      @for (i of integrations; track i.name) {
-        @if (i.status === 'live') {
-          <article class="integration-card info-panel">
-            <header>
+      @for (i of live(); track i.name) {
+        <article class="integration-card info-panel status-live">
+          <header>
+            @if (i.logo) {
+              <img [src]="i.logo" [alt]="i.name + ' logo'" class="integration-logo" />
+            } @else {
+              <span class="integration-lettermark" aria-hidden="true">{{ i.initials || initials(i.name) }}</span>
+            }
+            <div class="integration-title">
               <h3>{{ i.name }}</h3>
-              <div class="tags">
-                <span class="tag dir-tag">{{ i.direction === 'both' ? '⇄' : '→' }}</span>
-                <span class="tag protocol-tag">{{ i.protocol }}</span>
-              </div>
-            </header>
-            <dl>
-              <dt>What it is</dt>
-              <dd>{{ i.what }}</dd>
-              <dt>How Observatory integrates</dt>
-              <dd>{{ i.how }}</dd>
-              <dt>Benefit</dt>
-              <dd>{{ i.benefit }}</dd>
-            </dl>
-          </article>
-        }
+              <span class="badge-chip tone-positive">Live</span>
+            </div>
+          </header>
+          <dl>
+            <dt>What it is</dt>
+            <dd>{{ i.what }}</dd>
+            <dt>How Observatory integrates</dt>
+            <dd>{{ i.how }}</dd>
+            <dt>Benefit</dt>
+            <dd>{{ i.benefit }}</dd>
+          </dl>
+          <footer class="tags">
+            <span class="tag dir-tag" [attr.title]="i.direction === 'both' ? 'Bidirectional' : 'Links out'">
+              <span aria-hidden="true">{{ i.direction === 'both' ? '⇄' : '→' }}</span>
+              {{ i.direction === 'both' ? 'Bidirectional' : 'Links out' }}
+            </span>
+            <span class="tag protocol-tag">{{ i.protocol }}</span>
+          </footer>
+        </article>
       }
     </div>
   </div>
@@ -50,34 +66,42 @@
   <div class="band-inner">
     <div class="card-header">
       <span class="icon-badge"><i class="icon icon-common icon-calendar" aria-hidden="true"></i></span>
-      <h2>Planned</h2>
+      <h2>Planned integrations</h2>
     </div>
     <p class="section-note">
       Reserved in the schema or roadmapped, not yet live. Listed openly so the direction of travel
       is visible, not just the finished state.
     </p>
     <div class="cards">
-      @for (i of integrations; track i.name) {
-        @if (i.status === 'planned') {
-          <article class="integration-card info-panel planned">
-            <header>
+      @for (i of planned(); track i.name) {
+        <article class="integration-card info-panel status-planned">
+          <header>
+            @if (i.logo) {
+              <img [src]="i.logo" [alt]="i.name + ' logo'" class="integration-logo" />
+            } @else {
+              <span class="integration-lettermark" aria-hidden="true">{{ i.initials || initials(i.name) }}</span>
+            }
+            <div class="integration-title">
               <h3>{{ i.name }}</h3>
-              <div class="tags">
-                <span class="tag dir-tag">{{ i.direction === 'both' ? '⇄' : '→' }}</span>
-                <span class="tag protocol-tag">{{ i.protocol }}</span>
-                <span class="badge-chip tone-undeterminable">Planned</span>
-              </div>
-            </header>
-            <dl>
-              <dt>What it is</dt>
-              <dd>{{ i.what }}</dd>
-              <dt>How Observatory would integrate</dt>
-              <dd>{{ i.how }}</dd>
-              <dt>Benefit</dt>
-              <dd>{{ i.benefit }}</dd>
-            </dl>
-          </article>
-        }
+              <span class="badge-chip tone-undeterminable">Planned</span>
+            </div>
+          </header>
+          <dl>
+            <dt>What it is</dt>
+            <dd>{{ i.what }}</dd>
+            <dt>How Observatory would integrate</dt>
+            <dd>{{ i.how }}</dd>
+            <dt>Benefit</dt>
+            <dd>{{ i.benefit }}</dd>
+          </dl>
+          <footer class="tags">
+            <span class="tag dir-tag" [attr.title]="i.direction === 'both' ? 'Bidirectional' : 'Links out'">
+              <span aria-hidden="true">{{ i.direction === 'both' ? '⇄' : '→' }}</span>
+              {{ i.direction === 'both' ? 'Bidirectional' : 'Links out' }}
+            </span>
+            <span class="tag protocol-tag">{{ i.protocol }}</span>
+          </footer>
+        </article>
       }
     </div>
   </div>

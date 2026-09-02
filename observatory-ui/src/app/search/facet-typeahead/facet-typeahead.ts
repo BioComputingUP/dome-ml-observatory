@@ -38,6 +38,11 @@ export class FacetTypeahead {
   /** Set for the remote-search facets (journal, MeSH); left null for local, vocabulary-backed
    *  ones. See the class doc above. */
   readonly searchFn = input<((q: string) => Observable<string[]>) | null>(null);
+  /** Optional display-only transform for option/chip labels (e.g. model type's title-casing in
+   *  facet-labels.ts). Matching, adding and removing selections all keep comparing the raw
+   *  option string -- only what's rendered changes. Defaults to the identity function so every
+   *  other facet is unaffected. */
+  readonly displayFn = input<(value: string) => string>((value) => value);
 
   readonly selectionChange = output<string[]>();
 

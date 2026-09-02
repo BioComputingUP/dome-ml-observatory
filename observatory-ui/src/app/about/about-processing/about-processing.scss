@@ -6,36 +6,87 @@ h1 {
 }
 
 h2 {
-  font-size: var(--font-size-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xl);
   font-weight: 700;
   color: var(--observatory-primary);
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
+
+  i {
+    color: var(--observatory-accent);
+    font-size: 0.85em;
+  }
 }
 
 .lead {
   font-size: var(--font-size-lg);
   color: var(--status-neutral);
   line-height: 1.6;
-  margin-bottom: var(--space-4);
+  margin-bottom: 0;
 }
 
-.last-run {
-  line-height: 1.6;
+// The enrichment pass hasn't run yet -- render its stat-pill visually muted rather than as a
+// dead-looking blank slot, so "not yet run" reads as a genuine status rather than missing data.
+.stat-pill-pending {
+  border-style: dashed;
+  background-color: var(--surface-page);
 
-  strong {
-    color: var(--observatory-primary);
+  > i {
+    color: var(--status-undeterminable);
   }
 }
 
+// .info-panel comes from the shared primitives in styles.scss. Reused verbatim for both the
+// classification-round card and the enrichment card below so the two sections read as the same
+// kind of thing (a dated processing round), even though one is complete and one is pending.
 .round-card {
   line-height: 1.6;
 }
 
+.round-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+
+  h3 {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--observatory-primary);
+  }
+}
+
+.round-badge {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-pill);
+  background-color: rgba(246, 103, 41, 0.12);
+  color: var(--observatory-accent-dark);
+  font-weight: 700;
+  font-size: var(--font-size-base);
+}
+
+// .icon-badge comes from styles.scss -- used here instead of a numbered .round-badge because
+// enrichment isn't itself an ordinal "round", it's a standing pass that runs alongside them.
+.round-badge-icon {
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+}
+
 .round-facts {
   display: grid;
-  grid-template-columns: 200px 1fr;
+  grid-template-columns: 180px 1fr;
   gap: var(--space-2) var(--space-4);
-  margin: 0 0 var(--space-4);
+  margin: 0 0 var(--space-5);
 
   > div {
     display: contents;
@@ -52,8 +103,16 @@ h2 {
 }
 
 dt {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   font-weight: 700;
   color: var(--observatory-primary);
+
+  i {
+    color: var(--observatory-accent);
+    font-size: 0.9em;
+  }
 }
 
 dd {
@@ -61,8 +120,140 @@ dd {
   color: var(--status-neutral);
 }
 
+// The enrichment card's facts are all placeholders until the first batch runs -- dim them
+// relative to the classification round's real facts so "—" doesn't read as missing/broken data.
+.round-facts-pending dd {
+  color: var(--border-strong);
+  font-weight: 600;
+}
+
+.outcome-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.outcome-tile {
+  text-align: center;
+  padding: var(--space-3) var(--space-2);
+  border-radius: var(--radius-md);
+
+  &.tone-positive {
+    background-color: var(--status-positive-bg);
+    .outcome-value { color: var(--status-positive); }
+  }
+
+  &.tone-neutral {
+    background-color: var(--status-neutral-bg);
+    .outcome-value { color: var(--status-neutral); }
+  }
+
+  &.tone-undeterminable {
+    background-color: var(--status-undeterminable-bg);
+    .outcome-value { color: var(--status-undeterminable); }
+  }
+
+  &.tone-primary {
+    background-color: var(--surface-page);
+    border: 1px solid var(--border-default);
+    .outcome-value { color: var(--observatory-primary); }
+  }
+}
+
+.outcome-value {
+  display: block;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.outcome-label {
+  display: block;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--status-neutral);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-top: var(--space-1);
+}
+
 .round-note {
   margin: 0;
   padding-top: var(--space-4);
   border-top: 1px solid var(--border-default);
+}
+
+.round-intro {
+  margin: 0 0 var(--space-5);
+  color: var(--status-neutral);
+}
+
+.coverage {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-default);
+}
+
+.coverage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.coverage-label {
+  font-weight: 700;
+  color: var(--observatory-primary);
+  font-size: var(--font-size-sm);
+}
+
+.coverage-value {
+  font-size: var(--font-size-sm);
+  color: var(--status-neutral);
+}
+
+.coverage-bar {
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background-color: var(--surface-sunken);
+  overflow: hidden;
+}
+
+.coverage-bar-fill {
+  height: 100%;
+  background-color: var(--observatory-accent);
+  border-radius: var(--radius-pill);
+  transition: width 0.3s ease;
+}
+
+.future-intro {
+  line-height: 1.6;
+  color: var(--status-neutral);
+  max-width: 720px;
+  margin-bottom: var(--space-4);
+}
+
+.future-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    line-height: 1.6;
+  }
+
+  i {
+    flex-shrink: 0;
+    margin-top: 0.2em;
+    color: var(--observatory-accent);
+    font-size: 1.1em;
+  }
 }

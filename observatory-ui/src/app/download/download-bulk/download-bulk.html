@@ -5,60 +5,98 @@
       The whole dataset in one file. This is the recommended way to take the corpus at scale —
       it's faster for you than paging an API, and it keeps load off the service for everyone else.
     </p>
-
-    <div class="notice" role="status">
-      <strong>The archive is not published yet.</strong>
-      Bulk releases will be deposited to Zenodo with a citable DOI. Until the first deposit exists,
-      use <a routerLink="/search">Search</a> to explore the corpus, or the
-      <a routerLink="/download/api">API</a> for programmatic access to specific records.
-    </div>
   </div>
 </div>
 
 <div class="band band-tint">
   <div class="band-inner">
-    <h2>What a release will contain</h2>
-    <dl class="spec info-panel">
-      <div class="spec-row">
-        <dt>Format</dt>
-        <dd>
-          JSONL — one complete record per line, UTF-8. Streamable, and importable directly with
-          <code>mongoimport</code> without loading the whole file into memory.
-        </dd>
+    <h2>The release</h2>
+    <div class="release-card info-panel">
+      <div class="release-identity">
+        <a
+          [href]="zenodoUrl"
+          target="_blank"
+          rel="noopener"
+          class="zenodo-logo-link"
+          aria-label="Open this release on Zenodo"
+        >
+          <img src="assets/img/zenodo-logo.svg" alt="Zenodo" class="zenodo-logo" />
+        </a>
+        <div class="doi-block">
+          <span class="doi-label">DOI</span>
+          <div class="doi-row">
+            <a [href]="zenodoUrl" target="_blank" rel="noopener" class="doi-value">{{ zenodoDoi }}</a>
+            <app-copy-button [value]="zenodoDoi" label="the release DOI" />
+          </div>
+        </div>
+        <a [href]="zenodoUrl" target="_blank" rel="noopener" class="cta-pill cta-pill-accent download-cta">
+          <i class="icon icon-common icon-cloud-download-alt" aria-hidden="true"></i>
+          Get the archive on Zenodo
+        </a>
       </div>
-      <div class="spec-row">
-        <dt>Records</dt>
-        <dd>{{ corpus().total | number }} screened publications, of which {{ corpus().positive | number }} are classified AI/ML methods papers.</dd>
-      </div>
-      <div class="spec-row">
-        <dt>Schema</dt>
-        <dd>
-          Version {{ schemaVersion() }}. Every record conforms to the published schema — field
-          definitions, controlled vocabularies and a changelog ship alongside the data.
-        </dd>
-      </div>
-      <div class="spec-row">
-        <dt>Licence</dt>
-        <dd>CC BY 4.0 — see <a routerLink="/about/licensing">Licensing &amp; citation</a>.</dd>
-      </div>
-      <div class="spec-row">
-        <dt>Update cadence</dt>
-        <dd>
-          Monthly to bimonthly, as new triaged content is added. Each release is versioned and
-          citable in its own right, so an analysis can pin the exact snapshot it used.
-        </dd>
-      </div>
-    </dl>
+
+      <dl class="spec">
+        <div class="spec-row">
+          <dt><i class="icon icon-common icon-file-signature" aria-hidden="true"></i>Format</dt>
+          <dd>
+            JSONL — one complete record per line, UTF-8. Streamable, and importable directly with
+            <code>mongoimport</code> without loading the whole file into memory.
+          </dd>
+        </div>
+        <div class="spec-row">
+          <dt><i class="icon icon-common icon-database" aria-hidden="true"></i>Records</dt>
+          <dd>{{ corpus().total | number }} screened publications, of which {{ corpus().positive | number }} are classified AI/ML methods papers.</dd>
+        </div>
+        <div class="spec-row">
+          <dt><i class="icon icon-common icon-code-branch" aria-hidden="true"></i>Schema</dt>
+          <dd>
+            Version {{ schemaVersion() }}. Every record conforms to the published schema — field
+            definitions, controlled vocabularies and a changelog ship alongside the data.
+          </dd>
+        </div>
+        <div class="spec-row">
+          <dt><i class="icon icon-common icon-copyright" aria-hidden="true"></i>Licence</dt>
+          <dd>CC BY 4.0 — see <a routerLink="/about/licensing">Licensing &amp; citation</a>.</dd>
+        </div>
+        <div class="spec-row">
+          <dt><i class="icon icon-common icon-sync" aria-hidden="true"></i>Update cadence</dt>
+          <dd>
+            Monthly to bimonthly, as new triaged content is added. Each release is versioned and
+            citable in its own right, so an analysis can pin the exact snapshot it used.
+          </dd>
+        </div>
+      </dl>
+    </div>
   </div>
 </div>
 
 <div class="band">
   <div class="band-inner">
     <h2>Citing a release</h2>
-    <p>
-      Cite the specific Zenodo DOI of the release you used, not just the site — that's what makes
-      an analysis reproducible, since the corpus grows with each update. Citation details will
-      appear here once the first deposit is made.
+    <p class="citation-intro">
+      Cite the specific release you used, not just the site — that's what makes an analysis
+      reproducible, since the corpus grows with each update. A preprint describing the corpus and
+      its methodology is the <strong>preferred citation</strong>; cite the Zenodo DOI alongside it
+      when you need to pin the exact data snapshot an analysis used.
     </p>
+
+    <div class="citation-block">
+      <div class="citation-heading">
+        <span class="badge-chip tone-positive">Preferred citation</span>
+        <span class="citation-title">The preprint</span>
+      </div>
+      <pre class="code-block">Preprint citation forthcoming — check back here once it is posted.</pre>
+    </div>
+
+    <div class="citation-block">
+      <div class="citation-heading">
+        <span class="badge-chip tone-neutral">Release citation</span>
+        <span class="citation-title">This Zenodo deposit</span>
+      </div>
+      <div class="code-block-row">
+        <pre class="code-block">DOME Observatory. "AI/ML methods-paper corpus" (data release). Zenodo. https://doi.org/{{ zenodoDoi }}</pre>
+        <app-copy-button [value]="'DOME Observatory. \'AI/ML methods-paper corpus\' (data release). Zenodo. https://doi.org/' + zenodoDoi" label="the release citation" />
+      </div>
+    </div>
   </div>
 </div>

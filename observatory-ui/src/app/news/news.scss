@@ -103,15 +103,18 @@
   margin-bottom: 1rem;
 }
 
+// Brand palette, not Bootstrap's unthemed #007bff -- that blue is nowhere else on the site and
+// read as garish against the deep-blue card titles beside it.
 .card-link {
-  color: #007bff;
+  color: var(--observatory-primary);
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
   text-decoration: none;
   transition: color 0.3s ease;
 
   &:hover {
-    color: #0056b3;
+    color: var(--observatory-accent);
   }
 }
 

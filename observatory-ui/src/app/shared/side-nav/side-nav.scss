@@ -1,15 +1,29 @@
 .side-nav-floating {
-  // Fixed width rather than stretching to fill its grid column -- styles.scss's .section-layout
-  // sizes that column to exactly this (minmax(240px, 1fr)) so it never actually needs to grow
-  // wider, but pinning it explicitly keeps the card's own size predictable regardless.
-  width: 240px;
+  // Matches --rail-w in styles.scss's .section-layout, which sizes this component's own grid
+  // column -- var() with the same fallback keeps the two in sync without a shared SCSS variable
+  // across the global/component boundary.
+  width: var(--rail-w, 240px);
   position: sticky;
-  // 90px = navbar height (navbar.scss) -- settles just below the fixed bar instead of under it.
-  top: calc(90px + var(--space-5));
+  // The navbar is NOT position:fixed (it scrolls away in normal flow) -- so, unlike a fixed-bar
+  // site, there is nothing above the viewport top to clear once the page has scrolled. Anchoring
+  // to a navbar-height offset here was the bug: it left the card parked a fixed distance down the
+  // viewport with a growing gap above it as the page scrolled, instead of tracking the reader.
+  top: var(--space-4);
+  // A long side-nav (About's 6 items) can otherwise exceed the viewport at low zoom/small
+  // heights; scroll it internally rather than letting it overflow the sticky container.
+  max-height: calc(100vh - var(--space-6));
+  overflow-y: auto;
+  // Bands now paint across the full row (styles.scss's breakout); without this the sticky card
+  // can end up underneath a band's background once it detaches from normal flow.
+  z-index: 2;
   background-color: #ffffff;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
   padding: var(--space-4) var(--space-3);
+
+  @media (max-width: 1199px) and (min-width: 992px) {
+    width: var(--rail-w, 200px);
+  }
 
   // Matches .section-layout's mobile collapse-to-single-column breakpoint in styles.scss --
   // below this there's no room even for the plain 240px-nav-plus-content pair used between

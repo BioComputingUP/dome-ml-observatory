@@ -1,0 +1,38 @@
+<div class="band">
+  <div class="band-inner">
+    <h1>Governance</h1>
+    <p class="lead">
+      DOME Observatory is hosted and run by the <strong>UNIPD Biocomputing Lab</strong>, in
+      coordination with the <strong>ELIXIR Machine Learning Focus Group</strong> (see
+      <a routerLink="/about/team">the team</a> for who does what day to day). Independent oversight
+      of the project's direction sits with the Scientific Advisory Board below.
+    </p>
+  </div>
+</div>
+
+<div class="band band-tint">
+  <div class="band-inner">
+    <div class="card-header">
+      <span class="icon-badge"><i class="icon icon-common icon-classification" aria-hidden="true"></i></span>
+      <h2>Scientific Advisory Board</h2>
+    </div>
+    <p class="section-note">
+      The Board advises the DOME services as a whole — the DOME Recommendations, the DOME Registry
+      and DOME Observatory — rather than any one of them individually. It provides independent
+      strategic advice and critical evaluation from internationally recognized experts spanning
+      industry, academia and scholarly publishing, reviewing direction and priorities and weighing
+      in on major decisions before they are set. Day-to-day development, curation and
+      infrastructure decisions remain with the teams running each service.
+    </p>
+    <div class="member-grid">
+      @for (m of advisory; track m.name) {
+        <article class="member-card info-panel">
+          <img [src]="m.photo" [alt]="m.name" class="member-photo" />
+          <h3>{{ m.name }}</h3>
+          <p class="member-role">{{ m.focus }}</p>
+          <p class="member-affiliation">{{ m.affiliation }}</p>
+        </article>
+      }
+    </div>
+  </div>
+</div>

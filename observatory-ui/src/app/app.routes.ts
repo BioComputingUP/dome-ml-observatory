@@ -54,6 +54,11 @@ export const routes: Routes = [
         loadComponent: () => import('./about/about-team/about-team').then((m) => m.AboutTeam),
       },
       {
+        path: 'governance',
+        loadComponent: () =>
+          import('./about/about-governance/about-governance').then((m) => m.AboutGovernance),
+      },
+      {
         path: 'integrations',
         loadComponent: () =>
           import('./about/about-integrations/about-integrations').then((m) => m.AboutIntegrations),
@@ -69,6 +74,7 @@ export const routes: Routes = [
     ],
   },
   { path: 'team', redirectTo: '/about/team', pathMatch: 'full' },
+  { path: 'governance', redirectTo: '/about/governance', pathMatch: 'full' },
   { path: 'integrations', redirectTo: '/about/integrations', pathMatch: 'full' },
   { path: 'licensing', redirectTo: '/about/licensing', pathMatch: 'full' },
   { path: 'privacy', redirectTo: '/about/privacy', pathMatch: 'full' },

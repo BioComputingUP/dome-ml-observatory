@@ -8,81 +8,21 @@ h1 {
 .lead {
   font-size: var(--font-size-lg);
   color: var(--status-neutral);
-  margin-bottom: var(--space-4);
+  margin-bottom: 0;
 }
 
 // .card-header (icon+heading row, resets h2 margin to 0) comes from the shared primitives in
-// styles.scss.
+// styles.scss. .member-grid/.member-card/etc are also global now (styles.scss), shared with
+// about-governance.scss's advisory-board grid.
 h2 {
   font-size: var(--font-size-xl);
   font-weight: 700;
   color: var(--observatory-primary);
 }
 
-.section-note {
-  font-size: var(--font-size-sm);
+// .card / .card-header / .icon-badge / .card-cta come from the shared primitives in styles.scss.
+.governance-pointer p {
   color: var(--status-neutral);
-  margin-bottom: var(--space-4);
-  max-width: 680px;
-}
-
-.member-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: var(--space-5);
-}
-
-// .info-panel (background/border/radius/shadow) comes from the shared primitives in
-// styles.scss -- not .card, since a member card isn't itself clickable (only its ORCID/GitHub
-// links are), so it shouldn't carry .card's hover-lift as a false affordance.
-.member-card {
-  text-align: center;
-  padding: var(--space-4);
-
-  h3 {
-    font-size: var(--font-size-base);
-    font-weight: 700;
-    color: var(--observatory-primary);
-    margin-bottom: var(--space-1);
-  }
-}
-
-.member-photo {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: var(--space-3);
-  border: 3px solid var(--observatory-accent);
-}
-
-.role {
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  color: var(--status-neutral);
-  margin-bottom: var(--space-1);
-  min-height: 2.6em;
-}
-
-.affiliation {
-  font-size: var(--font-size-xs);
-  color: var(--status-neutral);
-  margin-bottom: var(--space-2);
-}
-
-.links {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-3);
-  font-size: var(--font-size-xs);
-
-  a {
-    text-decoration: none;
-    color: var(--observatory-primary);
-    font-weight: 600;
-
-    &:hover {
-      color: var(--observatory-accent);
-    }
-  }
+  line-height: 1.6;
+  margin: 0 0 var(--space-3);
 }

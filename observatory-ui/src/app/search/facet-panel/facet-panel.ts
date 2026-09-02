@@ -5,7 +5,7 @@ import { Observable, Subject, debounceTime } from 'rxjs';
 import { SearchFilters } from '../../core/records.service';
 import { FacetStats } from '../../core/facet-stats.model';
 import { Vocabularies } from '../../core/vocab.model';
-import { PUB_TYPE_LABELS, pubTypeLabel, sentenceCase } from '../../core/facet-labels';
+import { PUB_TYPE_LABELS, modelTypeLabel, pubTypeLabel, sentenceCase } from '../../core/facet-labels';
 import { FacetTypeahead } from '../facet-typeahead/facet-typeahead';
 
 /** https://www.nlm.nih.gov/mesh/meshhome.html -- the canonical browser for the MeSH vocabulary
@@ -41,6 +41,7 @@ export class FacetPanel {
   /** Bound to the template so it can call the shared label helpers directly. */
   readonly pubTypeLabel = pubTypeLabel;
   readonly sentenceCase = sentenceCase;
+  readonly modelTypeLabel = modelTypeLabel;
   readonly meshBrowserUrl = MESH_BROWSER_URL;
 
   readonly licences = computed(() => this.stats()?.facets.license.map((l) => l.value) ?? []);

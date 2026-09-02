@@ -83,6 +83,15 @@ body {
   font-size: var(--font-size-base);
 }
 
+// app.html wraps everything in .min-vh-100 with <main class="flex-grow-1">, so on any page
+// shorter than the viewport <main> stretches to absorb the slack. With no background of its own
+// that stretch rendered as a hard-edged white slab above the blue footer. Tinting it to the page
+// ground means the leftover space reads as page, not as a gap -- the same thing .search-page
+// already does for its own route.
+main {
+  background-color: var(--surface-page);
+}
+
 a {
   color: var(--observatory-primary);
 
@@ -127,43 +136,66 @@ textarea:focus-visible,
 // that component's own template renders -- a class shared across two unrelated components has to
 // live at this global level, same as .container-wide above.
 //
-// A plain 2-column grid (side-nav | content) centres the CONTENT COLUMN within the leftover space
-// after the side-nav, not the content itself within the page -- so the content's own true centre
-// sits to the right of the page's true centre by half the side-nav's width, which reads as
-// lopsided/dead-space-heavy on the left. Fixed with a symmetric 3-column grid instead: two equal
-// minmax(240px,1fr) flanks guarantee identical widths always (240px is the side-nav card's own
-// width, so this is the real floor, not an arbitrary one -- see the flank-vs-content math this was
-// checked against), so the middle content track is mathematically centred on the whole grid --
-// and therefore on the page -- regardless of the side-nav. The side-nav itself docks to the right
-// edge of the left flank (justify-self:end on app-side-nav below), so growing that flank (it never
-// actually needs to beyond its 240px floor while .container-wide caps at 1400px, but the mechanism
-// holds if that ever changes) just adds margin to the side-nav's own left, not a gap to content.
+// This used to be a symmetric 3-column grid inside .container-wide's 1400px cap, which kept the
+// content column mathematically page-centred but had a much worse consequence: every .band's
+// COLOUR was trapped in that 1040px middle track, so the section colour-blocking read as narrow
+// strips marooned in white on any wide screen. Colour blocking only works when the colour reaches
+// the viewport edge. So: no outer width cap, a plain rail+content grid, and .band breaks out
+// leftward under the rail (see the .band rules below) to reach the left edge -- the right edge it
+// already reaches, because this grid has no right padding and no max-width.
+//
+// --rail-total is the single source of truth for "how far in from the left edge does content
+// start", consumed by .band's negative margin and compensating padding. Setting it to 0 on mobile
+// is what collapses all of that to plain full-bleed with no separate mobile band rules.
 .section-layout {
-  display: grid;
-  grid-template-columns: minmax(240px, 1fr) minmax(0, 1040px) minmax(240px, 1fr);
-  column-gap: var(--space-6);
-  align-items: start;
-  padding-top: var(--space-6);
-  padding-bottom: var(--space-8);
+  --rail-w: 240px;
+  --rail-gap: var(--space-6);
+  --rail-inset: var(--space-6);
+  --rail-total: calc(var(--rail-inset) + var(--rail-w) + var(--rail-gap));
 
-  // Tablet / narrow-desktop tier. The symmetric 3-column grid above needs two 240px flanks
-  // just to keep the content column centred, which stops leaving a workable content width
-  // well before the pill strip below is actually necessary. Here we deliberately trade that
-  // flank-symmetry trick for a plain nav+content pair -- but centre the PAIR as a unit (via
-  // max-width + auto margins) rather than letting a bare 2-column grid stretch content to
-  // fill whatever's left of the viewport, which is exactly the "content reads off-centre"
-  // problem the 3-column grid above exists to avoid.
-  @media (max-width: 1299px) and (min-width: 992px) {
-    grid-template-columns: 240px minmax(0, 1fr);
-    max-width: 940px; // 240px nav + column-gap + a still-comfortable content column
-    margin-inline: auto;
+  display: grid;
+  grid-template-columns: var(--rail-w) minmax(0, 1fr);
+  column-gap: var(--rail-gap);
+  // NOT align-items: start. A grid track's height is always set by its tallest item regardless
+  // of align-items -- but align-items:start would still shrink-wrap app-side-nav's own box down
+  // to its content height (~300px) and pin it to the top of that much-taller row, rather than
+  // stretching it to match. That box is the containing block .side-nav-floating's `position:
+  // sticky` is constrained to, so a short box makes sticky stop working almost immediately on any
+  // page taller than the nav itself -- confirmed via a real scroll test (the nav's own bounding
+  // box went to y:-798 after a 900px scroll instead of staying pinned near the top). Left at the
+  // grid default (stretch), app-side-nav's box matches the full row height, so the sticky child
+  // can track the reader all the way down instead of scrolling away with the first screenful.
+  // Top padding is deliberately small: the navbar brackets itself with an orange border-bottom
+  // (navbar.scss) and each page's first band adds its own, so anything more reads as a dead
+  // white gap between that border and the page title.
+  //
+  // Bottom padding is deliberately 0. It used to be --space-8 (64px), which sat OUTSIDE every
+  // .band -- and since bands own the page's background colour, that 64px painted as a bare white
+  // strip wedged between the last coloured band and the blue footer on every section page. The
+  // breathing room now lives inside the last band instead (see .section-content > .band:last-child
+  // below), so the band's own colour runs all the way down to the footer.
+  padding: var(--space-3) 0 0 var(--rail-inset);
+
+  // Narrow-desktop tier: the rail is still worth keeping (the pill strip below is a real
+  // downgrade in scannability), but it and its gutters shrink to buy back content width.
+  @media (max-width: 1199px) and (min-width: 992px) {
+    --rail-w: 200px;
+    --rail-gap: var(--space-5);
+    --rail-inset: var(--space-4);
   }
 
-  // Mobile / narrow tablet: no room left for a persistent 240px nav column at all -- side-nav
-  // switches to the horizontal pill strip instead (side-nav.scss), so collapse to one column.
+  // Mobile / narrow tablet: no room left for a persistent nav column at all -- side-nav
+  // switches to the horizontal pill strip instead (side-nav.scss), so collapse to one column
+  // and zero the rail so bands run edge to edge with no left inset to compensate for.
   @media (max-width: 991px) {
-    grid-template-columns: 1fr;
-    padding-top: var(--space-5);
+    --rail-total: 0px;
+    // minmax(0, 1fr), not a bare 1fr. A `1fr` track's automatic minimum is min-content, so any
+    // child that refuses to shrink -- the side-nav pill strip, a long unbroken code block --
+    // pushes the track wider than the viewport and takes the whole page into horizontal scroll,
+    // clipping body copy at the right edge. The desktop rule above already guards its content
+    // column this way; this one did not.
+    grid-template-columns: minmax(0, 1fr);
+    padding: var(--space-3) 0 0;
   }
 }
 
@@ -182,6 +214,14 @@ app-side-nav {
   @media (max-width: 991px) {
     grid-column: 1 / -1;
     justify-self: stretch;
+    // A grid item's default min-width is auto, not 0 -- it won't shrink below its content's
+    // intrinsic min-content size even with overflow:auto set further down the tree. The mobile
+    // pillbar (side-nav.scss's .side-nav-pillbar) relies on its own overflow-x:auto to scroll
+    // sideways rather than wrap; without this, About's now-7-item nav (adding "Governance" and
+    // long labels like "Licensing & Citation") forces the whole page to overflow horizontally
+    // instead of scrolling contained within the pillbar -- confirmed via a real overflow check
+    // (211-604px of page-level horizontal overflow on every About page at 768px and 375px).
+    min-width: 0;
   }
 }
 
@@ -199,12 +239,38 @@ app-side-nav {
 // inner element owns the reading measure) rather than the near-invisible
 // `border-top: 1px solid var(--status-neutral-bg)` hairline these pages used before, or boxing
 // every section in a white `.card` on an already-white page. Bands butt directly against each
-// other with no margin/radius between them -- the colour change IS the divider. `.band-inner` is
-// narrower than `.section-content`'s 1040px track deliberately (860px, matching the reading
-// measure these pages already used) so long lines of prose stay comfortable while the colour
-// itself still reaches the full column width.
+// other with no margin/radius between them -- the colour change IS the divider.
+//
+// .band's negative left margin cancels out .section-layout's rail inset (--rail-total, defined
+// there) so the background reaches the actual viewport edge instead of stopping at the content
+// column -- the right edge already reaches it, since .section-layout has no right padding or
+// max-width. The matching left padding is added back so the band's CONTENT starts exactly where
+// it did before the breakout, clear of the side-nav rail, never sliding underneath it.
 .band {
-  padding: var(--space-7) var(--space-5);
+  margin-left: calc(-1 * var(--rail-total, 0px));
+  padding: var(--space-6) var(--space-5) var(--space-6)
+    calc(var(--rail-total, 0px) + var(--space-5));
+  // Explicit rather than transparent. <main> now carries --surface-page as its ground (see the
+  // rule on `main` above), so an untinted band has to paint its own white -- otherwise every
+  // plain band would inherit the tint and the whole alternating white/tint rhythm collapses.
+  background-color: var(--surface-card);
+}
+
+// The page's opening band (the "hero") sits right under the navbar's orange border-bottom --
+// give it less top padding than every other band so it doesn't read as a second dead gap.
+.section-content > .band:first-child {
+  padding-top: var(--space-5);
+}
+
+// The page's closing band absorbs the bottom breathing room that used to live on
+// .section-layout's padding-bottom. Keeping it inside the band means the colour runs to the
+// footer instead of stopping short and leaving a white slab behind it.
+.section-content > .band:last-child {
+  padding-bottom: var(--space-8);
+
+  @media (max-width: 991px) {
+    padding-bottom: var(--space-7);
+  }
 }
 
 .band-tint {
@@ -235,8 +301,11 @@ app-side-nav {
   background-color: var(--status-undeterminable-bg);
 }
 
+// Widened from 860px now that bands are full-bleed rather than trapped in a 1040px column --
+// the extra room keeps prose from looking narrow and lost on a wide band, while still short of
+// a genuinely uncomfortable line length.
 .band-inner {
-  max-width: 860px;
+  max-width: 1080px;
   margin-inline: auto;
 }
 
@@ -262,6 +331,15 @@ app-side-nav {
     box-shadow: var(--shadow-md);
     transform: translateY(-2px);
   }
+}
+
+// A card that is itself a link opts out of the global `a:hover { color: accent }` above. That
+// rule repaints every descendant without an explicit colour of its own, so hovering a whole-card
+// link turned its body copy orange and made it hard to read. The border, the lift, the icon-badge
+// flip and the CTA arrow already signal the affordance clearly enough on their own.
+a.card,
+a.card:hover {
+  color: inherit;
 }
 
 .card-header {
@@ -292,6 +370,17 @@ app-side-nav {
     background-color: var(--observatory-accent);
     color: #ffffff;
   }
+}
+
+// Static badges (About/Download section headers, and the icon on a non-clickable .info-panel)
+// never sit inside a .card, so they could never reach the accent state above and every one read
+// as the same grey-tile/blue-glyph. Tinting them orange gives each section a scannable anchor and
+// matches the accent language the rest of the site already uses for emphasis. Scoped to bands so
+// the badge inside a real hoverable .card keeps its grey-to-orange flip.
+.band .card-header .icon-badge,
+.band .info-panel > .icon-badge {
+  background-color: rgba(246, 103, 41, 0.12);
+  color: var(--observatory-accent-dark);
 }
 
 .card-cta {
@@ -426,6 +515,165 @@ app-side-nav {
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
   padding: var(--space-5);
+}
+
+// Solid pill CTA. The geometry lived in three separate near-identical copies (.explorer-cta,
+// .download-cta, .hero-search-button) before this; it now lives here once and the colour is
+// chosen with a modifier, so two CTAs sitting side by side are guaranteed the same size and
+// shape whatever their role. Bootstrap's own .btn-primary/.btn-secondary are deliberately not
+// used: this theme maps $primary to the BLUE and $secondary to the ORANGE, the inverse of the
+// site's own convention, which makes those class names actively misleading here.
+.cta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  color: #ffffff;
+  transition: background-color 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    color: #ffffff;
+  }
+
+  i {
+    font-size: 0.85em;
+  }
+}
+
+.cta-pill-accent {
+  background-color: var(--observatory-accent);
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--observatory-accent-dark);
+  }
+}
+
+.cta-pill-primary {
+  background-color: var(--observatory-primary);
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--observatory-primary-dark);
+  }
+}
+
+// A small icon'd number-and-label tile -- used for headline figures inside a hero band (corpus
+// totals on Download, last-run dates on the processing timeline) so a key fact reads as a glance-
+// able stat rather than getting buried mid-sentence in the lead paragraph. Global because it's
+// shared across About and Download sub-pages the same way .card/.info-panel are.
+.stat-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+.stat-pill {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-3) var(--space-4);
+
+  > i {
+    flex-shrink: 0;
+    font-size: 1.4rem;
+    color: var(--observatory-accent);
+  }
+}
+
+.stat-pill-value {
+  display: block;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--observatory-primary);
+  line-height: 1.2;
+}
+
+.stat-pill-label {
+  display: block;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--status-neutral);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+// ============ Person card (Team, Governance) ============
+// Promoted here from about-team.scss once about-governance.ts started needing the identical
+// card for its advisory-board grid -- Angular's default view encapsulation scopes component
+// SCSS to that component's own template, so a class shared across two unrelated components has
+// to live at this global level, same reasoning as .section-layout and .band above.
+.member-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-5);
+}
+
+// .info-panel (background/border/radius/shadow) comes from the shared primitives above -- not
+// .card, since a member card isn't itself clickable (only its ORCID/GitHub links are), so it
+// shouldn't carry .card's hover-lift as a false affordance.
+.member-card {
+  text-align: center;
+  padding: var(--space-4);
+
+  h3 {
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--observatory-primary);
+    margin-bottom: var(--space-1);
+  }
+}
+
+.member-photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: var(--space-3);
+  border: 3px solid var(--observatory-accent);
+}
+
+// min-height reserves one line, not two: roles are short, uniform labels ("PhD Candidate", "Lab
+// Principal Investigator"), so reserving two lines just opened a gap under every card.
+.member-role {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--status-neutral);
+  margin-bottom: var(--space-1);
+  min-height: 1.5em;
+}
+
+.member-affiliation {
+  font-size: var(--font-size-xs);
+  color: var(--status-neutral);
+  margin-bottom: var(--space-2);
+}
+
+.member-links {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+  font-size: var(--font-size-xs);
+
+  a {
+    text-decoration: none;
+    color: var(--observatory-primary);
+    font-weight: 600;
+
+    &:hover {
+      color: var(--observatory-accent);
+    }
+  }
 }
 
 .visually-hidden-focusable {

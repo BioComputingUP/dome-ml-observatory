@@ -16,9 +16,9 @@
         <article class="member-card info-panel">
           <img [src]="m.photo" [alt]="m.name" class="member-photo" />
           <h3>{{ m.name }}</h3>
-          <p class="role">{{ m.role }}</p>
-          <p class="affiliation">{{ m.affiliation }}</p>
-          <div class="links">
+          <p class="member-role">{{ m.role }}</p>
+          <p class="member-affiliation">{{ m.affiliation }}</p>
+          <div class="member-links">
             @if (m.orcid) {
               <a [href]="'https://orcid.org/' + m.orcid" target="_blank" rel="noopener" title="ORCID">
                 <i class="icon icon-common icon-external-link-alt" aria-hidden="true"></i> ORCID
@@ -38,23 +38,13 @@
 
 <div class="band">
   <div class="band-inner">
-    <div class="card-header">
-      <span class="icon-badge"><i class="icon icon-common icon-classification" aria-hidden="true"></i></span>
-      <h2>Scientific Advisory Board</h2>
-    </div>
-    <p class="section-note">
-      Provide independent strategic advice and critical evaluation from internationally recognized
-      experts.
-    </p>
-    <div class="member-grid">
-      @for (m of advisory; track m.name) {
-        <article class="member-card info-panel">
-          <img [src]="m.photo" [alt]="m.name" class="member-photo" />
-          <h3>{{ m.name }}</h3>
-          <p class="role">{{ m.focus }}</p>
-          <p class="affiliation">{{ m.affiliation }}</p>
-        </article>
-      }
-    </div>
+    <a routerLink="/about/governance" class="card governance-pointer">
+      <div class="card-header">
+        <span class="icon-badge"><i class="icon icon-common icon-classification" aria-hidden="true"></i></span>
+        <h2>Governance</h2>
+      </div>
+      <p>How DOME Observatory is run, and the Scientific Advisory Board that oversees it.</p>
+      <span class="card-cta">See governance <i class="icon icon-common icon-arrow-right" aria-hidden="true"></i></span>
+    </a>
   </div>
 </div>

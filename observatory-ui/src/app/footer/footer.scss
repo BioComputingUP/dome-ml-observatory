@@ -10,8 +10,8 @@
 .footer-inner-content {
   max-width: 1200px;
   margin: 0 auto;
-  padding-left: 16px;
-  padding-right: 16px;
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
 }
 
 .footer-col-align {
@@ -28,10 +28,29 @@
 
   li {
     width: 100%;
+    margin-bottom: var(--space-1);
   }
 }
 
-.footer-bar a:hover {
-  text-decoration: underline;
-  cursor: pointer;
+// .footer-bar's own `color: white !important` (above) beats a plain hover rule, so this needs
+// !important too to actually show a colour change on hover -- previously the only feedback a
+// footer link gave was an underline, the one link style on the whole site with no accent-colour
+// hover, unlike the navbar, side-nav and .card-cta, which all switch to this same orange.
+.footer-bar a {
+  transition: color 0.15s ease;
+
+  i {
+    transition: color 0.15s ease;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--observatory-accent) !important;
+    text-decoration: underline;
+    cursor: pointer;
+
+    i {
+      color: var(--observatory-accent);
+    }
+  }
 }

@@ -2,22 +2,7 @@ h1 {
   color: var(--observatory-primary);
   font-weight: 700;
   font-size: var(--font-size-2xl);
-  margin-bottom: var(--space-4);
-}
-
-.notice {
-  background-color: var(--status-undeterminable-bg);
-  color: var(--status-undeterminable);
-  border-radius: var(--radius-md);
-  padding: var(--space-4) var(--space-5);
-  margin-bottom: var(--space-5);
-  line-height: 1.6;
-
-  code {
-    background: rgba(0, 0, 0, 0.06);
-    padding: 1px 6px;
-    border-radius: var(--radius-sm);
-  }
+  margin-bottom: var(--space-3);
 }
 
 .lead {
@@ -27,15 +12,40 @@ h1 {
   line-height: 1.6;
 }
 
+// Both CTAs use the shared .cta-pill primitive in styles.scss -- the orange explorer and the
+// blue raw-spec link are the same control in two roles, so they get the same size and shape from
+// one place rather than two hand-tuned copies that drift apart.
+.explorer-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.spec-note {
+  margin: var(--space-3) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--status-neutral);
+  max-width: 720px;
+  line-height: 1.5;
+}
+
 h2 {
-  font-size: var(--font-size-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xl);
   font-weight: 700;
   color: var(--observatory-primary);
   margin-bottom: var(--space-4);
+
+  i {
+    color: var(--observatory-accent);
+    font-size: 0.85em;
+  }
 }
 
-// Give each endpoint real presence instead of just another hairline-separated text block -- this
-// is the "no colour, all white, undifferentiated" part of the page the redesign targets.
+// Give each endpoint real presence instead of just another hairline-separated text block.
 // .info-panel (background/border/radius/shadow) comes from the shared primitives in styles.scss.
 .endpoint {
   margin-bottom: var(--space-4);
@@ -79,12 +89,29 @@ h2 {
   overflow-x: auto;
   white-space: pre-wrap;
   word-break: break-word;
+  margin: 0;
+  flex: 1;
+}
+
+.code-block-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+// A plain table won't shrink its columns below their content's natural width -- some param
+// rows here (long enum lists like sort's, or "positive,negative,undeterminable") are wider than
+// a phone viewport. Scrolling the table sideways within its own box keeps that content intact
+// without forcing the whole page to overflow horizontally (confirmed via a real overflow check).
+.params-scroll {
+  overflow-x: auto;
+  margin-bottom: var(--space-4);
 }
 
 .params {
   width: 100%;
+  min-width: 480px;
   border-collapse: collapse;
-  margin-bottom: var(--space-4);
   font-size: var(--font-size-sm);
 
   th,
@@ -112,4 +139,103 @@ h2 {
   font-weight: 600;
   color: var(--status-neutral);
   margin-bottom: var(--space-2);
+}
+
+.limits-intro {
+  line-height: 1.6;
+  color: var(--status-neutral);
+  max-width: 720px;
+  margin-bottom: var(--space-5);
+}
+
+// 380px floor, not 320: at the band's 1080px inner width that resolves to two columns, so the
+// four limits form a clean 2x2 instead of a 3+1 with an orphan card and a dead half-row.
+.limits-grid {
+  display: grid;
+  // min(380px, 100%) rather than a bare 380px: the floor resolves to two columns at the band's
+  // 1080px inner width -- so the four limits form a clean 2x2 instead of a 3+1 with an orphan --
+  // but collapses to the container's own width below 380px instead of overflowing it.
+  grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+// .icon-badge / .info-panel come from the shared primitives in styles.scss.
+//
+// Two-row grid, not a flex row. As a flex row the 48px icon badge sat beside a single text
+// column, so every line of copy was trapped in card_width - 48px - gap - padding and wrapped
+// into a tall ragged ribbon with dead space down the card's left edge. Here the badge is inline
+// with the title on row 1, and the value and detail span both columns beneath it -- so body text
+// runs the full width of the card, passing under the icon.
+.limit-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: var(--space-3);
+  row-gap: var(--space-2);
+  align-content: start;
+
+  h3 {
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--observatory-primary);
+    margin: 0;
+  }
+
+  .limit-value,
+  .limit-detail {
+    grid-column: 1 / -1;
+  }
+}
+
+// Margins zeroed -- .limit-card's row-gap owns the vertical rhythm now.
+.limit-value {
+  font-weight: 700;
+  color: var(--observatory-accent-dark);
+  margin: 0;
+  font-size: var(--font-size-sm);
+}
+
+.limit-detail {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  color: var(--status-neutral);
+}
+
+.recommendations {
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--observatory-primary);
+    margin: 0 0 var(--space-3);
+
+    i {
+      color: var(--observatory-accent);
+      font-size: 0.9em;
+    }
+  }
+
+  ul {
+    margin: 0;
+    padding-left: var(--space-5);
+
+    li {
+      margin-bottom: var(--space-2);
+      line-height: 1.6;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  code {
+    background: var(--surface-sunken);
+    padding: 1px 6px;
+    border-radius: var(--radius-sm);
+  }
 }
