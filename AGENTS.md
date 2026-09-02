@@ -6,8 +6,9 @@ the code, trust the code and update this file.
 
 ## What this is
 
-DOME Observatory: a searchable database of AI/ML methods-paper metadata (LLM-classified,
-human-expert-validated, cross-linked to Europe PMC). **Monorepo, two independent apps:**
+DOME Observatory: a searchable database of AI/ML methods-paper metadata (LLM-classified by a method
+validated against a hand-annotated expert benchmark, cross-linked to Europe PMC -- individual records
+are *not* curator-reviewed; don't describe them as such). **Monorepo, two independent apps:**
 
 - **`observatory-ui/`** — Angular frontend (Angular 22, standalone components). Talks to the
   backend only via `HttpClient` calls under `/api`, same-origin through nginx's proxy — see

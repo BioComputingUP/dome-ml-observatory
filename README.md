@@ -1,8 +1,9 @@
 # DOME Observatory
 
-A searchable database of AI/ML methods-paper metadata: records classified by LLM processing and
-validated by human expert curation, cross-linked to [Europe PMC](https://europepmc.org/). It maps
-the AI/ML landscape in the life sciences at scale (currently ~827,000 documents).
+A searchable database of AI/ML methods-paper metadata: records classified by LLM processing, using a
+method validated against a hand-annotated expert benchmark before being scaled, cross-linked to
+[Europe PMC](https://europepmc.org/). It maps the AI/ML landscape in the life sciences at scale
+(currently ~827,000 documents). Individual records are not curator-reviewed.
 
 Live at [observatory.dome-ml.org](https://observatory.dome-ml.org/). Part of the
 [DOME-ML](https://dome-ml.org/) family, alongside the [DOME Registry](https://registry.dome-ml.org/).
