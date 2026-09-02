@@ -16,6 +16,11 @@ import {
   authorClause,
   buildPromotedFilter,
   rankPromoted,
+  canUseTextIndex,
+  buildTextSearch,
+  buildTextSearchFilter,
+  isSingleBareTerm,
+  shouldFallBackFromText,
 } from './records.query';
 
 /** A filters object with every field left at its "untouched" default -- individual tests spread
@@ -543,5 +548,124 @@ describe('rankPromoted', () => {
 
   it('tolerates a missing title', () => {
     expect(rankPromoted([{ _id: 'x' }], 'random forest')).toEqual(['x']);
+  });
+});
+
+describe('canUseTextIndex', () => {
+  const filters = (raw: Record<string, string>) => parseSearchParams(raw).filters;
+
+  it('is true for an ordinary multi-word positives-only search', () => {
+    expect(canUseTextIndex(filters({ q: 'random forest' }))).toBe(true);
+  });
+
+  it('is FALSE when the classification filter is cleared', () => {
+    // This is a correctness guard, not an optimisation. positives_text is a partial index, and
+    // MongoDB 4.2 rejects a $text query that does not carry its filter predicate outright --
+    // confirmed against the live collection. Getting this wrong is a 500, not a slow query.
+    expect(canUseTextIndex(filters({ q: 'random forest', class: '' }))).toBe(false);
+  });
+
+  it('is false for any classification other than positives-only', () => {
+    expect(canUseTextIndex(filters({ q: 'random forest', class: 'negative' }))).toBe(false);
+    expect(canUseTextIndex(filters({ q: 'random forest', class: 'positive,negative' }))).toBe(
+      false,
+    );
+  });
+
+  it('is false with no free text at all', () => {
+    expect(canUseTextIndex(filters({}))).toBe(false);
+    expect(canUseTextIndex(filters({ oa: 'true' }))).toBe(false);
+  });
+
+  it('is false for a lone bare word -- recall, not correctness', () => {
+    expect(canUseTextIndex(filters({ q: 'neuro' }))).toBe(false);
+    expect(canUseTextIndex(filters({ q: 'transformer' }))).toBe(false);
+  });
+
+  it('is true for an author-shaped query, which is a phrase rather than a fragment', () => {
+    expect(canUseTextIndex(filters({ q: 'Farrell G' }))).toBe(true);
+  });
+
+  it('is true for a single QUOTED phrase', () => {
+    expect(canUseTextIndex(filters({ q: '"random forest"' }))).toBe(true);
+  });
+});
+
+describe('isSingleBareTerm', () => {
+  it('recognises the shape that must stay off the index', () => {
+    expect(isSingleBareTerm('neuro')).toBe(true);
+    expect(isSingleBareTerm('cancer')).toBe(true);
+  });
+
+  it('does not claim multi-word, quoted or author-shaped queries', () => {
+    expect(isSingleBareTerm('random forest')).toBe(false);
+    expect(isSingleBareTerm('"random forest"')).toBe(false);
+    expect(isSingleBareTerm('Farrell G')).toBe(false);
+  });
+
+  it('ignores a dropped single-character token', () => {
+    // searchTerms drops "a", leaving one real term.
+    expect(isSingleBareTerm('a cancer')).toBe(true);
+  });
+});
+
+describe('buildTextSearch', () => {
+  it('passes ordinary terms BARE so they stem', () => {
+    // Quoting a term turns stemming off: "prediction" matched 3,415 on the probe where bare
+    // prediction matched 5,320. The regex clauses alongside do the AND, so bare is safe here.
+    expect(buildTextSearch('random forest')).toBe('random forest');
+  });
+
+  it('keeps a user-quoted phrase quoted', () => {
+    expect(buildTextSearch('"random forest" sepsis')).toBe('"random forest" sepsis');
+  });
+
+  it('turns an author-shaped query into a phrase', () => {
+    expect(buildTextSearch('Farrell G')).toBe('"Farrell G"');
+    expect(buildTextSearch('Farrell G.')).toBe('"Farrell G"');
+    expect(buildTextSearch('Farrell, G')).toBe('"Farrell G"');
+    expect(buildTextSearch('Tosatto SCE')).toBe('"Tosatto SCE"');
+  });
+});
+
+describe('buildTextSearchFilter', () => {
+  const filters = (raw: Record<string, string>) => parseSearchParams(raw).filters;
+
+  it('returns null when the text index is not usable', () => {
+    expect(buildTextSearchFilter(filters({ q: 'random forest', class: '' }))).toBeNull();
+    expect(buildTextSearchFilter(filters({ q: 'neuro' }))).toBeNull();
+    expect(buildTextSearchFilter(filters({}))).toBeNull();
+  });
+
+  it('keeps the regex clauses alongside $text -- they are what preserve recall', () => {
+    // Measured live: this composite returns identical counts to the regex-only filter
+    // (random forest 45,116; deep learning 70,661). $text only selects candidates.
+    const built = JSON.stringify(buildTextSearchFilter(filters({ q: 'random forest' })));
+    expect(built).toContain('$text');
+    expect(built).toContain('publication_metadata.title');
+    expect(built).toContain('publication_metadata.abstract');
+  });
+
+  it('carries the classification predicate the partial index requires', () => {
+    const built = JSON.stringify(buildTextSearchFilter(filters({ q: 'random forest' })));
+    expect(built).toContain('llm_classification.classification');
+  });
+
+  it('carries the other filters too, so the index path never widens a search', () => {
+    const built = JSON.stringify(
+      buildTextSearchFilter(filters({ q: 'random forest', oa: 'true', year: '2020-' })),
+    );
+    expect(built).toContain('source.access.open_access');
+    expect(built).toContain('publication_metadata.year');
+  });
+});
+
+describe('shouldFallBackFromText', () => {
+  const f = parseSearchParams({ q: 'random forest' }).filters;
+
+  it('falls back only on zero -- every other recall risk is handled by the guard', () => {
+    expect(shouldFallBackFromText(f, 0)).toBe(true);
+    expect(shouldFallBackFromText(f, 1)).toBe(false);
+    expect(shouldFallBackFromText(f, 45116)).toBe(false);
   });
 });

@@ -423,6 +423,112 @@ export function buildMongoFilter(filters: ParsedFilters): FilterQuery<RecordDocu
   return clauses.length ? { $and: clauses } : {};
 }
 
+/** Name of the partial text index on `Content`. The backend never requires it to exist -- see
+ *  RecordsService's boot detection -- but when it does, this is what it is called. */
+export const TEXT_INDEX_NAME = 'positives_text';
+
+/**
+ * True when a `$text` query is legal for these filters.
+ *
+ * This is not an optimisation check, it is a correctness guard. `positives_text` is a PARTIAL index
+ * (`partialFilterExpression: { classification: "positive" }`), and MongoDB 4.2 does not quietly
+ * fall back to a collection scan when a `$text` query fails to carry that predicate -- it REJECTS
+ * the query outright:
+ *
+ *   planner returned error :: caused by :: failed to use text index to satisfy $text query
+ *
+ * Confirmed against the live collection after the index was built, 2026-09-02. So a search with the
+ * classification filter cleared (`class=`, which resolveClassification treats as "every
+ * classification") must take the regex path, or it becomes a 500 rather than a slow query.
+ */
+export function canUseTextIndex(filters: ParsedFilters): boolean {
+  return (
+    Boolean(filters.q) &&
+    filters.classification.length === 1 &&
+    filters.classification[0] === 'positive' &&
+    // A lone bare word is excluded on recall grounds, not correctness -- see isSingleBareTerm.
+    !isSingleBareTerm(filters.q as string)
+  );
+}
+
+/**
+ * The `$search` string for a query.
+ *
+ * Terms are passed BARE, not individually quoted, which looks wrong until you measure it. Quoting a
+ * term disables stemming for it: `"prediction"` matched 3,415 documents in the probe where bare
+ * `prediction` matched 5,320 (it also finds "predict", "predicts", "predicting"). Bare terms are
+ * OR'd rather than AND'd, but that does not widen the result -- buildTextSearchFilter keeps the
+ * existing per-term regex clauses alongside, and those do the AND. `$text` is there to select
+ * candidates from the index; the regex clauses decide what actually matches.
+ *
+ * An author-shaped query becomes a quoted phrase: measured `"Farrell G"` -> the 2 correct records
+ * in 562ms against the live collection, versus ~3.4s for the equivalent author regex.
+ */
+export function buildTextSearch(q: string): string {
+  const author = parseAuthorName(q);
+  if (author) return `"${author.surname} ${author.initials}"`;
+  // A phrase the user quoted stays quoted; everything else goes in bare so it can stem.
+  return tokenizeQuery(q)
+    .map((term) => (term.includes(' ') ? `"${term}"` : term))
+    .join(' ');
+}
+
+/**
+ * buildMongoFilter's result with a `$text` clause added, or null when `$text` is not usable here.
+ *
+ * The regex clauses are deliberately kept. Measured against the live collection, this composite
+ * returns EXACTLY the same counts as the regex-only filter -- random forest 45,116, deep learning
+ * 70,661, single cell transformer 187, graph neural network 5,749, identical in every case -- while
+ * running 1.2-4.6x faster, because `$text` narrows to a few thousand candidates via the index and
+ * the regexes only ever run on those. Recall is unchanged; there is no behaviour to explain to a
+ * reader, only a speed difference.
+ */
+export function buildTextSearchFilter(filters: ParsedFilters): FilterQuery<RecordDocument> | null {
+  if (!canUseTextIndex(filters)) return null;
+  const base = buildMongoFilter(filters) as { $and?: FilterQuery<RecordDocument>[] };
+  if (!base.$and) return null;
+  return { $and: [...base.$and, { $text: { $search: buildTextSearch(filters.q as string) } }] };
+}
+
+/**
+ * A single unquoted word -- the one shape where the `$text` gate can lose recall, so it is kept off
+ * the index path entirely.
+ *
+ * A multi-word query is safe because the regex clauses alongside `$text` do the actual narrowing:
+ * measured against the live collection, the composite returns *identical* counts to the regex-only
+ * filter (random forest 45,116, deep learning 70,661, single cell transformer 187, graph neural
+ * network 5,749). A lone term has no such second clause to rescue it -- whatever `$text` fails to
+ * select is simply gone.
+ *
+ * For real words that costs little, because stemming is good: `predict` finds 98% of what the regex
+ * finds, `transform` 99.9%, `cell` 92%. But for a fragment that is not a stem it is severe --
+ * `neuro` returned 1,701 against the live corpus where the regex finds roughly 26,500, and on the
+ * probe `immuno` found 3% of the regex total, `geno` 0%, `onco` and `bioinform` nothing at all.
+ * Those are ordinary biomedical combining forms people really do type.
+ *
+ * There is no cheap way to tell a fragment from a real word before running the query, and an
+ * absolute "too few results" threshold does not survive the jump from a 25k probe to 355k records
+ * (5% recall is still over a thousand rows). So the rule is simply: never trade recall for speed on
+ * a lone word. Those searches keep exactly the behaviour they have today.
+ *
+ * Author-shaped queries are exempt -- they are a phrase, not a fragment, and `"Farrell G"` on the
+ * index is both more precise and 6x faster.
+ */
+export function isSingleBareTerm(q: string): boolean {
+  return !q.includes('"') && searchTerms(q).length === 1 && parseAuthorName(q) === undefined;
+}
+
+/**
+ * Whether to discard the `$text` result and re-run the query the old way.
+ *
+ * Only zero remains: every other recall risk is handled by keeping the query off the index path in
+ * the first place (canUseTextIndex). A zero here means the index genuinely knows nothing about
+ * these terms, and the broader matcher is worth the one wasted round trip.
+ */
+export function shouldFallBackFromText(_filters: ParsedFilters, total: number): boolean {
+  return total === 0;
+}
+
 /**
  * The narrower "these are the ones you actually meant" tier, used to order results -- never to
  * decide which ones match. It is a strict subset of buildMongoFilter's result for the same

@@ -1,4 +1,10 @@
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+  OnModuleInit,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, mongo } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
@@ -10,7 +16,11 @@ import {
   buildPagination,
   buildPromotedFilter,
   buildSortSpec,
+  buildTextSearchFilter,
   canonicalCacheKey,
+  canUseTextIndex,
+  shouldFallBackFromText,
+  TEXT_INDEX_NAME,
   parseSearchParams,
   PromotedRow,
   rankPromoted,
@@ -77,14 +87,40 @@ function isSearchTimeout(err: unknown): boolean {
 }
 
 @Injectable()
-export class RecordsService {
+export class RecordsService implements OnModuleInit {
   private readonly logger = new Logger(RecordsService.name);
+
+  /** Whether `positives_text` exists on the collection. Checked once at boot, mirroring how
+   *  FacetsService caches its values there. The backend is correct either way: without the index
+   *  every search takes the regex path it always took. */
+  private textIndexAvailable = false;
 
   constructor(
     @InjectModel('Content') private readonly model: Model<RecordDocument>,
     private readonly countService: CountService,
     private readonly config: ConfigService<AppConfig, true>,
   ) {}
+
+  /** Non-fatal by design: a failure here means "no index", which is just the slower path. The app
+   *  must still boot and serve /api/health when the database server is unreachable. */
+  async onModuleInit(): Promise<void> {
+    try {
+      // Model.listIndexes(), not collection.listIndexes().toArray() -- the latter is what the raw
+      // driver exposes and it is NOT a cursor on Mongoose 8's bundled driver (confirmed live: it
+      // throws "toArray is not a function"). The rows are typed as loose Documents either way, so
+      // name the one field we read rather than letting an `any` leak into the path decision.
+      const specs = (await this.model.listIndexes()) as { name?: string }[];
+      this.textIndexAvailable = specs.some((spec) => spec.name === TEXT_INDEX_NAME);
+      this.logger.log(
+        this.textIndexAvailable
+          ? `Text index "${TEXT_INDEX_NAME}" present -- free-text search will use it`
+          : `Text index "${TEXT_INDEX_NAME}" absent -- free-text search will use the regex path`,
+      );
+    } catch (err) {
+      this.logger.warn(`Could not list indexes (assuming none): ${String(err)}`);
+      this.textIndexAvailable = false;
+    }
+  }
 
   async search(raw: RawSearchParams): Promise<SearchResult> {
     const { filters, sort } = parseSearchParams(raw);
@@ -100,6 +136,13 @@ export class RecordsService {
         ? { filter: buildPromotedFilter(filters), q: filters.q as string }
         : undefined;
 
+    // Fast path: let the text index select candidates. Falls through to the regex path below when
+    // it isn't usable, isn't there, or didn't find enough -- see shouldFallBackFromText.
+    if (this.textIndexAvailable && canUseTextIndex(filters)) {
+      const textResult = await this.tryTextSearch(filters, sort, skip, pageSize, cacheKey);
+      if (textResult) return { ...textResult, page, pageSize };
+    }
+
     const [pageResult, countResult] = await Promise.all([
       this.fetchPage(filter, sort, skip, pageSize, hasFreeText, promoted),
       this.countService.count(filter, cacheKey),
@@ -113,6 +156,103 @@ export class RecordsService {
       pageSize,
       timedOut: pageResult.timedOut,
     };
+  }
+
+  /**
+   * The `$text` path. Returns null to mean "use the regex path instead" -- either because the
+   * composite found nothing, or because it is the single-bare-term case where stemming loses too
+   * much recall (see shouldFallBackFromText).
+   *
+   * The page fetch and the count run in parallel exactly as the regex path does, so a fallback
+   * wastes one round trip rather than serialising two. That trade is deliberate: falling back is
+   * rare, and making the common case serial to avoid it would be slower overall.
+   */
+  private async tryTextSearch(
+    filters: ReturnType<typeof parseSearchParams>['filters'],
+    sort: SortOrder,
+    skip: number,
+    limit: number,
+    cacheKey: string,
+  ): Promise<Omit<SearchResult, 'page' | 'pageSize'> | null> {
+    const textFilter = buildTextSearchFilter(filters);
+    if (!textFilter) return null;
+
+    // A separate cache entry from the regex path's: for a single-bare-term fragment the two
+    // genuinely disagree ("neuro" is 43 by text, 806 by regex), and caching them under one key
+    // would let the discarded number leak into the path that fell back.
+    const maxTimeMs = this.config.get('mongo.searchMaxTimeMs', { infer: true });
+
+    try {
+      const [items, countResult] = await Promise.all([
+        this.runTextFetch(textFilter, sort, skip, limit, maxTimeMs),
+        this.countService.count(textFilter, `${cacheKey}|text`),
+      ]);
+
+      if (shouldFallBackFromText(filters, countResult.total)) {
+        this.logger.debug(
+          `Text search returned ${countResult.total} for "${filters.q}" -- falling back to regex`,
+        );
+        return null;
+      }
+
+      return {
+        items,
+        total: countResult.total,
+        totalRelation: countResult.totalRelation,
+      };
+    } catch (err) {
+      if (!isSearchTimeout(err)) throw err;
+      // An indexed search that still ran out of budget is a signal the regex path won't beat, but
+      // returning null keeps the old behaviour rather than inventing a new failure mode.
+      this.logger.warn(`Text search exceeded its ${maxTimeMs}ms budget: ${String(err)}`);
+      return null;
+    }
+  }
+
+  /**
+   * Fetches one page from the text index, ranked.
+   *
+   * Uses the same project -> sort -> skip/limit -> re-fetch-by-_id shape runFetch already uses for
+   * year and citation sorts, for the same two reasons: it carries `allowDiskUse` (MongoDB 4.2's
+   * find().sort() has none and a 32MB in-memory sort ceiling, which a textScore sort over tens of
+   * thousands of full documents would hit), and it sorts a few dozen bytes per document instead of
+   * ~3.5KB. Measured on the probe, the aggregation also just is faster than find().sort() at every
+   * depth tried: 284ms vs 399ms at skip 0, 200ms vs 886ms at skip 2,000.
+   */
+  private async runTextFetch(
+    filter: ReturnType<typeof buildMongoFilter>,
+    sort: SortOrder,
+    skip: number,
+    limit: number,
+    maxTimeMs: number,
+  ): Promise<RecordDocument[]> {
+    // 'relevance' now genuinely is one -- textScore, with the index's own field weights (title 10,
+    // authors 5, abstract 1) behind it. The _id tiebreak keeps paging stable across equal scores.
+    const sortSpec: Record<string, 1 | -1> =
+      sort === 'relevance' ? { score: -1, _id: 1 } : { ...buildSortSpec(sort) };
+
+    const idRows = await this.model
+      .aggregate<{ _id: string }>([
+        { $match: filter },
+        {
+          $project: {
+            _id: 1,
+            score: { $meta: 'textScore' },
+            'publication_metadata.year': 1,
+            'publication_metadata.citation_count': 1,
+          },
+        },
+        { $sort: sortSpec },
+        { $skip: skip },
+        { $limit: limit },
+      ])
+      .option({ maxTimeMS: maxTimeMs, allowDiskUse: true })
+      .exec();
+
+    return this.fetchByIds(
+      idRows.map((row) => row._id),
+      maxTimeMs,
+    );
   }
 
   async findByPid(pid: string): Promise<RecordDocument> {
