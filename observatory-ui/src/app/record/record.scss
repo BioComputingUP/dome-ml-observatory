@@ -1,176 +1,425 @@
+// The record page is not inside .section-layout, so the rail variable .band's full-bleed breakout
+// reads doesn't exist here. Declaring it as zero keeps that calc() valid and the bands full-width.
 .record-page {
-  // main no longer carries Bootstrap's pt-4 (see app.html) -- this page has no hero/header band
-  // of its own to supply top spacing, so it needs its own now.
-  padding-top: var(--space-5);
-  padding-bottom: var(--space-8);
-  max-width: 900px;
+  --rail-total: 0px;
 }
 
-.back-link {
-  display: inline-block;
-  font-size: var(--font-size-sm);
-  margin-bottom: var(--space-4);
-  text-decoration: none;
+.loading {
+  color: var(--status-neutral);
 }
 
+// ---------- Header band ----------------------------------------------------------------------
 .record-header {
-  margin-bottom: var(--space-6);
+  .back-pill {
+    margin-bottom: var(--space-5);
+
+    // .cta-pill's own colour rules assume a light ground; on the dark band the accent fill still
+    // reads, but the focus ring needs the lighter offset to be visible at all.
+    &:focus-visible {
+      outline-color: #ffffff;
+    }
+  }
 
   h1 {
     font-size: var(--font-size-2xl);
     font-weight: 700;
-    color: var(--observatory-primary);
     line-height: 1.3;
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--space-5);
+  }
+
+  // .band-brand paints headings white; these are the non-heading bits that also need it.
+  code,
+  dd,
+  .record-fact dt {
+    color: #ffffff;
   }
 }
 
-.authors {
-  font-size: var(--font-size-base);
-  margin-bottom: var(--space-1);
-}
-
-.meta {
-  font-size: var(--font-size-sm);
-  color: var(--status-neutral);
-  margin-bottom: var(--space-3);
-}
-
-.record-section {
-  padding-top: var(--space-5);
-  margin-bottom: var(--space-5);
-  border-top: 1px solid var(--status-neutral-bg);
-
-  h2 {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    flex-wrap: wrap;
-    font-size: var(--font-size-lg);
-    font-weight: 700;
-    color: var(--observatory-primary);
-    margin-bottom: var(--space-3);
-  }
-
-  h3 {
-    font-size: var(--font-size-base);
-    font-weight: 600;
-    color: var(--observatory-primary);
-    margin-bottom: var(--space-2);
-  }
-}
-
-.find-elsewhere {
-  border-top: 3px solid var(--observatory-accent);
-}
-
-.section-note {
-  font-size: var(--font-size-sm);
-  color: var(--status-neutral);
-  margin-bottom: var(--space-4);
-}
-
-.planned-heading {
-  margin-top: var(--space-5);
-}
-
-.link-grid {
+// Labelled rows, one fact each. Replaces an unlabelled author paragraph plus a fused
+// "journal · year" line -- each of those is a separate fact and reads faster labelled.
+.record-facts {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: var(--space-3);
-}
+  grid-template-columns: 160px 1fr;
+  gap: var(--space-2) var(--space-4);
+  margin-bottom: var(--space-5);
 
-.abstract {
-  line-height: 1.7;
-
-  // Corpus abstracts use <h4> as section markers ("Background", "Methods"); render them as
-  // inline-weight labels rather than full headings so they don't outrank the page's own structure.
-  :is(h1, h2, h3, h4, h5, h6) {
-    font-size: var(--font-size-base);
-    font-weight: 700;
-    color: var(--observatory-primary);
-    margin: var(--space-3) 0 var(--space-1);
+  // Lets the semantic <div> wrapper around each dt/dd pair sit inside the grid without breaking
+  // the two-column alignment -- same technique as the processing page's round facts.
+  > div {
+    display: contents;
   }
-}
-
-.identifiers {
-  margin: 0;
-}
-
-.identifier-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-2) 0;
-  border-bottom: 1px solid #f2f4f5;
 
   dt {
-    flex: 0 0 130px;
-    font-weight: 600;
-    color: var(--status-neutral);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
     font-size: var(--font-size-sm);
+    font-weight: 700;
+    opacity: 0.75;
+
+    i {
+      color: var(--observatory-accent);
+      font-size: 0.9em;
+    }
   }
 
   dd {
     margin: 0;
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    word-break: break-all;
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
   }
 
-  code {
-    font-size: var(--font-size-sm);
-    color: var(--observatory-primary);
+  @media (max-width: 575px) {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+
+    > div {
+      display: block;
+      margin-bottom: var(--space-3);
+    }
   }
 }
 
-.machine-tag {
+.pid-value {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+
+  code {
+    font-size: var(--font-size-xs);
+    background-color: rgba(255, 255, 255, 0.12);
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-sm);
+    word-break: break-all;
+  }
+}
+
+// ---------- Shared section furniture ----------------------------------------------------------
+.section-note {
+  color: var(--status-neutral);
+  margin-bottom: var(--space-4);
+  max-width: 70ch;
+}
+
+.abstract {
+  line-height: 1.7;
+  max-width: 80ch;
+
+  :is(h1, h2, h3, h4, h5, h6) {
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--observatory-primary);
+    margin: var(--space-4) 0 var(--space-1);
+  }
+
+  // Linkified repository URLs -- underlined at rest so they read as links inside running prose.
+  a {
+    word-break: break-word;
+  }
+}
+
+// ---------- Article sources -------------------------------------------------------------------
+.access-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-3);
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-5);
+}
+
+.access-tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+
+  &.tone-positive {
+    background-color: var(--status-positive-bg);
+    border-color: var(--status-positive-bg);
+
+    .access-value {
+      color: var(--status-positive);
+    }
+  }
+
+  &.tone-neutral {
+    background-color: var(--status-neutral-bg);
+
+    .access-value {
+      color: var(--status-neutral);
+    }
+  }
+
+  // "Not recorded" is not "no" -- it gets the uncertain tone, not the negative one.
+  &.tone-unknown {
+    background-color: var(--surface-card);
+    border-style: dashed;
+
+    .access-value {
+      color: var(--status-neutral);
+    }
+  }
+}
+
+.access-label {
   font-size: var(--font-size-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  padding: 2px var(--space-2);
-  border-radius: var(--radius-pill);
-  background-color: var(--status-undeterminable-bg);
-  color: var(--status-undeterminable);
+  color: var(--status-neutral);
+}
+
+.access-value {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+}
+
+.source-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-4);
+}
+
+.source-card,
+.asset-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.asset-card {
+  text-decoration: none;
+  color: inherit;
+}
+
+.source-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+
+  h3,
+  h4 {
+    margin: 0;
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--observatory-primary);
+  }
+}
+
+// Height-capped rather than boxed square, so wide wordmarks (PMC, Zenodo) stay legible next to
+// square marks -- same reasoning as the integrations grid.
+.source-logo {
+  flex-shrink: 0;
+  width: auto;
+  max-width: 96px;
+  height: 32px;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.source-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background-color: rgba(246, 103, 41, 0.12);
+  color: var(--observatory-accent-dark);
+}
+
+.source-explainer {
+  font-size: var(--font-size-sm);
+  color: var(--status-neutral);
+  margin: 0;
+  flex-grow: 1;
+}
+
+// The identifier lives on the card of the resource it belongs to, rather than in a separate
+// Identifiers list -- it is the thing you copy when you are already looking at that source.
+.source-id {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border-default);
+
+  code {
+    font-size: var(--font-size-xs);
+    color: var(--observatory-primary);
+    word-break: break-all;
+  }
+}
+
+.source-id-label {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--observatory-accent-dark);
+}
+
+.source-open {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-decoration: none;
+
+  &::after {
+    content: ' →';
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--observatory-accent-dark);
+  }
+}
+
+.asset-group {
+  margin-bottom: var(--space-5);
+
+  > h3 {
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--observatory-accent-dark);
+    margin-bottom: var(--space-3);
+  }
+}
+
+// ---------- Processing (screening + enrichment) -----------------------------------------------
+// Two components of one section, side by side, so the machine-made judgement and the machine-made
+// tagging are read together rather than as unrelated blocks.
+.process-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.process-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.process-pending {
+  border-style: dashed;
+}
+
+.process-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+
+  h3 {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--observatory-primary);
+    flex-grow: 1;
+  }
+}
+
+.process-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background-color: rgba(246, 103, 41, 0.12);
+  color: var(--observatory-accent-dark);
 }
 
 .verdict {
   font-weight: 600;
-  margin-bottom: var(--space-3);
+  margin: 0;
+}
+
+.pending-note {
+  font-weight: 400;
+  color: var(--status-neutral);
 }
 
 .rationale {
-  border-left: 3px solid var(--status-neutral-bg);
+  margin: 0;
   padding-left: var(--space-4);
-  margin: 0 0 var(--space-3);
-  color: #444;
+  border-left: 3px solid var(--border-default);
   font-size: var(--font-size-sm);
   line-height: 1.6;
+  color: var(--status-neutral);
 }
 
-.expander {
-  border: none;
-  background: none;
-  padding: 0;
-  color: var(--observatory-primary);
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  text-decoration: underline;
-  cursor: pointer;
+.process-facts {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-default);
 
-  &:hover {
-    color: var(--observatory-accent);
+  > div {
+    display: contents;
+  }
+
+  dt {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--status-neutral);
+
+    i {
+      color: var(--observatory-accent);
+      font-size: 0.9em;
+    }
+  }
+
+  dd {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    word-break: break-word;
+
+    &.mono {
+      font-family: monospace;
+      font-size: var(--font-size-xs);
+      word-break: break-all;
+    }
+  }
+
+  @media (max-width: 575px) {
+    grid-template-columns: 1fr;
+
+    > div {
+      display: block;
+      margin-bottom: var(--space-2);
+    }
   }
 }
 
-.provenance {
-  margin-top: var(--space-3);
+// Dimmed em-dashes: an empty row should read as "nothing here yet", not as a broken value.
+.process-facts-pending dd {
+  color: var(--border-strong);
 }
 
 .tag-group {
-  margin-bottom: var(--space-4);
+  h4 {
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--status-neutral);
+    margin-bottom: var(--space-2);
+  }
 }
 
 .tag-list {
@@ -183,73 +432,52 @@
 
   a {
     display: inline-block;
-    padding: var(--space-1) var(--space-3);
+    padding: 2px var(--space-3);
     border-radius: var(--radius-pill);
     background-color: var(--status-neutral-bg);
     color: var(--observatory-primary);
     font-size: var(--font-size-xs);
-    font-weight: 600;
     text-decoration: none;
 
-    &:hover {
+    &:hover,
+    &:focus-visible {
       background-color: var(--observatory-accent);
-      color: white;
+      color: #ffffff;
     }
   }
 }
 
-.not-enriched {
-  font-size: var(--font-size-sm);
-  color: var(--status-neutral);
-  background-color: var(--status-neutral-bg);
-  border-radius: var(--radius-sm);
-  padding: var(--space-4);
-}
-
+// ---------- Cite ------------------------------------------------------------------------------
 .cite-buttons {
   display: flex;
-  gap: var(--space-2);
-  margin-bottom: var(--space-3);
-}
-
-.cite-button {
-  padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--observatory-primary);
-  border-radius: var(--radius-sm);
-  background: white;
-  color: var(--observatory-primary);
-  font-weight: 600;
-  font-size: var(--font-size-sm);
-  cursor: pointer;
-
-  &:hover {
-    background-color: var(--observatory-primary);
-    color: white;
-  }
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4);
 }
 
 .citation {
   display: flex;
   align-items: flex-start;
-  gap: var(--space-2);
-  background-color: #f8f9fa;
-  border-radius: var(--radius-sm);
-  padding: var(--space-3);
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background-color: var(--surface-sunken);
+  border-radius: var(--radius-md);
 
   pre {
-    flex: 1;
+    flex-grow: 1;
     margin: 0;
-    font-size: var(--font-size-xs);
     white-space: pre-wrap;
     word-break: break-word;
+    font-size: var(--font-size-sm);
   }
 }
 
+// ---------- Error states ----------------------------------------------------------------------
 .not-found {
-  text-align: center;
-  padding: var(--space-8) var(--space-4);
+  padding: var(--space-6) 0;
 
   h1 {
+    font-size: var(--font-size-2xl);
     color: var(--observatory-primary);
     margin-bottom: var(--space-3);
   }
@@ -257,27 +485,18 @@
   &.unavailable h1 {
     color: var(--status-undeterminable);
   }
-}
 
-.cta-button {
-  display: inline-block;
-  margin-top: var(--space-4);
-  background-color: white;
-  color: var(--observatory-accent);
-  border: 2px solid var(--observatory-accent);
-  padding: var(--space-3) var(--space-6);
-  border-radius: var(--radius-sm);
-  font-weight: 600;
-  text-decoration: none;
-
-  &:hover {
-    background-color: var(--observatory-accent);
-    color: white;
+  p {
+    color: var(--status-neutral);
+    margin-bottom: var(--space-5);
   }
 }
 
-.loading {
-  padding: var(--space-8) 0;
-  text-align: center;
-  color: var(--status-neutral);
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
 }

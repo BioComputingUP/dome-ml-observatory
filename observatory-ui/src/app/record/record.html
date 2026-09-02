@@ -1,199 +1,306 @@
-<div class="container-wide record-page">
+<div class="record-page">
   @if (loading()) {
-    <p class="loading">Loading record…</p>
+    <div class="band"><div class="band-inner"><p class="loading">Loading record…</p></div></div>
   } @else if (unavailable()) {
-    <div class="not-found unavailable" role="alert">
-      <h1>Temporarily unavailable</h1>
-      <p>The database couldn't be reached just now. This record may well exist — please retry shortly.</p>
-      <a routerLink="/search" class="cta-button">Back to search</a>
-    </div>
+    <div class="band"><div class="band-inner">
+      <div class="not-found" role="alert">
+        <h1>Temporarily unavailable</h1>
+        <p>The database couldn't be reached just now. This record may well exist — please retry shortly.</p>
+        <a routerLink="/search" [queryParams]="backToSearch()" class="cta-pill cta-pill-accent">
+          <i class="icon icon-common icon-search" aria-hidden="true"></i> Back to search
+        </a>
+      </div>
+    </div></div>
   } @else if (!found()) {
-    <div class="not-found">
-      <h1>Record not found</h1>
-      <p>No record matches that identifier. It may have been removed, or the link may be wrong.</p>
-      <a routerLink="/search" class="cta-button">Back to search</a>
-    </div>
+    <div class="band"><div class="band-inner">
+      <div class="not-found">
+        <h1>Record not found</h1>
+        <p>No record matches that identifier. It may have been removed, or the link may be wrong.</p>
+        <a routerLink="/search" [queryParams]="backToSearch()" class="cta-pill cta-pill-accent">
+          <i class="icon icon-common icon-search" aria-hidden="true"></i> Back to search
+        </a>
+      </div>
+    </div></div>
   } @else {
     <article>
-      <!-- ============ Core facts first ============ -->
-      <header class="record-header">
-        <a routerLink="/search" class="back-link">← Back to search</a>
-        <h1 [innerHTML]="titleHtml()"></h1>
-        @if (rec().publication_metadata.authors) {
-          <p class="authors">{{ rec().publication_metadata.authors }}</p>
-        }
-        @if (meta()) {
-          <p class="meta">{{ meta() }}</p>
-        }
-        <app-status-badge [record]="rec()" />
-      </header>
+      <!-- ===== Header: identity, on the same dark band the search page uses ===== -->
+      <div class="band band-brand record-header">
+        <div class="band-inner">
+          <a routerLink="/search" [queryParams]="backToSearch()" class="cta-pill cta-pill-accent back-pill">
+            <span aria-hidden="true">←</span> Back to search
+          </a>
 
-      @if (abstractHtml()) {
-        <section class="record-section">
-          <h2>Abstract</h2>
-          <div class="abstract" [innerHTML]="abstractHtml()"></div>
-        </section>
-      }
+          <h1 [innerHTML]="titleHtml()"></h1>
 
-      <!-- ============ The point of the page ============ -->
-      <section class="record-section find-elsewhere">
-        <h2>Find this elsewhere</h2>
-        <p class="section-note">
-          DOME Observatory holds metadata. These are the resources that hold the article, its full
-          text, and its associated assets.
-        </p>
-
-        @if (links().length) {
-          <div class="link-grid">
-            @for (link of links(); track link.label) {
-              <app-outbound-link [link]="link" />
+          <!-- One labelled fact per row. Journal and year used to be fused into a single
+               "journal · year" line with authors unlabelled above it. -->
+          <dl class="record-facts">
+            @if (authors()) {
+              <div class="record-fact">
+                <dt><i class="icon icon-common icon-users" aria-hidden="true"></i> Authors</dt>
+                <dd>{{ authors() }}</dd>
+              </div>
             }
-          </div>
-        }
-
-        <h3 class="planned-heading">Planned cross-links</h3>
-        <p class="section-note">
-          These destinations are reserved in the record schema and will populate once the
-          cross-linking pass runs.
-        </p>
-        <div class="link-grid">
-          @for (link of planned(); track link.label) {
-            <app-outbound-link [link]="link" />
-          }
-        </div>
-      </section>
-
-      <!-- ============ Identifiers ============ -->
-      <section class="record-section">
-        <h2>Identifiers</h2>
-        <dl class="identifiers">
-          @for (id of identifiers(); track id.label) {
-            <div class="identifier-row">
-              <dt>{{ id.label }}</dt>
-              <dd>
-                <code>{{ id.value }}</code>
-                <app-copy-button [value]="id.value" [label]="id.label" />
+            @if (journal()) {
+              <div class="record-fact">
+                <dt><i class="icon icon-common icon-book" aria-hidden="true"></i> Journal</dt>
+                <dd>{{ journal() }}</dd>
+              </div>
+            }
+            @if (year()) {
+              <div class="record-fact">
+                <dt><i class="icon icon-common icon-calendar" aria-hidden="true"></i> Year</dt>
+                <dd>{{ year() }}</dd>
+              </div>
+            }
+            <div class="record-fact">
+              <dt><i class="icon icon-common icon-id-badge" aria-hidden="true"></i> Observatory PID</dt>
+              <dd class="pid-value">
+                <code>{{ pid() }}</code>
+                <app-copy-button [value]="pid()" label="Observatory PID" />
               </dd>
             </div>
-          }
-        </dl>
-      </section>
-
-      <!-- ============ Access ============ -->
-      <section class="record-section">
-        <h2>Access</h2>
-        <dl class="identifiers">
-          <div class="identifier-row">
-            <dt>Open access</dt>
-            <dd>{{ rec().source.access.open_access ? 'Yes' : 'No' }}</dd>
-          </div>
-          <div class="identifier-row">
-            <dt>Licence</dt>
-            <dd>{{ rec().source.access.license || 'Not recorded' }}</dd>
-          </div>
-          <div class="identifier-row">
-            <dt>Full text</dt>
-            <dd>{{ rec().source.access.fulltext_available ? 'Available' : 'Not available' }}</dd>
-          </div>
-        </dl>
-      </section>
-
-      <!-- ============ Classification: machine-generated, and said so ============ -->
-      <section class="record-section">
-        <h2>
-          Screening decision
-          <span class="machine-tag">Machine-generated</span>
-        </h2>
-        <p class="verdict">
-          {{
-            rec().llm_classification.classification === 'positive'
-              ? 'Classified as an AI/ML methods paper.'
-              : rec().llm_classification.classification === 'negative'
-                ? 'Screened out — not an AI/ML methods paper.'
-                : 'Undeterminable from the available metadata.'
-          }}
-        </p>
-        @if (rec().llm_classification.rationale) {
-          <blockquote class="rationale">{{ rec().llm_classification.rationale }}</blockquote>
-        }
-
-        <button
-          type="button"
-          class="expander"
-          (click)="showProvenance.set(!showProvenance())"
-          [attr.aria-expanded]="showProvenance()"
-        >
-          {{ showProvenance() ? 'Hide' : 'Show' }} how this was produced
-        </button>
-
-        @if (showProvenance()) {
-          <dl class="identifiers provenance">
-            <div class="identifier-row">
-              <dt>Model</dt>
-              <dd>{{ rec().llm_classification.model_id || 'Not recorded' }}</dd>
-            </div>
-            <div class="identifier-row">
-              <dt>Prompt version</dt>
-              <dd>{{ rec().llm_classification.prompt_version || 'Not recorded' }}</dd>
-            </div>
-            <div class="identifier-row">
-              <dt>Criteria hash</dt>
-              <dd><code>{{ rec().llm_classification.ruleset_sha256 || 'Not recorded' }}</code></dd>
-            </div>
-            <div class="identifier-row">
-              <dt>Run at</dt>
-              <dd>{{ rec().llm_classification.timestamp || 'Not recorded' }}</dd>
-            </div>
           </dl>
-        }
-      </section>
 
-      <!-- ============ Enrichment ============ -->
-      <section class="record-section">
-        <h2>
-          AI/ML enrichment
-          @if (enriched()) {
-            <span class="machine-tag">Machine-generated</span>
+          <app-status-badge [record]="rec()" />
+        </div>
+      </div>
+
+      <!-- ===== Abstract ===== -->
+      @if (abstractHtml()) {
+        <div class="band">
+          <div class="band-inner">
+            <div class="card-header">
+              <span class="icon-badge"><i class="icon icon-common icon-documentation" aria-hidden="true"></i></span>
+              <h2>Abstract</h2>
+            </div>
+            <div class="abstract" [innerHTML]="abstractHtml()"></div>
+          </div>
+        </div>
+      }
+
+      <!-- ===== Article sources, with access shown alongside them ===== -->
+      <div class="band band-tint">
+        <div class="band-inner">
+          <div class="card-header">
+            <span class="icon-badge"><i class="icon icon-common icon-globe" aria-hidden="true"></i></span>
+            <h2>Article sources</h2>
+          </div>
+          <p class="section-note">
+            Observatory holds the metadata. These are the resources that hold the article itself,
+            its full text and its indexing.
+          </p>
+
+          <ul class="access-tiles">
+            <li class="access-tile" [class]="'tone-' + access().openAccess.tone">
+              <span class="access-label">Access</span>
+              <span class="access-value">{{ access().openAccess.text }}</span>
+            </li>
+            <li class="access-tile" [class]="'tone-' + access().licence.tone">
+              <span class="access-label">Licence</span>
+              <span class="access-value">{{ access().licence.text }}</span>
+            </li>
+            <li class="access-tile" [class]="'tone-' + access().fulltext.tone">
+              <span class="access-label">Full text</span>
+              <span class="access-value">{{ access().fulltext.text }}</span>
+            </li>
+          </ul>
+
+          @if (sources().length) {
+            <div class="source-grid">
+              @for (source of sources(); track source.label) {
+                <div class="source-card info-panel">
+                  <div class="source-head">
+                    @if (source.logo) {
+                      <img [src]="source.logo" [alt]="source.label + ' logo'" class="source-logo" />
+                    } @else {
+                      <span class="source-icon" aria-hidden="true">
+                        <i class="icon icon-common" [class]="source.icon"></i>
+                      </span>
+                    }
+                    <h3>{{ source.label }}</h3>
+                  </div>
+                  <p class="source-explainer">{{ source.explainer }}</p>
+                  <div class="source-id">
+                    <span class="source-id-label">{{ source.idLabel }}</span>
+                    <code>{{ source.idValue }}</code>
+                    <app-copy-button [value]="source.idValue" [label]="source.idLabel" />
+                  </div>
+                  <a [href]="source.url" target="_blank" rel="noopener" class="source-open">
+                    Open at {{ source.label }}
+                    <span class="visually-hidden">(opens in a new tab)</span>
+                  </a>
+                </div>
+              }
+            </div>
+          } @else {
+            <p class="section-note">No external identifier is recorded for this article.</p>
           }
-        </h2>
+        </div>
+      </div>
 
-        @if (enriched()) {
-          @for (group of enrichmentTags(); track group.label) {
-            <div class="tag-group">
-              <h3>{{ group.label }}</h3>
-              <ul class="tag-list">
-                @for (tag of group.values; track tag.value) {
-                  <li>
-                    <a [routerLink]="['/search']" [queryParams]="tagQueryParams(group.param, tag.value)">
-                      {{ tag.display }}
+      <!-- ===== Cross-linked assets. Rendered only when something is actually linked. ===== -->
+      @if (assetGroups().length) {
+        <div class="band">
+          <div class="band-inner">
+            <div class="card-header">
+              <span class="icon-badge"><i class="icon icon-common icon-sitemap" aria-hidden="true"></i></span>
+              <h2>Cross-linked assets</h2>
+            </div>
+            <p class="section-note">
+              The data, code, models and structured annotations this paper released, linked from
+              the repositories that hold them.
+            </p>
+            @for (group of assetGroups(); track group.group) {
+              <section class="asset-group">
+                <h3>{{ group.group }}</h3>
+                <div class="source-grid">
+                  @for (asset of group.items; track asset.label) {
+                    <a [href]="asset.url" target="_blank" rel="noopener" class="asset-card card">
+                      <div class="source-head">
+                        @if (asset.logo) {
+                          <img [src]="asset.logo" [alt]="asset.label + ' logo'" class="source-logo" />
+                        } @else {
+                          <span class="source-icon" aria-hidden="true">
+                            <i class="icon icon-common" [class]="asset.icon"></i>
+                          </span>
+                        }
+                        <h4>{{ asset.label }}</h4>
+                      </div>
+                      <p class="source-explainer">{{ asset.explainer }}</p>
+                      <span class="visually-hidden">(opens in a new tab)</span>
                     </a>
-                  </li>
+                  }
+                </div>
+              </section>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- ===== How this record was processed: screening + enrichment, one section ===== -->
+      <div class="band band-tint">
+        <div class="band-inner">
+          <div class="card-header">
+            <span class="icon-badge"><i class="icon icon-common icon-cogs" aria-hidden="true"></i></span>
+            <h2>How this record was processed</h2>
+          </div>
+          <p class="section-note">
+            Both steps below are machine-generated. The method behind them was validated against a
+            hand-annotated expert benchmark before it was run across the corpus — see
+            <a routerLink="/about">how the corpus is built</a>.
+          </p>
+
+          <div class="process-grid">
+            <!-- Screening -->
+            <section class="process-card info-panel">
+              <div class="process-head">
+                <span class="process-badge" aria-hidden="true">
+                  <i class="icon icon-common icon-filter"></i>
+                </span>
+                <h3>Screening decision</h3>
+                <span class="badge-chip tone-neutral">Machine-generated</span>
+              </div>
+
+              <p class="verdict">{{ verdict() }}</p>
+
+              @if (rec().llm_classification.rationale) {
+                <blockquote class="rationale">{{ rec().llm_classification.rationale }}</blockquote>
+              }
+
+              <dl class="process-facts">
+                @for (fact of screeningFacts(); track fact.label) {
+                  <div>
+                    <dt><i class="icon icon-common" [class]="fact.icon" aria-hidden="true"></i> {{ fact.label }}</dt>
+                    <dd [class.mono]="fact.mono">{{ fact.value || 'Not recorded' }}</dd>
+                  </div>
                 }
-              </ul>
+              </dl>
+            </section>
+
+            <!-- Enrichment. Keeps the same shape when it hasn't run -- which is every record today. -->
+            <section class="process-card info-panel" [class.process-pending]="!enriched()">
+              <div class="process-head">
+                <span class="process-badge" aria-hidden="true">
+                  <i class="icon icon-common icon-tags"></i>
+                </span>
+                <h3>AI/ML enrichment</h3>
+                @if (enriched()) {
+                  <span class="badge-chip tone-neutral">Machine-generated</span>
+                } @else {
+                  <span class="badge-chip tone-undeterminable">Not yet run</span>
+                }
+              </div>
+
+              @if (enriched()) {
+                <p class="verdict">Tagged against the published controlled vocabularies.</p>
+                @for (group of enrichmentTags(); track group.label) {
+                  <div class="tag-group">
+                    <h4>{{ group.label }}</h4>
+                    <ul class="tag-list">
+                      @for (tag of group.values; track tag.value) {
+                        <li>
+                          <a [routerLink]="['/search']" [queryParams]="tagQueryParams(group.param, tag.value)">
+                            {{ tag.display }}
+                          </a>
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                }
+                <dl class="process-facts">
+                  @for (fact of enrichmentFacts(); track fact.label) {
+                    <div>
+                      <dt><i class="icon icon-common" [class]="fact.icon" aria-hidden="true"></i> {{ fact.label }}</dt>
+                      <dd>{{ fact.value || 'Not recorded' }}</dd>
+                    </div>
+                  }
+                </dl>
+              } @else {
+                <p class="verdict pending-note">
+                  Domain, learning paradigm, model family and model type are assigned by a separate
+                  pass that is still running across the corpus. This record hasn't reached it yet.
+                </p>
+                <dl class="process-facts process-facts-pending">
+                  @for (label of enrichmentPlaceholders; track label) {
+                    <div>
+                      <dt><i class="icon icon-common icon-tags" aria-hidden="true"></i> {{ label }}</dt>
+                      <dd aria-label="Not yet assigned">—</dd>
+                    </div>
+                  }
+                </dl>
+              }
+            </section>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Cite ===== -->
+      <div class="band">
+        <div class="band-inner">
+          <div class="card-header">
+            <span class="icon-badge"><i class="icon icon-common icon-copyright" aria-hidden="true"></i></span>
+            <h2>Cite this record</h2>
+          </div>
+          <div class="cite-buttons">
+            <button type="button" class="cta-pill cta-pill-primary" (click)="showCitation('bibtex')">
+              <i class="icon icon-common icon-file-signature" aria-hidden="true"></i> BibTeX
+            </button>
+            <button type="button" class="cta-pill cta-pill-primary" (click)="showCitation('ris')">
+              <i class="icon icon-common icon-download" aria-hidden="true"></i> RIS
+            </button>
+          </div>
+          @if (citationFormat()) {
+            <div class="citation">
+              <pre>{{ citationText() }}</pre>
+              <app-copy-button
+                [value]="citationText()"
+                [label]="citationFormat() === 'bibtex' ? 'BibTeX' : 'RIS'"
+              />
             </div>
           }
-        } @else {
-          <p class="not-enriched">
-            This record has not been enriched yet. Domain, learning paradigm, model family and
-            model type are assigned by a separate pass that is still in progress across the corpus.
-          </p>
-        }
-      </section>
-
-      <!-- ============ Cite ============ -->
-      <section class="record-section">
-        <h2>Cite this record</h2>
-        <div class="cite-buttons">
-          <button type="button" class="cite-button" (click)="showCitation('bibtex')">BibTeX</button>
-          <button type="button" class="cite-button" (click)="showCitation('ris')">RIS</button>
         </div>
-        @if (citationFormat()) {
-          <div class="citation">
-            <pre>{{ citationText() }}</pre>
-            <app-copy-button [value]="citationText()" [label]="citationFormat() === 'bibtex' ? 'BibTeX' : 'RIS'" />
-          </div>
-        }
-      </section>
+      </div>
     </article>
   }
 </div>

@@ -73,3 +73,34 @@
   gap: var(--space-2);
   margin-top: var(--space-3);
 }
+
+// Named pills, no external-link glyph. The icon that used to follow each label said nothing a
+// reader couldn't already tell -- these are obviously links out -- and repeated four times per card
+// it read as clutter rather than affordance. The screen-reader cue lives in the template instead.
+.card-source {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-3);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  background-color: var(--surface-card);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--observatory-primary);
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--observatory-accent);
+    color: var(--observatory-accent-dark);
+  }
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}

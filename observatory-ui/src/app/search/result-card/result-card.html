@@ -34,10 +34,13 @@
 
   <app-status-badge [record]="record()" context="card" />
 
-  @if (links().length) {
-    <div class="card-outbound" aria-label="Find this elsewhere">
-      @for (link of links(); track link.label) {
-        <app-outbound-link [link]="link" [compact]="true" />
+  @if (sources().length) {
+    <div class="card-outbound" aria-label="Read this article at">
+      @for (source of sources(); track source.label) {
+        <a [href]="source.url" target="_blank" rel="noopener" class="card-source">
+          {{ source.label }}
+          <span class="visually-hidden">(opens in a new tab)</span>
+        </a>
       }
     </div>
   }

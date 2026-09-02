@@ -5,22 +5,26 @@ import { map, switchMap, catchError, of } from 'rxjs';
 import { RecordsService } from '../core/records.service';
 import { AiMlRecord, isEnriched } from '../core/record.model';
 import { modelTypeLabel } from '../core/facet-labels';
+import { articleSources, crossLinkedAssets, CrossLinkedAsset } from '../core/outbound-links';
 import { plainText, richAbstract, richTitle } from '../core/rich-text';
-import { outboundLinks, plannedLinks } from '../core/outbound-links';
+import { SearchStateService } from '../core/search-state.service';
 import { toBibtex, toRis } from '../core/citation';
 import { StatusBadge } from '../shared/status-badge/status-badge';
-import { OutboundLinkItem } from '../shared/outbound-link/outbound-link';
 import { CopyButton } from '../shared/copy-button/copy-button';
+
+/** Groups render in this order when present -- assets a reader is most likely to want first. */
+const ASSET_GROUP_ORDER = ['Code', 'Data', 'Models', 'Annotation'] as const;
 
 @Component({
   selector: 'app-record',
-  imports: [RouterLink, StatusBadge, OutboundLinkItem, CopyButton],
+  imports: [RouterLink, StatusBadge, CopyButton],
   templateUrl: './record.html',
   styleUrl: './record.scss',
 })
 export class RecordPage {
   private readonly route = inject(ActivatedRoute);
   private readonly records = inject(RecordsService);
+  private readonly searchState = inject(SearchStateService);
 
   readonly loading = signal(true);
   /** True when the last lookup failed for a reason other than "no such record" (a 503, a network
@@ -54,19 +58,15 @@ export class RecordPage {
   readonly found = computed(() => this.record() !== undefined);
   readonly rec = computed(() => this.record() as AiMlRecord);
 
-  readonly meta = computed(() => {
-    const pm = this.rec().publication_metadata;
-    return [pm.journal, pm.year?.toString()].filter(Boolean).join(' · ');
-  });
+  /** Returns the reader to the results they came from -- filters, page and sort intact. Empty on a
+   *  bookmarked or shared link, which correctly lands on a plain /search. */
+  readonly backToSearch = this.searchState.lastSearch;
 
   /**
    * Corpus titles and abstracts carry markup -- inline emphasis in both, structured-abstract
    * headings and bare repository URLs in abstracts. rich-text.ts normalises that (JATS mapped to
    * HTML, attributes dropped, URLs linkified); binding the plain string with [innerHTML] then lets
    * Angular's own sanitizer run over the result.
-   *
-   * This deliberately does NOT use bypassSecurityTrustHtml, which the previous version called while
-   * its comment claimed the sanitizer was running -- bypassing is precisely what stops it running.
    */
   readonly titleHtml = computed(() => richTitle(this.rec().publication_metadata.title));
   readonly titleText = computed(
@@ -74,18 +74,78 @@ export class RecordPage {
   );
   readonly abstractHtml = computed(() => richAbstract(this.rec()?.publication_metadata.abstract));
 
-  readonly links = computed(() => outboundLinks(this.rec()));
-  readonly planned = computed(() => plannedLinks(this.rec()));
+  // ---- Header metadata: one labelled fact per row, never fused into a single line. -----------
+  readonly authors = computed(() => this.rec().publication_metadata.authors);
+  readonly journal = computed(() => this.rec().publication_metadata.journal);
+  readonly year = computed(() => this.rec().publication_metadata.year);
+  /** The Observatory's own persistent identifier for this record -- its `_id`. Belongs at the top
+   *  with the rest of the record's identity, not buried in a list of external identifiers. */
+  readonly pid = computed(() => this.rec()._id);
+
+  // ---- Article sources and assets ------------------------------------------------------------
+  readonly sources = computed(() => articleSources(this.rec()));
+  readonly assets = computed(() => crossLinkedAssets(this.rec()));
+
+  /** Assets grouped for display. Empty when nothing is cross-linked, and the template renders no
+   *  section at all in that case rather than a wall of "not yet linked" placeholders. */
+  readonly assetGroups = computed(() => {
+    const assets = this.assets();
+    return ASSET_GROUP_ORDER.map((group) => ({
+      group,
+      items: assets.filter((a: CrossLinkedAsset) => a.group === group),
+    })).filter((g) => g.items.length > 0);
+  });
+
+  // ---- Access. `null` means "not recorded", which is not the same as "no". -------------------
+  readonly access = computed(() => {
+    const a = this.rec().source.access;
+    const yesNo = (value: boolean | null | undefined, yes: string, no: string) =>
+      value == null ? { text: 'Not recorded', tone: 'unknown' } : value
+        ? { text: yes, tone: 'positive' }
+        : { text: no, tone: 'neutral' };
+    return {
+      openAccess: yesNo(a.open_access, 'Open access', 'Closed access'),
+      fulltext: yesNo(a.fulltext_available, 'Available', 'Not available'),
+      licence: a.license
+        ? { text: a.license.toUpperCase(), tone: 'positive' }
+        : { text: 'Not recorded', tone: 'unknown' },
+    };
+  });
+
+  // ---- Screening + enrichment ----------------------------------------------------------------
   readonly enriched = computed(() => isEnriched(this.rec()));
 
-  readonly identifiers = computed(() => {
-    const ids = this.rec().identifiers;
+  readonly verdict = computed(() => {
+    switch (this.rec().llm_classification.classification) {
+      case 'positive':
+        return 'Classified as an AI/ML methods paper.';
+      case 'negative':
+        return 'Screened out — not an AI/ML methods paper.';
+      default:
+        return 'Undeterminable from the available metadata.';
+    }
+  });
+
+  /** Provenance rows for the screening pass. Rendered inline rather than behind an expander --
+   *  "which model decided this, on what criteria, when" is the substance of a machine-made
+   *  judgement, not an appendix to it. */
+  readonly screeningFacts = computed(() => {
+    const c = this.rec().llm_classification;
     return [
-      { label: 'PID', value: this.rec()._id },
-      { label: 'DOI', value: ids.doi },
-      { label: 'PMID', value: ids.pmid },
-      { label: 'PMCID', value: ids.pmcid },
-    ].filter((i): i is { label: string; value: string } => !!i.value);
+      { label: 'Model', value: c.model_id, icon: 'icon-microchip' },
+      { label: 'Prompt version', value: c.prompt_version, icon: 'icon-documentation' },
+      { label: 'Run at', value: c.timestamp, icon: 'icon-calendar-check' },
+      { label: 'Criteria hash', value: c.ruleset_sha256, icon: 'icon-hashtag', mono: true },
+    ];
+  });
+
+  readonly enrichmentFacts = computed(() => {
+    const e = this.rec().llm_enrichment;
+    return [
+      { label: 'Model', value: e.model_id, icon: 'icon-microchip' },
+      { label: 'Prompt version', value: e.prompt_version, icon: 'icon-documentation' },
+      { label: 'Run at', value: e.timestamp, icon: 'icon-calendar-check' },
+    ];
   });
 
   readonly enrichmentTags = computed(() => {
@@ -115,7 +175,17 @@ export class RecordPage {
     ].filter((g) => g.values.length);
   });
 
-  readonly showProvenance = signal(false);
+  /** The placeholder rows an un-enriched record shows, so the section keeps its shape instead of
+   *  collapsing to a paragraph. This is the state of the entire corpus today (0 of 827,061 records
+   *  are enriched), so it has to look deliberate rather than broken. */
+  readonly enrichmentPlaceholders = [
+    'Domain (tier 1)',
+    'Domain (tier 2)',
+    'Learning paradigm',
+    'Model family',
+    'Model type',
+  ];
+
   readonly citationFormat = signal<'bibtex' | 'ris' | null>(null);
 
   readonly citationText = computed(() => {

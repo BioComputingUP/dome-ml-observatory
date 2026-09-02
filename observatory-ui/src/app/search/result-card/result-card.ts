@@ -1,16 +1,15 @@
 import { Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AiMlRecord } from '../../core/record.model';
-import { outboundLinks } from '../../core/outbound-links';
+import { articleSources } from '../../core/outbound-links';
 import { richTitle, truncatePlain } from '../../core/rich-text';
 import { StatusBadge } from '../../shared/status-badge/status-badge';
-import { OutboundLinkItem } from '../../shared/outbound-link/outbound-link';
 
 const SNIPPET_LENGTH = 240;
 
 @Component({
   selector: 'app-result-card',
-  imports: [RouterLink, StatusBadge, OutboundLinkItem],
+  imports: [RouterLink, StatusBadge],
   templateUrl: './result-card.html',
   styleUrl: './result-card.scss',
 })
@@ -36,5 +35,9 @@ export class ResultCard {
   readonly journal = computed(() => this.record().publication_metadata.journal);
   readonly year = computed(() => this.record().publication_metadata.year);
 
-  readonly links = computed(() => outboundLinks(this.record()));
+  /** Where the article itself can be read. Rendered as plain named pills: the external-link
+   *  glyph that used to follow each one added no information (they are obviously outbound) and
+   *  turned a tidy row into visual clutter. The "opens in a new tab" cue stays, for screen
+   *  readers. */
+  readonly sources = computed(() => articleSources(this.record()));
 }

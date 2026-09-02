@@ -2,9 +2,10 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Subject, debounceTime, distinctUntilChanged, switchMap, catchError, of, map } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged, switchMap, catchError, of, map, tap } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RecordsService, SearchFilters, SearchQuery, SearchResult, SortOrder } from '../core/records.service';
+import { SearchStateService } from '../core/search-state.service';
 import {
   paramsToQuery,
   queryToParams,
@@ -43,11 +44,18 @@ export class Search {
   private readonly records = inject(RecordsService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly searchState = inject(SearchStateService);
 
   /** The URL is the state: everything below derives from query params, so any result set is
    *  bookmarkable, citable and shareable. */
   private readonly query = toSignal(
-    this.route.queryParams.pipe(map((params) => paramsToQuery(params))),
+    this.route.queryParams.pipe(
+      // Hand the current results URL to SearchStateService so a record page's "back to search"
+      // returns here rather than to an empty search. Recorded on every param change, including the
+      // first load, so it is already correct by the time any result is clicked.
+      tap((params) => this.searchState.remember(params)),
+      map((params) => paramsToQuery(params)),
+    ),
     { initialValue: paramsToQuery({}) },
   );
 
