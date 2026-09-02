@@ -11,10 +11,10 @@
   box-shadow: var(--shadow-md);
   padding: var(--space-4) var(--space-3);
 
-  // Matches .section-layout's collapse-to-single-column breakpoint in styles.scss -- below this,
-  // there isn't room for the symmetric flanks that keep content genuinely centred, so this and
-  // the grid both fall back to a full-width single column with the pill-bar below instead.
-  @media (max-width: 1299px) {
+  // Matches .section-layout's mobile collapse-to-single-column breakpoint in styles.scss --
+  // below this there's no room even for the plain 240px-nav-plus-content pair used between
+  // 992-1299px, so this and the grid both fall back to a full-width pill strip instead.
+  @media (max-width: 991px) {
     display: none;
   }
 }
@@ -60,28 +60,52 @@
 }
 
 // Mobile fallback: the same horizontal pill-bar pattern already used on the News page
-// (news.scss's .content-nav), so the interaction reads as familiar rather than novel.
+// (news.scss's .content-nav), so the interaction reads as familiar rather than novel. Scrolls
+// sideways rather than squeezing every item into equal-width flex-1 columns -- About's 5 items
+// include "Licensing & Citation", which would otherwise wrap or truncate on a narrow phone.
 .side-nav-pillbar {
   display: none;
 
-  @media (max-width: 1299px) {
+  @media (max-width: 991px) {
     display: flex;
+    gap: var(--space-1);
     background-color: var(--observatory-primary);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-md);
-    overflow: hidden;
     margin-bottom: var(--space-5);
+    padding: var(--space-2) var(--space-1);
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 }
 
 .side-nav-pill-link {
-  flex: 1;
+  flex: 0 0 auto;
+  white-space: nowrap;
   text-align: center;
-  padding: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
   color: #ffffff;
   font-weight: 500;
   text-decoration: none;
   transition: background-color 0.2s ease;
+
+  // First/last pill need their own edge padding so they don't sit flush against the bar's
+  // rounded corners or get clipped mid-scroll -- the bar's own padding covers vertical
+  // clearance for the focus-visible outline (styles.scss), but not horizontal scroll insets.
+  &:first-child {
+    margin-left: var(--space-1);
+  }
+
+  &:last-child {
+    margin-right: var(--space-1);
+  }
 
   &.active {
     background-color: var(--observatory-accent);

@@ -16,7 +16,7 @@
   </ul>
 </nav>
 
-<nav class="side-nav-pillbar" [attr.aria-label]="ariaLabel()">
+<nav class="side-nav-pillbar" #pillbar [attr.aria-label]="ariaLabel()">
   @for (item of items(); track item.route) {
     <a
       class="side-nav-pill-link"
