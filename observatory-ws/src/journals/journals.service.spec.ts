@@ -3,11 +3,14 @@ import { SERIES_START, buildJournalPipeline, shapeJournalTable } from './journal
 /** Builds the aggregation's own output shape, so the tests exercise the real contract. */
 function group(
   journal: string,
-  buckets: [number | null, string | null, number, number?][],
-): { _id: string; buckets: { y: number | null; c: string | null; n: number; oa: number }[] } {
+  buckets: [number | null, string | null, number, number?, number?][],
+): {
+  _id: string;
+  buckets: { y: number | null; c: string | null; n: number; oa: number; enr: number }[];
+} {
   return {
     _id: journal,
-    buckets: buckets.map(([y, c, n, oa]) => ({ y, c, n, oa: oa ?? 0 })),
+    buckets: buckets.map(([y, c, n, oa, enr]) => ({ y, c, n, oa: oa ?? 0, enr: enr ?? 0 })),
   };
 }
 
@@ -15,7 +18,7 @@ describe('shapeJournalTable', () => {
   it('totals each classification and derives the AI/ML share', () => {
     const table = shapeJournalTable([
       group('Bioinformatics (Oxford, England)', [
-        [2020, 'positive', 30, 12],
+        [2020, 'positive', 30, 12, 9],
         [2020, 'negative', 60],
         [2020, 'undeterminable', 10],
       ]),
@@ -28,7 +31,28 @@ describe('shapeJournalTable', () => {
       undeterminable: 10,
       positiveRate: 0.3,
       openAccessPositive: 12,
+      enriched: 9,
     });
+  });
+
+  it('counts enriched entries across every classification and every year bucket', () => {
+    // openAccessPositive deliberately only accumulates inside the positive branch; `enriched` does
+    // not. It answers "how much of this journal's intake has been through the enrichment pass",
+    // which is a question about the intake, not about the positives.
+    const table = shapeJournalTable([
+      group('Mixed', [
+        [2020, 'positive', 10, 0, 4],
+        [2021, 'positive', 10, 0, 1],
+        [2020, 'negative', 10, 0, 2],
+        [null, 'positive', 5, 0, 3],
+      ]),
+    ]);
+    expect(table.byName.get('Mixed')!.enriched).toBe(10);
+  });
+
+  it('treats a journal with nothing enriched as zero, not undefined', () => {
+    const table = shapeJournalTable([group('Untouched', [[2020, 'positive', 3]])]);
+    expect(table.byName.get('Untouched')!.enriched).toBe(0);
   });
 
   it('zero-fills the gaps in a series rather than joining across them', () => {
@@ -123,5 +147,18 @@ describe('buildJournalPipeline', () => {
     const pipeline = stages();
     expect(pipeline).toHaveLength(3);
     expect(pipeline[2]).toMatchObject({ $group: { _id: '$_id.j' } });
+  });
+
+  it('counts enriched documents on the same test the rest of the service uses', () => {
+    // Not `{ $ne: [..., undefined] }` and not a truthiness check: llm_enrichment.provider is
+    // present-and-null on every unenriched document, so only an explicit null comparison is right.
+    expect(stages()[1]).toMatchObject({
+      $group: {
+        enr: { $sum: { $cond: [{ $ne: ['$llm_enrichment.provider', null] }, 1, 0] } },
+      },
+    });
+    expect(stages()[2]).toMatchObject({
+      $group: { buckets: { $push: { enr: '$enr' } } },
+    });
   });
 });

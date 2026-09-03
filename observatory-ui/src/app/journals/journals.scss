@@ -20,10 +20,15 @@
   text-align: center;
 }
 
+// Uncapped for the same reason as .footnote-wide below. The 620px that used to be here matched the
+// search box underneath, but this sentence is 104 characters and the cap broke it after "changed",
+// leaving "since 2000." alone on a second line with most of the band empty. It fills one line now
+// and still wraps by itself once the viewport is genuinely too narrow -- no nowrap, which would
+// overflow on a phone.
 .page-lead {
   color: rgba(255, 255, 255, 0.78);
   text-align: center;
-  max-width: 620px;
+  max-width: none;
   margin: 0 auto var(--space-4);
   font-size: var(--font-size-sm);
 }

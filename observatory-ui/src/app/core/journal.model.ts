@@ -26,6 +26,9 @@ export interface JournalListRow {
   /** positive / screened, 0-1. */
   positiveRate: number;
   openAccessPositive: number;
+  /** Records from this journal that have been through the enrichment pass, across every
+   *  classification. Zero for most journals -- enrichment has only run on a few so far. */
+  enriched: number;
   firstYear: number | null;
   lastYear: number | null;
   peakYear: number | null;

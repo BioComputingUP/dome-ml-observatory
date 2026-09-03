@@ -42,6 +42,12 @@ export interface JournalRow {
   positiveRate: number;
   /** Open-access count among this journal's AI/ML methods papers. */
   openAccessPositive: number;
+  /** Records from this journal that have been through the enrichment pass, on the same test used
+   *  everywhere else in the codebase: `llm_enrichment.provider` is non-null (see
+   *  records.query.ts's enrichedOnly clause and StatsService). Counted across every
+   *  classification, not just the positives -- the figure answers "how much of this journal's
+   *  intake is enriched", and enrichment has only ever run on positives anyway. */
+  enriched: number;
   firstYear: number | null;
   lastYear: number | null;
   /** Year with the most AI/ML methods papers; null when the journal has none. */
@@ -108,7 +114,7 @@ const MAX_LIMIT = 200;
 /** Raw shape of the two-stage aggregation's output, one document per journal. */
 interface RawJournalGroup {
   _id: string;
-  buckets: { y: number | null; c: string | null; n: number; oa: number }[];
+  buckets: { y: number | null; c: string | null; n: number; oa: number; enr: number }[];
 }
 
 /**
@@ -265,12 +271,15 @@ export function buildJournalPipeline() {
         },
         n: { $sum: 1 },
         oa: { $sum: { $cond: [{ $eq: ['$source.access.open_access', true] }, 1, 0] } },
+        // Same expression StatsService and records.query.ts's enrichedOnly filter use, so "enriched"
+        // means one thing across the whole service rather than three subtly different things.
+        enr: { $sum: { $cond: [{ $ne: ['$llm_enrichment.provider', null] }, 1, 0] } },
       },
     },
     {
       $group: {
         _id: '$_id.j',
-        buckets: { $push: { y: '$_id.y', c: '$_id.c', n: '$n', oa: '$oa' } },
+        buckets: { $push: { y: '$_id.y', c: '$_id.c', n: '$n', oa: '$oa', enr: '$enr' } },
       },
     },
   ];
@@ -287,6 +296,7 @@ function toListRow(row: JournalRow): JournalListRow {
     undeterminable: row.undeterminable,
     positiveRate: row.positiveRate,
     openAccessPositive: row.openAccessPositive,
+    enriched: row.enriched,
     firstYear: row.firstYear,
     lastYear: row.lastYear,
     peakYear: row.peakYear,
@@ -312,12 +322,14 @@ export function shapeJournalTable(raw: RawJournalGroup[]): JournalTable {
     let negative = 0;
     let undeterminable = 0;
     let openAccessPositive = 0;
+    let enriched = 0;
     const pre = { screened: 0, positive: 0 };
     const byYear = new Map<number, { screened: number; positive: number }>();
 
     for (const bucket of group.buckets) {
       const n = bucket.n ?? 0;
       screened += n;
+      enriched += bucket.enr ?? 0;
       if (bucket.c === 'positive') {
         positive += n;
         openAccessPositive += bucket.oa ?? 0;
@@ -370,6 +382,7 @@ export function shapeJournalTable(raw: RawJournalGroup[]): JournalTable {
       undeterminable,
       positiveRate: screened ? positive / screened : 0,
       openAccessPositive,
+      enriched,
       firstYear: years.length ? years[0] : null,
       lastYear: years.length ? years[years.length - 1] : null,
       peakYear,

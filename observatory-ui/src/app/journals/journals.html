@@ -81,6 +81,13 @@
                 <span class="stat-pill-label">AI/ML share of screened</span>
               </div>
             </div>
+            <div class="stat-pill">
+              <i class="icon icon-common icon-text-mining" aria-hidden="true"></i>
+              <div>
+                <span class="stat-pill-value">{{ detail.journal.enriched | number }}</span>
+                <span class="stat-pill-label">Entries enriched</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -273,6 +280,7 @@
                   <th scope="col" class="col-num">Screened</th>
                   <th scope="col" class="col-num">Screened out</th>
                   <th scope="col" class="col-share">AI/ML share</th>
+                  <th scope="col" class="col-num">Entries enriched</th>
                 </tr>
               </thead>
               <tbody>
@@ -293,6 +301,7 @@
                       </span>
                       <span class="share-value">{{ row.positiveRate * 100 | number: '1.0-1' }}%</span>
                     </td>
+                    <td class="col-num">{{ row.enriched | number }}</td>
                   </tr>
                 }
               </tbody>
