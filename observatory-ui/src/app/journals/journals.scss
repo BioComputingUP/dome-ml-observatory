@@ -44,6 +44,14 @@ h2 {
   max-width: 78ch;
 }
 
+// One line where the band has room for one. The 78ch measure above is right for the running note
+// under the charts, but this sentence is a single caveat sitting under a row of stat pills, and
+// capping it mid-sentence broke it onto a second line with most of the band left empty. Uncapped
+// it fills the width and still wraps naturally once the viewport is genuinely too narrow.
+.footnote-wide {
+  max-width: none;
+}
+
 // ---------- Single-journal lens ----------------------------------------------------------------
 .journal-head {
   display: flex;
