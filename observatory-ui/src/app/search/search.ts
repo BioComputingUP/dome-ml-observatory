@@ -135,11 +135,6 @@ export class Search {
    *  has actually landed, so the results-bar link only renders once there's a real date to show. */
   readonly lastClassifiedAt = computed(() => this.stats()?.last_classification?.timestamp ?? null);
 
-  /** citation_count is null for every record today (see records.service.ts's SortOrder doc) --
-   *  this drives the honest "not yet populated" note rather than letting the sort look like it
-   *  did nothing for no reason. */
-  readonly citationSortActive = computed(() => this.sort() === 'citations_desc' || this.sort() === 'citations_asc');
-
   /** Bound once, passed down to FacetPanel -> FacetTypeahead: journal and MeSH have no controlled
    *  vocabulary and too many corpus-wide values to ship as a static list, so their typeaheads
    *  query observatory-ws's /api/facets/:field cache live instead. */

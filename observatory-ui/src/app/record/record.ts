@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map, switchMap, catchError, of } from 'rxjs';
@@ -17,7 +18,7 @@ const ASSET_GROUP_ORDER = ['Code', 'Data', 'Models', 'Annotation'] as const;
 
 @Component({
   selector: 'app-record',
-  imports: [RouterLink, StatusBadge, CopyButton],
+  imports: [DecimalPipe, RouterLink, StatusBadge, CopyButton],
   templateUrl: './record.html',
   styleUrl: './record.scss',
 })
@@ -78,6 +79,13 @@ export class RecordPage {
   readonly authors = computed(() => this.rec().publication_metadata.authors);
   readonly journal = computed(() => this.rec().publication_metadata.journal);
   readonly year = computed(() => this.rec().publication_metadata.year);
+  /** Europe PMC's citation count. Null means "not available" rather than zero -- no Europe PMC
+   *  record answered for this paper's identifiers -- so the fact is omitted entirely in that case,
+   *  while a genuine zero renders. Same rule as the result card's. */
+  readonly citationCount = computed(() => {
+    const count = this.rec().publication_metadata.citation_count;
+    return typeof count === 'number' ? count : null;
+  });
   /** The Observatory's own persistent identifier for this record -- its `_id`. Belongs at the top
    *  with the rest of the record's identity, not buried in a list of external identifiers. */
   readonly pid = computed(() => this.rec()._id);

@@ -1,4 +1,5 @@
 import { Component, computed, input } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AiMlRecord } from '../../core/record.model';
 import { articleSources } from '../../core/outbound-links';
@@ -9,7 +10,7 @@ const SNIPPET_LENGTH = 240;
 
 @Component({
   selector: 'app-result-card',
-  imports: [RouterLink, StatusBadge],
+  imports: [DecimalPipe, RouterLink, StatusBadge],
   templateUrl: './result-card.html',
   styleUrl: './result-card.scss',
 })
@@ -34,6 +35,15 @@ export class ResultCard {
   readonly authors = computed(() => this.record().publication_metadata.authors);
   readonly journal = computed(() => this.record().publication_metadata.journal);
   readonly year = computed(() => this.record().publication_metadata.year);
+
+  /** Europe PMC's citation count. `null` means "not available" (no Europe PMC record answered for
+   *  this paper's identifiers, ~2% of the corpus) and the row is omitted; zero is a real, cited-
+   *  nowhere-yet count and must still render, which is why this tests the type rather than
+   *  truthiness the way the facts above do. */
+  readonly citationCount = computed(() => {
+    const count = this.record().publication_metadata.citation_count;
+    return typeof count === 'number' ? count : null;
+  });
 
   /** Where the article itself can be read. Rendered as plain named pills: the external-link
    *  glyph that used to follow each one added no information (they are obviously outbound) and

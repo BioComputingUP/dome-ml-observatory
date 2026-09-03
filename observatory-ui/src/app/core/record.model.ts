@@ -26,7 +26,9 @@ export interface PublicationMetadata {
   authors: string | null;
   year: number | null;
   journal: string | null;
-  /** Forward-compatible placeholder -- always null in the current corpus. */
+  /** Europe PMC citation count, real since the 2026-09-03 load (~98% of the corpus). `null` means
+   *  "not available" -- no Europe PMC record answered for this paper's identifiers -- never zero,
+   *  so anything displaying it has to distinguish the two. */
   citation_count: number | null;
 }
 

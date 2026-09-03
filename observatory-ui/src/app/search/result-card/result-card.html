@@ -26,6 +26,12 @@
         <dd>{{ year() }}</dd>
       </div>
     }
+    @if (citationCount() !== null) {
+      <div class="card-fact">
+        <dt>Citations:</dt>
+        <dd>{{ citationCount() | number }}</dd>
+      </div>
+    }
   </dl>
 
   @if (snippet()) {

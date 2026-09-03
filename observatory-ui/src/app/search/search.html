@@ -108,12 +108,6 @@
           </div>
         </div>
 
-        @if (citationSortActive()) {
-          <p class="citation-sort-note">
-            Citation counts are not yet populated for this corpus; this ordering takes effect once they land.
-          </p>
-        }
-
         @if (error()) {
           <div class="state error" role="alert">
             <p>{{ error() }}</p>
