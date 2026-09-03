@@ -20,17 +20,20 @@ export interface RawSearchParams {
   oa?: string;
   ft?: string;
   year?: string;
-  lic?: string;
-  jrnl?: string;
-  mesh?: string;
-  kw?: string;
-  ptype?: string;
-  d1?: string;
-  d2?: string;
-  d3?: string;
-  para?: string;
-  fam?: string;
-  mt?: string;
+  // Multi-value filters. `string | string[]` because they are REPEATABLE params
+  // (`?jrnl=A&jrnl=B`), which is what makes a value containing a comma expressible at all -- see
+  // readList. Express delivers a single occurrence as a string and a repeated one as an array.
+  lic?: string | string[];
+  jrnl?: string | string[];
+  mesh?: string | string[];
+  kw?: string | string[];
+  ptype?: string | string[];
+  d1?: string | string[];
+  d2?: string | string[];
+  d3?: string | string[];
+  para?: string | string[];
+  fam?: string | string[];
+  mt?: string | string[];
   enriched?: string;
   sort?: string;
   page?: string;
@@ -87,7 +90,33 @@ const SORTS: SortOrder[] = [
 ];
 const CLASSIFICATIONS: Classification[] = ['positive', 'negative', 'undeterminable'];
 
-function splitList(value: string | undefined): string[] | undefined {
+/**
+ * Reads a multi-value filter param. Values are taken VERBATIM -- never split on anything.
+ *
+ * Mirrors observatory-ui's search-params.ts readList exactly, and exists for the same reason: the
+ * previous comma-joined encoding destroyed any facet value containing a comma. A journal like
+ * "Bioinformatics Advances (Oxford, England)" parsed to the two-value filter
+ * ["Bioinformatics Advances (Oxford", "England)"] and matched nothing, and the same bug hit MeSH
+ * headings ("Neoplasms, Second Primary") and the EDAM domain vocabulary's own comma-bearing terms.
+ * A repeated key (`?jrnl=A&jrnl=B`) needs no in-value delimiter, so the comma is just data.
+ */
+function readList(value: string | string[] | undefined): string[] | undefined {
+  if (value === undefined) return undefined;
+  const items = (Array.isArray(value) ? value : [value]).filter(
+    (v) => typeof v === 'string' && v.trim() !== '',
+  );
+  return items.length ? items : undefined;
+}
+
+/**
+ * The one surviving comma-split, used only by `class` (see resolveClassification).
+ *
+ * Its three values are fixed literals that can never contain a comma, `class=positive,negative` is
+ * a documented API contract, and the empty-string `class=` "explicitly cleared" signal has to
+ * survive byte-for-byte -- canUseTextIndex depends on it, and getting it wrong turns every
+ * cleared-classification search into a 500 rather than a slow query.
+ */
+function splitClassificationList(value: string | undefined): string[] | undefined {
   if (!value) return undefined;
   const items = value
     .split(',')
@@ -233,7 +262,7 @@ function parseYearRange(value: string | undefined): {
  */
 function resolveClassification(value: string | undefined): Classification[] {
   if (value === undefined) return DEFAULT_CLASSIFICATION;
-  const items = (splitList(value) ?? []).filter((c): c is Classification =>
+  const items = (splitClassificationList(value) ?? []).filter((c): c is Classification =>
     (CLASSIFICATIONS as string[]).includes(c),
   );
   return items;
@@ -252,17 +281,17 @@ export function parseSearchParams(
     openAccess: parseBool(raw.oa),
     fulltextAvailable: parseBool(raw.ft),
     ...parseYearRange(raw.year),
-    license: splitList(raw.lic),
-    journal: splitList(raw.jrnl),
-    meshHeadings: splitList(raw.mesh),
-    keywordsAuthor: splitList(raw.kw),
-    pubTypes: splitList(raw.ptype),
-    domainTier1: splitList(raw.d1),
-    domainTier2: splitList(raw.d2),
-    domainTier3: splitList(raw.d3),
-    learningParadigm: splitList(raw.para),
-    modelFamily: splitList(raw.fam),
-    modelType: splitList(raw.mt),
+    license: readList(raw.lic),
+    journal: readList(raw.jrnl),
+    meshHeadings: readList(raw.mesh),
+    keywordsAuthor: readList(raw.kw),
+    pubTypes: readList(raw.ptype),
+    domainTier1: readList(raw.d1),
+    domainTier2: readList(raw.d2),
+    domainTier3: readList(raw.d3),
+    learningParadigm: readList(raw.para),
+    modelFamily: readList(raw.fam),
+    modelType: readList(raw.mt),
     enrichedOnly: parseBool(raw.enriched),
   };
 

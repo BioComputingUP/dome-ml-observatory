@@ -44,16 +44,29 @@ describe('search-params', () => {
       expect(paramsToQuery({ year: '-2026' }).filters).toMatchObject({ yearMin: undefined, yearMax: 2026 });
     });
 
-    it('splits comma lists and trims whitespace', () => {
-      expect(paramsToQuery({ mesh: 'Humans, Algorithms ,Male' }).filters.meshHeadings).toEqual([
+    it('reads a repeated param as a multi-value list', () => {
+      expect(paramsToQuery({ mesh: ['Humans', 'Algorithms', 'Male'] }).filters.meshHeadings).toEqual([
         'Humans',
         'Algorithms',
         'Male',
       ]);
     });
 
+    it('keeps a comma INSIDE a value instead of splitting on it', () => {
+      // The bug this encoding exists to fix: selecting this journal in the typeahead used to
+      // produce ['Bioinformatics Advances (Oxford', 'England)'] and match nothing.
+      expect(paramsToQuery({ jrnl: 'Bioinformatics Advances (Oxford, England)' }).filters.journal).toEqual([
+        'Bioinformatics Advances (Oxford, England)',
+      ]);
+      // Same shape, via the EDAM domain vocabulary's own comma-bearing terms.
+      expect(
+        paramsToQuery({ d1: 'Allergy, clinical immunology and immunotherapeutics' }).filters.domainTier1,
+      ).toEqual(['Allergy, clinical immunology and immunotherapeutics']);
+    });
+
     it('treats an empty list param as unset rather than an empty array', () => {
-      expect(paramsToQuery({ mesh: ',, ' }).filters.meshHeadings).toBeUndefined();
+      expect(paramsToQuery({ mesh: '' }).filters.meshHeadings).toBeUndefined();
+      expect(paramsToQuery({ mesh: [' ', ''] }).filters.meshHeadings).toBeUndefined();
     });
 
     it('falls back to sensible defaults for junk sort and page values', () => {
@@ -90,9 +103,9 @@ describe('search-params', () => {
       expect(queryToParams({ ...base, filters: { classification: [] } })['class']).toBe('');
     });
 
-    it('serialises lists as comma-joined values', () => {
+    it('serialises lists as arrays, which the router emits as a repeated key', () => {
       const params = queryToParams({ ...base, filters: { ...base.filters, modelFamily: ['deep learning', 'ensemble learning'] } });
-      expect(params['fam']).toBe('deep learning,ensemble learning');
+      expect(params['fam']).toEqual(['deep learning', 'ensemble learning']);
     });
 
     it('serialises page and sort only when non-default', () => {
@@ -130,7 +143,7 @@ describe('search-params', () => {
       };
 
       const params = queryToParams(original);
-      const nonNull: Record<string, string> = {};
+      const nonNull: Record<string, string | string[]> = {};
       for (const [k, v] of Object.entries(params)) if (v !== null) nonNull[k] = v;
 
       expect(paramsToQuery(nonNull)).toEqual(original);
@@ -139,7 +152,7 @@ describe('search-params', () => {
     it('round-trips a default (untouched) query back to the same defaults', () => {
       const original = paramsToQuery({});
       const params = queryToParams(original);
-      const nonNull: Record<string, string> = {};
+      const nonNull: Record<string, string | string[]> = {};
       for (const [k, v] of Object.entries(params)) if (v !== null) nonNull[k] = v;
       expect(paramsToQuery(nonNull).filters.classification).toEqual(['positive']);
     });
@@ -148,6 +161,28 @@ describe('search-params', () => {
       const cleared = paramsToQuery({ class: '' });
       const params = queryToParams(cleared);
       expect(paramsToQuery({ class: params['class'] ?? undefined }).filters.classification).toEqual([]);
+    });
+
+    it('round-trips comma-bearing values in every list facet, untouched', () => {
+      const original: SearchQuery = {
+        filters: {
+          classification: ['positive'],
+          journal: ['Bioinformatics Advances (Oxford, England)', 'Nature Methods'],
+          meshHeadings: ['Neoplasms, Second Primary'],
+          domainTier1: ['Allergy, clinical immunology and immunotherapeutics'],
+        },
+        sort: 'relevance',
+        page: 1,
+        pageSize: DEFAULT_PAGE_SIZE,
+      };
+      const params = queryToParams(original);
+      const nonNull: Record<string, string | string[]> = {};
+      for (const [k, v] of Object.entries(params)) if (v !== null) nonNull[k] = v;
+      expect(paramsToQuery(nonNull).filters).toMatchObject({
+        journal: ['Bioinformatics Advances (Oxford, England)', 'Nature Methods'],
+        meshHeadings: ['Neoplasms, Second Primary'],
+        domainTier1: ['Allergy, clinical immunology and immunotherapeutics'],
+      });
     });
   });
 
@@ -222,6 +257,17 @@ describe('search-params', () => {
       expect(params.get('class')).toBe('positive,negative');
       expect(params.get('year')).toBe('2020-');
       expect(params.get('jrnl')).toBe('Nature');
+    });
+
+    it('appends one wire param per value, so a repeated key survives instead of only the last', () => {
+      const params = queryToHttpParams({
+        ...base,
+        filters: { journal: ['Bioinformatics Advances (Oxford, England)', 'Nature Methods'] },
+      });
+      expect(params.getAll('jrnl')).toEqual([
+        'Bioinformatics Advances (Oxford, England)',
+        'Nature Methods',
+      ]);
     });
   });
 });

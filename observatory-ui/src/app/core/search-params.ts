@@ -54,16 +54,56 @@ const PARAM = {
   page: 'page',
 } as const;
 
-/** Anything the router hands us: string values, or null when the param is absent. */
-export type RawParams = Record<string, string | null | undefined>;
+/** Anything the router hands us: a string, an array of strings when the same key appears more
+ *  than once in the URL (see readList), or null/undefined when the param is absent. */
+export type RawParams = Record<string, string | string[] | null | undefined>;
 
-function splitList(value: string | null | undefined): string[] | undefined {
-  if (!value) return undefined;
-  const items = value
+/**
+ * Reads a multi-value filter param. Values are taken VERBATIM -- never split on anything.
+ *
+ * Multiple values arrive as a repeated key (`?jrnl=A&jrnl=B`), which the router hands back as an
+ * array. This is not a stylistic choice: the previous comma-joined encoding silently destroyed any
+ * facet value that itself contains a comma, and a great many of them do. Selecting
+ * "Bioinformatics Advances (Oxford, England)" in the journal typeahead produced the two-value
+ * filter ["Bioinformatics Advances (Oxford", "England)"], two junk chips, and zero results. The
+ * same bug hit MeSH headings ("Neoplasms, Second Primary"), author keywords, and the EDAM domain
+ * vocabulary itself, which ships comma-bearing terms ("Allergy, clinical immunology and
+ * immunotherapeutics", "Sequence sites, features and motifs") -- so it also broke the enrichment-tag
+ * links out of every record page. A repeated key needs no in-value delimiter, so a comma inside a
+ * value is just data.
+ *
+ * Note the cost this accepts: an old bookmarked `?jrnl=A,B` URL is now the single journal "A,B"
+ * rather than two journals. A single param value cannot be both one value and a list, and
+ * comma-bearing values are far more common in this corpus than multi-value bookmarks.
+ */
+function readList(value: string | string[] | null | undefined): string[] | undefined {
+  if (value === null || value === undefined) return undefined;
+  const items = (Array.isArray(value) ? value : [value]).filter((v) => v.trim() !== '');
+  return items.length ? items : undefined;
+}
+
+/**
+ * The one surviving comma-split, used only by `class`.
+ *
+ * Its three values are fixed literals that can never contain a comma, `class=positive,negative` is
+ * a documented API contract (see observatory-ws's search-records.dto.ts), and the empty-string
+ * `class=` "explicitly cleared" signal has to survive byte-for-byte -- observatory-ws's
+ * canUseTextIndex depends on it, and getting it wrong turns every cleared search into a 500.
+ */
+function splitClassificationList(value: string | string[] | null | undefined): string[] | undefined {
+  const raw = Array.isArray(value) ? value[value.length - 1] : value;
+  if (!raw) return undefined;
+  const items = raw
     .split(',')
     .map((v) => v.trim())
     .filter(Boolean);
   return items.length ? items : undefined;
+}
+
+/** Single-valued params. A repeated key is nonsense for these, so the last one wins rather than
+ *  erroring -- same "tolerate malformed input a human pasted" posture as the parsers below. */
+function readScalar(value: string | string[] | null | undefined): string | null | undefined {
+  return Array.isArray(value) ? (value[value.length - 1] ?? undefined) : value;
 }
 
 function parseBool(value: string | null | undefined): boolean | undefined {
@@ -99,42 +139,43 @@ export function paramsToQuery(params: RawParams): SearchQuery {
   // An empty-but-present `class=` means the user cleared the filter, and must round-trip as
   // cleared -- so it becomes [], not undefined (undefined means "never set", which re-applies
   // the default below).
-  const classification = (splitList(params[PARAM.classification]) ?? []).filter(
+  const rawClassification = readScalar(params[PARAM.classification]);
+  const classification = (splitClassificationList(rawClassification) ?? []).filter(
     (c): c is Classification => (CLASSIFICATIONS as string[]).includes(c),
   );
 
-  const sortRaw = params[PARAM.sort];
+  const sortRaw = readScalar(params[PARAM.sort]);
   const sort = SORTS.includes(sortRaw as SortOrder) ? (sortRaw as SortOrder) : DEFAULT_SORT;
 
   const filters: SearchFilters = {
     // Absent param means "not yet touched" -> apply the positive default. An explicitly empty
     // value (`class=`) means the user cleared it, and must NOT silently snap back to the default.
     classification:
-      params[PARAM.classification] === undefined || params[PARAM.classification] === null
+      rawClassification === undefined || rawClassification === null
         ? DEFAULT_CLASSIFICATION
         : classification,
-    openAccess: parseBool(params[PARAM.openAccess]),
-    fulltextAvailable: parseBool(params[PARAM.fulltextAvailable]),
-    ...parseYearRange(params[PARAM.year]),
-    license: splitList(params[PARAM.license]),
-    journal: splitList(params[PARAM.journal]),
-    meshHeadings: splitList(params[PARAM.meshHeadings]),
-    keywordsAuthor: splitList(params[PARAM.keywordsAuthor]),
-    pubTypes: splitList(params[PARAM.pubTypes]),
-    domainTier1: splitList(params[PARAM.domainTier1]),
-    domainTier2: splitList(params[PARAM.domainTier2]),
-    domainTier3: splitList(params[PARAM.domainTier3]),
-    learningParadigm: splitList(params[PARAM.learningParadigm]),
-    modelFamily: splitList(params[PARAM.modelFamily]),
-    modelType: splitList(params[PARAM.modelType]),
-    enrichedOnly: parseBool(params[PARAM.enrichedOnly]),
+    openAccess: parseBool(readScalar(params[PARAM.openAccess])),
+    fulltextAvailable: parseBool(readScalar(params[PARAM.fulltextAvailable])),
+    ...parseYearRange(readScalar(params[PARAM.year])),
+    license: readList(params[PARAM.license]),
+    journal: readList(params[PARAM.journal]),
+    meshHeadings: readList(params[PARAM.meshHeadings]),
+    keywordsAuthor: readList(params[PARAM.keywordsAuthor]),
+    pubTypes: readList(params[PARAM.pubTypes]),
+    domainTier1: readList(params[PARAM.domainTier1]),
+    domainTier2: readList(params[PARAM.domainTier2]),
+    domainTier3: readList(params[PARAM.domainTier3]),
+    learningParadigm: readList(params[PARAM.learningParadigm]),
+    modelFamily: readList(params[PARAM.modelFamily]),
+    modelType: readList(params[PARAM.modelType]),
+    enrichedOnly: parseBool(readScalar(params[PARAM.enrichedOnly])),
   };
 
   return {
-    q: params[PARAM.q]?.trim() || undefined,
+    q: readScalar(params[PARAM.q])?.trim() || undefined,
     filters,
     sort,
-    page: parseIntOr(params[PARAM.page], 1),
+    page: parseIntOr(readScalar(params[PARAM.page]), 1),
     pageSize: DEFAULT_PAGE_SIZE,
   };
 }
@@ -143,23 +184,23 @@ export function paramsToQuery(params: RawParams): SearchQuery {
  * Inverse of paramsToQuery. Anything at its default is omitted so shared URLs stay short and
  * readable; `null` is used (not '') for keys the router should drop entirely.
  */
-export function queryToParams(query: SearchQuery): Record<string, string | null> {
+export function queryToParams(query: SearchQuery): Record<string, string | string[] | null> {
   const f = query.filters;
-  const out: Record<string, string | null> = {
+  const out: Record<string, string | string[] | null> = {
     [PARAM.q]: query.q?.trim() || null,
     [PARAM.openAccess]: f.openAccess === undefined ? null : String(f.openAccess),
     [PARAM.fulltextAvailable]: f.fulltextAvailable === undefined ? null : String(f.fulltextAvailable),
-    [PARAM.license]: joinOrNull(f.license),
-    [PARAM.journal]: joinOrNull(f.journal),
-    [PARAM.meshHeadings]: joinOrNull(f.meshHeadings),
-    [PARAM.keywordsAuthor]: joinOrNull(f.keywordsAuthor),
-    [PARAM.pubTypes]: joinOrNull(f.pubTypes),
-    [PARAM.domainTier1]: joinOrNull(f.domainTier1),
-    [PARAM.domainTier2]: joinOrNull(f.domainTier2),
-    [PARAM.domainTier3]: joinOrNull(f.domainTier3),
-    [PARAM.learningParadigm]: joinOrNull(f.learningParadigm),
-    [PARAM.modelFamily]: joinOrNull(f.modelFamily),
-    [PARAM.modelType]: joinOrNull(f.modelType),
+    [PARAM.license]: listOrNull(f.license),
+    [PARAM.journal]: listOrNull(f.journal),
+    [PARAM.meshHeadings]: listOrNull(f.meshHeadings),
+    [PARAM.keywordsAuthor]: listOrNull(f.keywordsAuthor),
+    [PARAM.pubTypes]: listOrNull(f.pubTypes),
+    [PARAM.domainTier1]: listOrNull(f.domainTier1),
+    [PARAM.domainTier2]: listOrNull(f.domainTier2),
+    [PARAM.domainTier3]: listOrNull(f.domainTier3),
+    [PARAM.learningParadigm]: listOrNull(f.learningParadigm),
+    [PARAM.modelFamily]: listOrNull(f.modelFamily),
+    [PARAM.modelType]: listOrNull(f.modelType),
     [PARAM.enrichedOnly]: f.enrichedOnly ? 'true' : null,
     [PARAM.sort]: query.sort === DEFAULT_SORT ? null : query.sort,
     [PARAM.page]: query.page > 1 ? String(query.page) : null,
@@ -183,17 +224,27 @@ export function queryToParams(query: SearchQuery): Record<string, string | null>
  *  - `pageSize` is appended directly from the query, not from queryToParams: DEFAULT_PAGE_SIZE is
  *    a UI constant that never appears in the URL (see PARAM above), but the API has no page-size
  *    default of its own to fall back to and needs it sent explicitly every time.
+ *  - A multi-value filter is `append`ed once per value, producing the repeated key the backend
+ *    reads (`?jrnl=A&jrnl=B`). `set` would keep only the last one.
  */
 export function queryToHttpParams(query: SearchQuery): HttpParams {
   let params = new HttpParams().set('pageSize', String(query.pageSize));
   for (const [key, value] of Object.entries(queryToParams(query))) {
-    if (value !== null) params = params.set(key, value);
+    if (value === null) continue;
+    if (Array.isArray(value)) {
+      for (const item of value) params = params.append(key, item);
+    } else {
+      params = params.set(key, value);
+    }
   }
   return params;
 }
 
-function joinOrNull(values: string[] | undefined): string | null {
-  return values?.length ? values.join(',') : null;
+/** Multi-value filters go out as the array itself, which the router serialises as a repeated key
+ *  (`?jrnl=A&jrnl=B`) and queryToHttpParams appends one at a time. Deliberately NOT comma-joined --
+ *  see readList for the values that encoding destroyed. */
+function listOrNull(values: string[] | undefined): string[] | null {
+  return values?.length ? values : null;
 }
 
 function yearRangeParam(min: number | undefined, max: number | undefined): string | null {

@@ -67,13 +67,40 @@ describe('parseSearchParams', () => {
     expect(parseSearchParams({}).filters.openAccess).toBeUndefined();
   });
 
-  it('splits comma-separated list params and trims whitespace', () => {
-    const { filters } = parseSearchParams({ mesh: ' Humans , Animals ,,' });
+  it('reads a repeated list param as a multi-value filter', () => {
+    const { filters } = parseSearchParams({ mesh: ['Humans', 'Animals'] });
     expect(filters.meshHeadings).toEqual(['Humans', 'Animals']);
   });
 
-  it('leaves an absent list param undefined, not an empty array', () => {
+  it('keeps a comma INSIDE a value instead of splitting on it', () => {
+    // The regression this encoding exists to prevent: this journal used to parse as the two-value
+    // filter ['Bioinformatics Advances (Oxford', 'England)'] and match nothing.
+    expect(
+      parseSearchParams({ jrnl: 'Bioinformatics Advances (Oxford, England)' }).filters.journal,
+    ).toEqual(['Bioinformatics Advances (Oxford, England)']);
+    expect(parseSearchParams({ mesh: 'Neoplasms, Second Primary' }).filters.meshHeadings).toEqual([
+      'Neoplasms, Second Primary',
+    ]);
+    // The EDAM domain vocabulary ships comma-bearing terms of its own.
+    expect(
+      parseSearchParams({ d1: 'Allergy, clinical immunology and immunotherapeutics' }).filters
+        .domainTier1,
+    ).toEqual(['Allergy, clinical immunology and immunotherapeutics']);
+  });
+
+  it('leaves an absent or empty list param undefined, not an empty array', () => {
     expect(parseSearchParams({}).filters.meshHeadings).toBeUndefined();
+    expect(parseSearchParams({ mesh: '' }).filters.meshHeadings).toBeUndefined();
+    expect(parseSearchParams({ mesh: [' ', ''] }).filters.meshHeadings).toBeUndefined();
+  });
+
+  it('still comma-splits `class`, the one param whose values can never contain a comma', () => {
+    expect(parseSearchParams({ class: 'positive,negative' }).filters.classification).toEqual([
+      'positive',
+      'negative',
+    ]);
+    // And the explicitly-cleared signal still round-trips -- canUseTextIndex depends on it.
+    expect(parseSearchParams({ class: '' }).filters.classification).toEqual([]);
   });
 
   it('trims and drops an empty free-text query', () => {

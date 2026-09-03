@@ -1,4 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import { IsIn, IsOptional, IsString } from 'class-validator';
 
 /**
@@ -13,6 +14,30 @@ import { IsIn, IsOptional, IsString } from 'class-validator';
  * Param names match observatory-ui/src/app/core/search-params.ts's PARAM map exactly -- a shared
  * search results URL from the frontend is a valid query string here with no translation.
  */
+
+/**
+ * Marks a REPEATABLE multi-value filter param (`?jrnl=A&jrnl=B`).
+ *
+ * Express hands a single occurrence back as a string and a repeated one as an array; this
+ * normalises both to an array so records.query.ts's readList sees one shape. Repeated keys, rather
+ * than one comma-joined value, are what make a facet value containing a comma expressible --
+ * "Bioinformatics Advances (Oxford, England)" and the EDAM vocabulary's own comma-bearing terms
+ * were previously split into junk filter values that matched nothing.
+ */
+function RepeatableParam(description: string) {
+  return function (target: object, propertyKey: string): void {
+    ApiPropertyOptional({
+      description: `${description} Repeatable -- pass the key once per value (?k=A&k=B). Values are matched verbatim, so names containing commas work; a single comma-joined value is now ONE value, not a list.`,
+      type: [String],
+    })(target, propertyKey);
+    IsOptional()(target, propertyKey);
+    Transform(({ value }: { value: unknown }) =>
+      value === undefined ? undefined : Array.isArray(value) ? value : [value],
+    )(target, propertyKey);
+    IsString({ each: true })(target, propertyKey);
+  };
+}
+
 export class SearchRecordsDto {
   @ApiPropertyOptional({ description: 'Free text over title and abstract.' })
   @IsOptional()
@@ -53,65 +78,40 @@ export class SearchRecordsDto {
   @IsString()
   year?: string;
 
-  @ApiPropertyOptional({ description: 'Comma-separated licence values.' })
-  @IsOptional()
-  @IsString()
-  lic?: string;
+  @RepeatableParam('Licence values.')
+  lic?: string | string[];
 
-  @ApiPropertyOptional({ description: 'Comma-separated journal names.' })
-  @IsOptional()
-  @IsString()
-  jrnl?: string;
+  @RepeatableParam('Journal names.')
+  jrnl?: string | string[];
 
-  @ApiPropertyOptional({ description: 'Comma-separated MeSH headings.' })
-  @IsOptional()
-  @IsString()
-  mesh?: string;
+  @RepeatableParam('MeSH headings.')
+  mesh?: string | string[];
 
-  @ApiPropertyOptional({
-    description:
-      'Comma-separated author keywords. Exact match only -- see /api/facets for why there is no typeahead for this field.',
-  })
-  @IsOptional()
-  @IsString()
-  kw?: string;
+  @RepeatableParam(
+    'Author keywords. Exact match only -- see /api/facets for why there is no typeahead for this field.',
+  )
+  kw?: string | string[];
 
-  @ApiPropertyOptional({ description: 'Comma-separated publication types.' })
-  @IsOptional()
-  @IsString()
-  ptype?: string;
+  @RepeatableParam('Publication types.')
+  ptype?: string | string[];
 
-  @ApiPropertyOptional({
-    description: 'EDAM domain tier 1 (single-select vocabulary, comma-separated for OR).',
-  })
-  @IsOptional()
-  @IsString()
-  d1?: string;
+  @RepeatableParam('EDAM domain tier 1.')
+  d1?: string | string[];
 
-  @ApiPropertyOptional({ description: 'EDAM domain tier 2.' })
-  @IsOptional()
-  @IsString()
-  d2?: string;
+  @RepeatableParam('EDAM domain tier 2.')
+  d2?: string | string[];
 
-  @ApiPropertyOptional({ description: 'EDAM domain tier 3.' })
-  @IsOptional()
-  @IsString()
-  d3?: string;
+  @RepeatableParam('EDAM domain tier 3.')
+  d3?: string | string[];
 
-  @ApiPropertyOptional({ description: 'Learning paradigm.' })
-  @IsOptional()
-  @IsString()
-  para?: string;
+  @RepeatableParam('Learning paradigm.')
+  para?: string | string[];
 
-  @ApiPropertyOptional({ description: 'Model family.' })
-  @IsOptional()
-  @IsString()
-  fam?: string;
+  @RepeatableParam('Model family.')
+  fam?: string | string[];
 
-  @ApiPropertyOptional({ description: 'Model type.' })
-  @IsOptional()
-  @IsString()
-  mt?: string;
+  @RepeatableParam('Model type.')
+  mt?: string | string[];
 
   @ApiPropertyOptional({
     description: 'Only records the enrichment pass has touched.',
