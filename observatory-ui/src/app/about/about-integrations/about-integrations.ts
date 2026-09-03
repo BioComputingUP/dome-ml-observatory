@@ -20,9 +20,6 @@ interface Integration {
 const INTEGRATIONS: Integration[] = [
   // ---- Live today ----
   {
-    // No logo: Europe PMC does not publish its wordmark as a standalone file (the site renders it
-    // inline), so this one intentionally uses the lettermark tile. Drop an asset in here if the
-    // lab has one -- nothing else needs to change.
     name: 'Europe PMC',
     status: 'live',
     direction: 'out',
@@ -30,6 +27,10 @@ const INTEGRATIONS: Integration[] = [
     what: 'The European bioinformatics literature database — abstracts, citations and open-access full text.',
     how: 'Every record with a PMID links directly to its Europe PMC article page.',
     benefit: "One click from a record's metadata to its full literature context.",
+    // The horizontal "Extended" lockup from europepmc.org/Outreach, not the stacked "Basic" one:
+    // Basic is a ~1:1 composition with the wordmark set inside a circle, which is illegible at the
+    // 40px row height these cards use. CC BY-SA, used unmodified as their terms require.
+    logo: 'assets/img/europe-pmc-logo.png',
   },
   {
     name: 'PMC',
@@ -70,7 +71,10 @@ const INTEGRATIONS: Integration[] = [
     what: 'The sibling registry of structured, community-reviewed DOME method annotations.',
     how: 'A reserved identifier field (identifiers.dome_registry) will link a record to its matching Registry entry once the cross-linking pass runs.',
     benefit: 'Move between "this paper exists" (Observatory) and "here is its full structured method annotation" (Registry).',
-    logo: 'assets/img/DOME_Registry_Rounded.svg',
+    // The -cropped variant, not the full one: DOME_Registry_Rounded.svg is a 375x375 canvas whose
+    // wordmark occupies a 349x78 band, so ~80% of it is empty and object-fit shrank the mark to an
+    // illegible sliver. Same asset the home page already uses for the same reason.
+    logo: 'assets/img/DOME_Registry_Rounded-cropped.svg',
   },
   {
     name: 'Hugging Face',
@@ -143,8 +147,9 @@ export class AboutIntegrations {
 
   /** First letter(s) for the lettermark fallback tile, shown when an integration has no logo
    *  asset yet. "DOME Registry" -> "DR" (first letter of each word, capped at 2) so multi-word
-   *  names stay legible rather than colliding on one letter. Only reached by entries with no logo
-   *  asset -- currently Europe PMC alone. */
+   *  names stay legible rather than colliding on one letter. Every entry currently has a logo, so
+   *  nothing reaches this today -- it stays as the fallback for the next integration added before
+   *  its asset is sourced, which is exactly how Europe PMC sat here until one was. */
   initials(name: string): string {
     return name
       .replace(/\(.*?\)/g, '')

@@ -91,18 +91,27 @@ h2 {
     border-left-style: solid;
   }
 
+  // Logo on its own row, name and status pill on the next. Side by side, a 116px logo left only
+  // ~140px for both in a 270px card, so "Europe PMC" wrapped to two lines and "FAIRsharing" broke
+  // mid-word -- while the pill still had to be squeezed in beside them. Stacking gives the name
+  // row the full card width (no wrapping, pill hard right with room to spare) AND lets the logos
+  // grow to a size that can actually be read.
   header {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
     gap: var(--space-3);
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--space-4);
   }
 
   h3 {
     font-size: var(--font-size-lg);
     font-weight: 700;
     color: var(--observatory-primary);
-    margin: 0 0 var(--space-1);
+    // No bottom margin: it offset the name against the pill now sitting beside it, and the header
+    // already owns the spacing below.
+    margin: 0;
+    min-width: 0;
   }
 
   dl {
@@ -133,11 +142,24 @@ h2 {
   }
 }
 
+// The status pill is pinned to the right-hand end of the header row rather than allowed to wrap
+// under the name. It used to be `flex-wrap: wrap` on an auto-width box, so on the cards with the
+// widest logos (FAIRsharing, DOME Registry) the name + pill no longer fitted the remaining space
+// and the pill dropped onto its own line -- while the row still had obvious free space to its
+// right. Taking the remaining width (flex: 1) and pushing the two apart uses that space; a long
+// name now wraps to a second line with the pill still parked top-right, which is the one thing
+// that has to stay true at the narrowest grid column (340px).
 .integration-title {
+  width: 100%;
   display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: nowrap;
+
+  .badge-chip {
+    flex-shrink: 0;
+  }
 }
 
 // Height-constrained rather than boxed square: several of these are wide wordmarks (PMC,
@@ -145,14 +167,15 @@ h2 {
 // ~13px tall and illegible. Capping height and letting width run to a maximum keeps square marks
 // square and wordmarks readable in the same row.
 //
-// max-width is 116px, not 76px: PMC's wordmark is 5.1:1, so 76px capped it at 15px tall and it was
-// still unreadable. 116px puts the widest mark here at ~23px tall. The header row wraps, so the
-// extra width costs nothing at narrow widths.
+// 160x48 rather than the old 116x40, now that the logo has a row to itself and is no longer
+// competing with the name for the same 270px. PMC's wordmark is 5.1:1 and Europe PMC's is 4.3:1,
+// so the old 116px cap squeezed the widest of them to ~23px tall; 160px puts them at ~31-37px and
+// they read properly.
 .integration-logo {
   flex-shrink: 0;
   width: auto;
-  max-width: 116px;
-  height: 40px;
+  max-width: 160px;
+  height: 48px;
   object-fit: contain;
   object-position: left center;
   border-radius: var(--radius-sm);
@@ -163,8 +186,8 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: var(--radius-sm);
   background-color: var(--observatory-primary);
   color: #fff;
