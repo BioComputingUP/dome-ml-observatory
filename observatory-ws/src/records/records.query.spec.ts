@@ -643,8 +643,11 @@ describe('buildTextSearch', () => {
     expect(buildTextSearch('random forest')).toBe('random forest');
   });
 
-  it('keeps a user-quoted phrase quoted', () => {
-    expect(buildTextSearch('"random forest" sepsis')).toBe('"random forest" sepsis');
+  it('passes a user-quoted phrase BARE too, leaving adjacency to the regex', () => {
+    // A $text phrase is a literal adjacency test, but termPattern's phrase regex is markup- and
+    // hyphen-tolerant on purpose. ANDing a quoted $text clause on top of it dropped exactly the
+    // "random-forest"/"<i>In Vitro</i>" matches the regex had just found.
+    expect(buildTextSearch('"random forest" sepsis')).toBe('random forest sepsis');
   });
 
   it('turns an author-shaped query into a phrase', () => {
@@ -671,6 +674,14 @@ describe('buildTextSearchFilter', () => {
     expect(built).toContain('$text');
     expect(built).toContain('publication_metadata.title');
     expect(built).toContain('publication_metadata.abstract');
+  });
+
+  it('never puts a quoted phrase in $text, so the regex keeps deciding adjacency', () => {
+    // Regression guard for the composite. The markup/hyphen tolerance proved in the termPattern
+    // tests above is only reachable if $text does not AND a literal phrase on top of it.
+    const built = JSON.stringify(buildTextSearchFilter(filters({ q: '"random forest"' })));
+    expect(built).toContain('"$search":"random forest"');
+    expect(built).not.toContain('\\"random forest\\"');
   });
 
   it('carries the classification predicate the partial index requires', () => {

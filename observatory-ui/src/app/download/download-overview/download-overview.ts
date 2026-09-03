@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { RecordsService } from '../../core/records.service';
-import { FALLBACK_SCHEMA_VERSION, schemaReleaseUrl } from '../../core/schema-links';
+import { FALLBACK_SCHEMA_VERSION, versionNumber, schemaReleaseUrl } from '../../core/schema-links';
 
 @Component({
   selector: 'app-download-overview',
@@ -22,6 +22,10 @@ export class DownloadOverview {
   });
 
   readonly corpus = computed(() => this.stats()?.corpus ?? this.records.getStats());
-  readonly schemaVersion = computed(() => this.stats()?.schema_version ?? FALLBACK_SCHEMA_VERSION);
+  // versionNumber, not the raw value: /api/stats reports the version WITH a `v` (it reads
+  // schema/CURRENT verbatim), and templates here add their own, which rendered `vv1.1.0`.
+  readonly schemaVersion = computed(() =>
+    versionNumber(this.stats()?.schema_version ?? FALLBACK_SCHEMA_VERSION),
+  );
   readonly schemaUrl = computed(() => schemaReleaseUrl(this.schemaVersion()));
 }

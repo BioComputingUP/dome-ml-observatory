@@ -22,9 +22,13 @@ export const MAX_RESULT_WINDOW = 10_000;
 
 /**
  * The corpus is 355,558 AI/ML methods papers plus 464,581 records screened out as not-AI/ML.
- * Defaulting to positives means an unfiltered visit shows the resource's actual content -- but it
- * is surfaced as a removable chip in the UI, never a hidden filter, so widening the search is one
- * obvious click.
+ * Defaulting to positives means an unfiltered visit shows the resource's actual content.
+ *
+ * The search page no longer offers any way to widen this -- see the comment in search.ts on why
+ * the classification chip was withdrawn. The `class=` wire format below is still honoured for
+ * anyone calling /api/records directly or landing on an old bookmarked URL, but from the UI the
+ * search space is always the positives. The full screened corpus is reachable through bulk
+ * download, and /about/support says so.
  */
 export const DEFAULT_CLASSIFICATION: Classification[] = ['positive'];
 

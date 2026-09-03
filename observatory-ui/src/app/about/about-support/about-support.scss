@@ -20,6 +20,16 @@ h2 {
   margin: 0;
 }
 
+// A short orienting line between a band's heading and its content. Sized down from .lead so it
+// reads as a caption to the section rather than competing with the page's opening sentence.
+.section-intro {
+  font-size: var(--font-size-sm);
+  color: var(--status-neutral);
+  line-height: 1.6;
+  max-width: 68ch;
+  margin: 0 0 var(--space-4);
+}
+
 // ---- The support channels ----
 
 // 360px is chosen to land these 2x2 rather than 3+1. At the 1080px band width anything at or below
@@ -70,7 +80,6 @@ h2 {
   // Pushes the CTA to the card's bottom edge, so the buttons line up across a row of cards whose
   // paragraphs are different lengths.
   .cta-pill,
-  .card-cta,
   .issue-links {
     margin-top: auto;
   }
@@ -79,10 +88,6 @@ h2 {
   // children by default -- which at this card size is a very wide bar for a short address.
   .cta-pill {
     align-self: flex-start;
-  }
-
-  .card-cta:hover i {
-    transform: translateX(3px);
   }
 }
 
@@ -116,27 +121,26 @@ h2 {
     margin-top: var(--space-2);
   }
 
+  // The underline goes on the label span, never the anchor. An ancestor's text-decoration is
+  // drawn straight through its in-flow descendants, so underlining the <a> ran a line under the
+  // icon glyph as well -- which reads as a rendering fault rather than a link. Decorating the
+  // span keeps the accessible underline on the four labels and off their icons.
   a {
     display: inline-flex;
     align-items: baseline;
     gap: var(--space-2);
     font-size: var(--font-size-sm);
     font-weight: 600;
+    text-decoration: none;
+
+    span {
+      text-decoration: underline;
+    }
   }
 
   i {
     color: var(--observatory-accent);
   }
-}
-
-// The "this is not built yet" sentence, held apart from the description of what it will be so the
-// two cannot be skim-read as one promise.
-.support-note {
-  border-top: 1px solid var(--border-default);
-  padding-top: var(--space-3);
-  margin-top: auto;
-  margin-bottom: 0;
-  color: var(--status-neutral);
 }
 
 // ---- FAQ ----
@@ -178,12 +182,14 @@ h2 {
   }
 }
 
+// Section headings inside the FAQ. Set in the page's primary colour at a real heading size rather
+// than the small grey uppercase these started as: greyed-out small caps sat below the questions
+// themselves in visual weight, so the two groups they divide read as one undifferentiated list.
+// One step down from the band's <h2> (--font-size-xl), one step up from a question.
 .faq-group {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-lg);
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--status-neutral);
+  color: var(--observatory-primary);
   margin: var(--space-6) 0 var(--space-3);
 
   &:first-of-type {
@@ -280,11 +286,26 @@ h2 {
     }
   }
 
+  // Link then description on its own line, rather than dash-joined into one run of text: at five
+  // entries the dashes were the loudest punctuation on the page, and the split lets the eye scan
+  // the five destinations without reading the notes.
   a {
     display: inline-flex;
     align-items: baseline;
     gap: var(--space-2);
     font-weight: 600;
+    text-decoration: none;
+
+    // See .issue-links -- underline the label, not the icon.
+    span {
+      text-decoration: underline;
+    }
+  }
+
+  .next-note {
+    display: block;
+    // Indents the note to the width of the icon plus its gap, so it hangs under the link text.
+    margin-left: calc(1em + var(--space-2));
   }
 
   i {

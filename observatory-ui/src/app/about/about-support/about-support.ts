@@ -1,10 +1,10 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, afterNextRender, computed, inject } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { RecordsService } from '../../core/records.service';
-import { FALLBACK_SCHEMA_VERSION, schemaReleaseUrl } from '../../core/schema-links';
+import { FALLBACK_SCHEMA_VERSION, versionNumber, schemaReleaseUrl } from '../../core/schema-links';
 
 /** Where issues are filed. `?template=` opens the form directly rather than the chooser, so a
  *  card that says "report a wrong record" lands on the record-correction form and not a menu. */
@@ -30,6 +30,35 @@ const ISSUES = 'https://github.com/BioComputingUP/dome-ml-observatory/issues';
 })
 export class AboutSupport {
   private readonly records = inject(RecordsService);
+  private readonly route = inject(ActivatedRoute);
+
+  constructor() {
+    // Deep link support for /about/support#faq (and anyone who bookmarked it). The router is
+    // provided bare in app.config.ts -- no withInMemoryScrolling -- so nothing scrolls to a
+    // fragment on its own, and afterNextRender is the earliest point the FAQ band exists in the
+    // DOM. Read once from the snapshot rather than subscribing: the app is zoneless, and the
+    // fragment cannot change without leaving the page. Same approach as news.ts.
+    afterNextRender(() => {
+      if (this.route.snapshot.fragment === 'faq') this.scrollToFaq();
+    });
+  }
+
+  /**
+   * Scrolls to the FAQ band.
+   *
+   * The template's `routerLink`/`fragment` pair is what puts a real, copyable /about/support#faq
+   * in the address bar; this does the moving. A bare `href="#faq"` cannot be used here at all --
+   * index.html declares `<base href="/">`, so a fragment-only URL resolves against the document
+   * base rather than the current location, becoming `/#faq`, which the router matches as the
+   * empty path and renders Home. The button navigated away from the page it was scrolling.
+   */
+  jumpToFaq(): void {
+    this.scrollToFaq();
+  }
+
+  private scrollToFaq(): void {
+    document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
   private readonly stats = toSignal(this.records.getFacetStats().pipe(catchError(() => of(null))), {
     initialValue: null,
@@ -37,7 +66,11 @@ export class AboutSupport {
 
   readonly corpus = computed(() => this.stats()?.corpus ?? this.records.getStats());
 
-  readonly schemaVersion = computed(() => this.stats()?.schema_version ?? FALLBACK_SCHEMA_VERSION);
+  // versionNumber, not the raw value: /api/stats reports the version WITH a `v` (it reads
+  // schema/CURRENT verbatim), and templates here add their own, which rendered `vv1.1.0`.
+  readonly schemaVersion = computed(() =>
+    versionNumber(this.stats()?.schema_version ?? FALLBACK_SCHEMA_VERSION),
+  );
   readonly schemaUrl = computed(() => schemaReleaseUrl(this.schemaVersion()));
 
   readonly issuesUrl = ISSUES;

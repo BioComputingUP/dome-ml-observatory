@@ -12,6 +12,7 @@ import {
   schemaFileUrl,
   schemaReleaseUrl,
   schemaVocabUrl,
+  versionNumber,
 } from '../../core/schema-links';
 
 /** The permanent identifier for the current corpus release, all-versions record. Kept as a
@@ -33,7 +34,11 @@ export class DownloadBulk {
   });
 
   readonly corpus = computed(() => this.stats()?.corpus ?? this.records.getStats());
-  readonly schemaVersion = computed(() => this.stats()?.schema_version ?? FALLBACK_SCHEMA_VERSION);
+  // versionNumber, not the raw value: /api/stats reports the version WITH a `v` (it reads
+  // schema/CURRENT verbatim), and templates here add their own, which rendered `vv1.1.0`.
+  readonly schemaVersion = computed(() =>
+    versionNumber(this.stats()?.schema_version ?? FALLBACK_SCHEMA_VERSION),
+  );
 
   // Built from the version the API just reported, not hardcoded, so these links follow a
   // schema bump on their own -- release folders are immutable and cut before CURRENT moves.

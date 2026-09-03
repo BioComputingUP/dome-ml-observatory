@@ -2,10 +2,8 @@
   <div class="band-inner">
     <h1>Support</h1>
     <p class="lead">
-      One address reaches a person: <a href="mailto:contact@dome-ml.org">contact&#64;dome-ml.org</a>.
-      If you would rather your question left a public trail — a wrong record, a bug, a suggestion —
-      open an issue instead. Both are read by the same small team, so pick whichever suits what you
-      are asking.
+      How to reach us, and answers to the questions we are asked most about searching the corpus
+      and the data behind it.
     </p>
   </div>
 </div>
@@ -17,6 +15,11 @@
       <h2>Ways to get help</h2>
     </div>
 
+    <p class="section-intro">
+      Email is the quickest route for anything specific to you. The other routes are public, so an
+      answer is useful to more than one person.
+    </p>
+
     <div class="support-cards">
       <article class="support-card info-panel status-live">
         <header class="card-header">
@@ -27,8 +30,8 @@
           </div>
         </header>
         <p>
-          Anything at all — a question about the data, a collaboration, a correction you would
-          rather not raise in public, or a request to have a record removed.
+          Questions about the data, collaborations, corrections you would rather not raise in
+          public, or a request to have a record removed.
         </p>
         <a href="mailto:contact@dome-ml.org" class="cta-pill cta-pill-accent">
           <i class="icon icon-common icon-envelope" aria-hidden="true"></i>
@@ -45,11 +48,17 @@
           </div>
         </header>
         <p>
-          Search here behaves in a few ways that surprise people, and most of what reaches the inbox
-          is answered below. Worth a minute before you write.
+          Answers to the questions we are asked most, covering how search works and what the data
+          covers. Worth a minute before you write.
         </p>
-        <a href="#faq" class="card-cta">
-          Jump to the FAQ <i class="icon icon-common icon-arrow-down" aria-hidden="true"></i>
+        <a
+          routerLink="/about/support"
+          fragment="faq"
+          class="cta-pill cta-pill-primary"
+          (click)="jumpToFaq()"
+        >
+          <i class="icon icon-common icon-arrow-down" aria-hidden="true"></i>
+          Jump to the FAQ
         </a>
       </article>
 
@@ -61,29 +70,30 @@
             <span class="badge-chip tone-positive">Available now</span>
           </div>
         </header>
-        <p>
-          On GitHub, with a short form for each kind of report so you are not guessing what we need
-          from you.
-        </p>
+        <p>On GitHub, with a short form for each kind of report.</p>
         <ul class="issue-links">
           <li>
             <a [href]="recordIssueUrl" target="_blank" rel="noopener">
-              <i class="icon icon-common icon-edit" aria-hidden="true"></i>A record is wrong or missing
+              <i class="icon icon-common icon-edit" aria-hidden="true"></i>
+              <span>A record is wrong or missing</span>
             </a>
           </li>
           <li>
             <a [href]="searchIssueUrl" target="_blank" rel="noopener">
-              <i class="icon icon-common icon-search" aria-hidden="true"></i>Search isn't finding what I expect
+              <i class="icon icon-common icon-search" aria-hidden="true"></i>
+              <span>Search isn't finding what I expect</span>
             </a>
           </li>
           <li>
             <a [href]="bugIssueUrl" target="_blank" rel="noopener">
-              <i class="icon icon-common icon-bug" aria-hidden="true"></i>Something on the site is broken
+              <i class="icon icon-common icon-bug" aria-hidden="true"></i>
+              <span>Something on the site is broken</span>
             </a>
           </li>
           <li>
             <a [href]="questionIssueUrl" target="_blank" rel="noopener">
-              <i class="icon icon-common icon-comments" aria-hidden="true"></i>A question or suggestion
+              <i class="icon icon-common icon-comments" aria-hidden="true"></i>
+              <span>A question or suggestion</span>
             </a>
           </li>
         </ul>
@@ -93,17 +103,13 @@
         <header class="card-header">
           <span class="icon-badge"><i class="icon icon-common icon-users" aria-hidden="true"></i></span>
           <div class="support-title">
-            <h3>Mailing list</h3>
+            <h3>Google Group</h3>
             <span class="badge-chip tone-undeterminable">Planned</span>
           </div>
         </header>
         <p>
-          A Google Group is planned, for release announcements and discussion between people using
-          the corpus — so a question and its answer are useful to more than one person.
-        </p>
-        <p class="support-note">
-          It does not exist yet, and there is nothing to subscribe to. Email is the route until it
-          does; this page will carry the address the day it opens.
+          For release announcements and discussion between people using the corpus. It is not set up
+          yet; email us in the meantime.
         </p>
       </article>
     </div>
@@ -139,36 +145,38 @@
     <details class="faq-item" id="faq-author-names" open>
       <summary>Why won't an author's full name find their papers?</summary>
       <p>
-        Authors are stored the way the source literature databases store them — surname plus
-        initials, as in <code>Tosatto SCE</code> — so a full first name has nothing to match against.
-        Type the surname and the initials in capitals and the search recognises the shape, matching
-        that author exactly rather than anywhere their surname happens to appear; the initials are
-        allowed to extend, so <code>Farrell G</code> also finds <code>Farrell GP</code>. A surname on
-        its own works too, it is just broader. This is the least discoverable behaviour on the site,
-        and the one that most often looks like a missing paper when it is not.
+        Authors are stored the way the source literature databases store them: surname plus
+        initials, as in <code>Tosatto SCE</code>, so a full first name has nothing to match against.
+        Type the surname and the initials in capitals and the search recognises the shape and brings
+        that author's records to the top. The initials are allowed to extend, so
+        <code>Farrell G</code> also finds <code>Farrell GP</code>. A surname on its own works too,
+        it is just broader.
       </p>
     </details>
 
     <details class="faq-item" id="faq-multiple-words" open>
       <summary>How are multiple words treated?</summary>
       <p>
-        They are AND-ed, not read as a phrase: every word has to appear somewhere in the record, in
-        any order. Matching is anchored to the start of a word, so <code>cell</code> finds "cells"
-        and "cellular" but not "excellent" — which removed about a quarter of the false hits that
-        an unanchored match returns. If you want the words adjacent, quote them:
-        <code>"random forest"</code> is matched as a phrase, and tolerates the inline markup and
-        hyphenation that real titles are full of.
+        They are AND-ed, not read as a phrase: every word has to appear somewhere in the title,
+        abstract or author list, in any order. Matching is anchored to the start of a word, so
+        <code>cell</code> finds "cells" and "cellular" but not "excellent". If you want the words
+        next to each other, quote them: <code>"random forest"</code> is matched as a phrase, and
+        still matches titles that hyphenate it or split it with inline markup.
       </p>
     </details>
 
     <details class="faq-item" id="faq-fewer-results" open>
-      <summary>Why do I get far fewer results than the {{ corpus().total | number }} papers you screened?</summary>
+      <summary>Why do I get fewer results than the {{ corpus().total | number }} papers you screened?</summary>
       <p>
-        Because searching starts from the {{ corpus().positive | number }} papers classified as AI/ML
-        methods papers, not the whole screened corpus. The rest were screened and judged not to be
-        AI/ML methods papers, and they are still there — clear the classification filter on the
-        <a routerLink="/search">search page</a> to include them. Nearly everyone wants the positives,
-        which is why they are the default rather than a setting you have to find.
+        Search covers the {{ corpus().positive | number }} papers classified as AI/ML methods
+        papers. The rest were screened and judged not to be AI/ML methods papers, and the search
+        page does not reach them. They are kept, and the only way to get the full screened corpus is
+        <a routerLink="/download/bulk">bulk download</a>.
+      </p>
+      <p>
+        The corpus comes from a Europe PMC search for "artificial intelligence" and "machine
+        learning" as it stood when the dataset was built. Each release is versioned, so a later
+        release covers a wider slice of the literature.
       </p>
     </details>
 
@@ -176,16 +184,14 @@
       <summary>Why can one uncommon word be slower than two?</summary>
       <p>
         A search of two or more words uses the text index, which is fast. A single bare word
-        deliberately does not, because the index stems words and a lone term has no second word to
-        rescue what stemming drops. For whole words the loss is small, but for the combining forms
-        biologists actually type it is severe: <code>neuro</code> on the index returns about 1,700
-        records where the slower path finds roughly 26,500, and <code>bioinform</code> returns
-        nothing at all.
+        deliberately does not: the index stems words, and a lone term has no second word to rescue
+        what stemming drops. For the combining forms biologists actually type, such as
+        <code>neuro</code> or <code>bioinform</code>, that loss is severe enough to hide most of the
+        matches.
       </p>
       <p>
-        So a lone word takes the thorough path and can take several seconds. That is a deliberate
-        trade — recall is never given up for speed — and adding a second word puts you back on the
-        fast path.
+        So a lone word takes the thorough path instead and can take several seconds. Recall is never
+        given up for speed, and adding a second word puts you back on the fast path.
       </p>
     </details>
 
@@ -193,10 +199,10 @@
       <summary>Why does browsing stop at page 400?</summary>
       <p>
         Paging deeper than 10,000 results means asking the database to sort and skip past a large
-        part of the corpus on every request, which it cannot do reliably at this scale. Rather than
-        fail slowly and unpredictably, the limit is enforced up front. If you need more than the
-        first 10,000 of a result set, narrow the filters — or take the whole corpus in one file from
-        <a routerLink="/download">Download</a>, which is faster for you anyway.
+        part of the corpus on every request, which it cannot do reliably at this scale. At 25
+        results a page, that is 400 pages. If you need more than the first 10,000 of a result set,
+        narrow the filters, or take the whole corpus in one file from
+        <a routerLink="/download">Download</a>.
       </p>
     </details>
 
@@ -207,28 +213,27 @@
       <p>
         Not record by record. Every classification and enrichment in the corpus is LLM-generated.
         The method behind them was validated against a hand-annotated expert benchmark before being
-        run at scale, so the figures are high-confidence across the corpus as a whole — but no
+        run at scale, so the figures are high-confidence across the corpus as a whole, but no
         individual record has been reviewed by a curator.
       </p>
       <p>
         Treat any single record's labels as a strong starting point rather than a verified fact, and
-        cite the paper itself rather than our classification of it. If one is wrong, please tell us —
-        that is the fastest way it gets fixed.
+        cite the paper itself rather than our classification of it. If one is wrong, please tell us.
       </p>
     </details>
 
     <details class="faq-item" id="faq-not-enriched" open>
       <summary>What does "not yet enriched" mean on a record?</summary>
       <p>
-        Enrichment is the second pass — domain, learning paradigm, model family and model type,
-        drawn from controlled vocabularies. Those fields are defined in
+        Enrichment is the second pass: domain, learning paradigm, model family and model type, drawn
+        from controlled vocabularies. Those fields are defined in
         <a [href]="schemaUrl()" target="_blank" rel="noopener">schema release v{{ schemaVersion() }}</a>
         and reserved on every record, but the pass has not been run yet, so they are empty for now.
       </p>
       <p>
-        Nothing is missing or broken — the work simply has not happened. Coverage is reported live on
-        the <a routerLink="/about/processing">processing history</a> page and will start climbing on
-        its own once the first batch lands.
+        Nothing is missing or broken. Coverage is reported live on the
+        <a routerLink="/about/processing">processing history</a> page and will start climbing once
+        the first batch lands.
       </p>
     </details>
 
@@ -242,9 +247,8 @@
       </p>
       <p>
         A missing paper is usually one of two things: it is in the corpus but classified as not an
-        AI/ML methods paper, or it has not been through a processing round yet — the corpus is
-        reloaded several times a year. See <a routerLink="/about/licensing">licensing</a> for what we
-        redistribute and on what terms.
+        AI/ML methods paper, or it has not been through a processing round yet. See
+        <a routerLink="/about/licensing">licensing</a> for what we redistribute and on what terms.
       </p>
     </details>
 
@@ -268,24 +272,34 @@
     </div>
     <ul class="next-links">
       <li>
-        <a routerLink="/download/api"><i class="icon icon-common icon-cogs" aria-hidden="true"></i>API reference</a>
-        — endpoints, parameters and rate limits.
+        <a routerLink="/download/api">
+          <i class="icon icon-common icon-cogs" aria-hidden="true"></i><span>API reference</span>
+        </a>
+        <span class="next-note">Endpoints, parameters and rate limits.</span>
       </li>
       <li>
-        <a href="/api/docs" target="_blank" rel="noopener"><i class="icon icon-common icon-book" aria-hidden="true"></i>Live API docs</a>
-        — the Swagger interface, to try a request in the browser.
+        <a href="/api/docs" target="_blank" rel="noopener">
+          <i class="icon icon-common icon-book" aria-hidden="true"></i><span>Live API docs</span>
+        </a>
+        <span class="next-note">The Swagger interface, to try a request in the browser.</span>
       </li>
       <li>
-        <a [href]="schemaUrl()" target="_blank" rel="noopener"><i class="icon icon-common icon-code-branch" aria-hidden="true"></i>The record schema</a>
-        — every field defined, with a real example record and the controlled vocabularies.
+        <a [href]="schemaUrl()" target="_blank" rel="noopener">
+          <i class="icon icon-common icon-code-branch" aria-hidden="true"></i><span>The record schema</span>
+        </a>
+        <span class="next-note">Every field defined, with a real example record and the controlled vocabularies.</span>
       </li>
       <li>
-        <a routerLink="/about/processing"><i class="icon icon-common icon-calendar" aria-hidden="true"></i>Processing history</a>
-        — what has been run over the corpus, and when.
+        <a routerLink="/about/processing">
+          <i class="icon icon-common icon-calendar" aria-hidden="true"></i><span>Processing history</span>
+        </a>
+        <span class="next-note">What has been run over the corpus, and when.</span>
       </li>
       <li>
-        <a routerLink="/about/licensing"><i class="icon icon-common icon-copy" aria-hidden="true"></i>Licensing &amp; citation</a>
-        — what you may reuse, and how to cite it.
+        <a routerLink="/about/licensing">
+          <i class="icon icon-common icon-copy" aria-hidden="true"></i><span>Licensing &amp; citation</span>
+        </a>
+        <span class="next-note">What you may reuse, and how to cite it.</span>
       </li>
     </ul>
   </div>

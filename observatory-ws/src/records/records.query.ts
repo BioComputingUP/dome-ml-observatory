@@ -491,15 +491,24 @@ export function canUseTextIndex(filters: ParsedFilters): boolean {
  * candidates from the index; the regex clauses decide what actually matches.
  *
  * An author-shaped query becomes a quoted phrase: measured `"Farrell G"` -> the 2 correct records
- * in 562ms against the live collection, versus ~3.4s for the equivalent author regex.
+ * in 562ms against the live collection, versus ~3.4s for the equivalent author regex. That one is
+ * safe to quote because an author name really is a literal string in the stored field.
+ *
+ * A user-quoted phrase is NOT quoted here, for the opposite reason. A `$text` phrase is a literal
+ * adjacency test on the raw field, but termPattern's phrase regex is deliberately markup- and
+ * hyphen-tolerant (PHRASE_GAP), because that is what the corpus's real text needs -- "in vitro" is
+ * stored as "<i>In Vitro</i>", and "random forest" is often written "random-forest". Quoting the
+ * phrase for `$text` re-imposed literal adjacency, and since buildTextSearchFilter ANDs the two
+ * clauses together, every markup-broken or hyphenated match the regex found was then dropped by
+ * `$text` -- silently, because shouldFallBackFromText only rescues a total of exactly zero. Passing
+ * the words bare leaves the phrase constraint entirely to the regex, which is the division of
+ * labour this whole path is built on: `$text` selects candidates, the regexes decide what matches.
  */
 export function buildTextSearch(q: string): string {
   const author = parseAuthorName(q);
   if (author) return `"${author.surname} ${author.initials}"`;
-  // A phrase the user quoted stays quoted; everything else goes in bare so it can stem.
-  return tokenizeQuery(q)
-    .map((term) => (term.includes(' ') ? `"${term}"` : term))
-    .join(' ');
+  // Every term goes in bare -- a quoted phrase included, see above.
+  return tokenizeQuery(q).join(' ');
 }
 
 /**
