@@ -1,0 +1,192 @@
+.chart {
+  margin: 0;
+}
+
+// Line keys, not filled boxes -- the marks are lines, and the legend should mirror the mark.
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  list-style: none;
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  font-size: var(--font-size-sm);
+  color: var(--status-neutral);
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+}
+
+.legend-key {
+  display: inline-block;
+  width: 18px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+.chart-plot {
+  position: relative;
+}
+
+.chart-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+
+  &:focus-visible {
+    outline: 3px solid var(--observatory-accent);
+    outline-offset: 2px;
+  }
+}
+
+// Hairline and solid, never dashed: a dashed gridline reads as a data series.
+.chart-grid line {
+  stroke: var(--border-default);
+  stroke-width: 1;
+}
+
+.chart-axis text {
+  fill: var(--status-neutral);
+  font-size: 12px;
+}
+
+.chart-crosshair {
+  stroke: var(--border-strong);
+  stroke-width: 1;
+}
+
+.chart-series path {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+// The surface ring is what keeps a marker readable where it crosses the other series' line.
+.chart-markers circle {
+  stroke: var(--surface-card);
+  stroke-width: 2;
+}
+
+.chart-tooltip {
+  position: absolute;
+  top: 0;
+  transform: translateX(12px);
+  min-width: 150px;
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+  z-index: 2;
+
+  // Flips to the other side of the crosshair past the midpoint, so it never hangs off the chart.
+  &.flip {
+    transform: translateX(calc(-100% - 12px));
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    font-size: var(--font-size-xs);
+    margin-top: 2px;
+  }
+}
+
+.tooltip-label {
+  margin: 0 0 var(--space-1);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--status-neutral);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tooltip-key {
+  flex-shrink: 0;
+  width: 12px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+// Value leads, series name follows: the reader already knows which series they want and is here
+// for the number. Text wears text tokens -- the colour lives in the key beside it, never in the
+// label itself.
+.tooltip-value {
+  font-weight: 700;
+  color: var(--observatory-primary);
+}
+
+.tooltip-series {
+  color: var(--status-neutral);
+}
+
+figcaption {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--status-neutral);
+}
+
+.chart-table-wrap {
+  overflow-x: auto;
+  margin-top: var(--space-4);
+}
+
+.chart-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+
+  caption {
+    caption-side: top;
+    text-align: left;
+    padding-bottom: var(--space-2);
+    color: var(--status-neutral);
+    font-size: var(--font-size-xs);
+  }
+
+  th,
+  td {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--border-default);
+    text-align: right;
+  }
+
+  th[scope='row'] {
+    text-align: left;
+    font-weight: 600;
+  }
+
+  thead th {
+    text-align: right;
+    color: var(--status-neutral);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+
+    &:first-child {
+      text-align: left;
+    }
+  }
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}

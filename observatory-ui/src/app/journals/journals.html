@@ -1,0 +1,305 @@
+<div class="journals-page">
+  <!-- Full-bleed header band, matching the search page's own -- this is the other place you come
+       to look something up, and it should announce itself the same way. -->
+  <section class="journals-header">
+    <div class="container-wide">
+      <h1 class="page-title">Journals</h1>
+      <p class="page-lead">
+        Which journals publish AI/ML methods papers in the life sciences, and how that has changed
+        since 2000.
+      </p>
+      <app-journal-search (selectionChange)="select($event)" />
+    </div>
+  </section>
+
+  @if (selected(); as journal) {
+    <!-- ===================== Single-journal lens ===================== -->
+    @if (detailLoading()) {
+      <div class="band"><div class="band-inner"><p class="muted">Loading {{ journal }}…</p></div></div>
+    } @else if (notFound()) {
+      <div class="band">
+        <div class="band-inner">
+          <h2>No journal by that name</h2>
+          <p class="muted">
+            Nothing in the corpus is published under “{{ journal }}”. Journal names are matched
+            exactly — search above to find the exact spelling.
+          </p>
+          <button type="button" class="cta-pill cta-pill-accent" (click)="clearJournal()">
+            Back to all journals
+          </button>
+        </div>
+      </div>
+    } @else if (result(); as detail) {
+      <div class="band">
+        <div class="band-inner">
+          <div class="journal-head">
+            <div>
+              <h2 class="journal-name">{{ detail.journal.journal }}</h2>
+              <p class="muted journal-rank">
+                Ranked <strong>#{{ detail.rank | number }}</strong> of
+                {{ detail.rankOf | number }} journals by AI/ML methods papers —
+                {{ detail.shareOfCorpusPositive * 100 | number: '1.0-2' }}% of every AI/ML methods
+                paper Observatory holds.
+              </p>
+            </div>
+            <div class="journal-actions">
+              <a routerLink="/search" [queryParams]="recordsLink()" class="cta-pill cta-pill-accent">
+                Browse its records <span aria-hidden="true">→</span>
+              </a>
+              <button type="button" class="cta-pill cta-pill-primary" (click)="clearJournal()">
+                All journals
+              </button>
+            </div>
+          </div>
+
+          <div class="stat-pills">
+            <div class="stat-pill">
+              <i class="icon icon-common icon-classification" aria-hidden="true"></i>
+              <div>
+                <span class="stat-pill-value">{{ detail.journal.positive | number }}</span>
+                <span class="stat-pill-label">AI/ML methods papers</span>
+              </div>
+            </div>
+            <div class="stat-pill">
+              <i class="icon icon-common icon-search" aria-hidden="true"></i>
+              <div>
+                <span class="stat-pill-value">{{ detail.journal.screened | number }}</span>
+                <span class="stat-pill-label">Screened from this journal</span>
+              </div>
+            </div>
+            <div class="stat-pill">
+              <i class="icon icon-common icon-filter" aria-hidden="true"></i>
+              <div>
+                <span class="stat-pill-value">{{ detail.journal.negative | number }}</span>
+                <span class="stat-pill-label">Screened out</span>
+              </div>
+            </div>
+            <div class="stat-pill">
+              <i class="icon icon-common icon-pie-chart" aria-hidden="true"></i>
+              <div>
+                <span class="stat-pill-value">{{ detail.journal.positiveRate * 100 | number: '1.0-1' }}%</span>
+                <span class="stat-pill-label">AI/ML share of screened</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="band band-tint">
+        <div class="band-inner">
+          <div class="card-header">
+            <span class="icon-badge"><i class="icon icon-common icon-chart-line" aria-hidden="true"></i></span>
+            <h2>Temporal trend</h2>
+          </div>
+
+          @if (hasTrend()) {
+            <div class="chart-card info-panel">
+              <app-line-chart
+                [series]="trendSeries()"
+                [labels]="years()"
+                caption="Papers per year from this journal, and how many of them are AI/ML methods papers."
+                tableLabel="Year"
+              />
+            </div>
+
+            <!-- A second panel, deliberately not a second axis on the chart above: a percentage
+                 and a count share no scale. -->
+            <div class="chart-card info-panel">
+              <app-line-chart
+                [series]="shareSeries()"
+                [labels]="years()"
+                unit="%"
+                [maxOverride]="100"
+                caption="Share of that year's screened output classified as AI/ML methods papers."
+                tableLabel="Year"
+              />
+            </div>
+
+            @if (detail.journal.pre.screened) {
+              <p class="muted footnote">
+                The chart starts at 2000. Before that, Observatory screened
+                {{ detail.journal.pre.screened | number }} more papers from this journal, of which
+                {{ detail.journal.pre.positive | number }} are AI/ML methods papers. They are
+                included in the totals above but cannot be placed on the axis.
+              </p>
+            }
+          } @else {
+            <p class="muted">
+              Too few years of data to plot a trend — this journal has records in a single year.
+            </p>
+          }
+        </div>
+      </div>
+
+      <div class="band">
+        <div class="band-inner">
+          <div class="card-header">
+            <span class="icon-badge"><i class="icon icon-common icon-info" aria-hidden="true"></i></span>
+            <h2>In context</h2>
+          </div>
+          <dl class="context-grid">
+            <div>
+              <dt>Busiest year</dt>
+              <dd>{{ detail.journal.peakYear ?? '—' }}</dd>
+            </div>
+            <div>
+              <dt>First year seen</dt>
+              <dd>{{ detail.journal.firstYear ?? '—' }}</dd>
+            </div>
+            <div>
+              <dt>Most recent year</dt>
+              <dd>{{ detail.journal.lastYear ?? '—' }}</dd>
+            </div>
+            <div>
+              <dt>Open access</dt>
+              <dd>
+                {{ detail.journal.openAccessPositive | number }}
+                <span class="context-sub">
+                  of its {{ detail.journal.positive | number }} AI/ML methods papers
+                </span>
+              </dd>
+            </div>
+            <div>
+              <dt>Undeterminable</dt>
+              <dd>{{ detail.journal.undeterminable | number }}</dd>
+            </div>
+            <div>
+              <dt>Rank by AI/ML papers</dt>
+              <dd>#{{ detail.rank | number }} <span class="context-sub">of {{ detail.rankOf | number }}</span></dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    }
+  } @else {
+    <!-- ===================== Overview (the landing view) ===================== -->
+    <div class="band">
+      <div class="band-inner">
+        @if (corpus(); as c) {
+          <div class="stat-pills">
+            <div class="stat-pill">
+              <i class="icon icon-common icon-book" aria-hidden="true"></i>
+              <div>
+                <span class="stat-pill-value">{{ c.journals | number }}</span>
+                <span class="stat-pill-label">Journals with AI/ML papers</span>
+              </div>
+            </div>
+            <div class="stat-pill">
+              <i class="icon icon-common icon-classification" aria-hidden="true"></i>
+              <div>
+                <span class="stat-pill-value">{{ c.positive | number }}</span>
+                <span class="stat-pill-label">AI/ML methods papers</span>
+              </div>
+            </div>
+            <div class="stat-pill">
+              <i class="icon icon-common icon-search" aria-hidden="true"></i>
+              <div>
+                <span class="stat-pill-value">{{ c.screened | number }}</span>
+                <span class="stat-pill-label">Papers screened</span>
+              </div>
+            </div>
+          </div>
+          <p class="muted footnote">
+            Counted across the {{ c.journalsScreened | number }} journals Observatory has screened
+            anything from. Records with no journal name recorded are not included here.
+          </p>
+        }
+      </div>
+    </div>
+
+    <div class="band band-tint">
+      <div class="band-inner">
+        <div class="card-header">
+          <span class="icon-badge"><i class="icon icon-common icon-list" aria-hidden="true"></i></span>
+          <h2>Top {{ topN }} journals</h2>
+        </div>
+
+        <div class="lens-row">
+          <div class="lens-toggle" role="group" aria-label="Ranking">
+            <button
+              type="button"
+              [class.active]="sort() === 'count'"
+              [attr.aria-pressed]="sort() === 'count'"
+              (click)="setSort('count')"
+            >
+              By AI/ML paper count
+            </button>
+            <button
+              type="button"
+              [class.active]="sort() === 'density'"
+              [attr.aria-pressed]="sort() === 'density'"
+              (click)="setSort('density')"
+            >
+              By AI/ML share
+            </button>
+          </div>
+
+          @if (sort() === 'density') {
+            <div class="lens-min">
+              <label for="min-screened">Minimum screened</label>
+              <!-- [selected] per option, not [value] on the select: the select's value property
+                   is set before @for has rendered the options, so it does not stick and the
+                   control shows the first option regardless of the real setting. -->
+              <select id="min-screened" (change)="setMinScreened($any($event.target).value)">
+                @for (option of minScreenedOptions; track option) {
+                  <option [value]="option" [selected]="option === minScreened()">{{ option }}</option>
+                }
+              </select>
+            </div>
+          }
+        </div>
+
+        @if (sort() === 'density') {
+          <p class="muted caveat">
+            Share is measured against what Observatory screened from a journal — its
+            life-sciences-scoped Europe PMC intake — not the journal's total published output,
+            which the corpus does not hold. The minimum keeps two-paper journals off the top of the
+            list; {{ rankedTotal() | number }} journals clear it.
+          </p>
+        }
+
+        @if (listLoading() && !rows().length) {
+          <p class="muted">Loading…</p>
+        } @else if (!rows().length) {
+          <p class="muted">No journals to rank.</p>
+        } @else {
+          <div class="table-wrap">
+            <table class="journal-table">
+              <thead>
+                <tr>
+                  <th scope="col" class="col-rank">#</th>
+                  <th scope="col">Journal</th>
+                  <th scope="col" class="col-num">AI/ML papers</th>
+                  <th scope="col" class="col-num">Screened</th>
+                  <th scope="col" class="col-num">Screened out</th>
+                  <th scope="col" class="col-share">AI/ML share</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of rows(); track row.journal; let i = $index) {
+                  <tr>
+                    <td class="col-rank">{{ i + 1 }}</td>
+                    <th scope="row">
+                      <a [routerLink]="[]" [queryParams]="{ j: row.journal }" queryParamsHandling="merge">
+                        {{ row.journal }}
+                      </a>
+                    </th>
+                    <td class="col-num strong">{{ row.positive | number }}</td>
+                    <td class="col-num">{{ row.screened | number }}</td>
+                    <td class="col-num">{{ row.negative | number }}</td>
+                    <td class="col-share">
+                      <span class="share-bar" aria-hidden="true">
+                        <span class="share-bar-fill" [style.width.%]="row.positiveRate * 100"></span>
+                      </span>
+                      <span class="share-value">{{ row.positiveRate * 100 | number: '1.0-1' }}%</span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

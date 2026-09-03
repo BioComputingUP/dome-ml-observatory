@@ -11,6 +11,10 @@ export const routes: Routes = [
     loadComponent: () => import('./search/search').then((m) => m.Search),
   },
   {
+    path: 'journals',
+    loadComponent: () => import('./journals/journals').then((m) => m.Journals),
+  },
+  {
     path: 'record/:pid',
     loadComponent: () => import('./record/record').then((m) => m.RecordPage),
   },

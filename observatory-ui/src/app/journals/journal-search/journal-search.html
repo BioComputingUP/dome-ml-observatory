@@ -1,0 +1,50 @@
+<div class="journal-search">
+  <label for="journal-q" class="visually-hidden">Search journals by name</label>
+  <div class="search-field">
+    <i class="icon icon-common icon-search search-field-icon" aria-hidden="true"></i>
+    <input
+      id="journal-q"
+      type="search"
+      role="combobox"
+      autocomplete="off"
+      aria-controls="journal-options"
+      [attr.aria-expanded]="open()"
+      [placeholder]="placeholder()"
+      [value]="query()"
+      (input)="onInput($any($event.target).value)"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+      (keydown)="onKeydown($event)"
+    />
+  </div>
+
+  @if (open()) {
+    <ul id="journal-options" class="journal-options" role="listbox">
+      @if (loading() && !matches().length) {
+        <li class="journal-option-note" role="presentation">Searching…</li>
+      } @else if (!matches().length) {
+        <li class="journal-option-note" role="presentation">
+          @if (hasQuery()) {
+            No journal matches that name.
+          } @else {
+            Type to search {{ 'journals' }}.
+          }
+        </li>
+      } @else {
+        @for (row of matches(); track row.journal; let i = $index) {
+          <li role="option" [attr.aria-selected]="i === activeIndex()">
+            <button
+              type="button"
+              class="journal-option"
+              [class.active]="i === activeIndex()"
+              (mousedown)="select(row.journal)"
+            >
+              <span class="journal-option-name">{{ row.journal }}</span>
+              <span class="journal-option-count">{{ row.positive | number }} AI/ML</span>
+            </button>
+          </li>
+        }
+      }
+    </ul>
+  }
+</div>

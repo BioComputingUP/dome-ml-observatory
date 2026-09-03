@@ -10,6 +10,7 @@ import { HealthModule } from './health/health.module';
 import { RecordsModule } from './records/records.module';
 import { FacetsModule } from './facets/facets.module';
 import { StatsModule } from './stats/stats.module';
+import { JournalsModule } from './journals/journals.module';
 
 @Module({
   imports: [
@@ -79,6 +80,7 @@ import { StatsModule } from './stats/stats.module';
     RecordsModule,
     FacetsModule,
     StatsModule,
+    JournalsModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })

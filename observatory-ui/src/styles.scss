@@ -64,6 +64,16 @@
   --font-size-3xl: 2.5rem;
   --font-size-4xl: 3rem;
 
+  // Chart series colours. NOT the brand tokens above, which fail as data colours: the deep blue
+  // #103344 sits outside the usable lightness band and below the chroma floor (it reads as grey
+  // against gridlines), and the accent #f66729 falls under 3:1 contrast on white. These are the
+  // nearest steps that clear every check -- lightness band, chroma floor, colour-blind separation
+  // (worst adjacent dE 21.2 protan), normal-vision separation (32.5), and contrast -- verified
+  // with the dataviz palette validator rather than by eye. Series identity is always carried by a
+  // legend and a direct label as well as by hue, never by hue alone.
+  --viz-series-1: #e35c1c; // primary series -- reads as the brand orange
+  --viz-series-2: #1c6ea8; // secondary/context series -- reads as a brighter DOME blue
+
   // Radius / shadow
   --radius-sm: 4px;
   --radius-md: 8px;

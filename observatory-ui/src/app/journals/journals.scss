@@ -1,0 +1,284 @@
+// Not inside .section-layout (no side-nav rail), so the variable .band's full-bleed breakout reads
+// doesn't exist here. Declaring it zero keeps that calc() valid -- same trick as .record-page.
+.journals-page {
+  --rail-total: 0px;
+  background-color: var(--surface-page);
+}
+
+// Same treatment as search.scss's .search-header: this is the site's other "look something up"
+// page, and it should announce itself the same way.
+.journals-header {
+  background-color: var(--observatory-primary);
+  padding: var(--space-6) 0 var(--space-6);
+}
+
+.page-title {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--space-2);
+  text-align: center;
+}
+
+.page-lead {
+  color: rgba(255, 255, 255, 0.78);
+  text-align: center;
+  max-width: 620px;
+  margin: 0 auto var(--space-4);
+  font-size: var(--font-size-sm);
+}
+
+h2 {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--observatory-primary);
+}
+
+.muted {
+  color: var(--status-neutral);
+}
+
+.footnote {
+  font-size: var(--font-size-sm);
+  margin: var(--space-4) 0 0;
+  max-width: 78ch;
+}
+
+// ---------- Single-journal lens ----------------------------------------------------------------
+.journal-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.journal-name {
+  margin-bottom: var(--space-2);
+}
+
+.journal-rank {
+  font-size: var(--font-size-sm);
+  max-width: 70ch;
+  margin: 0;
+
+  strong {
+    color: var(--observatory-primary);
+  }
+}
+
+.journal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+// Each chart gets its own panel so the count chart and the share chart read as two separate
+// statements rather than one figure with two scales.
+.chart-card {
+  padding: var(--space-5);
+
+  & + & {
+    margin-top: var(--space-4);
+  }
+}
+
+// Explicitly three columns rather than auto-fit: there are exactly six facts, and auto-fit gave
+// five across with a single orphan on the second row.
+.context-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-5) var(--space-4);
+  margin: 0;
+
+  @media (max-width: 767px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (max-width: 479px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  dt {
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--observatory-accent-dark);
+    margin-bottom: var(--space-1);
+  }
+
+  dd {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--observatory-primary);
+  }
+}
+
+// On its own line, so a cell with a qualifier is the same height as one without.
+.context-sub {
+  display: block;
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  color: var(--status-neutral);
+}
+
+// ---------- Overview ----------------------------------------------------------------------------
+// One row of controls above the content they scope, never inside a card.
+.lens-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-3);
+}
+
+.lens-toggle {
+  display: inline-flex;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+
+  button {
+    padding: var(--space-2) var(--space-4);
+    border: none;
+    background-color: var(--surface-card);
+    color: var(--observatory-primary);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    cursor: pointer;
+
+    &.active {
+      background-color: var(--observatory-primary);
+      color: #ffffff;
+    }
+
+    &:not(.active):hover {
+      background-color: var(--surface-sunken);
+    }
+  }
+}
+
+.lens-min {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--status-neutral);
+
+  select {
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background-color: var(--surface-card);
+    color: var(--observatory-primary);
+  }
+}
+
+// One sentence, once, next to the control it qualifies -- the denominator genuinely is not the
+// journal's real output and saying so is not optional, but it does not need a banner.
+.caveat {
+  font-size: var(--font-size-sm);
+  max-width: 84ch;
+  margin-bottom: var(--space-4);
+}
+
+.table-wrap {
+  overflow-x: auto;
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.journal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+
+  th,
+  td {
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--border-default);
+    text-align: left;
+  }
+
+  tbody tr:last-child :is(th, td) {
+    border-bottom: none;
+  }
+
+  tbody tr:hover {
+    background-color: var(--surface-sunken);
+  }
+
+  thead th {
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--status-neutral);
+    white-space: nowrap;
+  }
+
+  th[scope='row'] {
+    font-weight: 400;
+
+    a {
+      color: var(--observatory-primary);
+      text-decoration: none;
+      font-weight: 600;
+
+      &:hover,
+      &:focus-visible {
+        color: var(--observatory-accent-dark);
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+.col-rank {
+  width: 3rem;
+  color: var(--status-neutral);
+  text-align: right !important;
+}
+
+.col-num {
+  text-align: right !important;
+  white-space: nowrap;
+}
+
+.strong {
+  font-weight: 700;
+  color: var(--observatory-primary);
+}
+
+.col-share {
+  white-space: nowrap;
+  min-width: 148px;
+}
+
+// A bar beside the number, not instead of it -- the figure stays readable without decoding a
+// length, and the bar makes the column scannable.
+.share-bar {
+  display: inline-block;
+  width: 72px;
+  height: 6px;
+  margin-right: var(--space-2);
+  border-radius: var(--radius-pill);
+  background-color: var(--surface-sunken);
+  vertical-align: middle;
+  overflow: hidden;
+}
+
+.share-bar-fill {
+  display: block;
+  height: 100%;
+  background-color: var(--viz-series-1);
+}
+
+.share-value {
+  font-variant-numeric: tabular-nums;
+  color: var(--observatory-primary);
+}

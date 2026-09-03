@@ -1,0 +1,129 @@
+<figure class="chart">
+  <!-- Legend above the plot. Always present for two or more series, so identity never rests on
+       colour alone; the marks are lines, so the keys are lines too. A single-series chart gets no
+       legend -- its caption already names it. -->
+  @if (series().length > 1) {
+    <ul class="chart-legend">
+      @for (s of series(); track s.key) {
+        <li>
+          <span class="legend-key" [style.background-color]="s.color" aria-hidden="true"></span>
+          {{ s.label }}
+        </li>
+      }
+    </ul>
+  }
+
+  <div class="chart-plot">
+    <svg
+      #host
+      class="chart-svg"
+      [attr.viewBox]="'0 0 ' + W + ' ' + H"
+      preserveAspectRatio="xMidYMid meet"
+      role="img"
+      [attr.aria-label]="caption()"
+      tabindex="0"
+      (pointermove)="onPointerMove($event, host)"
+      (pointerleave)="clearActive()"
+      (keydown)="onKeydown($event)"
+      (focus)="onFocus()"
+      (blur)="clearActive()"
+    >
+      <!-- Gridlines and axis text are one step off the surface and hairline-thin: they are
+           scaffolding for the marks, never competing ink. -->
+      <g class="chart-grid">
+        @for (tick of yTicks(); track tick.value) {
+          <line [attr.x1]="PAD.left" [attr.x2]="W - PAD.right" [attr.y1]="tick.y" [attr.y2]="tick.y" />
+        }
+      </g>
+
+      <g class="chart-axis">
+        @for (tick of yTicks(); track tick.value) {
+          <text [attr.x]="PAD.left - 10" [attr.y]="tick.y + 4" text-anchor="end">
+            {{ tick.value | number: '1.0-0' }}{{ unit() }}
+          </text>
+        }
+        @for (tick of xTicks(); track tick.i) {
+          <text [attr.x]="tick.x" [attr.y]="H - PAD.bottom + 22" text-anchor="middle">{{ tick.label }}</text>
+        }
+      </g>
+
+      <!-- Crosshair under the marks, so it never sits on top of the data it is pointing at. -->
+      @if (active(); as a) {
+        <line
+          class="chart-crosshair"
+          [attr.x1]="a.x"
+          [attr.x2]="a.x"
+          [attr.y1]="PAD.top"
+          [attr.y2]="PAD.top + plotH"
+        />
+      }
+
+      <g class="chart-series">
+        @for (p of paths(); track p.key) {
+          <path [attr.d]="p.d" [attr.stroke]="p.color" />
+        }
+      </g>
+
+      <!-- End markers carry a surface-coloured ring so they stay legible where the two lines
+           cross or converge. -->
+      <g class="chart-markers">
+        @for (p of paths(); track p.key) {
+          <circle [attr.cx]="p.endX" [attr.cy]="p.endY" r="4.5" [attr.fill]="p.color" />
+        }
+      </g>
+
+      @if (active(); as a) {
+        <g class="chart-markers">
+          @for (point of a.points; track point.key) {
+            <circle [attr.cx]="a.x" [attr.cy]="point.y" r="5" [attr.fill]="point.color" />
+          }
+        </g>
+      }
+    </svg>
+
+    @if (active(); as a) {
+      <div class="chart-tooltip" [class.flip]="tooltipSide() === 'left'" [style.left.%]="a.xPercent" role="status">
+        <p class="tooltip-label">{{ a.label }}</p>
+        <ul>
+          @for (point of a.points; track point.key) {
+            <li>
+              <span class="tooltip-key" [style.background-color]="point.color" aria-hidden="true"></span>
+              <span class="tooltip-value">{{ point.value | number: '1.0-1' }}{{ unit() }}</span>
+              <span class="tooltip-series">{{ point.label }}</span>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </div>
+
+  @if (caption()) {
+    <figcaption>{{ caption() }}</figcaption>
+  }
+
+  <!-- Always rendered. Hidden visually unless [showTable], but present for screen readers and as
+       the guarantee that no value is reachable only by hovering. -->
+  <div [class.visually-hidden]="!showTable()" class="chart-table-wrap">
+    <table class="chart-table">
+      <caption>{{ caption() }}</caption>
+      <thead>
+        <tr>
+          <th scope="col">{{ tableLabel() }}</th>
+          @for (s of series(); track s.key) {
+            <th scope="col">{{ s.label }}</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.label) {
+          <tr>
+            <th scope="row">{{ row.label }}</th>
+            @for (value of row.values; track $index) {
+              <td>{{ value | number: '1.0-1' }}{{ unit() }}</td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</figure>
