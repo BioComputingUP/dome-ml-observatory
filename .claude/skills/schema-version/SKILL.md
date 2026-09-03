@@ -73,7 +73,10 @@ why this folder is deliberately leaner than `BioComputingUP/dome-schema`, which 
    migration note, and — if relevant — what's still pending (mirroring how that entry flagged the
    enrichment pass as not-yet-run without treating that as a schema change).
 
-7. **Move `CURRENT`** to the new version.
+7. **Move `CURRENT`** to the new version, then update the hardcoded `FALLBACK_SCHEMA_VERSION` in
+   `observatory-ws/src/common/schema-version.ts` to match. That file reads `schema/CURRENT` at
+   module load and reports the result on `GET /api/health/ready`; the fallback only applies when
+   the file can't be found at all, but it's kept in sync by hand and is easy to forget.
 
 8. **Re-sync the UI.** `node observatory-ui/scripts/sync-schema.js` (or `npm run sync-schema
    --prefix observatory-ui`) — copies the new release's `vocab/` into
@@ -83,9 +86,17 @@ why this folder is deliberately leaner than `BioComputingUP/dome-schema`, which 
 9. **Validate.** `python3 schema/validate.py schema/releases/vX.Y.Z/ai-ml-landscape.example.json`
    must pass before you consider the bump done.
 
-10. **Report** what changed, the version bump and why, and whether anything in
-    `observatory-ui`'s TypeScript models (`src/app/core/record.model.ts`, once Phase 3 lands it)
-    needs a matching update — this skill doesn't edit component code itself, just flags it.
+10. **Report** what changed, the version bump and why, and whether any of the three places that
+    mirror this shape need a matching update — this skill doesn't edit application code itself,
+    it just flags what needs a follow-up:
+    - `observatory-ui/src/app/core/record.model.ts` and `core/vocab.model.ts` — the frontend's
+      TypeScript view of a record and of the vocabularies.
+    - `observatory-ws/src/records/schemas/record.schema.ts` — the backend's Mongoose schema. It's
+      deliberately minimal and `strict: false`, so an added field often needs nothing here; a
+      renamed or retyped one usually does.
+    - `observatory-ws/src/records/records.query.ts` — if a field that search filters on changed
+      path or type, the query builder and its frontend twin (`core/search-params.ts`) both need
+      the matching change. See `AGENTS.md` on why those two mirror each other.
 
 ## When there's nothing to report
 

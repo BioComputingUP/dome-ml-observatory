@@ -14,9 +14,9 @@ are *not* curator-reviewed; don't describe them as such). **Monorepo, two indepe
   backend only via `HttpClient` calls under `/api`, same-origin through nginx's proxy — see
   `observatory-ui/nginx.conf`.
 - **`observatory-ws/`** — NestJS backend, read-only API over the record dataset (`GET /api/health`,
-  `/api/records`, `/api/records/:pid`, `/api/stats`, `/api/facets/:field`, `/api/journals`,
-  `/api/journals/detail`, Swagger at `/api/docs`). The only thing in this repo that ever opens a
-  connection to Mongo.
+  `/api/health/ready`, `/api/records`, `/api/records/:pid`, `/api/stats`, `/api/facets/:field`,
+  `/api/journals`, `/api/journals/detail`, Swagger at `/api/docs`). The only thing in this repo
+  that ever opens a connection to Mongo.
 
 No shared `-core` package between them — overlapping types/shapes are duplicated on each side
 deliberately, not linked. **The backend is the only thing that ever talks to the database.**
@@ -25,8 +25,8 @@ backend is the entire security boundary. This is a hosting-lab requirement, not 
 
 ## Environment
 
-- **`observatory-ui/`**: `.nvmrc` pins `lts/krypton` (Node 22 LTS). Run `nvm use` inside
-  `observatory-ui/` before installing or building.
+- **`observatory-ui/`**: `.nvmrc` pins `lts/krypton` (Node 24 LTS — krypton is 24, not 22). Run
+  `nvm use` inside `observatory-ui/` before installing or building.
 - **`observatory-ws/`**: `.nvmrc` pins `24.20.0` (Node 24 LTS) — a separate, independent install
   from the UI's, deliberately not assumed to match it. **Mongoose is pinned to the `8.x` line
   (`mongoose@^8.19.1`, bundling MongoDB driver ~6.x) and must not be bumped to `9.x`.** Verified
@@ -36,6 +36,12 @@ backend is the entire security boundary. This is a hosting-lab requirement, not 
   driver `6.x` still supports it. `@nestjs/mongoose@11.x`'s own peer range (`^7.0.0 || ^8.0.0`)
   already blocks `9.x`, but don't assume a future bump is safe without re-checking this against
   the database server directly first.
+- **`observatory-ws` is configured by environment variables only**, validated at boot
+  (`src/config/env.validation.ts` — it names the bad variable and refuses to start). Seven of them,
+  all documented in `.env.example`; two are easy to miss because they look like one setting:
+  `MONGO_MAX_TIME_MS` (5s, filter-only queries) and `MONGO_SEARCH_MAX_TIME_MS` (20s, applied only
+  when `q=` is present). There is no config file and no `environments/*.yaml` — deliberately, so
+  the image carries nothing environment-specific.
 - Install deps with `npm ci`, **never `npm install`**, in whichever app you're working in — a
   bare install can silently upgrade/break a pinned toolchain (and, in `observatory-ws/`'s case,
   could silently pull in the incompatible Mongoose major above). If you need to add or bump a
@@ -76,17 +82,34 @@ in production — local dev against the database server over the VPN, read-only,
 `observatory-ws/.env.example`); writes, schema changes, or touching any other database on that
 host are not.
 
+## Skills
+
+- **`.claude/skills/schema-version/SKILL.md`** — the only skill in this repo. Use it for anything
+  that touches `schema/`: pulling vocab/schema updates from `dome-triage`, deciding the semver
+  bump, cutting a new immutable release, writing the changelog entry, and re-syncing
+  `observatory-ui/src/assets/vocab/`. Don't hand-roll a release; the skill exists because the
+  release folders are immutable and the sync/validate steps are easy to forget. Background on the
+  folder itself is in `schema/README.md`.
+
 ## Repo layout
 
-- `observatory-ui/src/app/` — one folder per route/feature (`about`, `home-page`, `news`,
-  `navbar`, `footer`, `header`, `not-found-page`, ...).
+- `observatory-ui/src/app/` — one folder per route/feature: `home`, `search`, `record`,
+  `journals`, `news`, `navbar`, `footer`, `not-found`, plus `about/` and `download/`, which are
+  each a side-nav layout wrapping several child-route pages. Two non-route folders alongside them:
+  `core/` (models, services, the URL<->query parsing in `search-params.ts`, outbound-link and
+  citation helpers) and `shared/` (`line-chart`, `copy-button`, `side-nav`, `status-badge`).
 - `observatory-ui/src/assets/data/content-items.json` — hand-maintained news/event feed consumed
   by the `news` feature. Entries are plain objects (`type`, `date`, `title`, `description`,
   `link`, `linkText`, `linkIcon`, `tags`); follow the existing shape and keep `date` as a
   human-readable string like the surrounding entries, not ISO.
-- `observatory-ui/scripts/convert_images.py` — image conversion helper for
-  `observatory-ui/src/assets/img*`. Needs Python 3 with `Pillow` (check the script itself for
-  exact requirements before running).
+- `observatory-ui/scripts/sync_news.py` (`npm run sync-news`) — pulls that `content-items.json`
+  from the **private** `BioComputingUP/dome-ml-ui` repo via the GitHub contents API, needing a
+  token (`$GITHUB_TOKEN` → `$GH_TOKEN` → `gh auth token`). Deliberately manual, never wired to a
+  `pre*` hook — don't automate it.
+- `observatory-ui/scripts/convert_images.py` — image conversion helper (PNG→WebP, needs Python 3
+  with `Pillow`). **Currently stale**: its paths are hardcoded to `dome-ml-osai-ui`, a different
+  repo, so it does not run against this one as-is. Fix the paths before using it rather than
+  assuming it works.
 - `schema/` — the versioned record schema and its controlled vocabularies (EDAM domain tiers,
   learning paradigm, model family, model type seed). Source of truth for `observatory-ui`'s
   search filters/record model and for `observatory-ws`'s Mongoose schema. **Never hand-edit a
@@ -116,6 +139,22 @@ host are not.
   (2,663 records) matched nothing, and so did most multi-part MeSH headings and several EDAM
   domain terms we ship. `class` is the sole exception and still comma-splits — fixed literals, a
   documented API contract, and the `class=` cleared-signal that `canUseTextIndex` depends on.
+- `observatory-ws/src/records/records.service.ts` — free-text search, and the one place the Mongo
+  indexes matter. Two indexes exist on the collection (built 2026-09-03): `positives_text` (a
+  `$text` index on title/abstract/authors, scoped by `partialFilterExpression` to
+  `classification: 'positive'`) and `class_year_id`. Three rules:
+  - **The `$text` path is gated on `classification` resolving to exactly `['positive']`**
+    (`canUseTextIndex`). This is not an optimisation — MongoDB **rejects** a `$text` query that
+    omits a partial index's filter predicate rather than degrading to a scan, so getting the guard
+    wrong turns every cleared-classification search into a 500. `?q=…&class=` returning 200, not
+    500, is the single most important regression check on this feature.
+  - **A single bare search word deliberately stays on the regex path.** With one term there's no
+    second clause to rescue what `$text` misses, and stemming can't match a non-stem fragment
+    (`neuro` found 1,701 via the index vs 28,622 via regex). Recall is not traded for speed here.
+  - **Detect indexes with `Model.listIndexes()`**, not `collection.listIndexes().toArray()` —
+    the latter isn't a cursor on Mongoose 8's bundled driver and throws. The service falls back to
+    the regex path silently when the text index is absent, so a dropped-and-reloaded collection
+    gets slow rather than broken; recreating both indexes is part of that reload runbook.
 - `observatory-ws/src/journals/journals.service.ts` — per-journal figures and year-by-year
   trends. Runs **one aggregation over the whole collection at boot** (~24s, measured) and serves
   every request from the resulting in-memory table with a 24h TTL, exactly like `StatsService`.
@@ -124,10 +163,17 @@ host are not.
   shared database host. Its totals cover the 770,752 records carrying a journal name, not all
   827,061 — anything displaying them has to say so.
 - `observatory-ws/src/database/content-model.module.ts` — the **only** place the `'Content'`
-  Mongoose model is registered (`records`, `facets`, `stats` modules all import this rather than
-  each calling `MongooseModule.forFeatureAsync` themselves). Registering the same model name from
-  two places on the same connection throws `OverwriteModelError` — don't add a second
-  registration to "fix" a missing-model error in a new feature module; import this instead.
+  Mongoose model is registered (`records`, `facets`, `stats` and `journals` modules all import
+  this rather than each calling `MongooseModule.forFeatureAsync` themselves). Registering the same
+  model name from two places on the same connection throws `OverwriteModelError` — don't add a
+  second registration to "fix" a missing-model error in a new feature module; import this instead.
+- **Boot-time warm-up is a contract, not an implementation detail.** `FacetsService`,
+  `StatsService` and `JournalsService` each `await` real Mongo work in `onModuleInit` *before*
+  Nest calls `app.listen()` — ~36k distinct facet values, one `$facet` aggregation, and the ~24s
+  journals aggregation respectively. That's why the service takes ~40-50s to answer its first
+  request on a cold start, and why `observatory-ws/Dockerfile`'s `HEALTHCHECK --start-period` has
+  to stay comfortably above it. **If you add another serial warm-up step, re-measure boot time and
+  raise `--start-period` to match** — the Dockerfile's own comment says the same thing.
 
 ## Things that have gone wrong before — don't reintroduce these
 
