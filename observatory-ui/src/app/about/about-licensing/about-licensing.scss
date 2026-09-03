@@ -12,6 +12,16 @@ p {
   line-height: 1.6;
 }
 
+// Matches about-privacy.scss's list treatment, so the two sibling pages indent alike.
+ul {
+  padding-left: var(--space-5);
+  line-height: 1.6;
+
+  li {
+    margin-bottom: var(--space-2);
+  }
+}
+
 h2 {
   font-size: var(--font-size-xl);
   font-weight: 700;

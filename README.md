@@ -254,4 +254,6 @@ affected endpoint — several real bugs in this service were only ever caught th
   before. Read it before changing code, whether you are a person or an AI coding agent.
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) · [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)
 - [`CITATION.cff`](CITATION.cff) — how to cite this.
-- [`LICENSE.md`](LICENSE.md) — CC BY 4.0.
+- [`LICENSE.md`](LICENSE.md) — CC BY 4.0 on the classification/enrichment layer this project
+  adds. The underlying bibliographic metadata and abstracts come largely from Europe PMC and keep
+  their own terms; full text is linked, never hosted.

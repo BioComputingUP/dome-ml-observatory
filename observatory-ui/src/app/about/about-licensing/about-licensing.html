@@ -8,15 +8,29 @@
   <div class="band-inner">
     <div class="card-header">
       <span class="icon-badge"><i class="icon icon-common icon-copy" aria-hidden="true"></i></span>
-      <h2>Licence</h2>
+      <h2>What the licence covers</h2>
     </div>
     <p>
-      The curated metadata served by DOME Observatory — screened, classified and enriched record
-      data — is licensed under the
+      DOME Observatory is a discovery layer over publication metadata, not a repository of
+      publications. The layer this project <em>adds</em> is licensed under the
       <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">
         Creative Commons Attribution 4.0 International License (CC BY 4.0)
-      </a>. You are free to share and adapt the material for any purpose, even commercially, as
+      </a>:
+    </p>
+    <ul>
+      <li>the AI/ML screening decisions and their rationales,</li>
+      <li>the enrichment tags — domain, learning paradigm, model family and model type,</li>
+      <li>the controlled vocabularies and record schema,</li>
+      <li>and the aggregate statistics, journal rankings and facet counts.</li>
+    </ul>
+    <p>
+      You are free to share and adapt that material for any purpose, including commercially, as
       long as you give appropriate credit.
+    </p>
+    <p class="note">
+      This covers the data and documentation. Creative Commons licences are not intended for
+      software, so CC BY 4.0 is not asserted over the application source code; no separate code
+      licence has been declared yet.
     </p>
   </div>
 </div>
@@ -24,16 +38,70 @@
 <div class="band">
   <div class="band-inner">
     <div class="card-header">
-      <span class="icon-badge"><i class="icon icon-common icon-documentation" aria-hidden="true"></i></span>
-      <h2>This is not the same as each paper's own licence</h2>
+      <span class="icon-badge"><i class="icon icon-common icon-sitemap" aria-hidden="true"></i></span>
+      <h2>Where the underlying data comes from</h2>
     </div>
     <p>
-      CC BY 4.0 covers Observatory's <em>metadata</em> — the classification, enrichment and
-      curation this project adds. It does not relicense the underlying papers themselves, which
-      each carry their own terms. Every record's actual access licence (where recorded) is shown
-      on its <a routerLink="/search">record page</a> — some papers are open access under CC BY or
-      similar terms, others remain under the publisher's standard copyright. Check the specific
-      record before reusing the paper's own text or figures.
+      Each record also carries bibliographic metadata and an abstract that this project did not
+      create and does not own — CC BY 4.0 does not extend to it. Roughly 93.5% of the abstracts in
+      the corpus are retrieved from
+      <a href="https://europepmc.org/" target="_blank" rel="noopener">Europe PMC</a> through their
+      public APIs, with the remainder from Crossref and PubMed, and a small share of records
+      carrying no abstract at all. Each record's open-access flag and licence string also come from
+      the Europe PMC licensing lookup.
+    </p>
+    <p>Europe PMC should be cited alongside DOME Observatory in any work that reuses this corpus.</p>
+    <pre class="code-block">Rosonovski S, Levchenko M, Bhatnagar R, Chandrasekaran U, Faulk L, Hassan I,
+Jeffryes M, Mubashar SI, Nassar M, Palanisamy MJ, Parkin M, Poluru J, Rogers F,
+Saha S, Selim M, Shafique Z, Ide-Smith M, Stephenson D, Tirunagari S,
+Venkatesan A, Xing L, Harrison M. "Europe PMC in 2023."
+Nucleic Acids Research 52(D1):D1668-D1676 (2024). doi:10.1093/nar/gkad1085</pre>
+    <p class="note">
+      Europe PMC's own terms govern that upstream content — see
+      <a href="https://europepmc.org/Copyright" target="_blank" rel="noopener">their copyright
+      notice</a>. Two points from it shape how this corpus may be reused: Europe PMC places no
+      blanket open licence on the metadata and abstracts it serves, so standard copyright should be
+      assumed for an article unless that article says otherwise; and automated retrieval must go
+      through their APIs rather than by crawling their site, which is how this corpus was
+      assembled. Where a record came from Crossref or PubMed instead, those sources' terms apply in
+      the same way.
+    </p>
+  </div>
+</div>
+
+<div class="band band-tint">
+  <div class="band-inner">
+    <div class="card-header">
+      <span class="icon-badge"><i class="icon icon-common icon-external-link-alt" aria-hidden="true"></i></span>
+      <h2>Full text is linked, never hosted</h2>
+    </div>
+    <p>
+      Observatory stores title, abstract, authors, year, journal and citation count. It does not
+      hold, mirror or redistribute the full text of any publication. Every route to the article
+      itself is an outbound link to the source that holds it — Europe PMC, PubMed, PMC, or the
+      publisher via DOI — and access to that full text is governed entirely by whoever hosts it.
+    </p>
+  </div>
+</div>
+
+<div class="band">
+  <div class="band-inner">
+    <div class="card-header">
+      <span class="icon-badge"><i class="icon icon-common icon-file-signature" aria-hidden="true"></i></span>
+      <h2>Each paper's own licence still governs that paper</h2>
+    </div>
+    <p>
+      Access terms vary across the corpus. Around two thirds of the source corpus is flagged open
+      access, and each record's licence string — <code>cc by</code>, for example — is shown on its
+      <a routerLink="/search">record page</a> where a licence lookup matched. Some papers are open
+      access under CC BY or similar terms; others remain under a publisher's standard copyright;
+      for some, no licence information was available at all, and an empty field means
+      <em>unknown</em>, not <em>unrestricted</em>.
+    </p>
+    <p>
+      Check a specific paper's own terms at the source before reusing its abstract, text or
+      figures. A CC BY 4.0 licence on Observatory's classification of a paper says nothing about
+      what you may do with the paper.
     </p>
   </div>
 </div>
@@ -58,33 +126,6 @@ https://github.com/BioComputingUP/dome-ml-observatory</pre>
 <div class="band">
   <div class="band-inner">
     <div class="card-header">
-      <span class="icon-badge"><i class="icon icon-common icon-sitemap" aria-hidden="true"></i></span>
-      <h2>Data source &amp; attribution</h2>
-    </div>
-    <p>
-      The publication metadata underlying this corpus is sourced largely from
-      <a href="https://europepmc.org/" target="_blank" rel="noopener">Europe PMC</a>, and the
-      screening and enrichment described on the
-      <a routerLink="/about">About page</a> are performed against that source data. Europe PMC
-      should be cited alongside DOME Observatory in any work that reuses this corpus.
-    </p>
-    <pre class="code-block">Rosonovski S, Levchenko M, Bhatnagar R, Chandrasekaran U, Faulk L, Hassan I,
-Jeffryes M, Mubashar SI, Nassar M, Palanisamy MJ, Parkin M, Poluru J, Rogers F,
-Saha S, Selim M, Shafique Z, Ide-Smith M, Stephenson D, Tirunagari S,
-Venkatesan A, Xing L, Harrison M. "Europe PMC in 2023."
-Nucleic Acids Research 52(D1):D1668-D1676 (2024). doi:10.1093/nar/gkad1085</pre>
-    <p class="note">
-      Europe PMC content carries its own terms — see
-      <a href="https://europepmc.org/Copyright" target="_blank" rel="noopener">their copyright
-      notice</a>. Observatory's CC BY 4.0 licence covers the curation layer this project adds, not
-      the upstream records.
-    </p>
-  </div>
-</div>
-
-<div class="band band-tint">
-  <div class="band-inner">
-    <div class="card-header">
       <span class="icon-badge"><i class="icon icon-common icon-database" aria-hidden="true"></i></span>
       <h2>Citing a specific record</h2>
     </div>
@@ -92,6 +133,22 @@ Nucleic Acids Research 52(D1):D1668-D1676 (2024). doi:10.1093/nar/gkad1085</pre>
       Use the BibTeX or RIS export on any <a routerLink="/search">record page</a> to cite an
       individual paper — that citation is for the paper itself, under its own terms, not for
       Observatory's metadata about it.
+    </p>
+  </div>
+</div>
+
+<div class="band band-tint">
+  <div class="band-inner">
+    <div class="card-header">
+      <span class="icon-badge"><i class="icon icon-common icon-users" aria-hidden="true"></i></span>
+      <h2>Corrections</h2>
+    </div>
+    <p>
+      If you believe a record misrepresents your work, or that anything here is redistributed in a
+      way its licence does not permit, please
+      <a href="https://github.com/BioComputingUP/dome-ml-observatory/issues" target="_blank" rel="noopener">open
+      an issue</a> or email <a href="mailto:contact@dome-ml.org">contact&#64;dome-ml.org</a>, and we
+      will correct or remove it.
     </p>
   </div>
 </div>
