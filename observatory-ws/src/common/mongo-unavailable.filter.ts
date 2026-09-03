@@ -7,7 +7,7 @@ import { MongooseError, mongo } from 'mongoose';
  * confirmed by two different real failure modes hitting this, not just one:
  *
  * - `MongooseError` (client-side): a buffered command timing out while disconnected -- the
- *   VPN-drop test in internal/ROADMAP.md Phase 5.
+ *   VPN-drop test in ROADMAP.md Phase 5.
  * - `mongo.MongoError` / its `MongoServerError` subclass (server-side, from the native MongoDB
  *   driver, NOT a MongooseError -- a completely separate class hierarchy from a different
  *   package): a query that genuinely exceeded `maxTimeMS` on the server, e.g. a free-text regex

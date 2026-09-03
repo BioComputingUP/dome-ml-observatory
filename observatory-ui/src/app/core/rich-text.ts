@@ -17,7 +17,7 @@
  * No entity decoding happens anywhere below. A handful of live titles carry double-encoded markup
  * (`&lt;i&gt;Halomonas elongata&lt;/i&gt;`) which is an ingestion data-quality problem; blanket
  * decoding would mis-render every title that legitimately contains `<` or `>` (`P<0.05`, `<74
- * years`) in order to fix those few. See internal/ROADMAP.md.
+ * years`) in order to fix those few. See ROADMAP.md.
  */
 
 /** Inline emphasis, safe in a heading, a card title or a sentence. */

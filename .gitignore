@@ -47,11 +47,6 @@ typings/
 .DS_Store
 Thumbs.db
 
-# 2026-08-28: private working notes for the backend build-out (the database server/REDACTED-HOST investigation,
-# roadmap, agent conventions) -- never committed, references lab-server specifics that don't
-# belong in this public org repo.
-internal/
-
 # 2026-08-28: env config -- real Mongo connection string once confirmed. .env.example (committed,
 # placeholder values only) documents what's needed; actual .env never is. Unanchored so this
 # covers observatory-ws/.env (node_modules/ above already covers observatory-ws/node_modules/).

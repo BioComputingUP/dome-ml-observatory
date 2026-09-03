@@ -4,6 +4,10 @@ Guidance for any AI coding agent (Claude, Copilot, Cursor, etc.) working in this
 Read this fully before making changes. If something here conflicts with what you observe in
 the code, trust the code and update this file.
 
+`ROADMAP.md` is the companion: what has been built and why, what is still open, and the runbooks
+for the recurring jobs (data refresh, Zenodo archive). Comments throughout the codebase cite it
+by phase — keep those pointers working if you renumber anything there.
+
 ## What this is
 
 DOME Observatory: a searchable database of AI/ML methods-paper metadata (LLM-classified by a method

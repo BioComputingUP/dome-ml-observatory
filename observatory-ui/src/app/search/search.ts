@@ -69,7 +69,7 @@ export class Search {
 
   /** True while a free-text search against the real corpus is in flight -- q searches are the
    *  slow path (measured against the database server: ~4-10s depending on term rarity, see
-   *  internal/ROADMAP.md Phase 5's timing table), unlike filter-only searches which stay fast. */
+   *  ROADMAP.md Phase 5's timing table), unlike filter-only searches which stay fast. */
   readonly searchingFullText = computed(() => this.loading() && this.freeText().length > 0);
 
   private readonly results = toSignal(

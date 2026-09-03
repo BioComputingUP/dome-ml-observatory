@@ -3,7 +3,7 @@
 
 As of Phase 7, this file is NOT a UI input: observatory-ui reads facet/corpus stats live from
 observatory-ws's GET /api/stats (the same aggregation this script's --from-api mode fetches from),
-via RecordsService.getFacetStats() -- see internal/ROADMAP.md's Phase 7 entry. This script now
+via RecordsService.getFacetStats() -- see ROADMAP.md's Phase 7 entry. This script now
 exists for two things: (1) regenerating a fixture-mode snapshot against the dev fixture for anyone
 working on schema/generate_facet_stats.py or the fixture itself offline, with no ws running, and
 (2) as the one place that originally measured the CORPUS dict below, kept as a record even though

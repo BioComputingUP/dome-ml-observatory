@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
  * Documents the response shape for Swagger only -- responses are returned as-is from Mongo's
  * `.lean()` (see records.service.ts), never instantiated as this class or serialized through it.
  * Mirrors observatory-ui/src/app/core/record.model.ts, duplicated deliberately rather than shared
- * (see internal/ROADMAP.md's "no shared -core package" decision) -- source of truth for the real
+ * (see ROADMAP.md's "no shared -core package" decision) -- source of truth for the real
  * shape is schema/releases/v1.1.0/ai-ml-landscape.schema.json.
  */
 class RecordIdentifiersDto {

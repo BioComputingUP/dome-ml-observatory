@@ -17,7 +17,7 @@ const BOUNDED_COUNT_LIMIT = 10_000;
 /**
  * Counting is the expensive part of a search on the database server's un-indexed Content collection -- measured
  * 2026-09-01: an unbounded countDocuments() on the default filter took 4.4s cold (192ms bounded to
- * 10k), vs. 724ms to fetch a page of results. See internal/ROADMAP.md Phase 5 for the full
+ * 10k), vs. 724ms to fetch a page of results. See ROADMAP.md Phase 5 for the full
  * measurement table this design is built from.
  *
  * Strategy: empty filter -> free estimatedDocumentCount(); cache hit -> return cached; miss ->

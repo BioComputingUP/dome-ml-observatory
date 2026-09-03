@@ -6,8 +6,8 @@ see `README.md` for what counts as major/minor/patch here.
 
 ## v1.1.0 — 2026-08-31
 
-Initial publication of this `schema/` folder, pulled up from Phase 8 of `internal/ROADMAP.md`
-into Phase 3 because the search UI and record page need it now rather than later. Not a schema
+Initial publication of this `schema/` folder, pulled forward into Phase 3 of `ROADMAP.md`
+because the search UI and record page needed it then rather than later. Not a schema
 change in itself — the shape and version number (`1.1.0`) already existed in
 `dome-triage/mongo_landscape_export/scripts/schema.py`; this is that same shape published here as
 a versioned, documented artifact for `observatory-ui` (and, from Phase 5, `observatory-ws`) to

@@ -3,14 +3,14 @@
 #
 # observatory-ui/scripts/sync-schema.js (run automatically by npm's prebuild-prod hook below)
 # reaches up to ../../schema/ for the vocab and facet-stats files this app ships -- exactly like
-# the existing local build already does (see internal/ROADMAP.md Phase 4). A context scoped to
+# the existing local build already does (see ROADMAP.md Phase 4). A context scoped to
 # observatory-ui/ alone can't see schema/ at all: Docker refuses to COPY anything outside the
 # build context. Root context is why this Dockerfile COPYs schema/ and observatory-ui/ as two
 # separate, explicit steps rather than one blanket `COPY . .`.
 #
 # Exactly two containers in this whole project, by design -- this one and observatory-ws
 # (Phase 5/6). No shared "core" package, no gateway/connector service in between. See
-# internal/ROADMAP.md Phase 4 for why (DOME Registry's npm file:-linked -core package was
+# ROADMAP.md Phase 4 for why (DOME Registry's npm file:-linked -core package was
 # specifically checked and rejected as the thing to avoid).
 
 # ---- Stage 1: build the Angular app ----

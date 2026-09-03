@@ -12,7 +12,7 @@
  *
  * Facet/corpus stats are NOT synced here (Phase 7 onward): observatory-ui reads them live from
  * GET /api/stats instead of a static file -- see RecordsService.getFacetStats() and
- * internal/ROADMAP.md's Phase 7 entry. schema/stats/facet-stats.json still exists and is still
+ * ROADMAP.md's Phase 7 entry. schema/stats/facet-stats.json still exists and is still
  * written by schema/generate_facet_stats.py (its non-API default mode, for anyone regenerating it
  * offline against the dev fixture), it's just no longer a UI input.
  */

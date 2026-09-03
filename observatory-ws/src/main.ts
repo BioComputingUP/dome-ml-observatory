@@ -11,7 +11,7 @@ import { MongoUnavailableFilter } from './common/mongo-unavailable.filter';
 
 async function bootstrap(): Promise<void> {
   // Typed as NestExpressApplication (not the platform-agnostic default) specifically so
-  // app.set('trust proxy', ...) below is available -- see internal/ROADMAP.md Phase 6, item 12.
+  // app.set('trust proxy', ...) below is available -- see ROADMAP.md Phase 6, item 12.
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const logger = new Logger('Bootstrap');
   const config = app.get(ConfigService<AppConfig, true>);
@@ -49,7 +49,7 @@ async function bootstrap(): Promise<void> {
   app.useGlobalFilters(new MongoUnavailableFilter());
 
   // Closes the Mongo connection on SIGTERM instead of leaving `docker stop` to SIGKILL the
-  // process after its 10s grace period -- see internal/ROADMAP.md Phase 6 readiness checklist.
+  // process after its 10s grace period -- see ROADMAP.md Phase 6 readiness checklist.
   app.enableShutdownHooks();
 
   setupSwagger(app);

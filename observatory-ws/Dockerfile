@@ -9,7 +9,7 @@
 # needs no code change for Docker.
 #
 # Exactly two containers in this whole project, by design -- this one and observatory-ui
-# (Phase 4). See that Dockerfile's header and internal/ROADMAP.md Phase 4/6.
+# (Phase 4). See that Dockerfile's header and ROADMAP.md Phase 4/6.
 
 # ---- Stage 1: install deps and compile TypeScript ----
 FROM node:24-alpine AS build
@@ -77,7 +77,7 @@ EXPOSE 3000
 # becomes reachable -- FacetsService and StatsService's OnModuleInit hooks do real Mongo work
 # (loading ~36k facet values across 4 fields, one $facet aggregation over 827k docs) serially
 # before Nest calls app.listen(). 60s leaves real margin above the measured ceiling. RE-MEASURE
-# this specific figure once actually containerised (see internal/ROADMAP.md Phase 6 verification)
+# this specific figure once actually containerised (see ROADMAP.md Phase 6 verification)
 # -- container/alpine overhead is not guaranteed identical to the bare-metal figure -- and raise
 # it further if boot time ever approaches it.
 HEALTHCHECK --interval=10s --timeout=3s --start-period=60s --retries=3 \
