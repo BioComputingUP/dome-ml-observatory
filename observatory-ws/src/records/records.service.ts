@@ -35,7 +35,7 @@ export interface SearchResult {
   page: number;
   pageSize: number;
   /** True when fetching this page itself hit its time budget and gave up (items is [] in that
-   *  case) -- distinct from a genuine the database server outage, which throws through untouched to
+   *  case) -- distinct from a genuine the MongoDB server outage, which throws through untouched to
    *  MongoUnavailableFilter's 503 instead (see isSearchTimeout below). Only reachable for a
    *  free-text (q=) search: filter-only searches stay within the ordinary 5s budget. Since
    *  records.query.ts's AND-of-terms rewrite this should be rare -- it used to be the routine
@@ -50,7 +50,7 @@ interface Promoted {
   q: string;
 }
 
-/** Every document's _id is a UUID5 string (confirmed against the database server, 2026-09-01), never a Mongo
+/** Every document's _id is a UUID5 string (confirmed against the MongoDB server, 2026-09-01), never a Mongo
  *  ObjectId -- backend/src/routes/records.js's `ObjectId.isValid()` guard is wrong for this data
  *  and is deliberately not ported. Matches any UUID version. */
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -58,7 +58,7 @@ const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{
 /**
  * How many results the promotion tier may reorder -- four pages' worth.
  *
- * The bound is what keeps this affordable on an un-indexed collection. Measured against the database server with
+ * The bound is what keeps this affordable on an un-indexed collection. Measured against the MongoDB server with
  * an `_id`-only projection: 118-520ms typical for the title tier (`deep learning` 196ms,
  * `graph neural network` 289ms, `random forest` 312ms), rising to ~3.4s only when the tier matches
  * almost nothing and Mongo has to scan the positives to prove it -- the same cost shape a rare term
@@ -71,8 +71,8 @@ const PROMOTE_CAP = 100;
 
 /**
  * True only for a server-side query time-limit expiry (maxTimeMS exceeded on a live, connected
- * the database server) -- MongoServerError code 50 / codeName 'MaxTimeMSExpired'. Deliberately NOT true for a
- * connection-level failure: a disconnected/unreachable the database server throws a `mongoose.MongooseError`
+ * The MongoDB server) -- MongoServerError code 50 / codeName 'MaxTimeMSExpired'. Deliberately NOT true for a
+ * connection-level failure: a disconnected/unreachable MongoDB server throws a `mongoose.MongooseError`
  * (buffered-command timeout), a completely different class from `mongo.MongoServerError` -- see
  * mongo-unavailable.filter.ts's own comment on that split. That distinction is exactly what keeps
  * this catch from ever masking a real outage as a mere "your search was slow" result: only this
@@ -102,7 +102,7 @@ export class RecordsService implements OnModuleInit {
   ) {}
 
   /** Non-fatal by design: a failure here means "no index", which is just the slower path. The app
-   *  must still boot and serve /api/health when the database server is unreachable. */
+   *  must still boot and serve /api/health when the MongoDB server is unreachable. */
   async onModuleInit(): Promise<void> {
     try {
       // Model.listIndexes(), not collection.listIndexes().toArray() -- the latter is what the raw
@@ -274,7 +274,7 @@ export class RecordsService implements OnModuleInit {
     promoted?: Promoted,
   ): Promise<{ items: RecordDocument[]; timedOut?: boolean }> {
     // A free-text search gets a larger budget than a filter-only one -- measured live against
-    // the database server: a rare author surname ("Tosatto") is a genuine ~10s query on this unindexed
+    // the MongoDB server: a rare author surname ("Tosatto") is a genuine ~10s query on this unindexed
     // collection, well past the 5s filter-only budget. See configuration.ts's searchMaxTimeMs.
     const maxTimeMs = hasFreeText
       ? this.config.get('mongo.searchMaxTimeMs', { infer: true })
@@ -299,7 +299,7 @@ export class RecordsService implements OnModuleInit {
     maxTimeMs: number,
     promoted?: Promoted,
   ): Promise<RecordDocument[]> {
-    // 'relevance' sorts by _id, the only indexed field on the database server's Content collection -- a plain
+    // 'relevance' sorts by _id, the only indexed field on the MongoDB server's Content collection -- a plain
     // find().sort() is cheap and safe at any depth within MAX_RESULT_WINDOW (measured: skip
     // 300,000 took 2.85s with no sort-buffer error, vs. year-sorted skip 9,000+ failing outright).
     if (sort === 'relevance') {

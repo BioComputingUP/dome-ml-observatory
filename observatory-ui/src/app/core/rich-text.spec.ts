@@ -1,6 +1,6 @@
 import { plainText, richAbstract, richTitle, truncatePlain } from './rich-text';
 
-// Every "real corpus" string below is copied verbatim from a live record on the database server, not invented.
+// Every "real corpus" string below is copied verbatim from a live record on the MongoDB server, not invented.
 describe('rich-text', () => {
   describe('richTitle', () => {
     it('keeps the inline emphasis real titles actually carry', () => {

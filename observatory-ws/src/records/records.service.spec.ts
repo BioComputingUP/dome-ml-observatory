@@ -89,7 +89,7 @@ describe('RecordsService.search / fetchPage', () => {
     // Reproduces the exact live failure this fix targets: a free-text query with no matching
     // literal phrase used to force a full-collection scan that blew maxTimeMS -- a
     // mongo.MongoServerError code 50 / codeName 'MaxTimeMSExpired', thrown on a perfectly healthy,
-    // connected the database server. That must degrade the search, not fail it and not report a false outage.
+    // connected the MongoDB server. That must degrade the search, not fail it and not report a false outage.
     const timeoutErr = new mongo.MongoServerError({
       message: 'operation exceeded time limit',
       code: 50,
@@ -113,7 +113,7 @@ describe('RecordsService.search / fetchPage', () => {
   });
 
   it('lets a genuine connection-level failure propagate untouched, so MongoUnavailableFilter still reports a real outage as 503', async () => {
-    // A disconnected/unreachable the database server throws mongoose.MongooseError (a buffered-command timeout),
+    // A disconnected/unreachable MongoDB server throws mongoose.MongooseError (a buffered-command timeout),
     // a completely different class from mongo.MongoServerError -- isSearchTimeout must not catch
     // this, or a real outage would be misreported as merely "your search was slow".
     const outageErr = new Error('MongooseError: buffering timed out after 10000ms');

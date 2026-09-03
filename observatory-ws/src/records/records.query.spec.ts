@@ -237,7 +237,7 @@ describe('buildMongoFilter', () => {
     });
   });
 
-  it("places the classification clause before the free-text clauses -- measured 2,566ms vs 5,809ms on the database server; see buildMongoFilter's comment", () => {
+  it("places the classification clause before the free-text clauses -- measured 2,566ms vs 5,809ms on the MongoDB server; see buildMongoFilter's comment", () => {
     const filter = buildMongoFilter({ classification: ['positive'], q: 'transformer' });
     expect(filter.$and?.[0]).toEqual({
       'llm_classification.classification': { $eq: 'positive' },
@@ -294,7 +294,7 @@ describe('buildMongoFilter', () => {
     });
   });
 
-  it('expands an empty-string licence request to match both "" and null (measured on the database server: 208,649 "" docs, 71,025 null docs)', () => {
+  it('expands an empty-string licence request to match both "" and null (measured on the MongoDB server: 208,649 "" docs, 71,025 null docs)', () => {
     const filter = buildMongoFilter({ ...emptyFilters, license: [''] });
     expect(filter).toEqual({
       $and: [{ 'source.access.license': { $in: ['', null] } }],
@@ -362,7 +362,7 @@ describe('tokenizeQuery', () => {
 });
 
 describe('buildSortSpec', () => {
-  it('sorts relevance by _id -- the only indexed field on the database server today', () => {
+  it('sorts relevance by _id -- the only indexed field on the MongoDB server today', () => {
     expect(buildSortSpec('relevance')).toEqual({ _id: 1 });
   });
 

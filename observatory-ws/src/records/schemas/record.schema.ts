@@ -7,7 +7,7 @@ import { Schema } from 'mongoose';
  * upstream (dome-triage) doesn't lose data here before schema/ and this file catch up.
  *
  * `_id` MUST be declared `String` explicitly. Every document's `_id` is a UUID5 string (confirmed
- * against the database server directly, 2026-09-01: e.g. "04fc0915-fded-5146-8847-4da33cf3a059"), not a Mongo
+ * against the MongoDB server directly, 2026-09-01: e.g. "04fc0915-fded-5146-8847-4da33cf3a059"), not a Mongo
  * ObjectId -- without this, Mongoose defaults to ObjectId casting and every `findById`/`_id`
  * lookup silently fails to match anything.
  */
@@ -21,7 +21,7 @@ export const RECORD_SCHEMA_DEFINITION = new Schema(
     versionKey: false,
     id: false,
     // Collection name is set per-connection at registration time (records.module.ts), from
-    // config -- the database server's real collection is `Content`, confirmed live; nothing here hardcodes it.
+    // config -- The MongoDB server's real collection is `Content`, confirmed live; nothing here hardcodes it.
   },
 );
 

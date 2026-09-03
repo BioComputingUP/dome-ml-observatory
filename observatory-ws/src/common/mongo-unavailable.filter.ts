@@ -11,9 +11,9 @@ import { MongooseError, mongo } from 'mongoose';
  * - `mongo.MongoError` / its `MongoServerError` subclass (server-side, from the native MongoDB
  *   driver, NOT a MongooseError -- a completely separate class hierarchy from a different
  *   package): a query that genuinely exceeded `maxTimeMS` on the server, e.g. a free-text regex
- *   search on the database server's un-indexed collection whose bounded-count fallback (see count.service.ts)
+ *   search on the MongoDB server's un-indexed collection whose bounded-count fallback (see count.service.ts)
  *   still has to scan nearly the whole collection when the match rate is low, so it can time out
- *   too. Confirmed live against the database server with `?q=transformer`: `MongoServerError: ... operation
+ *   too. Confirmed live against the MongoDB server with `?q=transformer`: `MongoServerError: ... operation
  *   exceeded time limit, code: 50, codeName: 'MaxTimeMSExpired'` -- catching only MongooseError
  *   let this one straight through as a bare 500 with no useful message.
  *

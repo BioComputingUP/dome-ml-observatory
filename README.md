@@ -10,7 +10,8 @@ Live at [observatory.dome-ml.org](https://observatory.dome-ml.org/). Part of the
 
 ## Architecture
 
-A monorepo with two independent apps, matching the lab's usual `*-ui` / `*-ws` split.
+A monorepo with two independent apps, following the `*-ui` / `*-ws` convention used across the
+DOME-ML services.
 
 | Part | Stack | Role |
 |---|---|---|
@@ -74,15 +75,16 @@ cp .env.example .env  # fill in real values; .env is gitignored, never committed
 npm run start:dev     # hot reload at http://localhost:3000
 ```
 
-Backend development needs network reach to the lab MongoDB host (VPN), read-only. Configuration is
-environment variables only, validated at boot — see [Environment variables](#environment-variables).
+Backend development needs read-only network reach to the MongoDB host — over VPN if that host is
+network-restricted. Configuration is environment variables only, validated at boot — see
+[Environment variables](#environment-variables).
 
 From the repo root the same commands are available unprefixed (`npm run start`, `npm run build-prod`)
 for the frontend and suffixed (`npm run start:ws`, `npm run build:ws`, `npm run test:ws`,
 `npm run lint:ws`) for the backend. Each app keeps its own independent install; there is no root
 lockfile and no npm-workspaces hoisting.
 
-## Running the whole service with Docker
+## Running the whole service locally with Docker
 
 Two images, no others:
 
@@ -104,7 +106,7 @@ docker compose -f docker-compose-local.yml up --build
 | `observatory-ui` | 8080 | 80 — **the only browser-facing origin** |
 | `observatory-ws` | 3000 | 3000 — host side is for `curl`ing the API directly; the browser never uses it |
 
-### Things that will bite you if changed independently
+### Coupled settings
 
 - **The service name `observatory-ws` and the container port `3000` are a hard contract.**
   [`observatory-ui/nginx.conf`](observatory-ui/nginx.conf) hardcodes `observatory-ws:3000` as its
@@ -129,22 +131,38 @@ the corpus stats aggregation, and the journals table. Consequently:
 - With the database unreachable the process still starts and stays up — `/api/health` returns 200,
   `/api/health/ready` returns 503, and the process does not die.
 
-## Deploying
+## Server deployment
 
-Production deployment is owned by the hosting lab, not by this repo's contributors. Both of the
-plausible shapes are supported deliberately, so the choice stays open:
+Two deployment shapes are supported. Both are first-class; the repository does not assume either.
 
 **Containers.** [`docker-compose-local.yml`](docker-compose-local.yml) is a working two-service
-project intended as the starting point for a production compose file, not as a deployment artifact
-itself. It carries no volumes and no secrets.
+project and the intended starting point for a production Compose file. It carries no volumes and no
+secrets. A production file differs from it in three places only: published ports, the `MONGODB_URI`
+and `FRONTEND_URL` values, and a restart policy. Build both images from the repository root as
+context.
 
-**Bare process.** `npm run start:prod` in `observatory-ws/` runs `node dist/main` — byte-identical
-to the container's `CMD`, so a service-manager deployment needs no Docker at all. The frontend in
-that shape is `npm run build-prod` plus serving `observatory-ui/dist/` as static files. This is what
-production runs today for the frontend; `npm run deploy-prod-quick` builds and rsyncs `dist/` to it
-and is the lab's command to run, not something to invoke casually.
+**Bare process.** `npm run start:prod` in `observatory-ws/` runs `node dist/main`, byte-identical to
+the container's `CMD`, so a systemd or equivalent deployment needs no Docker. The frontend in that
+shape is `npm run build-prod` plus serving `observatory-ui/dist/` as static files behind a web
+server that provides the SPA fallback and the `/api` proxy — [`observatory-ui/nginx.conf`](observatory-ui/nginx.conf)
+is a working reference for that configuration.
 
-### Networking — where to connect it up
+`npm run deploy-prod-quick` builds the frontend and rsyncs `dist/` to a configured host with
+`--delete`. It publishes immediately and has no staging step; run it only as a deliberate deploy.
+
+### Decisions the deployment makes
+
+The repository is neutral on all of these, and none of them require code changes:
+
+| Decision | Constraint it must satisfy |
+|---|---|
+| Published ports | The frontend is the only browser-facing origin. The backend port need not be published at all. |
+| `/api` on the live domain | Must resolve to the backend on the same origin as the SPA — see below. |
+| Containers or bare process | Both supported; the backend's start command is identical either way. |
+| Staging environment | Nothing in the repository is environment-specific; a second deployment needs only different env values. |
+| TLS and DNS | Terminated in front of the frontend. The backend expects `X-Forwarded-*` headers from it. |
+
+### Networking — what to connect where
 
 - **The SPA uses relative URLs only.** There is no `apiUrl` constant and no build-time environment
   file. It must be served from a **domain root** with the API co-located at **`/api` on the same
@@ -211,30 +229,25 @@ Measured on the live collection: `class_year_id` builds in ~4 s for ~37 MB; `pos
 ~3 minutes for ~390 MB, plus roughly 1 GB of transient sort files. Both use `background: true`, and
 the collection stayed readable throughout the build.
 
-### Still the lab's call
+## Design constraints
 
-Production port allocation; whether `/api/` on the live domain is already reserved or proxied;
-whether a staging subdomain is wanted; and containers versus a bare process under a service manager.
-Nothing in this repo assumes an answer to any of them.
-
-## Why the backend looks the way it does
-
-The boot-time warm caches, the 24 h TTLs, the bounded counts that report `10,000+` rather than an
-exact figure, the split query budgets and the hard result window all exist because this is a large
-collection on a shared database host running MongoDB 4.2. The two indexes above now carry most of
-that load, but the fallback paths stay, because the service has to survive their absence.
+The boot-time warm caches, 24 h TTLs, bounded counts that report `10,000+` rather than an exact
+figure, split query budgets and hard result window all follow from one fact: this is a large
+collection on a shared database host running MongoDB 4.2. The indexes above now carry most of that
+load, but the fallback paths remain, because the service must survive their absence.
 
 ## Tests and gates
 
-There is no CI. The local gates are the only gate — run the ones for whichever app you touched:
+There is no CI yet (see [`ROADMAP.md`](ROADMAP.md)). The local gates are the only gate — run the
+ones for whichever app you touched:
 
 ```bash
 npm test          && npm run lint      && npm run build-prod   # observatory-ui
 npm run test:ws   && npm run lint:ws   && npm run build:ws     # observatory-ws
 ```
 
-For backend changes touching database queries, also run it for real against the database and hit the
-affected endpoint — several real bugs in this service were only ever caught that way.
+For backend changes touching database queries, also run the service against the real database and
+exercise the affected endpoint. Several defects in this service were reproducible only that way.
 
 ## Conventions worth knowing
 
@@ -251,7 +264,7 @@ affected endpoint — several real bugs in this service were only ever caught th
 ## More
 
 - [`ROADMAP.md`](ROADMAP.md) — what is still to build, and the runbooks for the recurring jobs:
-  refreshing the corpus on the database server, and the monthly Zenodo archive.
+  refreshing the corpus on the MongoDB server, and the monthly Zenodo archive.
 - [`AGENTS.md`](AGENTS.md) — working conventions, and a record of the things that have gone wrong
   before. Read it before changing code, whether you are a person or an AI coding agent.
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) · [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)

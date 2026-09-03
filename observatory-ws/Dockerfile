@@ -61,7 +61,7 @@ USER node
 EXPOSE 3000
 
 # Liveness only (/api/health, never /api/health/ready) -- same reasoning as
-# HealthController's own doc comment: a VPN blip to the database server must not restart-loop this container,
+# HealthController's own doc comment: a VPN blip to the MongoDB server must not restart-loop this container,
 # only make /api/records etc fail per-request while the process stays up.
 #
 # node -e rather than wget/curl: avoids depending on either being present in node:24-alpine
@@ -76,12 +76,12 @@ EXPOSE 3000
 # start-period=60s: measured live (bare process, pre-container) at 15-40s before /api/health
 # becomes reachable -- FacetsService and StatsService's OnModuleInit hooks do real Mongo work
 # (loading ~36k facet values across 4 fields, one $facet aggregation over 827k docs) serially
-# before Nest calls app.listen(). Measured worst case (the database server unreachable, every warm-up step
+# before Nest calls app.listen(). Measured worst case (the MongoDB server unreachable, every warm-up step
 # timing out in sequence) is ~40s containerised, so 60s leaves real margin. RE-MEASURE if any
 # more sequential boot-time warm-up is ever added, and raise it if boot approaches it.
 HEALTHCHECK --interval=10s --timeout=3s --start-period=60s --retries=3 \
   CMD node -e "const http=require('http');const p=process.env.PORT||3000;http.get('http://127.0.0.1:'+p+'/api/health',(r)=>{process.exit(r.statusCode===200?0:1)}).on('error',()=>process.exit(1))"
 
-# Exec form, matching npm run start:prod's own command (node dist/main) -- Ivan's exact
-# convention, so the non-Docker REDACTED-HOST path stays identical to what this image runs.
+# Exec form, matching npm run start:prod's own command (node dist/main) -- the same
+# convention, so a non-Docker systemd deployment stays identical to what this image runs.
 CMD ["node", "dist/main"]

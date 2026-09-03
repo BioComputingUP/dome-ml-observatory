@@ -12,7 +12,7 @@
     "fulltextAvailable": 615151,
     "enriched": 0
   },
-  "corpus_provenance": "corpus figures measured directly against dome_observatory.Content on the database server via a read-only aggregation (GET /api/stats), 2026-09-01 -- see observatory-ws/src/stats/stats.service.ts",
+  "corpus_provenance": "corpus figures measured directly against dome_observatory.Content on the MongoDB server via a read-only aggregation (GET /api/stats), 2026-09-01 -- see observatory-ws/src/stats/stats.service.ts",
   "facets": {
     "classification": [
       {

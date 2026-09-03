@@ -70,7 +70,7 @@ export interface FacetStats {
 const CACHE_KEY = 'facet-stats';
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // same reasoning as CountService: corpus refreshes 6-12x/year
 /** $facet has a 16MB-per-sub-pipeline output cap. The high-cardinality fields (journal 12,753,
- *  mesh 23,222, keywords_author 694,411 -- measured against the database server 2026-09-01) are deliberately
+ *  mesh 23,222, keywords_author 694,411 -- measured against the MongoDB server 2026-09-01) are deliberately
  *  left out of this aggregation for that reason and because a UI stat block has no use for them;
  *  the low-cardinality ones here (license 9, pub_types 89 among the positives) are comfortably
  *  inside the cap. */
@@ -85,7 +85,7 @@ const POSITIVE_MATCH = { $match: { 'llm_classification.classification': 'positiv
  * search space). They're kept as two separate aggregate() calls rather than one combined $facet
  * because $facet's sub-pipelines all read the SAME input documents -- a single upstream $match
  * would wrongly narrow `corpus` to positives-only too, and there is no way to un-filter one
- * sub-pipeline of a $facet once its parent stage has filtered the input. Measured against the database server,
+ * sub-pipeline of a $facet once its parent stage has filtered the input. Measured against the MongoDB server,
  * 2026-09-01: the positives-scoped $facet (search_space totals + license + pubTypes + yearRange)
  * took 2,836ms on its own; running both aggregations via Promise.all keeps the combined wall time
  * close to that, not their sum.
@@ -326,7 +326,8 @@ function shapeFacetStats(
     source: 'full-corpus',
     records_counted: corpus.total,
     corpus,
-    corpus_provenance: 'Computed live from dome_observatory.Content on the database server via GET /api/stats.',
+    corpus_provenance:
+      'Computed live from dome_observatory.Content on the MongoDB server via GET /api/stats.',
     last_classification: {
       timestamp: rawCorpus?.lastClassifiedAt ?? null,
       enriched_timestamp: rawCorpus?.lastEnrichedAt ?? null,

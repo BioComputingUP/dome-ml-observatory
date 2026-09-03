@@ -65,6 +65,6 @@ networks:
   # resolves service names like "observatory-ws" on a Compose-created, USER-DEFINED network --
   # confirmed in Phase 4 testing, not the default `bridge` network. (Compose's own implicit
   # default network is already user-defined and would technically also satisfy this -- naming it
-  # here just makes the requirement obvious to whoever reads this file next, e.g. Ivan.)
+  # here just makes the requirement obvious to whoever reads this file next.)
   observatory:
     driver: bridge

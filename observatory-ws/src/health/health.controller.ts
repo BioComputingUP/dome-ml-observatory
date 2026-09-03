@@ -17,7 +17,7 @@ export class HealthController {
 
   /**
    * Liveness probe -- the Docker HEALTHCHECK target. Deliberately never touches Mongo: a VPN blip
-   * taking the database server unreachable must not restart-loop this container, it should just make
+   * taking the MongoDB server unreachable must not restart-loop this container, it should just make
    * /api/records fail per-request while the process itself stays up. Verified by the VPN-drop test.
    */
   @Get()

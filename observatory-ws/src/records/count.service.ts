@@ -15,7 +15,7 @@ const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // corpus is refreshed 6-12x/year -- s
 const BOUNDED_COUNT_LIMIT = 10_000;
 
 /**
- * Counting is the expensive part of a search on the database server's un-indexed Content collection -- measured
+ * Counting is the expensive part of a search on the MongoDB server's un-indexed Content collection -- measured
  * 2026-09-01: an unbounded countDocuments() on the default filter took 4.4s cold (192ms bounded to
  * 10k), vs. 724ms to fetch a page of results.
  *
@@ -23,7 +23,7 @@ const BOUNDED_COUNT_LIMIT = 10_000;
  * try an exact count under a time budget; timeout -> fall back to a cheap bounded count reported
  * as `totalRelation: 'gte'` so callers can render "10,000+" rather than a wrong exact number.
  *
- * That bounded fallback is NOT reliably cheap, though -- confirmed live against the database server: a
+ * That bounded fallback is NOT reliably cheap, though -- confirmed live against the MongoDB server: a
  * `.limit(10000)` count can only stop early once it finds 10,000 matches, so for a *rare* free-
  * text term (e.g. "transformer", ~10,939 hits out of 827,061 -- barely over the bound) it still
  * has to scan nearly the entire un-indexed collection to confirm that, and can time out too. If

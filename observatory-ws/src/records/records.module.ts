@@ -17,9 +17,9 @@ export class RecordsModule implements OnModuleInit {
   constructor(private readonly countService: CountService) {}
 
   /** Warms the count cache for the default (class=positive) search at boot, so the first real
-   *  page load never pays the cold ~4.4s unbounded count measured against the database server -- see
+   *  page load never pays the cold ~4.4s unbounded count measured against the MongoDB server -- see
    *  CountService. Runs once; failure is logged, not fatal (the
-   *  app must still serve /api/health while the database server is unreachable -- see health.controller.ts). */
+   *  app must still serve /api/health while the MongoDB server is unreachable -- see health.controller.ts). */
   async onModuleInit(): Promise<void> {
     const { filters } = parseSearchParams({});
     const filter = buildMongoFilter(filters);

@@ -101,7 +101,7 @@ describe('CountService', () => {
   });
 
   it('degrades to a gte-bound estimate, without throwing, when even the bounded fallback fails', async () => {
-    // Reproduces a real failure seen live against the database server: a rare free-text term's bounded count
+    // Reproduces a real failure seen live against the MongoDB server: a rare free-text term's bounded count
     // can ALSO time out, since it still has to scan nearly the whole un-indexed collection to
     // confirm there's no 10,000th match. The search response must stay usable (a real page of
     // results with an honestly-uncertain total), not throw and take the whole request down.

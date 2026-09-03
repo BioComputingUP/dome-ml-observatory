@@ -25,7 +25,7 @@ are *not* curator-reviewed; don't describe them as such). **Monorepo, two indepe
 No shared `-core` package between them — overlapping types/shapes are duplicated on each side
 deliberately, not linked. **The backend is the only thing that ever talks to the database.**
 Never give the frontend a database connection string or expose a database port publicly; the
-backend is the entire security boundary. This is a hosting-lab requirement, not a style choice.
+backend is the entire security boundary. This is a hosting requirement, not a style choice.
 
 ## Environment
 
@@ -34,12 +34,12 @@ backend is the entire security boundary. This is a hosting-lab requirement, not 
 - **`observatory-ws/`**: `.nvmrc` pins `24.20.0` (Node 24 LTS) — a separate, independent install
   from the UI's, deliberately not assumed to match it. **Mongoose is pinned to the `8.x` line
   (`mongoose@^8.19.1`, bundling MongoDB driver ~6.x) and must not be bumped to `9.x`.** Verified
-  directly, 2026-09-01: MongoDB driver `7.x` refuses to connect to the database server at all
+  directly, 2026-09-01: MongoDB driver `7.x` refuses to connect to the MongoDB server at all
   (`MongoServerSelectionError: ... reports maximum wire version 8, but this version of the
-  Node.js Driver requires at least 9 (MongoDB 4.4)`) — the database server runs MongoDB **4.2.25**, and only
+  Node.js Driver requires at least 9 (MongoDB 4.4)`) — the MongoDB server runs MongoDB **4.2.25**, and only
   driver `6.x` still supports it. `@nestjs/mongoose@11.x`'s own peer range (`^7.0.0 || ^8.0.0`)
   already blocks `9.x`, but don't assume a future bump is safe without re-checking this against
-  the database server directly first.
+  the MongoDB server directly first.
 - **`observatory-ws` is configured by environment variables only**, validated at boot
   (`src/config/env.validation.ts` — it names the bad variable and refuses to start). Seven of them,
   all documented in `.env.example`; two are easy to miss because they look like one setting:
@@ -81,8 +81,8 @@ from inside `observatory-ws/`.
 `--delete`. Never run it as a side effect of something else, on uncommitted/unreviewed changes,
 or without the user explicitly asking to deploy right now. Production deployment (Docker or
 otherwise) is ultimately owned by the hosting lab, not by ad-hoc commands run from a laptop. The
-same caution applies to anything that would touch `observatory-ws`'s production config or the database server
-in production — local dev against the database server over the VPN, read-only, is fine and expected (see
+same caution applies to anything that would touch `observatory-ws`'s production config or the MongoDB server
+in production — local dev against the MongoDB server over the VPN, read-only, is fine and expected (see
 `observatory-ws/.env.example`); writes, schema changes, or touching any other database on that
 host are not.
 
@@ -186,10 +186,10 @@ host are not.
   wrong (e.g. a stray `git add -A`); undo it, don't commit it.
 - **Don't run `npm install` to "fix" a dependency issue** in either app — a bare install can
   silently upgrade a pinned toolchain or (in `observatory-ws/`'s case) the Mongoose major
-  version, which breaks the the database server connection outright (see Environment above). Use `npm ci`.
+  version, which breaks the MongoDB server connection outright (see Environment above). Use `npm ci`.
 - **`observatory-ws`'s Mongo connection uses `lazyConnection: true` plus a `connectionFactory`
   hook that calls `connection.asPromise().catch(...)`** (see `app.module.ts`) — both parts are
-  load-bearing, confirmed the hard way against a genuinely unreachable the database server: `lazyConnection`
+  load-bearing, confirmed the hard way against a genuinely unreachable MongoDB server: `lazyConnection`
   alone still crashes the process a few seconds later (Mongoose's internal connection attempt
   becomes an unhandled promise rejection with nothing awaiting it), and a plain
   `connection.on('error', ...)` listener does **not** fix that (the rejection and the `'error'`
@@ -214,9 +214,9 @@ host are not.
   `npm run test:ws` + `npm run lint:ws` + `npm run build:ws` from the repo root, or the
   equivalents from inside `observatory-ws/`) — this project has no CI yet, so these local checks
   are the only gate. For `observatory-ws` changes touching Mongo queries, also actually run it
-  (`npm run start:ws`) against the database server over the VPN and hit the affected endpoint with `curl` —
+  (`npm run start:ws`) against the MongoDB server over the VPN and hit the affected endpoint with `curl` —
   several real bugs in this backend (wrong collection name, a Mongo-driver version that silently
-  can't connect to the database server at all, a boot sequence that looked fine but crashed the whole process
+  can't connect to the MongoDB server at all, a boot sequence that looked fine but crashed the whole process
   the moment Mongo was unreachable) were only caught by actually running it, not by tests or a
   clean build.
 - Keep content edits (news items, about-page copy, images) and code edits as separate,

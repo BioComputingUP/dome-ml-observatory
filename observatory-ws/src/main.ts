@@ -43,7 +43,7 @@ async function bootstrap(): Promise<void> {
     }),
   );
 
-  // Turns a Mongo outage (VPN down, the database server unreachable) into a clean 503 for /api/records etc.
+  // Turns a Mongo outage (VPN down, the MongoDB server unreachable) into a clean 503 for /api/records etc.
   // instead of a bare "Internal server error" -- see that filter's header comment for the
   // VPN-drop test that found the gap.
   app.useGlobalFilters(new MongoUnavailableFilter());

@@ -19,7 +19,7 @@ Two modes:
   marked `"source": "full-corpus"`. The aggregation logic lives exactly once, in
   observatory-ws/src/stats/stats.service.ts -- this mode is a thin fetch-and-write, not a
   reimplementation, so the two can never drift apart. Requires the ws running and reachable (e.g.
-  `npm run start:dev` in observatory-ws/, or the VPN to the database server for a real corpus run).
+  `npm run start:dev` in observatory-ws/, or the VPN to the MongoDB server for a real corpus run).
 
 Usage:
     python3 schema/generate_facet_stats.py
@@ -42,9 +42,9 @@ DEFAULT_RECORDS = REPO_ROOT / "observatory-ui" / "fixtures" / "sample-records.js
 OUT_PATH = SCHEMA_DIR / "stats" / "facet-stats.json"
 
 # Real full-corpus figures. Used only by the fixture-file mode below -- --from-api mode gets its
-# own live corpus block straight from the database server and ignores this dict entirely.
+# own live corpus block straight from the MongoDB server and ignores this dict entirely.
 #
-# Corrected 2026-09-01 (Phase 5) from a live read-only aggregation against the database server
+# Corrected 2026-09-01 (Phase 5) from a live read-only aggregation against the MongoDB server
 # (dome_observatory.Content, measured via GET /api/stats): these are marginally lower than the
 # dome-triage/mongo_landscape_export tallies this dict previously carried (e.g. positive was
 # recorded as 355,569; the live collection has 355,558) -- a handful of records evidently didn't
@@ -62,7 +62,7 @@ CORPUS = {
     "enriched": 0,
 }
 CORPUS_PROVENANCE = (
-    "corpus figures measured directly against dome_observatory.Content on the database server via a read-only "
+    "corpus figures measured directly against dome_observatory.Content on the MongoDB server via a read-only "
     "aggregation (GET /api/stats), 2026-09-01 -- see observatory-ws/src/stats/stats.service.ts"
 )
 

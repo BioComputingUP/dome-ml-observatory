@@ -20,7 +20,7 @@ import { JournalsModule } from './journals/journals.module';
       validate,
     }),
 
-    // 300 req/min per IP. Sized to the shared database host's capacity: the database server carries several
+    // 300 req/min per IP. Sized to the shared database host's capacity: the MongoDB server carries several
     // other production databases, so a runaway client loop has to be capped here rather than
     // allowed to degrade the host. Documented publicly in swagger.ts and on /download/api.
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 300 }]),
@@ -30,16 +30,16 @@ import { JournalsModule } from './journals/journals.module';
       useFactory: (config: ConfigService<AppConfig, true>) => ({
         uri: config.get('mongo.uri', { infer: true }),
         dbName: config.get('mongo.db', { infer: true }),
-        // Fail fast on a dead/unreachable the database server (e.g. VPN down) instead of the driver's 30s
+        // Fail fast on a dead/unreachable MongoDB server (e.g. VPN down) instead of the driver's 30s
         // default -- this is what keeps /api/health/ready honest under real network conditions.
         serverSelectionTimeoutMS: 5_000,
-        // the database server is a standalone server, not a replica set (confirmed via mongosh, 2026-09-01) --
+        // the MongoDB server is a standalone server, not a replica set (confirmed via mongosh, 2026-09-01) --
         // this skips replica-set discovery entirely rather than timing out looking for one.
         directConnection: true,
         maxPoolSize: 10,
         // Without this, @nestjs/mongoose awaits the FIRST connection attempt (with its own
         // retry loop, default 10 attempts) as a hard Nest module dependency -- confirmed the hard
-        // way: with the database server unreachable, that blocked app.listen() from ever being called for 80+
+        // way: with the MongoDB server unreachable, that blocked app.listen() from ever being called for 80+
         // seconds before the process crashed outright, taking /api/health down with it even
         // though that route never touches Mongo. lazyConnection makes this provider resolve
         // immediately and connect in the background instead (Mongoose's own bufferTimeoutMS,

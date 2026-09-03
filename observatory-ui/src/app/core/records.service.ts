@@ -44,7 +44,7 @@ export interface SearchQuery {
 export interface SearchResult {
   items: AiMlRecord[];
   total: number;
-  /** 'eq' is an exact count. 'gte' means the exact count timed out on the database server's un-indexed
+  /** 'eq' is an exact count. 'gte' means the exact count timed out on the MongoDB server's un-indexed
    *  collection and `total` is a cheap lower bound instead (always exactly 10,000) -- render it
    *  as "10,000+", never a bare number. See observatory-ws/src/records/count.service.ts. */
   totalRelation: 'eq' | 'gte';
@@ -64,7 +64,7 @@ export interface SearchResult {
  * are a snapshot, not live, and will drift from the real corpus over time; update here only if
  * they drift enough to be misleading as a fallback.
  *
- * Corrected 2026-09-01 (Phase 5) from a direct read-only aggregation against the database server
+ * Corrected 2026-09-01 (Phase 5) from a direct read-only aggregation against the MongoDB server
  * (dome_observatory.Content via GET /api/stats), replacing the prior dome-triage export tallies,
  * which were marginally higher (e.g. positive was recorded as 355,569; the live collection has
  * 355,558) -- a handful of records evidently didn't make it from that export into the loaded
@@ -84,7 +84,7 @@ export const CORPUS_STATS: CorpusStats = {
 
 /** Positives-scoped fallback (classification: positive only) -- same role and provenance as
  *  CORPUS_STATS above: painted instantly so the home metric row never flashes zeros while
- *  GET /api/stats is in flight. Measured against dome_observatory.Content on the database server via
+ *  GET /api/stats is in flight. Measured against dome_observatory.Content on the MongoDB server via
  *  GET /api/stats, 2026-09-02. */
 export const SEARCH_SPACE_STATS: SearchSpaceStats = {
   total: 355_558,

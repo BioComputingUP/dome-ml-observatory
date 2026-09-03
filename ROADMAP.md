@@ -5,14 +5,14 @@ and in the code; this file is only the work ahead.
 
 Last updated **2026-09-03**.
 
-**Where things stand**: both apps are built, containerised and running against the database server
+**Where things stand**: both apps are built, containerised and running against the MongoDB server
 (`dome_observatory.Content`, MongoDB 4.2.25, 827,061 documents at `schema_version` 1.1.0).
 All three indexes are live — `_id_`, `class_year_id`, `positives_text`. **No record is enriched
 yet.** There is no Zenodo deposit, no analytics, and no CI.
 
 ---
 
-## 1. Data refresh — reloading the database server, and new classification / enrichment runs
+## 1. Data refresh — reloading the corpus, and new classification / enrichment runs
 
 The corpus turns over **6–12 times a year** and every cache in `observatory-ws` is sized around
 that. There is no runbook for it — the initial load was a one-off manual Compass import.
@@ -47,6 +47,18 @@ what makes everything below possible.
   Decide the field-level merge policy explicitly: a classification refresh must not blank an
   `llm_enrichment` group a later enrichment run has populated. `$set` of a whole document will
   decide that by accident if nobody decides it on purpose.
+
+- **Fetch citation counts from Europe PMC before each load.** `publication_metadata.citation_count`
+  is a required field in the schema and is null on every record — reserved but never populated.
+  Europe PMC exposes counts per article, so the pull belongs in the staging chain alongside the
+  existing licence join, before the JSONL is written. Cheapest point to fix it is a refresh that
+  is happening anyway.
+
+- **The first enrichment merge is its own milestone**, not part of a routine refresh. It writes
+  fields nothing has ever written, so run it against a copy first, verify a sample against the
+  vocabularies in the current schema release, then merge. The search page's enrichment-coverage
+  banner reads its number live and starts reporting on its own once records land — no
+  regeneration step, no code change.
 
 - **An enrichment writer**, in `dome-triage`. **Not here** — `observatory-ws` is read-only by
   design and must never gain write credentials.
@@ -109,7 +121,7 @@ on the bucket PUT (not `Content-Type: application/json`, which breaks it), strip
   instead of being forked.
 - **Cite the concept DOI**, not the version DOI, on a page that outlives any single release.
 
-⚠️ **The export blocker.** GitHub runners cannot reach the database server, so the dump has to come through the
+⚠️ **The export blocker.** GitHub runners cannot reach the MongoDB server, so the dump has to come through the
 public API — but `MAX_RESULT_WINDOW` rejects `page * pageSize > 10,000`, so a paginated dump tops
 out at 10,000 of 827,061. That cap is not tunable: MongoDB 4.2's `find()` sort has no
 `allowDiskUse` and a deep skip blows the 32MB sort buffer.
@@ -124,7 +136,22 @@ out at 10,000 of 827,061. That cap is not tunable: MongoDB 4.2's `find()` sort h
 Each deposit should carry the corpus as gzipped NDJSON, a metadata sidecar (count, size, sha256,
 source, `schema_version`), and the schema release itself so the deposit is self-describing.
 
-## 3. Help page
+## 3. Surface the schema properly
+
+The published schema is the thing that makes the corpus reusable, and right now it is mentioned
+in passing rather than shown. `schema/releases/<version>/` holds the JSON Schema, a real example
+record and the three controlled vocabularies, and nothing in the UI links to any of it.
+
+- **Make the schema card on `/download/bulk` clickable** — it currently states a version number
+  and stops. It should open the schema itself, so a reader can see the field definitions rather
+  than take them on trust.
+- **Link the release folder from every point the schema is named**, in particular the processing
+  timeline and the About overview, where reserved-but-empty fields are already being explained in
+  prose that would be shorter with a link.
+- Serve the release from a stable path so the link survives a version bump, and point the schema
+  version reported by `/api/stats` at the same place.
+
+## 4. Help page
 
 A `/help` route, in the navbar and footer, with `/faq` redirecting to it. Search behaviour here is
 genuinely non-obvious and nothing currently explains it.
@@ -146,7 +173,7 @@ genuinely non-obvious and nothing currently explains it.
 Prose with anchors, not an accordion of one-liners — the rules that matter need a sentence of
 *why* to be useful rather than surprising.
 
-## 4. Analytics and cookie consent
+## 5. Analytics and cookie consent
 
 `/about/privacy` documents the intended stack and carries a **"Not yet active"** badge. That badge
 is accurate today and must not come off before the implementation ships.
@@ -169,13 +196,13 @@ gating problem plus an EU/EEA data transfer the privacy page then has to disclos
 
 Update the privacy page in the same change that ships the implementation, never before.
 
-## 5. Continuous integration
+## 6. Continuous integration
 
 There is no `.github/` in this repo. Nothing verified so far is verified automatically.
 
 `ci.yml`, on pull request and push to `main`:
 
-- Node from `.nvmrc`, `npm ci` — **never `npm install`**, which has already broken the the database server
+- Node from `.nvmrc`, `npm ci` — **never `npm install`**, which has already broken the MongoDB server
   connection once by floating Mongoose past `8.x`.
 - Both apps: lint, test, build. Currently 131 tests in `observatory-ui`, 132 in `observatory-ws`.
 - `python3 schema/validate.py` against the current release.
@@ -188,9 +215,21 @@ Explicitly not in scope: any workflow that deploys. Deployment is the hosting la
 
 ---
 
+## 7. Repository access and visibility
+
+The repository is private and the account doing the development does not hold admin on it. That
+combination is the wrong way round for a project meant to be citable and externally reusable, and
+it blocks several items above: publishing releases, adding repository secrets for the scheduled
+archive, and enabling branch protection or required status checks alongside CI.
+
+- Make the repository public, once the sanitisation pass above is confirmed — no internal
+  hostnames, addresses or credentials in tracked files.
+- Grant admin to the maintainer doing the work, so releases, secrets and branch protection can be
+  configured without a round trip.
+
 ## Deferred, tracked
 
-- **Mongoose is pinned to `8.x`.** Driver `7.x` cannot connect to the database server at all (max wire version 8
+- **Mongoose is pinned to `8.x`.** Driver `7.x` cannot connect to the MongoDB server at all (max wire version 8
   vs. the driver's required 9). Do not bump without re-verifying against the real server. A
   `a newer database server` on MongoDB v8 has been offered — it would remove this and several other constraints
   (`allowDiskUse` on `find()`, better text search) and is worth revisiting if the sort and export
@@ -204,8 +243,9 @@ Explicitly not in scope: any workflow that deploys. Deployment is the hosting la
   to avoid.
 - Ecosystem-wide dependency upgrades across the other DOME apps are out of scope here.
 
-## Owned by the hosting lab
+## Out of scope for this repository
 
-Production deployment, the production and staging Compose files, port allocation, TLS and the
-domain, and the database server itself. `npm run deploy-prod-quick` must keep **working** — buildable, correct
-output path, invocable from the repo root — but the lab runs it, not this repo.
+Production deployment and its Compose files, published port allocation, TLS termination, DNS, and
+the database server itself are operated by whoever hosts the service. This repository ships the
+images, the local Compose file and the deployment documentation in `README.md`; it does not
+contain production configuration or credentials.

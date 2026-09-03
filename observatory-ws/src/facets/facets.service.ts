@@ -7,7 +7,7 @@ import { AppConfig } from '../config/configuration';
 
 /**
  * Fields the typeahead can search, mapped to their Mongo path. Deliberately does NOT include
- * `keywords_author`: it has 694,411 distinct values on the live corpus (measured against the database server,
+ * `keywords_author`: it has 694,411 distinct values on the live corpus (measured against the MongoDB server,
  * 2026-09-01) -- too many to cache in memory sensibly, and a per-keystroke Mongo query against an
  * un-indexed array field on that collection measured ~3s. observatory-ui's search page ships that
  * field as a plain text input with no suggestions instead.
@@ -116,7 +116,7 @@ export class FacetsService implements OnModuleInit {
       this.logger.log(`Loaded ${cleaned.length} distinct values for facet "${field}"`);
     } catch (err) {
       // Non-fatal: this field's typeahead just returns empty suggestions until the next boot
-      // (or the database server comes back) rather than crashing the whole app over a convenience feature.
+      // (or the MongoDB server comes back) rather than crashing the whole app over a convenience feature.
       this.logger.warn(
         `Failed to load facet "${field}" (will serve empty until next boot): ${String(err)}`,
       );

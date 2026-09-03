@@ -173,7 +173,7 @@ export function searchTerms(q: string): string[] {
  * Word separator inside a phrase. A literal space fails on the corpus's real text: titles carry
  * inline markup, so "in vitro" is stored as "<i>In Vitro</i>" and a plain-space phrase regex never
  * matches it. Hyphenation ("random-forest") breaks it the same way. Measured *faster* than the
- * naive form on the database server (1,225ms vs 1,572ms for "in vitro"), because it fails earlier on non-matches.
+ * naive form on the MongoDB server (1,225ms vs 1,572ms for "in vitro"), because it fails earlier on non-matches.
  */
 const PHRASE_GAP = '(?:<[^>]*>|[\\s\\-\u2013\u2014])+';
 
@@ -324,7 +324,7 @@ export function buildPagination(rawPage: string | undefined, rawPageSize: string
 
 /** license: '' represents "no license recorded" on the frontend (`access.license ?? ''`,
  *  see record.model.ts) but is stored in Mongo as a genuine mix of `""` (208,649 docs) and `null`
- *  (71,025 docs) -- confirmed by direct aggregation against the database server, 2026-09-01. Requesting the
+ *  (71,025 docs) -- confirmed by direct aggregation against the MongoDB server, 2026-09-01. Requesting the
  *  empty-license bucket must therefore match both. */
 function licenseInClause(license: string[]): (string | null)[] {
   return license.includes('') ? [...license, null] : license;
@@ -336,7 +336,7 @@ const AUTHORS = 'publication_metadata.authors';
 
 /**
  * Classification goes FIRST, before the expensive free-text regex -- measured directly against
- * the database server: the identical filter with this clause first vs. last is 2,566ms vs. 5,809ms (more than
+ * The MongoDB server: the identical filter with this clause first vs. last is 2,566ms vs. 5,809ms (more than
  * 2x) on a zero-match query, because Mongo's un-indexed collection scan can then short-circuit the
  * regex entirely for the majority of documents (the 464,581 non-positive ones on the default
  * filter) via this cheap equality check first. Don't reorder this without re-measuring -- it looks

@@ -19,7 +19,7 @@ export class PaginatedRecordsDto {
   @ApiProperty({
     enum: ['eq', 'gte'],
     description:
-      "'eq' is an exact count. 'gte' means the exact count timed out on the database server's un-indexed " +
+      "'eq' is an exact count. 'gte' means the exact count timed out on the MongoDB server's un-indexed " +
       'collection and `total` is a cheap lower bound instead -- render it as e.g. "10,000+".',
   })
   totalRelation!: 'eq' | 'gte';

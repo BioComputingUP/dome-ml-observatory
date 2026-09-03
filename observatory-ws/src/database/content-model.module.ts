@@ -19,7 +19,7 @@ import { AppConfig } from '../config/configuration';
         name: 'Content',
         useFactory: (config: ConfigService<AppConfig, true>) => {
           const schema = RECORD_SCHEMA_DEFINITION;
-          // the database server's real collection is also, coincidentally, named "Content" (confirmed
+          // the MongoDB server's real collection is also, coincidentally, named "Content" (confirmed
           // 2026-09-01) -- this stays driven by MONGODB_COLLECTION regardless, same as db/URI.
           schema.set('collection', config.get('mongo.collection', { infer: true }));
           return schema;

@@ -104,7 +104,7 @@ export interface CrossLinkedAsset {
  * Passes a value straight through when it is already a URL, otherwise builds the canonical one.
  *
  * These fields are reserved in schema v1.1.0 and populated by a cross-linking pass that has not run
- * yet -- confirmed against the database server 2026-09-02: **0 of all 827,061 records** carry any of them. Whether
+ * yet -- confirmed against the MongoDB server 2026-09-02: **0 of all 827,061 records** carry any of them. Whether
  * the pass will write bare accessions or full URLs is therefore not yet observable, so this handles
  * both rather than guessing one and breaking on the other.
  */

@@ -116,7 +116,7 @@ interface RawJournalGroup {
  *
  * Nothing here queries Mongo per request. One aggregation over the whole collection builds a
  * compact in-memory table (~25k journals, a few MB) at boot, and every endpoint is then a pure
- * read from it. That is deliberate: the database server is a shared host carrying several other production
+ * read from it. That is deliberate: the MongoDB server is a shared host carrying several other production
  * databases, and grouping 827k documents by journal-and-year is not something to do on a page
  * view. It also needs no new index -- the cost is one sequential pass per restart, bounded by the
  * 24h TTL, with no writes and nothing outside dome_observatory.Content touched.
@@ -124,7 +124,7 @@ interface RawJournalGroup {
  * Warm-up is fire-and-forget and non-fatal, matching StatsService: a cold cache costs the first
  * caller one aggregation, it is never wrong.
  *
- * Measured against the database server, 2026-09-03: the aggregation takes ~24s and yields 12,752 journals, of
+ * Measured against the MongoDB server, 2026-09-03: the aggregation takes ~24s and yields 12,752 journals, of
  * which 8,119 carry at least one AI/ML methods paper. Requests off the warm cache are 12-16ms.
  * Note the table covers the 770,752 screened records that carry a journal name, not all 827,061 --
  * 56,309 have none, so these totals are deliberately journal-scoped and must be labelled as such
