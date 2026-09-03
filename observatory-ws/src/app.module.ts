@@ -20,10 +20,9 @@ import { JournalsModule } from './journals/journals.module';
       validate,
     }),
 
-    // 300 req/min per IP. Sized to the shared database host's capacity: it carries several other
-    // production databases and this collection has no secondary indexes yet (see
-    // ROADMAP.md), so a runaway client loop has to be capped here rather than allowed to
-    // degrade the host. Documented publicly in swagger.ts and on /download/api.
+    // 300 req/min per IP. Sized to the shared database host's capacity: the database server carries several
+    // other production databases, so a runaway client loop has to be capped here rather than
+    // allowed to degrade the host. Documented publicly in swagger.ts and on /download/api.
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 300 }]),
 
     MongooseModule.forRootAsync({
@@ -45,8 +44,8 @@ import { JournalsModule } from './journals/journals.module';
         // though that route never touches Mongo. lazyConnection makes this provider resolve
         // immediately and connect in the background instead (Mongoose's own bufferTimeoutMS,
         // 10s default, bounds how long a query issued before that connects waits) -- this is
-        // exactly what keeps liveness honest under the VPN-drop scenario Phase 6's healthcheck
-        // depends on. See ROADMAP.md Phase 5 verification notes.
+        // exactly what keeps liveness honest under the VPN-drop scenario the Docker healthcheck
+        // depends on.
         lazyConnection: true,
         // lazyConnection alone isn't sufficient. Mongoose's createConnection() calls openUri()
         // in "fire and forget" mode internally when lazy, stashing the connection attempt as

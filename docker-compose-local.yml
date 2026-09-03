@@ -1,7 +1,6 @@
 # docker-compose-local.yml -- runs observatory-ui + observatory-ws together as ONE Docker
 # project, entirely locally, for development and review. NOT a deployment artifact: the
-# production and staging Compose files are the hosting lab's own and live elsewhere
-# (see ROADMAP.md, "Owned by the hosting lab").
+# production and staging Compose files are the hosting lab's own and live elsewhere.
 #
 # Run from the repo root:
 #   cp .env.example .env        # first time only -- fill in real values, .env is gitignored

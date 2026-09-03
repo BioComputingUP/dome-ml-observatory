@@ -15,8 +15,8 @@ export interface AppConfig {
     /** Budget for a free-text search (q= present) specifically, applied in RecordsService.fetchPage
      *  -- separate from maxTimeMs because a rare author surname or term is a genuine ~10s query on
      *  the database server's collection (measured pre-index: "Tosatto" took 10.0s), well past the 5s filter-only
-     *  budget above. positives_text (ROADMAP.md Phase 7.6) cut the indexed cases to well under 4s,
-     *  but a lone bare word deliberately still takes the regex path, so this budget stays. */
+     *  budget above. The positives_text index cut the indexed cases to well under 4s, but a lone
+     *  bare word deliberately still takes the regex path, so this budget stays. */
     searchMaxTimeMs: number;
   };
 }

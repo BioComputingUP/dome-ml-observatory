@@ -10,7 +10,7 @@ import { AppConfig } from '../config/configuration';
  * `keywords_author`: it has 694,411 distinct values on the live corpus (measured against the database server,
  * 2026-09-01) -- too many to cache in memory sensibly, and a per-keystroke Mongo query against an
  * un-indexed array field on that collection measured ~3s. observatory-ui's search page ships that
- * field as a plain text input with no suggestions instead (Phase 7) -- see ROADMAP.md.
+ * field as a plain text input with no suggestions instead.
  */
 const FIELD_PATHS: Record<string, string> = {
   journal: 'publication_metadata.journal',

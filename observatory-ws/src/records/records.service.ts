@@ -52,7 +52,7 @@ interface Promoted {
 
 /** Every document's _id is a UUID5 string (confirmed against the database server, 2026-09-01), never a Mongo
  *  ObjectId -- backend/src/routes/records.js's `ObjectId.isValid()` guard is wrong for this data
- *  and is deliberately not ported (see ROADMAP.md Phase 5). Matches any UUID version. */
+ *  and is deliberately not ported. Matches any UUID version. */
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
@@ -317,8 +317,8 @@ export class RecordsService implements OnModuleInit {
     }
 
     // Year/citation sorts: MongoDB 4.2's find().sort() has no allowDiskUse and a 32MB in-memory
-    // sort ceiling -- confirmed failing past ~skip 9,000 on this collection (see
-    // ROADMAP.md Phase 5). The aggregation pipeline below sorts only the handful of
+    // sort ceiling -- confirmed failing past ~skip 9,000 on this collection.
+    // The aggregation pipeline below sorts only the handful of
     // fields a non-_id sort might need (a few dozen bytes/doc instead of ~3.5KB), with
     // allowDiskUse as a second line of defence, then re-fetches the full documents by _id and
     // restores the sorted order in JS -- measured 1.6s vs. 5.4s for sorting full documents via

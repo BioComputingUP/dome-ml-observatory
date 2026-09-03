@@ -4,9 +4,9 @@ Guidance for any AI coding agent (Claude, Copilot, Cursor, etc.) working in this
 Read this fully before making changes. If something here conflicts with what you observe in
 the code, trust the code and update this file.
 
-`ROADMAP.md` is the companion: what has been built and why, what is still open, and the runbooks
-for the recurring jobs (data refresh, Zenodo archive). Comments throughout the codebase cite it
-by phase — keep those pointers working if you renumber anything there.
+`ROADMAP.md` is the companion: what is still open, and the runbooks for the recurring jobs (data
+refresh, Zenodo archive). It covers what is *planned*, not what has shipped — the record of what
+has been built and why lives in this file and in the code comments.
 
 ## What this is
 

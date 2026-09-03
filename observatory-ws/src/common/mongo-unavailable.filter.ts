@@ -6,8 +6,8 @@ import { MongooseError, mongo } from 'mongoose';
  * Maps a Mongo-outage-or-overload error to a clean 503 instead of a generic, unhelpful 500 --
  * confirmed by two different real failure modes hitting this, not just one:
  *
- * - `MongooseError` (client-side): a buffered command timing out while disconnected -- the
- *   VPN-drop test in ROADMAP.md Phase 5.
+ * - `MongooseError` (client-side): a buffered command timing out while disconnected -- what the
+ *   VPN-drop test produces.
  * - `mongo.MongoError` / its `MongoServerError` subclass (server-side, from the native MongoDB
  *   driver, NOT a MongooseError -- a completely separate class hierarchy from a different
  *   package): a query that genuinely exceeded `maxTimeMS` on the server, e.g. a free-text regex

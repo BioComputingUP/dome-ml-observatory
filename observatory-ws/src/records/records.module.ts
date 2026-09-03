@@ -18,7 +18,7 @@ export class RecordsModule implements OnModuleInit {
 
   /** Warms the count cache for the default (class=positive) search at boot, so the first real
    *  page load never pays the cold ~4.4s unbounded count measured against the database server -- see
-   *  CountService and ROADMAP.md Phase 5. Runs once; failure is logged, not fatal (the
+   *  CountService. Runs once; failure is logged, not fatal (the
    *  app must still serve /api/health while the database server is unreachable -- see health.controller.ts). */
   async onModuleInit(): Promise<void> {
     const { filters } = parseSearchParams({});

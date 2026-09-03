@@ -9,8 +9,8 @@ import { RecordsService } from '../../core/records.service';
  * Hand-maintained processing-round log, following the same "corpus figures live, narrative
  * hand-written" split as about-overview.ts -- the headline date and counts below come straight
  * from GET /api/stats (never hardcoded, so they can't drift from the database), but there is no
- * runs/batches collection anywhere in this stack (see ROADMAP.md) to build the per-round
- * cards themselves from, so a new card is added by hand each time a processing round completes.
+ * runs/batches collection anywhere in this stack to build the per-round cards themselves from,
+ * so a new card is added by hand each time a processing round completes.
  */
 @Component({
   selector: 'app-about-processing',

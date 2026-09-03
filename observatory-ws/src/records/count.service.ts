@@ -11,14 +11,13 @@ export interface CountResult {
   totalRelation: 'eq' | 'gte';
 }
 
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // corpus is refreshed 6-12x/year -- see ROADMAP.md Phase 5
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // corpus is refreshed 6-12x/year -- see ROADMAP.md
 const BOUNDED_COUNT_LIMIT = 10_000;
 
 /**
  * Counting is the expensive part of a search on the database server's un-indexed Content collection -- measured
  * 2026-09-01: an unbounded countDocuments() on the default filter took 4.4s cold (192ms bounded to
- * 10k), vs. 724ms to fetch a page of results. See ROADMAP.md Phase 5 for the full
- * measurement table this design is built from.
+ * 10k), vs. 724ms to fetch a page of results.
  *
  * Strategy: empty filter -> free estimatedDocumentCount(); cache hit -> return cached; miss ->
  * try an exact count under a time budget; timeout -> fall back to a cheap bounded count reported

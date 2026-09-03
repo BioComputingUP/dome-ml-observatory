@@ -77,8 +77,8 @@ export const DEFAULT_SORT: SortOrder = 'relevance';
 export const DEFAULT_CLASSIFICATION: Classification[] = ['positive'];
 /** page * pageSize beyond this is rejected (400), not silently clamped -- see buildPagination.
  *  Deep pages exist to browse, not to reconstruct the corpus; that's what /download is for
- *  (see observatory-ui's api-docs page). Also makes Mongo's 32MB in-memory sort ceiling on
- *  the database server's un-indexed collection structurally unreachable -- see ROADMAP.md Phase 5. */
+ *  (see observatory-ui's api-docs page). Also makes Mongo's 32MB in-memory sort ceiling
+ *  structurally unreachable. */
 export const MAX_RESULT_WINDOW = 10_000;
 
 const SORTS: SortOrder[] = [
@@ -300,9 +300,9 @@ export function parseSearchParams(
 
 /**
  * Validates + clamps page/pageSize, and rejects (400) any request whose result window would
- * exceed MAX_RESULT_WINDOW -- rather than allowing it through and letting Mongo's un-indexed
- * deep sort fail with a raw 500 (see ROADMAP.md's measured `Sort operation used more
- * than the maximum 33554432 bytes of RAM` failure at skip ~9000).
+ * exceed MAX_RESULT_WINDOW -- rather than allowing it through and letting Mongo's deep sort fail
+ * with a raw 500 (measured: `Sort operation used more than the maximum 33554432 bytes of RAM`
+ * at skip ~9000).
  */
 export function buildPagination(rawPage: string | undefined, rawPageSize: string | undefined) {
   const pageNum = Number(rawPage);
@@ -440,8 +440,8 @@ function structuredClauses(filters: ParsedFilters): FilterQuery<RecordDocument>[
 
 /**
  * Reproduces observatory-ui's matchesFilters() (records.service.ts) as a Mongo filter, field for
- * field -- see ROADMAP.md Phase 5's filter translation table. `$in` against an array
- * field is Mongo's native any-element-matches semantics, which is exactly hasAnyOverlap().
+ * field. `$in` against an array field is Mongo's native any-element-matches semantics, which is
+ * exactly hasAnyOverlap().
  */
 export function buildMongoFilter(filters: ParsedFilters): FilterQuery<RecordDocument> {
   const clauses = [
@@ -631,9 +631,8 @@ function promotedRank(title: string, terms: string[]): number {
 }
 
 /**
- * `relevance` sorts by `_id` -- the only indexed field on the database server's Content collection today (see
- * ROADMAP.md). It's not a relevance ranking (there is none server-side yet), just a
- * stable, deep-pagination-safe default ordering; year and citation sorts add `_id` as a tiebreak
+ * `relevance` sorts by `_id`. It's not a relevance ranking (there is none server-side yet), just
+ * a stable, deep-pagination-safe default ordering; year and citation sorts add `_id` as a tiebreak
  * so page 2 never repeats or skips a row that shares a sort value with the page boundary.
  *
  * `citations_desc`/`citations_asc` sort on `publication_metadata.citation_count`, which is

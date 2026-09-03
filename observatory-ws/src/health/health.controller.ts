@@ -16,10 +16,9 @@ export class HealthController {
   ) {}
 
   /**
-   * Liveness probe -- the Docker HEALTHCHECK target (Phase 6). Deliberately never touches Mongo:
-   * a VPN blip taking the database server unreachable must not restart-loop this container, it should just make
-   * /api/records fail per-request while the process itself stays up. See ROADMAP.md Phase 6
-   * readiness checklist item 6 and the VPN-drop verification step.
+   * Liveness probe -- the Docker HEALTHCHECK target. Deliberately never touches Mongo: a VPN blip
+   * taking the database server unreachable must not restart-loop this container, it should just make
+   * /api/records fail per-request while the process itself stays up. Verified by the VPN-drop test.
    */
   @Get()
   @ApiOperation({ summary: 'Liveness probe. Never touches the database.' })

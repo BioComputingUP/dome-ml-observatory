@@ -4,7 +4,7 @@ import { RecordDto } from './record.dto';
 /**
  * Response shape for GET /api/records. Extends observatory-ui's SearchResult
  * (records.service.ts) additively -- `totalRelation` is a new field the existing
- * `{ items, total, page, pageSize }` consumers can simply ignore, per ROADMAP.md Phase 5.
+ * `{ items, total, page, pageSize }` consumers can simply ignore.
  */
 export class PaginatedRecordsDto {
   @ApiProperty({ type: [RecordDto] })

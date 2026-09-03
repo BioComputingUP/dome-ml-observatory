@@ -250,8 +250,8 @@ affected endpoint — several real bugs in this service were only ever caught th
 
 ## More
 
-- [`ROADMAP.md`](ROADMAP.md) — what has been built and why, what is still open, and the runbooks
-  for the recurring jobs: refreshing the corpus on the database server, and the monthly Zenodo archive.
+- [`ROADMAP.md`](ROADMAP.md) — what is still to build, and the runbooks for the recurring jobs:
+  refreshing the corpus on the database server, and the monthly Zenodo archive.
 - [`AGENTS.md`](AGENTS.md) — working conventions, and a record of the things that have gone wrong
   before. Read it before changing code, whether you are a person or an AI coding agent.
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) · [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)

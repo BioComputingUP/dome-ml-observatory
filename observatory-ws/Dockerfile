@@ -8,8 +8,8 @@
 # matching this repo's own top-level layout, so schema-version.ts's existing relative-path lookup
 # needs no code change for Docker.
 #
-# Exactly two containers in this whole project, by design -- this one and observatory-ui
-# (Phase 4). See that Dockerfile's header and ROADMAP.md Phase 4/6.
+# Exactly two containers in this whole project, by design -- this one and observatory-ui.
+# See that Dockerfile's header.
 
 # ---- Stage 1: install deps and compile TypeScript ----
 FROM node:24-alpine AS build
@@ -76,10 +76,9 @@ EXPOSE 3000
 # start-period=60s: measured live (bare process, pre-container) at 15-40s before /api/health
 # becomes reachable -- FacetsService and StatsService's OnModuleInit hooks do real Mongo work
 # (loading ~36k facet values across 4 fields, one $facet aggregation over 827k docs) serially
-# before Nest calls app.listen(). 60s leaves real margin above the measured ceiling. RE-MEASURE
-# this specific figure once actually containerised (see ROADMAP.md Phase 6 verification)
-# -- container/alpine overhead is not guaranteed identical to the bare-metal figure -- and raise
-# it further if boot time ever approaches it.
+# before Nest calls app.listen(). Measured worst case (the database server unreachable, every warm-up step
+# timing out in sequence) is ~40s containerised, so 60s leaves real margin. RE-MEASURE if any
+# more sequential boot-time warm-up is ever added, and raise it if boot approaches it.
 HEALTHCHECK --interval=10s --timeout=3s --start-period=60s --retries=3 \
   CMD node -e "const http=require('http');const p=process.env.PORT||3000;http.get('http://127.0.0.1:'+p+'/api/health',(r)=>{process.exit(r.statusCode===200?0:1)}).on('error',()=>process.exit(1))"
 
