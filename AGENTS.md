@@ -14,8 +14,9 @@ are *not* curator-reviewed; don't describe them as such). **Monorepo, two indepe
   backend only via `HttpClient` calls under `/api`, same-origin through nginx's proxy — see
   `observatory-ui/nginx.conf`.
 - **`observatory-ws/`** — NestJS backend, read-only API over the record dataset (`GET /api/health`,
-  `/api/records`, `/api/records/:pid`, `/api/stats`, `/api/facets/:field`, Swagger at
-  `/api/docs`). The only thing in this repo that ever opens a connection to Mongo.
+  `/api/records`, `/api/records/:pid`, `/api/stats`, `/api/facets/:field`, `/api/journals`,
+  `/api/journals/detail`, Swagger at `/api/docs`). The only thing in this repo that ever opens a
+  connection to Mongo.
 
 No shared `-core` package between them — overlapping types/shapes are duplicated on each side
 deliberately, not linked. **The backend is the only thing that ever talks to the database.**
@@ -109,6 +110,19 @@ host are not.
   positive, `class=` explicitly clears it) so a shared search-results URL from the frontend is a
   valid `/api/records` query string with no translation layer. If you change filter behaviour on
   one side, check whether the other needs the matching change.
+  **Multi-value filters are repeatable params (`?jrnl=A&jrnl=B`) and their values are matched
+  verbatim — never split a filter value on a delimiter.** They used to be comma-joined, which
+  silently destroyed every facet value containing a comma: `Bioinformatics (Oxford, England)`
+  (2,663 records) matched nothing, and so did most multi-part MeSH headings and several EDAM
+  domain terms we ship. `class` is the sole exception and still comma-splits — fixed literals, a
+  documented API contract, and the `class=` cleared-signal that `canUseTextIndex` depends on.
+- `observatory-ws/src/journals/journals.service.ts` — per-journal figures and year-by-year
+  trends. Runs **one aggregation over the whole collection at boot** (~24s, measured) and serves
+  every request from the resulting in-memory table with a 24h TTL, exactly like `StatsService`.
+  Needs no index and writes nothing. Don't move this to a per-request aggregation: grouping 827k
+  documents by journal-and-year on a page view is precisely what the cache exists to avoid on a
+  shared database host. Its totals cover the 770,752 records carrying a journal name, not all
+  827,061 — anything displaying them has to say so.
 - `observatory-ws/src/database/content-model.module.ts` — the **only** place the `'Content'`
   Mongoose model is registered (`records`, `facets`, `stats` modules all import this rather than
   each calling `MongooseModule.forFeatureAsync` themselves). Registering the same model name from
