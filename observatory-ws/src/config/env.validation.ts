@@ -10,6 +10,11 @@ import {
   validateSync,
 } from 'class-validator';
 
+/** Ceiling on both Mongo query budgets. These exist to stop one slow query holding a connection
+ *  open on a shared host, so an operator typo (500000 for 5000) must not silently disable them.
+ *  60s is already far beyond any measured query -- the slowest observed was ~24s. */
+const MAX_QUERY_BUDGET_MS = 60_000;
+
 /**
  * Every env var this app reads, validated once at boot. Fails fast with the offending variable
  * named, rather than a NestJS app that starts fine and only breaks on the first request that
@@ -43,11 +48,13 @@ class EnvironmentVariables {
   @IsOptional()
   @IsInt()
   @Min(100)
+  @Max(MAX_QUERY_BUDGET_MS)
   MONGO_MAX_TIME_MS?: number;
 
   @IsOptional()
   @IsInt()
   @Min(100)
+  @Max(MAX_QUERY_BUDGET_MS)
   MONGO_SEARCH_MAX_TIME_MS?: number;
 }
 

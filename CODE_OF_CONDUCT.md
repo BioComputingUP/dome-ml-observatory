@@ -1,7 +1,6 @@
 # Community Code of Conduct for DOME Observatory
 
-**DOME Observatory**, managed by the **UNIPD Biocomputing Lab** and the **ELIXIR Europe Machine
-Learning Focus Group**, is dedicated to providing a welcoming and supportive environment for all
+**DOME Observatory**, managed by the **UNIPD Biocomputing Lab**, is dedicated to providing a welcoming and supportive environment for all
 people, regardless of background or identity. We do not tolerate behaviour that is disrespectful
 to our community members or that excludes, intimidates, or causes discomfort to others.
 

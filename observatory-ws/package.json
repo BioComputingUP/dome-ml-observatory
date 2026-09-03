@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "DOME Observatory backend: read-only NestJS API over the dome_observatory.Content MongoDB collection. The only thing in this repo that ever talks to the database -- see AGENTS.md.",
   "private": true,
+  "packageManager": "npm@11.19.0",
   "engines": {
     "node": ">=24"
   },

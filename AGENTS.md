@@ -29,8 +29,9 @@ backend is the entire security boundary. This is a hosting requirement, not a st
 
 ## Environment
 
-- **`observatory-ui/`**: `.nvmrc` pins `lts/krypton` (Node 24 LTS — krypton is 24, not 22). Run
-  `nvm use` inside `observatory-ui/` before installing or building.
+- **Both apps pin Node `24.20.0`** in their own `.nvmrc`, as an explicit version rather than an
+  nvm-only alias like `lts/krypton`, so `fnm`/`asdf`/`volta` users can read it too. Run
+  `nvm install && nvm use` (or the equivalent) inside the app you're working in.
 - **`observatory-ws/`**: `.nvmrc` pins `24.20.0` (Node 24 LTS) — a separate, independent install
   from the UI's, deliberately not assumed to match it. **Mongoose is pinned to the `8.x` line
   (`mongoose@^8.19.1`, bundling MongoDB driver ~6.x) and must not be bumped to `9.x`.** Verified
@@ -40,6 +41,10 @@ backend is the entire security boundary. This is a hosting requirement, not a st
   driver `6.x` still supports it. `@nestjs/mongoose@11.x`'s own peer range (`^7.0.0 || ^8.0.0`)
   already blocks `9.x`, but don't assume a future bump is safe without re-checking this against
   the MongoDB server directly first.
+- **There are no credentials anywhere in this repository.** The database has no authentication,
+  so nothing here is a password, token or key. Real `.env` files are gitignored at any depth and
+  excluded from every Docker build context. Anything genuinely secret that CI needs later (a
+  Zenodo token, say) belongs in GitHub repository Actions secrets, never in a tracked file.
 - **`observatory-ws` is configured by environment variables only**, validated at boot
   (`src/config/env.validation.ts` — it names the bad variable and refuses to start). Seven of them,
   all documented in `.env.example`; two are easy to miss because they look like one setting:
@@ -64,7 +69,7 @@ npm run start             # observatory-ui dev server, http://localhost:4200
 npm run build-dev         # observatory-ui dev build -> observatory-ui/dist/
 npm run build-prod        # observatory-ui production build -> observatory-ui/dist/
 npm test                  # observatory-ui unit tests (Vitest)
-npm run deploy-prod-quick # build-prod, then rsync dist/ to the production host
+npm run deploy-prod-quick # build-prod, then rsync dist/ to $DEPLOY_TARGET
 
 npm run start:ws          # observatory-ws dev server w/ hot reload, http://localhost:3000
 npm run build:ws          # observatory-ws production build -> observatory-ws/dist/
@@ -77,12 +82,12 @@ inside that folder; there is no `e2e` script (protractor was removed, dead upstr
 `observatory-ws` likewise has its own `npm run lint`/`npm test`/`npm run build` runnable directly
 from inside `observatory-ws/`.
 
-`npm run deploy-prod-quick` **pushes straight to the live production server** over rsync with
-`--delete`. Never run it as a side effect of something else, on uncommitted/unreviewed changes,
-or without the user explicitly asking to deploy right now. Production deployment (Docker or
-otherwise) is ultimately owned by the hosting lab, not by ad-hoc commands run from a laptop. The
-same caution applies to anything that would touch `observatory-ws`'s production config or the MongoDB server
-in production — local dev against the MongoDB server over the VPN, read-only, is fine and expected (see
+`npm run deploy-prod-quick` **publishes straight to whatever `$DEPLOY_TARGET` points at**, over
+rsync with `--delete` and no staging step. The target is deliberately not committed — the script
+exits with a message when the variable is unset. Never run it as a side effect of something else,
+on uncommitted or unreviewed changes, or without being asked to deploy right now. The same caution
+applies to anything touching `observatory-ws`'s production config or the production database.
+Read-only local development against a real database is fine and expected (see
 `observatory-ws/.env.example`); writes, schema changes, or touching any other database on that
 host are not.
 
@@ -110,10 +115,6 @@ host are not.
   from the **private** `BioComputingUP/dome-ml-ui` repo via the GitHub contents API, needing a
   token (`$GITHUB_TOKEN` → `$GH_TOKEN` → `gh auth token`). Deliberately manual, never wired to a
   `pre*` hook — don't automate it.
-- `observatory-ui/scripts/convert_images.py` — image conversion helper (PNG→WebP, needs Python 3
-  with `Pillow`). **Currently stale**: its paths are hardcoded to `dome-ml-osai-ui`, a different
-  repo, so it does not run against this one as-is. Fix the paths before using it rather than
-  assuming it works.
 - `schema/` — the versioned record schema and its controlled vocabularies (EDAM domain tiers,
   learning paradigm, model family, model type seed). Source of truth for `observatory-ui`'s
   search filters/record model and for `observatory-ws`'s Mongoose schema. **Never hand-edit a
@@ -199,6 +200,17 @@ host are not.
   up" this pairing without re-running the VPN-down test (kill the Mongo route, confirm
   `/api/health` still returns 200 and the process doesn't die) — it's easy to write something that
   looks equivalent and isn't.
+- **The frontend loads no third-party resources, and that is enforced.** Fonts (`src/_fonts.scss`),
+  the EBI icon subset (`src/_ebi-icons.scss`) and the Creative Commons badges are all self-hosted,
+  and `observatory-ui/nginx.conf` ships a `default-src 'self'` CSP that blocks anything else. Add
+  an external stylesheet, font, image or script and it will silently fail to load in the container
+  even though it works under `ng serve` -- check a containerised page in a real browser, not just
+  the dev server. The privacy page states that no third-party resource is contacted; keep that
+  true.
+- **Angular's critical-CSS inlining is disabled on purpose** (`optimization.styles.inlineCritical:
+  false` in `angular.json`). It rewrites the stylesheet link to `media="print"
+  onload="this.media='all'"`, and that inline handler is blocked by the CSP -- leaving the page
+  styled by the inlined critical CSS alone. Don't re-enable it without a CSP that permits it.
 - This repo previously carried an OSAI-ecosystem YAML-sync feature (`ai_ecosystem` page,
   `scripts/update_yaml.py`, a matching Claude Code skill). It has been removed entirely — this
   is now a from-scratch AI/ML paper-metadata database, not a copy of the OSAI site. If you find

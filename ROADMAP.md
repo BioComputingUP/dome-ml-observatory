@@ -115,8 +115,10 @@ archives the Registry to `10.5281/zenodo.18301461`. It gets the fiddly parts rig
 on the bucket PUT (not `Content-Type: application/json`, which breaks it), stripping `doi` and
 `prereserve_doi` before `PUT`ting metadata back. Three things must change rather than be copied:
 
-- **The token is a literal in that script's source.** Here it is a `ZENODO_TOKEN` Actions secret,
-  and the script refuses to start if it is unset rather than failing mid-publish.
+- **The token is a literal in that script's source.** Here it is a `ZENODO_TOKEN` **GitHub
+  repository Actions secret**, referenced by name from the workflow and read from the environment
+  by the script, which refuses to start if unset rather than failing mid-publish. Nothing about it
+  is written to a file in this repository. Managing repository secrets needs admin — see §7.
 - **Parameterise it** — source URL, deposition ID, filenames — so one script serves both archives
   instead of being forked.
 - **Cite the concept DOI**, not the version DOI, on a page that outlives any single release.
@@ -180,6 +182,11 @@ is accurate today and must not come off before the implementation ships.
 
 **Blocked on** a real self-hosted Matomo instance and site ID, and a GA measurement ID.
 
+The site currently loads **no third-party resources at all** — fonts, icons and badges are served
+from its own origin, and `observatory-ui/nginx.conf` ships a `default-src 'self'` CSP that keeps
+it that way. Adding analytics means deliberately relaxing that policy, so treat the CSP change as
+part of the work rather than as something discovered late.
+
 **Recommendation: Matomo alone.** Self-hosted, cookieless (`disableCookies`), IP-anonymised — no
 consent banner needed under ePrivacy, so there is no banner to build, no consent state to persist
 and version, and nothing for a visitor to dismiss. Adding GA buys little and imports the whole
@@ -229,11 +236,11 @@ archive, and enabling branch protection or required status checks alongside CI.
 
 ## Deferred, tracked
 
-- **Mongoose is pinned to `8.x`.** Driver `7.x` cannot connect to the MongoDB server at all (max wire version 8
-  vs. the driver's required 9). Do not bump without re-verifying against the real server. A
-  `a newer database server` on MongoDB v8 has been offered — it would remove this and several other constraints
-  (`allowDiskUse` on `find()`, better text search) and is worth revisiting if the sort and export
-  workarounds start to bite.
+- **Mongoose is pinned to `8.x`.** Driver `7.x` cannot connect to the current database server at
+  all (max wire version 8 vs. the driver's required 9). Do not bump without re-verifying against
+  the real server. Moving the corpus to a MongoDB v8 host would remove this and several other
+  constraints (`allowDiskUse` on `find()`, better text search), and is worth revisiting if the
+  sort and export workarounds start to bite.
 - **Relevance ranking.** `sort=relevance` sorts by `_id`, and the dropdown honestly calls it
   "Default order". `positives_text` has field weights, so a real `{ $meta: 'textScore' }` ranking
   is available — but only for queries that take the index path, so the sort would be inconsistent

@@ -52,12 +52,31 @@ Publicly documented limits, enforced server-side:
 
 ## Local development
 
+### Quickstart
+
+```bash
+git clone https://github.com/BioComputingUP/dome-ml-observatory.git
+cd dome-ml-observatory
+npm run setup                # npm ci in both apps
+cp .env.example .env         # then set MONGODB_URI -- see below
+```
+
+Node 24 is required and pinned in each app's `.nvmrc` (`nvm install && nvm use`, or the
+equivalent for `fnm`/`asdf`). Each app keeps its own independent install; there is no root
+lockfile and no workspace hoisting.
+
+**You need a database.** Three options, in order of least setup:
+
+| | `MONGODB_URI` | Notes |
+|---|---|---|
+| Self-contained sample data | `mongodb://mongo:27017` | Run with `--profile offline` (below). 200 records, no network access needed. |
+| MongoDB on your own machine | `mongodb://host.docker.internal:27017` | Load your own data. `localhost` will not work from inside a container. |
+| The real corpus | the host your deployment provides | Read-only, and typically only reachable from inside its own network. |
+
 ### Frontend
 
 ```bash
 cd observatory-ui
-nvm use              # Node 24 LTS, pinned in observatory-ui/.nvmrc
-npm ci               # never `npm install` -- see AGENTS.md (toolchain pinning)
 npm run start        # dev server at http://localhost:4200
 ```
 
@@ -69,9 +88,7 @@ development is same-origin exactly like production.
 
 ```bash
 cd observatory-ws
-nvm use               # Node 24, pinned in observatory-ws/.nvmrc
-npm ci                # never `npm install` -- see AGENTS.md (Mongoose is version-pinned)
-cp .env.example .env  # fill in real values; .env is gitignored, never committed
+cp .env.example .env  # .env is gitignored and never committed
 npm run start:dev     # hot reload at http://localhost:3000
 ```
 
@@ -96,6 +113,9 @@ Two images, no others:
 **Both build from the repo root as context** — each needs `schema/`, which sits outside its own
 directory, and Docker refuses to `COPY` anything outside the build context:
 
+Requires a Compose v2 CLI (`docker compose`, space-separated). The file has no `version:` key,
+which Compose v1 misparses.
+
 ```bash
 cp .env.example .env   # first time only
 docker compose -f docker-compose-local.yml up --build
@@ -105,6 +125,24 @@ docker compose -f docker-compose-local.yml up --build
 |---|---|---|
 | `observatory-ui` | 8080 | 80 — **the only browser-facing origin** |
 | `observatory-ws` | 3000 | 3000 — host side is for `curl`ing the API directly; the browser never uses it |
+
+### Self-contained stack with sample data
+
+To run the whole service with no access to any real database — set
+`MONGODB_URI=mongodb://mongo:27017` in `.env`, then:
+
+```bash
+docker compose -f docker-compose-local.yml --profile offline up --build
+```
+
+This adds a throwaway MongoDB, seeds it from the tracked 200-record fixture
+(`observatory-ui/fixtures/sample-records.json`) and creates the same two indexes the real
+collection carries. The backend waits for the seed to finish before starting, because it warms
+its caches once at boot and holds them for 24 h.
+
+It is a demo dataset, not a mirror of production, and it is ephemeral: `down` discards it and the
+next `up` reseeds. The image defaults to `mongo:7` for multi-architecture support; production
+runs MongoDB 4.2, so this is not a version-parity environment. Override with `MONGO_IMAGE`.
 
 ### Coupled settings
 
@@ -147,8 +185,25 @@ shape is `npm run build-prod` plus serving `observatory-ui/dist/` as static file
 server that provides the SPA fallback and the `/api` proxy — [`observatory-ui/nginx.conf`](observatory-ui/nginx.conf)
 is a working reference for that configuration.
 
-`npm run deploy-prod-quick` builds the frontend and rsyncs `dist/` to a configured host with
-`--delete`. It publishes immediately and has no staging step; run it only as a deliberate deploy.
+`npm run deploy-prod-quick` builds the frontend and rsyncs `dist/` to `$DEPLOY_TARGET` with
+`--delete`. The target is not committed — set it in your environment:
+
+```bash
+DEPLOY_TARGET=user@host:/var/www/dome-ml-observatory/dist/ npm run deploy-prod-quick
+```
+
+Without it the script exits before building. It publishes immediately and has no staging step;
+run it only as a deliberate deploy.
+
+**What a production Compose file changes** relative to
+[`docker-compose-local.yml`](docker-compose-local.yml), which is otherwise a working starting
+point:
+
+- Do not publish the backend port. Only the frontend needs to be reachable; the backend is
+  reached over the internal network by service name.
+- Set `MONGODB_URI` and `FRONTEND_URL` to real values.
+- Set a restart policy appropriate to the host's orchestration.
+- Do not enable the `offline` profile — it exists for local development only.
 
 ### Decisions the deployment makes
 
@@ -171,11 +226,32 @@ The repository is neutral on all of these, and none of them require code changes
 - Because it is same-origin, **CORS is never exercised** in either shape. `FRONTEND_URL` only
   matters for a split-host deployment or for `ng serve` without the dev proxy. Never set it to `*`.
 - The backend binds `0.0.0.0` and expects to sit behind a proxy forwarding `X-Forwarded-For`; it
-  sets `trust proxy` so the rate limiter keys on the real client IP rather than the proxy's.
+  sets `trust proxy` to **1**, meaning exactly one proxy hop. If you put another reverse proxy in
+  front of the frontend container, raise that value to match the real hop count — otherwise a
+  client can spoof `X-Forwarded-For` and evade the rate limit.
+- The frontend container sets the site's security headers, including its Content Security Policy
+  (see [`observatory-ui/nginx.conf`](observatory-ui/nginx.conf)). It listens on plain HTTP, so
+  `Strict-Transport-Security` is left to whatever terminates TLS in front of it.
 - For a split-host deployment, replace `nginx.conf`'s `$backend` value using nginx:alpine's envsubst
   templating (`/etc/nginx/templates/*.template`) rather than hand-editing the file per environment.
 - nginx's `resolver_timeout` is set to 5 s so an unreachable backend fails fast instead of hanging a
   client request for nginx's 30 s default.
+
+### Secrets and configuration
+
+The service has **no credentials**. Every setting is one of the seven environment variables
+below; none is a password, token or key, and none reaches the browser — the SPA has no build-time
+configuration and issues only relative-URL requests.
+
+- The real `.env` is **never committed**. `.gitignore` matches `.env` at any depth, and
+  `.dockerignore` excludes it from every build context, so it cannot reach an image layer either.
+- `.env.example` documents every variable with placeholder values and is the file to keep
+  up to date.
+- The only genuinely sensitive value is whatever host `MONGODB_URI` points at, when that host is
+  not publicly reachable. Share it out of band, not through this repository.
+- Anything CI needs later — for example a Zenodo API token for the planned archive workflow —
+  belongs in **GitHub repository Actions secrets**, referenced by name from the workflow and
+  never written to a file in the repository.
 
 ### Environment variables
 
@@ -242,8 +318,8 @@ There is no CI yet (see [`ROADMAP.md`](ROADMAP.md)). The local gates are the onl
 ones for whichever app you touched:
 
 ```bash
-npm test          && npm run lint      && npm run build-prod   # observatory-ui
-npm run test:ws   && npm run lint:ws   && npm run build:ws     # observatory-ws
+npm test        && npm run lint     && npm run build-prod   # observatory-ui
+npm run test:ws && npm run lint:ws  && npm run build:ws     # observatory-ws
 ```
 
 For backend changes touching database queries, also run the service against the real database and

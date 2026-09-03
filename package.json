@@ -4,6 +4,8 @@
   "private": true,
   "description": "DOME Observatory monorepo: observatory-ui (Angular) + observatory-ws (NestJS). Each app manages its own independent install -- no shared '-core' package, no npm-workspaces hoisting.",
   "scripts": {
+    "setup": "npm ci --prefix observatory-ui && npm ci --prefix observatory-ws",
+    "lint": "npm run lint --prefix observatory-ui",
     "start": "npm run start --prefix observatory-ui",
     "build-dev": "npm run build-dev --prefix observatory-ui",
     "build-prod": "npm run build-prod --prefix observatory-ui",

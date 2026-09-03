@@ -30,7 +30,18 @@ async function bootstrap(): Promise<void> {
   // guard keys on req.ip, which only reads X-Forwarded-For once Express is told to trust it.
   app.set('trust proxy', 1);
 
-  app.enableCors({ origin: config.get('frontendUrl', { infer: true }) });
+  // FRONTEND_URL is optional and defaults to the dev origin, so a deployment that forgets it
+  // boots clean and silently trusts localhost as its CORS origin. Harmless in the shipped
+  // topology (nginx proxies /api/ same-origin, so CORS is never consulted) but wrong for a
+  // split-host deployment -- say so loudly at boot rather than letting it pass unnoticed.
+  const frontendUrl = config.get('frontendUrl', { infer: true });
+  if (process.env.NODE_ENV === 'production' && frontendUrl.includes('localhost')) {
+    logger.warn(
+      `FRONTEND_URL is "${frontendUrl}" in a production build -- set it to the real public ` +
+        `origin. This only matters if the frontend is served from a different origin than /api.`,
+    );
+  }
+  app.enableCors({ origin: frontendUrl });
 
   // whitelist: true strips any query param that isn't declared on a DTO -- an unrecognised param
   // must never silently become a Mongo filter. transform: true lets Nest coerce query strings

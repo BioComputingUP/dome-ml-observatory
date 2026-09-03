@@ -28,7 +28,11 @@ export class FacetsController {
   })
   @ApiOkResponse({ type: [String] })
   search(@Param('field') field: string, @Query() query: FacetSearchDto): string[] {
-    const limit = query.limit !== undefined ? Number(query.limit) : undefined;
+    // Number('abc') is NaN, which propagates through the service's Math.min/max clamp and makes
+    // slice(0, NaN) return an empty list -- a malformed limit should fall back to the default,
+    // not silently yield no suggestions.
+    const parsed = query.limit !== undefined ? Number(query.limit) : undefined;
+    const limit = parsed !== undefined && Number.isFinite(parsed) ? parsed : undefined;
     return this.facetsService.search(field, query.q, limit);
   }
 }

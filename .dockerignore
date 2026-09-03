@@ -17,7 +17,10 @@
 *.swp
 .DS_Store
 
-# Env/secrets -- never belongs in an image layer
-.env
-.env.local
-*.env
+# Env/secrets -- never belongs in an image layer. The `**/` prefix is load-bearing: Docker
+# matches these with filepath.Match, not gitignore semantics, so a bare `.env` matches only the
+# context root and would NOT exclude observatory-ws/.env -- which every developer is told to
+# create, and which `COPY observatory-ws/ ...` would then pull into a build layer.
+**/.env
+**/.env.*
+!**/.env.example

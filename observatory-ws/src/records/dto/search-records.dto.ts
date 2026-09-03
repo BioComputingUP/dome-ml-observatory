@@ -1,6 +1,15 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsIn, IsOptional, IsString } from 'class-validator';
+import { ArrayMaxSize, IsIn, IsOptional, IsString, MaxLength } from 'class-validator';
+
+/** Nothing in a real search is longer than this. Without a cap, one request can build an
+ *  arbitrarily long regex and make the server do arbitrarily much work for it -- nginx's own URL
+ *  limits bound it in the shipped topology, but the API should not depend on what fronts it. */
+const MAX_PARAM_LENGTH = 200;
+
+/** Ceiling on values in one repeatable filter (?jrnl=A&jrnl=B&...), which become a Mongo $in.
+ *  Well above any real facet selection; the journal facet UI caps far lower. */
+const MAX_LIST_VALUES = 50;
 
 /**
  * Deliberately thin: every field is left as an optional raw string (or absent) and handed
@@ -35,13 +44,18 @@ function RepeatableParam(description: string) {
       value === undefined ? undefined : Array.isArray(value) ? value : [value],
     )(target, propertyKey);
     IsString({ each: true })(target, propertyKey);
+    ArrayMaxSize(MAX_LIST_VALUES)(target, propertyKey);
+    MaxLength(MAX_PARAM_LENGTH, { each: true })(target, propertyKey);
   };
 }
 
 export class SearchRecordsDto {
-  @ApiPropertyOptional({ description: 'Free text over title and abstract.' })
+  @ApiPropertyOptional({
+    description: `Free text over title, abstract and authors. Maximum ${MAX_PARAM_LENGTH} characters.`,
+  })
   @IsOptional()
   @IsString()
+  @MaxLength(MAX_PARAM_LENGTH)
   q?: string;
 
   @ApiPropertyOptional({

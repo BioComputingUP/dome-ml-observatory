@@ -36,7 +36,8 @@
               {
                 "glob": "**/*",
                 "input": "src/assets",
-                "output": "assets"
+                "output": "assets",
+                "ignore": ["fonts/**"]
               }
             ],
             "styles": ["src/styles.scss"]
@@ -55,7 +56,16 @@
                   "maximumError": "50kb"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "optimization": {
+                "scripts": true,
+                "fonts": true,
+                "styles": {
+                  "minify": true,
+                  "removeSpecialComments": true,
+                  "inlineCritical": false
+                }
+              }
             },
             "development": {
               "optimization": false,

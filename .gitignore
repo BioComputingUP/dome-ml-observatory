@@ -47,6 +47,14 @@ typings/
 .DS_Store
 Thumbs.db
 
+# Credential material -- none of this exists today; these are guards, not fixes.
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+.npmrc
+
 # 2026-08-28: env config -- real Mongo connection string once confirmed. .env.example (committed,
 # placeholder values only) documents what's needed; actual .env never is. Unanchored so this
 # covers observatory-ws/.env (node_modules/ above already covers observatory-ws/node_modules/).

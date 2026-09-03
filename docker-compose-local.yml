@@ -12,7 +12,6 @@
 
 services:
   observatory-ws:
-    container_name: observatory-ws
     build:
       context: .
       dockerfile: observatory-ws/Dockerfile
@@ -21,6 +20,20 @@ services:
     # user-defined network below. Renaming this service breaks the frontend silently.
     env_file:
       - .env
+    # Lets MONGODB_URI point at a MongoDB running on the host machine
+    # (mongodb://host.docker.internal:27017). Without this, "localhost" inside the container is
+    # the container itself, which fails silently on Linux while appearing to work on macOS.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # Only meaningful under `--profile offline`; `required: false` makes Compose ignore it when
+    # mongo-seed isn't part of the run. It has to be here rather than optional, because the
+    # backend warms its count/stats caches once at boot and holds them for 24h -- start it before
+    # the seed finishes and it caches "0 records" and serves that all day. The same reason a real
+    # data refresh needs a backend restart (see ROADMAP.md).
+    depends_on:
+      mongo-seed:
+        condition: service_completed_successfully
+        required: false
     ports:
       # HOST:CONTAINER. Container side must stay 3000 -- fixed both here and by PORT in .env
       # (read by observatory-ws/src/config/configuration.ts -> main.ts's app.listen), which
@@ -39,7 +52,6 @@ services:
       - observatory
 
   observatory-ui:
-    container_name: observatory-ui
     build:
       context: .
       dockerfile: observatory-ui/Dockerfile
@@ -56,6 +68,39 @@ services:
     depends_on:
       - observatory-ws
     restart: unless-stopped
+    networks:
+      - observatory
+
+  # ---- offline profile: a self-contained stack with sample data -----------------------------
+  # Started only with `--profile offline`. Gives the backend something to read when no real
+  # database is reachable, so this repository can be built, run and demonstrated on any machine.
+  # A 200-record demo dataset, not a mirror of production, and deliberately ephemeral -- no
+  # volume, so `down` discards it and the next `up` reseeds from the tracked fixture.
+  mongo:
+    profiles: ["offline"]
+    # Production runs MongoDB 4.2, which has no arm64 image; this defaults to a version that
+    # works on every machine. Set MONGO_IMAGE if you need closer parity with production.
+    image: ${MONGO_IMAGE:-mongo:7}
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    networks:
+      - observatory
+
+  mongo-seed:
+    profiles: ["offline"]
+    image: ${MONGO_IMAGE:-mongo:7}
+    depends_on:
+      mongo:
+        condition: service_healthy
+    volumes:
+      - ./docker/mongo-seed/seed.sh:/seed/seed.sh:ro
+      - ./observatory-ui/fixtures/sample-records.json:/seed/sample-records.json:ro
+    entrypoint: ["bash", "/seed/seed.sh"]
+    restart: "no"
     networks:
       - observatory
 

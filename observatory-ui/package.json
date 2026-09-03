@@ -9,7 +9,7 @@
     "prebuild-dev": "node scripts/sync-schema.js",
     "build-prod": "ng build",
     "prebuild-prod": "node scripts/sync-schema.js",
-    "deploy-prod-quick": "(colC='\\033[0;36m';colN='\\033[0m'; echo ${colC}Running npm build-prod ...${colN} && npm run build-prod && echo ${colC}Rsyncing dist ...${colN} && rsync -avh --delete dist/* REDACTED-DEPLOY-TARGET:/var/www/dome-ml-observatory/dist/ && echo ${colC}Done with deploy-prod-quick!${colC})",
+    "deploy-prod-quick": "sh scripts/deploy-prod-quick.sh",
     "test": "ng test",
     "pretest": "node scripts/sync-schema.js",
     "lint": "ng lint",
@@ -17,6 +17,9 @@
     "sync-news": "python3 scripts/sync_news.py"
   },
   "private": true,
+  "engines": {
+    "node": ">=24"
+  },
   "packageManager": "npm@11.19.0",
   "dependencies": {
     "@angular/common": "^22.1.0",
