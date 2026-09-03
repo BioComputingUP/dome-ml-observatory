@@ -193,24 +193,166 @@ export interface AuthorName {
 }
 
 /**
- * Recognises the "surname + initials" form the corpus stores authors in ("Farrell G", "Farrell G.",
- * "Farrell, G", "Tosatto SCE") -- the exact format the search page's own hint tells users to type.
+ * Which spelling of a name the user typed:
+ *  - `pubmed`  "Farrell G", "farrell g", "Farrell, G.", "Tosatto SCE", "van der Berg J"
+ *  - `leading` "G Farrell", "g farrell", "S.C.E. Tosatto"  (initials FIRST)
+ *  - `given`   "Gavin Farrell", "Farrell Gavin", "sce tosatto"  (no explicit initials at all)
  *
- * The initials must be UPPERCASE in the raw input. That is what keeps ordinary two-word topical
- * queries out: "random forest" and "single cell" are not author names, and treating them as one
- * would spend a whole extra collection scan proving it. Lowercase "farrell g" simply falls through
- * to the ordinary term path, which still finds the surname.
- *
- * A false positive here is cheap but not free: this only ever drives the promotion tier (see
- * buildPromotedFilter), never what a search matches, so a wrong guess costs one scan and changes
- * no results.
+ * The shape decides routing, not just labelling: only `pubmed` may put a quoted phrase straight
+ * into the main `$text` query, because only there is the leading token certainly a surname. See
+ * buildAuthorProbeFilter for why `leading` gets its own probe instead.
  */
-const AUTHOR_QUERY_RE = /^(\p{L}[\p{L}'\u2019-]+)\s*,?\s+([A-Z]{1,4})\.?$/u;
+export type AuthorShape = 'pubmed' | 'leading' | 'given';
 
+export interface AuthorInterpretation extends AuthorName {
+  shape: AuthorShape;
+}
+
+/** A token that could be part of a personal name: letters, plus the apostrophes, hyphens and dots
+ *  real names and initials carry ("O'Brien", "García-Martínez", "S.C.E"). Anything else -- a digit,
+ *  a "+", a bare symbol -- means this is not a name, which is what keeps "covid 19" and "C++" out. */
+const AUTHOR_TOKEN_RE = /^\p{L}[\p{L}'.-]*$/u;
+
+/** Initials, as written when they are unmistakably initials: "G", "SCE", "AGB", "LEE", and the
+ *  particle forms Europe PMC really carries ("RdJ", "MdC"). Deliberately case-sensitive for the
+ *  multi-letter case -- "Yu", "Li" and "Ke" are surnames, not initials -- and matched on \p{Lu} so
+ *  a caseless script is never mistaken for capitals. */
+const INITIALS_RE = /^\p{Lu}(?:\p{Ll}?\p{Lu}){0,3}$/u;
+
+/** Names never run this long as a query, and each extra token multiplies the interpretations. */
+const MAX_AUTHOR_TOKENS = 4;
+
+function nameLetters(token: string): string {
+  return token.replace(/[^\p{L}]/gu, '');
+}
+
+/**
+ * Splits a query into name tokens, or undefined when it cannot be a name at all.
+ *
+ * Deliberately NOT searchTerms(): that drops single-character tokens, which are exactly the
+ * initials this has to see. Commas are separators here ("Farrell, G" and "Farrell,G" are the same
+ * name), trailing dots are stripped per token, and a curly apostrophe is folded to a straight one
+ * so it matches what the corpus stores.
+ */
+function authorTokens(q: string): string[] | undefined {
+  let text = q.trim().replace(/’/g, "'");
+  const quoted = /^"([^"]+)"$/.exec(text);
+  if (quoted) text = quoted[1].trim();
+  else if (text.includes('"')) return undefined; // a mixed quoted query is a phrase search, not a name
+
+  const tokens = text
+    .split(/[\s,]+/)
+    .filter(Boolean)
+    .map((token) => token.replace(/\.+$/, ''));
+
+  if (tokens.length < 2 || tokens.length > MAX_AUTHOR_TOKENS) return undefined;
+  if (!tokens.every((token) => AUTHOR_TOKEN_RE.test(token))) return undefined;
+  return tokens;
+}
+
+/** A lone letter is never a name, a dotted token is always initials, and anything longer has to
+ *  look like capitals to qualify. */
+function isInitialsShaped(token: string): boolean {
+  const letters = nameLetters(token);
+  if (letters.length === 0 || letters.length > 4) return false;
+  if (letters.length === 1) return true;
+  if (token.includes('.')) return true;
+  return INITIALS_RE.test(letters);
+}
+
+/** Initials that cannot also be read as a word. "G" and "S.C.E" qualify; "SCE" and "DNA" do not --
+ *  an all-caps token at the FRONT of a query is far more often an acronym ("DNA methylation",
+ *  "RNA seq") than someone's initials, and reading it as a name would hijack the query. */
+function isUnambiguousInitials(token: string): boolean {
+  return isInitialsShaped(token) && (nameLetters(token).length === 1 || token.includes('.'));
+}
+
+function isNameLike(token: string): boolean {
+  return !token.includes('.') && nameLetters(token).length >= 2;
+}
+
+/** A name token contributes its first letter; an initials token contributes all of them. */
+function initialsOf(token: string): string {
+  const letters = nameLetters(token);
+  return (isInitialsShaped(token) ? letters : letters.slice(0, 1)).toUpperCase();
+}
+
+/**
+ * Every way the query could name an author, most-certain first.
+ *
+ * The corpus stores authors one way only -- surname then initials, "Liang L, He M" -- but people
+ * type names every other way: lowercase, initials first, dotted, comma'd, or with the full given
+ * name that is nowhere in the data. Each interpretation is a surname+initials pair to look for, and
+ * authorClause turns it into a match against the stored form. Ordinary topical queries produce
+ * `given` interpretations too ("random forest" -> "Forest R", "Random F"); that is intended and
+ * cheap, because those clauses are OR'd alongside the normal term matching rather than replacing it
+ * -- a query only ever gains the handful of papers actually written by someone of that name.
+ */
+export function authorInterpretations(q: string): AuthorInterpretation[] {
+  const tokens = authorTokens(q);
+  if (!tokens) return [];
+
+  const found: AuthorInterpretation[] = [];
+  const seen = new Set<string>();
+  const add = (surname: string, initials: string, shape: AuthorShape): void => {
+    if (!surname || !initials) return;
+    const key = `${surname.toLowerCase()}|${initials.toUpperCase()}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    found.push({ surname, initials, shape });
+  };
+  const joinInitials = (parts: string[]): string =>
+    parts.map(nameLetters).join('').toUpperCase().slice(0, 8);
+
+  // "van der Berg J" -- the longest run of trailing initials, everything before it the surname.
+  // Every remaining token must be name-like, which is what keeps a two-author paste
+  // ("Farrell G Attafi O") from parsing as one absurd surname.
+  let surnameEnd = tokens.length;
+  while (surnameEnd > 1 && isInitialsShaped(tokens[surnameEnd - 1])) surnameEnd--;
+  if (surnameEnd < tokens.length && tokens.slice(0, surnameEnd).every(isNameLike)) {
+    add(tokens.slice(0, surnameEnd).join(' '), joinInitials(tokens.slice(surnameEnd)), 'pubmed');
+    return found;
+  }
+
+  // "G Farrell" -- the mirror image. Only unambiguous initials lead, so "DNA methylation" is not
+  // read as a person.
+  let surnameStart = 0;
+  while (surnameStart < tokens.length - 1 && isUnambiguousInitials(tokens[surnameStart])) {
+    surnameStart++;
+  }
+  if (surnameStart > 0 && tokens.slice(surnameStart).every(isNameLike)) {
+    add(
+      tokens.slice(surnameStart).join(' '),
+      joinInitials(tokens.slice(0, surnameStart)),
+      'leading',
+    );
+    return found;
+  }
+
+  // "Gavin Farrell" / "Farrell Gavin" -- no initials anywhere, so both orders are plausible and
+  // both are tried. Only the FIRST given name's initial is used: records routinely carry "Tosatto
+  // S" for an author whose full name has a middle name, and authorClause lets initials extend, so
+  // the shorter form finds "Tosatto S", "Tosatto SC" and "Tosatto SCE" alike.
+  if (tokens.length <= 3 && tokens.every(isNameLike)) {
+    add(tokens[tokens.length - 1], initialsOf(tokens[0]), 'given');
+    if (tokens.length === 3) add(tokens.slice(1).join(' '), initialsOf(tokens[0]), 'given');
+    if (tokens.length === 2) add(tokens[0], initialsOf(tokens[1]), 'given');
+  }
+  return found;
+}
+
+/**
+ * The "surname then initials" reading of a query, the one shape whose leading token is certainly a
+ * surname -- so the only one that may become a `$text` phrase in the main query (see
+ * buildTextSearch) and skip the single-bare-term guard.
+ */
 export function parseAuthorName(q: string): AuthorName | undefined {
-  const match = AUTHOR_QUERY_RE.exec(q.trim());
-  if (!match) return undefined;
-  return { surname: match[1], initials: match[2] };
+  return authorInterpretations(q).find((name) => name.shape === 'pubmed');
+}
+
+/** The "initials then surname" reading ("G Farrell"). Drives the probe query, never the main one. */
+export function leadingInitialsName(q: string): AuthorName | undefined {
+  return authorInterpretations(q).find((name) => name.shape === 'leading');
 }
 
 /**
@@ -218,9 +360,14 @@ export function parseAuthorName(q: string): AuthorName | undefined {
  * ("Liang L, Liang H, He M, Zhang H, Ke P."). Anchored on a comma or the string edge at both ends
  * so "Farrell G" cannot match inside another name, and allowing the initials to extend
  * ("Farrell G" also matches "Farrell GP") the way PubMed's author search does.
+ *
+ * The surname's own spaces become `\s+` rather than literal spaces so a multi-part surname
+ * ("van der Berg J") survives any spacing, and the initials may extend through a hyphen because
+ * Europe PMC writes some Korean and Chinese names that way ("Lee J-H").
  */
 export function authorClause(name: AuthorName): FilterQuery<RecordDocument> {
-  const pattern = `(^|,\\s*)${escapeRegex(name.surname)}\\s+${escapeRegex(name.initials)}[A-Za-z]*\\.?\\s*(,|\\.?$)`;
+  const surname = name.surname.trim().split(/\s+/).map(escapeRegex).join('\\s+');
+  const pattern = `(^\\s*|,\\s*)${surname}\\s+${escapeRegex(name.initials)}[A-Za-z-]*\\.?\\s*(,|\\.?$)`;
   return { 'publication_metadata.authors': { $regex: pattern, $options: 'i' } };
 }
 
@@ -354,23 +501,69 @@ function classificationClauses(filters: ParsedFilters): FilterQuery<RecordDocume
   ];
 }
 
+/** One term, matched anywhere it could sensibly appear. */
+function termClause(term: string): FilterQuery<RecordDocument> {
+  const pattern = termPattern(term);
+  return {
+    $or: [
+      { [TITLE]: { $regex: pattern, $options: 'i' } },
+      { [ABSTRACT]: { $regex: pattern, $options: 'i' } },
+      { [AUTHORS]: { $regex: pattern, $options: 'i' } },
+    ],
+  };
+}
+
 /**
  * AND-of-terms, not one literal phrase: a user typing "random forest sepsis" means all three words,
  * in any order, not that exact substring -- which appears in zero documents and used to force a
  * full 827k-document scan to prove it (measured: 5.1s, then a false-positive 503 for what was
  * actually a healthy, just-slow query). Matches across title, abstract AND author.
+ *
+ * When the query could also be somebody's name, the author readings are OR'd alongside that AND
+ * rather than replacing it. That is the one thing making "Gavin Farrell" work at all: no given name
+ * is stored anywhere in the corpus, so the term AND can never match, and only the reconstructed
+ * "Farrell G" clause can. It is equally load-bearing for dotted initials -- "S.C.E. Tosatto" keeps
+ * the five-character term "S.C.E", which appears in no document. For a query already in the stored
+ * form ("Farrell G") the extra clause is a subset of what the terms match anyway, so results are
+ * unchanged; for an ordinary topical query it adds only the handful of papers written by someone
+ * actually named that.
  */
 function freeTextClauses(filters: ParsedFilters): FilterQuery<RecordDocument>[] {
   if (!filters.q) return [];
-  return searchTerms(filters.q).map((term) => {
-    const pattern = termPattern(term);
-    return {
-      $or: [
-        { [TITLE]: { $regex: pattern, $options: 'i' } },
-        { [ABSTRACT]: { $regex: pattern, $options: 'i' } },
-        { [AUTHORS]: { $regex: pattern, $options: 'i' } },
-      ],
-    };
+  const terms = searchTerms(filters.q);
+  const clauses = terms.map(termClause);
+  const authors = authorInterpretations(filters.q)
+    .filter((name) => !impliedByTerms(name, terms))
+    .map(authorClause);
+
+  if (!authors.length) return clauses;
+  if (!clauses.length) return [{ $or: authors }];
+  return [{ $or: [{ $and: clauses }, ...authors] }];
+}
+
+/**
+ * True when the term AND already matches everything this author clause could -- so adding it would
+ * cost a second regex per document and find nothing new.
+ *
+ * That is the case whenever every search term is part of the name itself: "farrell g" searches for
+ * `\bfarrell` and looks for the author "farrell G", and any document with that author necessarily
+ * contains that term. Skipping it matters, not just tidiness -- measured against the live corpus
+ * with the classification filter cleared, carrying the redundant clause pushed the count for
+ * "farrell g" past its 5s budget, degrading an exact 334 into "10,000+".
+ *
+ * A given-name query is the opposite case and keeps its clause: "Gavin Farrell" ANDs a term that
+ * appears in no document at all, so only the reconstructed "Farrell G" clause can match anything.
+ * That one does still cost a scan when the classification filter is cleared -- measured live, the
+ * count for "Gavin Farrell" with `class=` exceeds its 5s budget and CountService reports "10,000+"
+ * rather than an exact number. The page itself is correct and fast, and the alternative is what
+ * this query used to do, which was return zero results.
+ */
+function impliedByTerms(name: AuthorName, terms: string[]): boolean {
+  const words = new Set(name.surname.toLowerCase().split(/\s+/));
+  const initials = name.initials.toLowerCase();
+  return terms.every((term) => {
+    const lower = term.toLowerCase();
+    return words.has(lower) || initials.includes(lower);
   });
 }
 
@@ -507,8 +700,10 @@ export function canUseTextIndex(filters: ParsedFilters): boolean {
 export function buildTextSearch(q: string): string {
   const author = parseAuthorName(q);
   if (author) return `"${author.surname} ${author.initials}"`;
-  // Every term goes in bare -- a quoted phrase included, see above.
-  return tokenizeQuery(q).join(' ');
+  // Every term goes in bare -- a quoted phrase included, see above. A lone letter is dropped: it
+  // stems to nothing useful and only widens the candidate set the regexes then have to filter.
+  const terms = tokenizeQuery(q).filter((term) => term.replace(/[^\p{L}\p{N}]/gu, '').length >= 2);
+  return (terms.length ? terms : tokenizeQuery(q)).join(' ');
 }
 
 /**
@@ -526,6 +721,41 @@ export function buildTextSearchFilter(filters: ParsedFilters): FilterQuery<Recor
   const base = buildMongoFilter(filters) as { $and?: FilterQuery<RecordDocument>[] };
   if (!base.$and) return null;
   return { $and: [...base.$and, { $text: { $search: buildTextSearch(filters.q as string) } }] };
+}
+
+/**
+ * The one-shot probe for an initials-first query ("G Farrell", "S.C.E. Tosatto"), or null when the
+ * query is not that shape.
+ *
+ * These cannot go through buildTextSearchFilter the way "Farrell G" does. A `$text` phrase is a
+ * case-folded substring test, and the leading token of a query like "T cell" or "X ray" is a single
+ * letter that is not an initial at all -- the phrase `"cell T"` would quietly match "cell types"
+ * and "cell therapy" and return a wrong, non-empty subset, which shouldFallBackFromText (zero only)
+ * would never rescue.
+ *
+ * So the probe asks the narrower question instead: its base is the AUTHOR clause alone, with no
+ * title or abstract branch. A correct guess returns that author's papers off the index in one round
+ * trip; a wrong guess returns exactly zero and the caller falls through to the ordinary routing
+ * with nothing changed. The cost of being wrong is one indexed query, not a wrong answer.
+ *
+ * Gated on positives-only for the same non-negotiable reason every other `$text` query here is:
+ * `positives_text` is a partial index and MongoDB 4.2 rejects a `$text` query that omits its filter
+ * predicate outright, so a cleared `class=` has to stay off this path entirely.
+ */
+export function buildAuthorProbeFilter(filters: ParsedFilters): FilterQuery<RecordDocument> | null {
+  if (!filters.q) return null;
+  if (filters.classification.length !== 1 || filters.classification[0] !== 'positive') return null;
+  const name = leadingInitialsName(filters.q);
+  if (!name) return null;
+
+  return {
+    $and: [
+      ...classificationClauses(filters),
+      authorClause(name),
+      ...structuredClauses(filters),
+      { $text: { $search: `"${name.surname} ${name.initials}"` } },
+    ],
+  };
 }
 
 /**
@@ -583,17 +813,25 @@ export function shouldFallBackFromText(_filters: ParsedFilters, total: number): 
 export function buildPromotedFilter(filters: ParsedFilters): FilterQuery<RecordDocument> | null {
   if (!filters.q) return null;
 
-  const author = parseAuthorName(filters.q);
-  const promoted: FilterQuery<RecordDocument>[] = author
-    ? [authorClause(author)]
-    : searchTerms(filters.q).map((term) => ({
-        [TITLE]: { $regex: termPattern(term), $options: 'i' },
-      }));
+  const names = authorInterpretations(filters.q);
+  const definite = names.some((name) => name.shape !== 'given');
+  const titleClauses = searchTerms(filters.q).map((term) => ({
+    [TITLE]: { $regex: termPattern(term), $options: 'i' },
+  }));
+
+  // A query that spells out initials ("Farrell G", "G Farrell") is unambiguously about a person, so
+  // only that person's papers are promoted -- putting title mentions of the surname in the same
+  // tier would let them crowd out the real hits inside PROMOTE_CAP, and a single-term query has no
+  // phrase ordering left for rankPromoted to separate them by.
+  const promoted: FilterQuery<RecordDocument>[] = definite
+    ? names.map(authorClause)
+    : [...(titleClauses.length ? [{ $and: titleClauses }] : []), ...names.map(authorClause)];
 
   if (!promoted.length) return null;
+  const tier = promoted.length === 1 ? promoted : [{ $or: promoted }];
 
   return {
-    $and: [...classificationClauses(filters), ...promoted, ...structuredClauses(filters)],
+    $and: [...classificationClauses(filters), ...tier, ...structuredClauses(filters)],
   };
 }
 
@@ -644,12 +882,12 @@ function promotedRank(title: string, terms: string[]): number {
  * a stable, deep-pagination-safe default ordering; year and citation sorts add `_id` as a tiebreak
  * so page 2 never repeats or skips a row that shares a sort value with the page boundary.
  *
- * `citations_desc`/`citations_asc` sort on `publication_metadata.citation_count`, which is
- * `null` for every record in the corpus today (schema v1.1.0: a forward-compatible placeholder,
- * never populated upstream -- see record.model.ts). Wired now so the option works the moment that
- * field is populated in a future data update, without needing a second code change then; until
- * then every document ties on `null` and the `_id` tiebreak makes the result identical to
- * `relevance`.
+ * `citations_desc`/`citations_asc` sort on `publication_metadata.citation_count`, a real Europe PMC
+ * figure on ~98% of the corpus since the 2026-09-03 load. The remainder is `null`, meaning "not
+ * available" rather than zero; BSON orders null below every number, so those records sort to the
+ * bottom of `citations_desc` and the top of `citations_asc`, and the `_id` tiebreak keeps paging
+ * stable across the ties. The field is not indexed, so a deep citation sort is slow -- measure
+ * before adding an index for it.
  */
 export function buildSortSpec(sort: SortOrder): Record<string, 1 | -1> {
   if (sort === 'year_desc') return { 'publication_metadata.year': -1, _id: 1 };

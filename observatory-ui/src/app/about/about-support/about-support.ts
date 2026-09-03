@@ -14,9 +14,9 @@ const ISSUES = 'https://github.com/BioComputingUP/dome-ml-observatory/issues';
  * The one page that answers "how do I get help, and who reads it".
  *
  * Two halves, deliberately: the support channels themselves, and an FAQ covering the behaviours
- * that surprise people. The FAQ is not decoration -- search here is genuinely non-obvious (authors
- * indexed as surname plus initials, the default search space being the positives rather than the
- * whole corpus) and nothing else on the site explains it, so a reader who does not find this page
+ * that surprise people. The FAQ is not decoration -- search here is genuinely non-obvious (the
+ * default search space is the positives rather than the whole corpus, a lone word deliberately
+ * skips the index) and nothing else on the site explains it, so a reader who does not find this page
  * concludes the search is broken rather than that it works differently than they assumed.
  *
  * Corpus figures come from GET /api/stats, never hardcoded -- the same split about-overview.ts and

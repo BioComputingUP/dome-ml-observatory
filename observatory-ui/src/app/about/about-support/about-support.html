@@ -143,14 +143,21 @@
     <h3 class="faq-group">Searching and browsing</h3>
 
     <details class="faq-item" id="faq-author-names" open>
-      <summary>Why won't an author's full name find their papers?</summary>
+      <summary>How do I search for an author?</summary>
       <p>
-        Authors are stored the way the source literature databases store them: surname plus
-        initials, as in <code>Tosatto SCE</code>, so a full first name has nothing to match against.
-        Type the surname and the initials in capitals and the search recognises the shape and brings
-        that author's records to the top. The initials are allowed to extend, so
-        <code>Farrell G</code> also finds <code>Farrell GP</code>. A surname on its own works too,
-        it is just broader.
+        However you would normally write the name. Authors are stored the way the source literature
+        databases store them, as surname plus initials (<code>Tosatto SCE</code>), but the search
+        recognises the other spellings and matches them to that form: <code>Farrell G</code>,
+        <code>farrell g</code>, <code>Farrell, G.</code>, <code>G Farrell</code> and
+        <code>Gavin Farrell</code> all find the same author. Case, dots, commas and the order of
+        name and initials make no difference.
+      </p>
+      <p>
+        The initials are allowed to extend, so <code>Farrell G</code> also finds
+        <code>Farrell GP</code>, and <code>Silvio Tosatto</code> finds <code>Tosatto S</code>,
+        <code>Tosatto SC</code> and <code>Tosatto SCE</code> alike. Given names are not stored
+        anywhere in the corpus, so a full name is matched by reconstructing the initial rather than
+        by looking the name up. A surname on its own works too; it is broader, and slower.
       </p>
     </details>
 

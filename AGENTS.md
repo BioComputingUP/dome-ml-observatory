@@ -156,6 +156,20 @@ host are not.
   - **A single bare search word deliberately stays on the regex path.** With one term there's no
     second clause to rescue what `$text` misses, and stemming can't match a non-stem fragment
     (`neuro` found 1,701 via the index vs 28,622 via regex). Recall is not traded for speed here.
+  - **An author query has three spellings and three routes.** People type a name as `Farrell G`,
+    `G Farrell` or `Gavin Farrell`, in any case, and all three must return the same papers
+    (verified live: 2 records each, where the last used to return 0 in 10s). `authorInterpretations`
+    in `records.query.ts` turns a query into surname+initials readings; the surname-first reading
+    becomes a `$text` phrase as before, and the reading it reconstructs from a given name is OR'd
+    into the filter alongside the term AND, because no given name is stored anywhere in the corpus.
+    An **initials-first** query gets its own probe query first (`buildAuthorProbeFilter`), whose
+    base is the author clause alone — `T cell` and `X ray` have that same shape, and a `$text`
+    phrase `"cell T"` would silently match "cell types" and return a wrong non-empty answer, where
+    an author-only base returns a clean zero and falls through. **The probe is gated on
+    positives-only exactly like every other `$text` query here**, for the partial-index reason
+    above. Author clauses whose match the terms already imply are dropped rather than added
+    (`impliedByTerms`) — carrying one cost `farrell g` its exact count on the cleared-classification
+    path, degrading 334 into "10,000+".
   - **Detect indexes with `Model.listIndexes()`**, not `collection.listIndexes().toArray()` —
     the latter isn't a cursor on Mongoose 8's bundled driver and throws. The service falls back to
     the regex path silently when the text index is absent, so a dropped-and-reloaded collection
@@ -166,7 +180,9 @@ host are not.
   Needs no index and writes nothing. Don't move this to a per-request aggregation: grouping 827k
   documents by journal-and-year on a page view is precisely what the cache exists to avoid on a
   shared database host. Its totals cover the 770,752 records carrying a journal name, not all
-  827,061 — anything displaying them has to say so.
+  827,061 — anything displaying them has to say so. `toListRow` is an explicit whitelist, not a
+  spread: a field added to `JournalRow` and not copied there reaches the detail view and silently
+  never reaches the table.
 - `observatory-ws/src/database/content-model.module.ts` — the **only** place the `'Content'`
   Mongoose model is registered (`records`, `facets`, `stats` and `journals` modules all import
   this rather than each calling `MongooseModule.forFeatureAsync` themselves). Registering the same

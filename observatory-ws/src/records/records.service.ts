@@ -6,12 +6,13 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, mongo } from 'mongoose';
+import { FilterQuery, Model, mongo } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
 import { CountService } from './count.service';
 import { RecordDocument } from './schemas/record.schema';
 import { AppConfig } from '../config/configuration';
 import {
+  buildAuthorProbeFilter,
   buildMongoFilter,
   buildPagination,
   buildPromotedFilter,
@@ -136,6 +137,25 @@ export class RecordsService implements OnModuleInit {
         ? { filter: buildPromotedFilter(filters), q: filters.q as string }
         : undefined;
 
+    // An initials-first name ("G Farrell") gets one cheap, narrow question asked first: is anyone in
+    // the corpus called that? A hit answers the whole search off the index; a miss is an exact zero
+    // and costs one round trip, after which the routing below proceeds untouched. See
+    // buildAuthorProbeFilter for why this cannot simply join the composite query.
+    if (this.textIndexAvailable) {
+      const probe = buildAuthorProbeFilter(filters);
+      if (probe) {
+        const probed = await this.runTextPath(
+          probe,
+          filters,
+          sort,
+          skip,
+          pageSize,
+          `${cacheKey}|author`,
+        );
+        if (probed) return { ...probed, page, pageSize };
+      }
+    }
+
     // Fast path: let the text index select candidates. Falls through to the regex path below when
     // it isn't usable, isn't there, or didn't find enough -- see shouldFallBackFromText.
     if (this.textIndexAvailable && canUseTextIndex(filters)) {
@@ -176,16 +196,32 @@ export class RecordsService implements OnModuleInit {
   ): Promise<Omit<SearchResult, 'page' | 'pageSize'> | null> {
     const textFilter = buildTextSearchFilter(filters);
     if (!textFilter) return null;
-
     // A separate cache entry from the regex path's: for a single-bare-term fragment the two
     // genuinely disagree ("neuro" is 43 by text, 806 by regex), and caching them under one key
     // would let the discarded number leak into the path that fell back.
+    return this.runTextPath(textFilter, filters, sort, skip, limit, `${cacheKey}|text`);
+  }
+
+  /**
+   * Runs one `$text` query -- the composite above or the author probe -- and returns null to mean
+   * "this found nothing, use the path behind it". Both callers want the same page/count pairing,
+   * the same time budget and the same timeout handling, so they share this rather than each
+   * growing its own copy.
+   */
+  private async runTextPath(
+    textFilter: FilterQuery<RecordDocument>,
+    filters: ReturnType<typeof parseSearchParams>['filters'],
+    sort: SortOrder,
+    skip: number,
+    limit: number,
+    cacheKey: string,
+  ): Promise<Omit<SearchResult, 'page' | 'pageSize'> | null> {
     const maxTimeMs = this.config.get('mongo.searchMaxTimeMs', { infer: true });
 
     try {
       const [items, countResult] = await Promise.all([
         this.runTextFetch(textFilter, sort, skip, limit, maxTimeMs),
-        this.countService.count(textFilter, `${cacheKey}|text`),
+        this.countService.count(textFilter, cacheKey),
       ]);
 
       if (shouldFallBackFromText(filters, countResult.total)) {
