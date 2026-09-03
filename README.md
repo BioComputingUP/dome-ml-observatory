@@ -17,7 +17,7 @@ DOME-ML services.
 |---|---|---|
 | [`observatory-ui/`](observatory-ui/) | Angular 22 (standalone components, signals), Bootstrap 5.3, Vitest | Static SPA. **No runtime configuration at all** — no env vars, no `environment.ts`. |
 | [`observatory-ws/`](observatory-ws/) | NestJS 11, Mongoose 8, Swagger, Jest | Read-only REST API. The only process in this repo that opens a database connection. |
-| [`schema/`](schema/) | Versioned JSON Schema + controlled vocabularies | Build-time input to both apps. See [`schema/README.md`](schema/README.md). |
+| [`schema/`](schema/) | Versioned JSON Schema + controlled vocabularies | Build-time input to both apps. Current release: [`schema/releases/v1.1.0/`](schema/releases/v1.1.0/). See [`schema/README.md`](schema/README.md). |
 
 There is deliberately no shared `-core` package between the two apps; overlapping types are
 duplicated on each side rather than linked.
@@ -334,8 +334,34 @@ exercise the affected endpoint. Several defects in this service were reproducibl
   no vocabulary files until a build runs — `scripts/sync-schema.js` copies them out of `schema/` and
   is wired to every `pre*` npm hook, so this is automatic, but it does mean `schema/` has to be
   present in the build context.
-- **Never hand-edit a published `schema/releases/vX.Y.Z/` folder.** Releases are immutable; see
-  [`schema/README.md`](schema/README.md).
+- **Never hand-edit a published [`schema/releases/vX.Y.Z/`](schema/releases/) folder.** Releases
+  are immutable; a change means a new release folder. See [`schema/README.md`](schema/README.md)
+  and [`schema/CHANGELOG.md`](schema/CHANGELOG.md).
+
+## Support
+
+**[contact@dome-ml.org](mailto:contact@dome-ml.org)** reaches the team, for anything at all —
+questions about the data, collaborations, or a request to correct or remove a record.
+
+For anything worth a public trail, open an issue. There is a short form for each kind of report,
+so you are not guessing what we need:
+
+| Template | Use it for |
+|---|---|
+| A record is wrong or missing | A paper misclassified, wrong metadata, or absent from the corpus. |
+| Search isn't finding what I expect | A search returning nothing, too little, or the wrong things. |
+| Something on the site is broken | A page that errors or renders wrong. |
+| A question or suggestion | Everything else. |
+
+The forms live in [`.github/ISSUE_TEMPLATE/`](.github/ISSUE_TEMPLATE/). Blank issues stay enabled —
+the forms are there to save people guesswork, not to refuse anything that does not fit one of four
+shapes.
+
+The [Support page](https://observatory.dome-ml.org/about/support) carries the same routes plus an
+FAQ covering the behaviours that surprise people most — authors are indexed as surname plus
+initials, search starts from the AI/ML positives rather than the whole screened corpus, and a
+single uncommon search term deliberately takes a slower, higher-recall path. A Google Group for
+release announcements is planned; until it exists, email is the route.
 
 ## More
 

@@ -149,6 +149,29 @@ h2 {
   }
 }
 
+// The four things a schema release actually contains, each reachable in one click. A single link
+// to the release folder would be shorter, but it lands the reader on a directory listing and
+// leaves them to guess which file answers their question -- naming the files is the whole point.
+// Wraps rather than scrolls: at the 160px dt width there is not much room left on a narrow screen.
+.schema-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin-top: var(--space-3);
+
+  a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+  }
+
+  i {
+    color: var(--observatory-accent);
+  }
+}
+
 .citation-intro {
   line-height: 1.6;
   margin-bottom: var(--space-5);

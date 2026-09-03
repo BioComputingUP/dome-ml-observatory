@@ -1,0 +1,29 @@
+name: Something on the site is broken
+description: A page errors, renders wrong, or doesn't do what it says it will.
+title: '[Bug] '
+labels: ['bug']
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, and what the site did instead. A screenshot is worth a lot here.
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: Which page?
+      placeholder: https://observatory.dome-ml.org/search?q=...
+    validations:
+      required: false
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      description: Only matters for layout and rendering problems — skip it otherwise.
+      placeholder: Firefox 141, Linux
+    validations:
+      required: false

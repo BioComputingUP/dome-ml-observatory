@@ -1,0 +1,11 @@
+# Blank issues stay enabled on purpose. The forms below are there to save people the guesswork
+# about what we need, not to refuse anything that does not fit one of four shapes.
+blank_issues_enabled: true
+
+contact_links:
+  - name: Support and FAQ
+    url: https://observatory.dome-ml.org/about/support
+    about: How to reach us, and answers to the questions that come up most — worth a look first.
+  - name: Email the team
+    url: mailto:contact@dome-ml.org
+    about: For anything you would rather not raise in public, including removal of a record.

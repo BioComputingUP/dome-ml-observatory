@@ -1,0 +1,41 @@
+name: A record is wrong or missing
+description: A paper is misclassified, its metadata is wrong, or it is not in the corpus at all.
+title: '[Record] '
+labels: ['data']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for flagging this. Classifications here are machine-generated and no individual
+        record is curator-reviewed, so genuine errors do happen — telling us is the fastest way
+        one gets fixed.
+
+        If the paper concerns you personally and you would rather not do this in public, email
+        contact@dome-ml.org instead.
+
+  - type: input
+    id: paper
+    attributes:
+      label: Which paper?
+      description: A DOI, PMID or PMCID is ideal. A link to the record page or the paper works too.
+      placeholder: 10.1038/s41592-021-01205-4
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What's wrong with it?
+      description: >
+        For example: classified as an AI/ML methods paper when it isn't (or the reverse), wrong
+        title or authors, or missing from the corpus entirely.
+    validations:
+      required: false
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should it say instead?
+      description: Only if you know. A correction is welcome but not required to report the problem.
+    validations:
+      required: false

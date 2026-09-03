@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { RecordsService } from '../../core/records.service';
+import { FALLBACK_SCHEMA_VERSION, schemaReleaseUrl } from '../../core/schema-links';
 
 @Component({
   selector: 'app-about-overview',
@@ -19,4 +20,8 @@ export class AboutOverview {
   });
 
   readonly corpus = computed(() => this.stats()?.corpus ?? this.records.getStats());
+
+  readonly schemaUrl = computed(() =>
+    schemaReleaseUrl(this.stats()?.schema_version ?? FALLBACK_SCHEMA_VERSION),
+  );
 }

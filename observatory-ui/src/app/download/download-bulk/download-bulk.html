@@ -50,8 +50,24 @@
         <div class="spec-row">
           <dt><i class="icon icon-common icon-code-branch" aria-hidden="true"></i>Schema</dt>
           <dd>
-            Version {{ schemaVersion() }}. Every record conforms to the published schema — field
-            definitions, controlled vocabularies and a changelog ship alongside the data.
+            Version {{ schemaVersion() }}. Every record conforms to the
+            <a [href]="schemaFile()" target="_blank" rel="noopener">published schema</a> — read the
+            field definitions rather than take them on trust. Each release is immutable, so a link
+            to it keeps meaning the same thing.
+            <span class="schema-links">
+              <a [href]="schemaExample()" target="_blank" rel="noopener">
+                <i class="icon icon-common icon-documentation" aria-hidden="true"></i>Example record
+              </a>
+              <a [href]="schemaVocab()" target="_blank" rel="noopener">
+                <i class="icon icon-common icon-list" aria-hidden="true"></i>Controlled vocabularies
+              </a>
+              <a [href]="schemaChangelog" target="_blank" rel="noopener">
+                <i class="icon icon-common icon-history" aria-hidden="true"></i>Changelog
+              </a>
+              <a [href]="schemaUrl()" target="_blank" rel="noopener">
+                <i class="icon icon-common icon-folder-open" aria-hidden="true"></i>Whole release
+              </a>
+            </span>
           </dd>
         </div>
         <div class="spec-row">

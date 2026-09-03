@@ -1,0 +1,19 @@
+name: A question or suggestion
+description: Anything else — how something works, an idea, a possible collaboration.
+title: '[Question] '
+labels: ['question']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        No form for this one. Ask in whatever way suits — and if it turns out to be a common
+        question, it will end up in the
+        [FAQ](https://observatory.dome-ml.org/about/support#faq) so the next person finds it
+        without having to ask.
+
+  - type: textarea
+    id: body
+    attributes:
+      label: What's on your mind?
+    validations:
+      required: true

@@ -155,8 +155,10 @@
       <li><strong>Enrichment coverage is partial:</strong> that pass is still running across the
         corpus, so most records currently show "not yet enriched" rather than a full tag set.</li>
       <li><strong>Cross-links are not yet populated:</strong> the DOME Registry, Hugging Face,
-        Kaggle and Zenodo fields are reserved in the schema but empty for every record — see
-        <a routerLink="/about/integrations">Integrations</a> for what's live versus planned.</li>
+        Kaggle and Zenodo fields are reserved in
+        <a [href]="schemaUrl()" target="_blank" rel="noopener">the schema</a> but empty for every
+        record — see <a routerLink="/about/integrations">Integrations</a> for what's live versus
+        planned.</li>
     </ul>
   </div>
 </div>

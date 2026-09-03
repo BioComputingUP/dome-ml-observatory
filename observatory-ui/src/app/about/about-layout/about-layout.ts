@@ -16,5 +16,6 @@ export class AboutLayout {
     { label: 'Integrations', icon: 'icon-sitemap', route: '/about/integrations' },
     { label: 'Licensing & Citation', icon: 'icon-copy', route: '/about/licensing' },
     { label: 'Privacy Policy', icon: 'icon-lock', route: '/about/privacy' },
+    { label: 'Support', icon: 'icon-support', route: '/about/support' },
   ];
 }

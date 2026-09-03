@@ -56,7 +56,7 @@ what makes everything below possible.
 
 - **The first enrichment merge is its own milestone**, not part of a routine refresh. It writes
   fields nothing has ever written, so run it against a copy first, verify a sample against the
-  vocabularies in the current schema release, then merge. The search page's enrichment-coverage
+  [vocabularies in the current schema release](schema/releases/v1.1.0/vocab/), then merge. The search page's enrichment-coverage
   banner reads its number live and starts reporting on its own once records land — no
   regeneration step, no code change.
 
@@ -70,8 +70,10 @@ what makes everything below possible.
   | `FacetsService` (journal / mesh / pub-type / licence typeaheads) | **boot-loaded, no TTL — a restart is required** |
   | `StatsService`, `CountService`, `JournalsService` | 24h TTL |
 
-  Then re-run `schema/generate_facet_stats.py --from-api <url>`, check `/api/stats`, and cut a
-  schema release with the `schema-version` skill if the shape changed.
+  Then re-run [`schema/generate_facet_stats.py`](schema/generate_facet_stats.py) `--from-api <url>`,
+  check `/api/stats`, and cut a schema release with the `schema-version` skill if the shape
+  changed — a new [`schema/releases/vX.Y.Z/`](schema/releases/) folder plus a
+  [`CHANGELOG.md`](schema/CHANGELOG.md) entry, never an edit to a published one.
 
 - **If the collection is ever dropped**, both indexes go with it. Recreate them:
 
@@ -136,46 +138,10 @@ out at 10,000 of 827,061. That cap is not tunable: MongoDB 4.2's `find()` sort h
   the schedule moves somewhere this repo cannot see or test.
 
 Each deposit should carry the corpus as gzipped NDJSON, a metadata sidecar (count, size, sha256,
-source, `schema_version`), and the schema release itself so the deposit is self-describing.
+source, `schema_version`), and the [schema release](schema/releases/v1.1.0/) itself so the deposit
+is self-describing.
 
-## 3. Surface the schema properly
-
-The published schema is the thing that makes the corpus reusable, and right now it is mentioned
-in passing rather than shown. `schema/releases/<version>/` holds the JSON Schema, a real example
-record and the three controlled vocabularies, and nothing in the UI links to any of it.
-
-- **Make the schema card on `/download/bulk` clickable** — it currently states a version number
-  and stops. It should open the schema itself, so a reader can see the field definitions rather
-  than take them on trust.
-- **Link the release folder from every point the schema is named**, in particular the processing
-  timeline and the About overview, where reserved-but-empty fields are already being explained in
-  prose that would be shorter with a link.
-- Serve the release from a stable path so the link survives a version bump, and point the schema
-  version reported by `/api/stats` at the same place.
-
-## 4. Help page
-
-A `/help` route, in the navbar and footer, with `/faq` redirecting to it. Search behaviour here is
-genuinely non-obvious and nothing currently explains it.
-
-- **Multiple words are AND-ed**, not treated as a phrase. Matching is word-boundary anchored, so
-  `cell` does not match `excellent`. Quoted phrases work.
-- **Authors are indexed as surname plus initials** (`Tosatto SCE`) — a full first name will not
-  match. Least discoverable feature on the site.
-- **Why a rare single word can be slower than two.** A lone term deliberately takes the regex path
-  so recall is never traded for speed. Explain the trade rather than hiding it.
-- **The default search space is the positives** (355,558), not the whole corpus.
-- **What the classification labels mean**, and that they are LLM-generated rather than curated.
-- **What the enrichment fields will be**, written so it reads correctly both before and after the
-  enrichment run lands.
-- **Why browsing stops at page 400**, and that `/download` is the answer for anything deeper.
-- Pointers out to `/download/api`, `/api/docs` and `/about/licensing` rather than duplicating them,
-  and who to contact about a wrong or missing record.
-
-Prose with anchors, not an accordion of one-liners — the rules that matter need a sentence of
-*why* to be useful rather than surprising.
-
-## 5. Analytics and cookie consent
+## 3. Analytics and cookie consent
 
 `/about/privacy` documents the intended stack and carries a **"Not yet active"** badge. That badge
 is accurate today and must not come off before the implementation ships.
@@ -203,16 +169,17 @@ gating problem plus an EU/EEA data transfer the privacy page then has to disclos
 
 Update the privacy page in the same change that ships the implementation, never before.
 
-## 6. Continuous integration
+## 4. Continuous integration
 
-There is no `.github/` in this repo. Nothing verified so far is verified automatically.
+[`.github/`](.github/) holds issue templates and nothing else — there is no workflow in it.
+Nothing verified so far is verified automatically.
 
 `ci.yml`, on pull request and push to `main`:
 
 - Node from `.nvmrc`, `npm ci` — **never `npm install`**, which has already broken the MongoDB server
   connection once by floating Mongoose past `8.x`.
-- Both apps: lint, test, build. Currently 131 tests in `observatory-ui`, 132 in `observatory-ws`.
-- `python3 schema/validate.py` against the current release.
+- Both apps: lint, test, build. Currently 136 tests in `observatory-ui`, 132 in `observatory-ws`.
+- [`python3 schema/validate.py`](schema/validate.py) against the current release.
 - `docker build` both images from the repo root context, build only, never push — this catches the
   cross-directory `COPY schema/` breaking, which a plain `npm run build` will not.
 - **A guard on the deploy output path**: assert `build-prod` produces a flat `dist/` with
@@ -222,7 +189,7 @@ Explicitly not in scope: any workflow that deploys. Deployment is the hosting la
 
 ---
 
-## 7. Repository access and visibility
+## 5. Repository access and visibility
 
 The repository is private and the account doing the development does not hold admin on it. That
 combination is the wrong way round for a project meant to be citable and externally reusable, and
@@ -230,7 +197,9 @@ it blocks several items above: publishing releases, adding repository secrets fo
 archive, and enabling branch protection or required status checks alongside CI.
 
 - Make the repository public, once the sanitisation pass above is confirmed — no internal
-  hostnames, addresses or credentials in tracked files.
+  hostnames, addresses or credentials in tracked files. Until then the schema links on
+  `/download/bulk` and the About pages, and the issue templates the support page points at, 404 for
+  anyone outside the organisation. Nothing to change here when it flips; they simply start working.
 - Grant admin to the maintainer doing the work, so releases, secrets and branch protection can be
   configured without a round trip.
 

@@ -78,6 +78,11 @@ why this folder is deliberately leaner than `BioComputingUP/dome-schema`, which 
    module load and reports the result on `GET /api/health/ready`; the fallback only applies when
    the file can't be found at all, but it's kept in sync by hand and is easy to forget.
 
+   The frontend carries the same constant in `observatory-ui/src/app/core/schema-links.ts` — update
+   it too. The UI's links to the release folder on GitHub are built from whatever version
+   `/api/stats` reports, so they follow the bump on their own; the constant is only what they fall
+   back to before the API has answered.
+
 8. **Re-sync the UI.** `node observatory-ui/scripts/sync-schema.js` (or `npm run sync-schema
    --prefix observatory-ui`) — copies the new release's `vocab/` into
    `observatory-ui/src/assets/vocab/`. That destination is gitignored and always generated; never

@@ -1,0 +1,39 @@
+name: Search isn't finding what I expect
+description: A search returns nothing, too little, or the wrong things.
+title: '[Search] '
+labels: ['search']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Search here behaves in a few ways that catch people out — authors are stored as surname
+        plus initials (`Tosatto SCE`), searching starts from the AI/ML positives rather than the
+        whole screened corpus, and a single uncommon word takes a deliberately slower path.
+
+        The [FAQ](https://observatory.dome-ml.org/about/support#faq) covers all of these. If it
+        doesn't explain what you're seeing, that's worth knowing about — tell us below.
+
+  - type: input
+    id: query
+    attributes:
+      label: What did you search for?
+      description: The exact text you typed, plus any filters you had set.
+      placeholder: single cell transformer, filtered to 2020-2024
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to get back?
+      description: A specific paper you know is in there is the most useful thing you can give us.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: faq
+    attributes:
+      label: Before you file
+      options:
+        - label: I've had a look at the FAQ and it doesn't cover this.
+          required: false

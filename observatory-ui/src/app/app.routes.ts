@@ -75,6 +75,10 @@ export const routes: Routes = [
         path: 'privacy',
         loadComponent: () => import('./about/about-privacy/about-privacy').then((m) => m.AboutPrivacy),
       },
+      {
+        path: 'support',
+        loadComponent: () => import('./about/about-support/about-support').then((m) => m.AboutSupport),
+      },
     ],
   },
   { path: 'team', redirectTo: '/about/team', pathMatch: 'full' },
@@ -82,6 +86,11 @@ export const routes: Routes = [
   { path: 'integrations', redirectTo: '/about/integrations', pathMatch: 'full' },
   { path: 'licensing', redirectTo: '/about/licensing', pathMatch: 'full' },
   { path: 'privacy', redirectTo: '/about/privacy', pathMatch: 'full' },
+  { path: 'support', redirectTo: '/about/support', pathMatch: 'full' },
+  // /help and /faq are the addresses people type and link to from elsewhere; the page itself
+  // lives under /about so it keeps the About side rail rather than standing on its own.
+  { path: 'help', redirectTo: '/about/support', pathMatch: 'full' },
+  { path: 'faq', redirectTo: '/about/support', pathMatch: 'full' },
   {
     path: 'news',
     loadComponent: () => import('./news/news').then((m) => m.News),

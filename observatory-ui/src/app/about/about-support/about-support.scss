@@ -1,0 +1,293 @@
+h1 {
+  color: var(--observatory-primary);
+  font-weight: 700;
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--space-3);
+}
+
+.lead {
+  font-size: var(--font-size-base);
+  color: var(--status-neutral);
+  margin-bottom: 0;
+  line-height: 1.6;
+  max-width: 68ch;
+}
+
+h2 {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--observatory-primary);
+  margin: 0;
+}
+
+// ---- The support channels ----
+
+// 360px is chosen to land these 2x2 rather than 3+1. At the 1080px band width anything at or below
+// ~349px fits three columns, which strands the fourth card alone on a row and reads as though it
+// were an afterthought rather than one of four equal options. Below ~750px it drops to one column.
+.support-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: var(--space-4);
+}
+
+// Surface, border, radius and shadow all come from .info-panel in styles.scss; .support-card only
+// adds the status rule. Not the bare .card primitive, which carries a hover-lift meant for cards
+// that are themselves a single link -- these hold several links each, so a whole-card affordance
+// would be lying about what clicking does.
+//
+// The coloured left rule is the same device about-integrations.scss uses, and for the same reason:
+// "Planned" as a small pill among the text is easy to read past, and someone who misses it goes
+// looking for a mailing list that does not exist. As a 4px rule plus a dashed border it is the
+// first thing the eye resolves, before any of the words.
+.support-card {
+  border-left: 4px solid transparent;
+  display: flex;
+  flex-direction: column;
+
+  &.status-live {
+    border-left-color: var(--status-positive);
+  }
+
+  &.status-planned {
+    border-left-color: var(--status-undeterminable);
+    border-style: dashed;
+    border-left-style: solid;
+  }
+
+  // The card's own icon + title row. .card-header (global) supplies the flex row and the
+  // orange-tinted .icon-badge that every other static badge on the About pages gets.
+  .card-header {
+    align-items: flex-start;
+  }
+
+  p {
+    line-height: 1.6;
+    font-size: var(--font-size-sm);
+    color: var(--observatory-primary);
+  }
+
+  // Pushes the CTA to the card's bottom edge, so the buttons line up across a row of cards whose
+  // paragraphs are different lengths.
+  .cta-pill,
+  .card-cta,
+  .issue-links {
+    margin-top: auto;
+  }
+
+  // Without this the pill stretches to the card's full width -- a flex column stretches its
+  // children by default -- which at this card size is a very wide bar for a short address.
+  .cta-pill {
+    align-self: flex-start;
+  }
+
+  .card-cta:hover i {
+    transform: translateX(3px);
+  }
+}
+
+// Name above status rather than beside it: "Available now" is wide enough that at the 300px column
+// floor it pushed the heading into a second line, and a wrapped two-word heading reads worse than
+// a stacked pill does.
+.support-title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  min-width: 0;
+
+  h3 {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--observatory-primary);
+    margin: 0;
+  }
+}
+
+// Each issue template as its own line. A single "open an issue" link would make the reader choose
+// a template from a GitHub chooser page they have no context for; naming the four here means the
+// link they follow is already the right form.
+.issue-links {
+  list-style: none;
+  padding: 0;
+  margin: var(--space-2) 0 0;
+
+  li + li {
+    margin-top: var(--space-2);
+  }
+
+  a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+  }
+
+  i {
+    color: var(--observatory-accent);
+  }
+}
+
+// The "this is not built yet" sentence, held apart from the description of what it will be so the
+// two cannot be skim-read as one promise.
+.support-note {
+  border-top: 1px solid var(--border-default);
+  padding-top: var(--space-3);
+  margin-top: auto;
+  margin-bottom: 0;
+  color: var(--status-neutral);
+}
+
+// ---- FAQ ----
+
+// Provenance for the answers below. An FAQ with no date is impossible to trust: a reader has no
+// way to tell an answer that is current from one written against behaviour that has since changed.
+.faq-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  margin: 0 0 var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--surface-sunken);
+  border-radius: var(--radius-md);
+
+  > div {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+  }
+
+  dt {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-1);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--observatory-accent-dark);
+    white-space: nowrap;
+  }
+
+  dd {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--observatory-primary);
+  }
+}
+
+.faq-group {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--status-neutral);
+  margin: var(--space-6) 0 var(--space-3);
+
+  &:first-of-type {
+    margin-top: 0;
+  }
+}
+
+// Collapsible, but every question ships `open`. Collapsing is there so a reader who has found
+// their answer can fold the rest away -- not to hide the content by default, which would break
+// find-in-page, defeat the anchor links each question carries, and turn a page of explanations
+// into a wall of headings that all have to be clicked to be useful.
+//
+// Custom triangle rather than the native marker, matching the search facet panel: the default
+// disclosure marker sits at a different size and offset in every browser, and one of these is
+// directly below the other.
+.faq-item {
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-3);
+
+  summary {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    list-style: none;
+    cursor: pointer;
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--observatory-primary);
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::before {
+      content: '';
+      flex: none;
+      // Nudged down from the baseline the flex row aligns on, so the triangle sits against the
+      // middle of the first line of text rather than its underside.
+      transform: translateY(-2px);
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 4px 0 4px 6px;
+      border-color: transparent transparent transparent var(--observatory-accent);
+      transition: transform 0.15s ease;
+    }
+
+    &:hover {
+      color: var(--observatory-accent-dark);
+    }
+  }
+
+  &[open] summary::before {
+    transform: translateY(-1px) rotate(90deg);
+  }
+
+  p {
+    line-height: 1.65;
+    // Indented to the width of the triangle plus its gap, so the answer reads as belonging to the
+    // question rather than as the next block on the page.
+    margin: var(--space-3) 0 0 calc(6px + var(--space-3));
+    max-width: 72ch;
+  }
+
+  code {
+    font-size: 0.9em;
+    background-color: var(--surface-sunken);
+    padding: 0.1em 0.35em;
+    border-radius: var(--radius-sm);
+    color: var(--observatory-primary);
+  }
+}
+
+// ---- Onward pointers ----
+
+.next-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-width: 72ch;
+
+  li {
+    line-height: 1.6;
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--border-default);
+    font-size: var(--font-size-sm);
+    color: var(--status-neutral);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    font-weight: 600;
+  }
+
+  i {
+    color: var(--observatory-accent);
+  }
+}
