@@ -79,115 +79,16 @@
         </div>
       }
 
-      <!-- ===== Article sources, with access shown alongside them ===== -->
-      <div class="band band-tint">
-        <div class="band-inner">
-          <div class="card-header">
-            <span class="icon-badge"><i class="icon icon-common icon-globe" aria-hidden="true"></i></span>
-            <h2>Article sources</h2>
-          </div>
-          <p class="section-note">
-            Observatory holds the metadata. These are the resources that hold the article itself,
-            its full text and its indexing.
-          </p>
-
-          <ul class="access-tiles">
-            <li class="access-tile" [class]="'tone-' + access().openAccess.tone">
-              <span class="access-label">Access</span>
-              <span class="access-value">{{ access().openAccess.text }}</span>
-            </li>
-            <li class="access-tile" [class]="'tone-' + access().licence.tone">
-              <span class="access-label">Licence</span>
-              <span class="access-value">{{ access().licence.text }}</span>
-            </li>
-            <li class="access-tile" [class]="'tone-' + access().fulltext.tone">
-              <span class="access-label">Full text</span>
-              <span class="access-value">{{ access().fulltext.text }}</span>
-            </li>
-          </ul>
-
-          @if (sources().length) {
-            <div class="source-grid">
-              @for (source of sources(); track source.label) {
-                <div class="source-card info-panel">
-                  <div class="source-head">
-                    @if (source.logo) {
-                      <img [src]="source.logo" [alt]="source.label + ' logo'" class="source-logo" />
-                    } @else {
-                      <span class="source-icon" aria-hidden="true">
-                        <i class="icon icon-common" [class]="source.icon"></i>
-                      </span>
-                    }
-                    <h3>{{ source.label }}</h3>
-                  </div>
-                  <p class="source-explainer">{{ source.explainer }}</p>
-                  <div class="source-id">
-                    <span class="source-id-label">{{ source.idLabel }}</span>
-                    <code>{{ source.idValue }}</code>
-                    <app-copy-button [value]="source.idValue" [label]="source.idLabel" />
-                  </div>
-                  <a [href]="source.url" target="_blank" rel="noopener" class="source-open">
-                    Open at {{ source.label }}
-                    <span class="visually-hidden">(opens in a new tab)</span>
-                  </a>
-                </div>
-              }
-            </div>
-          } @else {
-            <p class="section-note">No external identifier is recorded for this article.</p>
-          }
-        </div>
-      </div>
-
-      <!-- ===== Cross-linked assets. Rendered only when something is actually linked. ===== -->
-      @if (assetGroups().length) {
-        <div class="band">
-          <div class="band-inner">
-            <div class="card-header">
-              <span class="icon-badge"><i class="icon icon-common icon-sitemap" aria-hidden="true"></i></span>
-              <h2>Cross-linked assets</h2>
-            </div>
-            <p class="section-note">
-              The data, code, models and structured annotations this paper released, linked from
-              the repositories that hold them.
-            </p>
-            @for (group of assetGroups(); track group.group) {
-              <section class="asset-group">
-                <h3>{{ group.group }}</h3>
-                <div class="source-grid">
-                  @for (asset of group.items; track asset.label) {
-                    <a [href]="asset.url" target="_blank" rel="noopener" class="asset-card card">
-                      <div class="source-head">
-                        @if (asset.logo) {
-                          <img [src]="asset.logo" [alt]="asset.label + ' logo'" class="source-logo" />
-                        } @else {
-                          <span class="source-icon" aria-hidden="true">
-                            <i class="icon icon-common" [class]="asset.icon"></i>
-                          </span>
-                        }
-                        <h4>{{ asset.label }}</h4>
-                      </div>
-                      <p class="source-explainer">{{ asset.explainer }}</p>
-                      <span class="visually-hidden">(opens in a new tab)</span>
-                    </a>
-                  }
-                </div>
-              </section>
-            }
-          </div>
-        </div>
-      }
-
-      <!-- ===== How this record was processed: screening + enrichment, one section ===== -->
+      <!-- ===== AI/ML Methods Publication Information: screening + enrichment ===== -->
       <div class="band band-tint">
         <div class="band-inner">
           <div class="card-header">
             <span class="icon-badge"><i class="icon icon-common icon-cogs" aria-hidden="true"></i></span>
-            <h2>How this record was processed</h2>
+            <h2>AI/ML Methods Publication Information</h2>
           </div>
-          <p class="section-note">
-            Both steps below are machine-generated. The method behind them was validated against a
-            hand-annotated expert benchmark before it was run across the corpus — see
+          <p class="section-note process-note">
+            Both panels below are machine-generated. The method was validated against a
+            hand-annotated expert benchmark before it ran across the corpus — see
             <a routerLink="/about">how the corpus is built</a>.
           </p>
 
@@ -272,6 +173,114 @@
               }
             </section>
           </div>
+        </div>
+      </div>
+
+      <!-- ===== Cross-linked assets. Always rendered: an honest empty state beats a
+           missing section, and it also keeps the white/tint band rhythm stable regardless of
+           whether a record happens to carry any cross-links. ===== -->
+      <div class="band">
+        <div class="band-inner">
+          <div class="card-header">
+            <span class="icon-badge"><i class="icon icon-common icon-sitemap" aria-hidden="true"></i></span>
+            <h2>Cross-linked assets</h2>
+          </div>
+          <p class="section-note">
+            The data, code, models and structured annotations this paper released, linked from
+            the repositories that hold them.
+          </p>
+          @if (assetGroups().length) {
+            @for (group of assetGroups(); track group.group) {
+              <section class="asset-group">
+                <h3>{{ group.group }}</h3>
+                <div class="source-grid">
+                  @for (asset of group.items; track asset.label) {
+                    <a [href]="asset.url" target="_blank" rel="noopener" class="asset-card card">
+                      <div class="source-head">
+                        @if (asset.logo) {
+                          <img [src]="asset.logo" [alt]="asset.label + ' logo'" class="source-logo" />
+                        } @else {
+                          <span class="source-icon" aria-hidden="true">
+                            <i class="icon icon-common" [class]="asset.icon"></i>
+                          </span>
+                        }
+                        <h4>{{ asset.label }}</h4>
+                      </div>
+                      <p class="source-explainer">{{ asset.explainer }}</p>
+                      <span class="visually-hidden">(opens in a new tab)</span>
+                    </a>
+                  }
+                </div>
+              </section>
+            }
+          } @else {
+            <p class="crosslink-empty">
+              <strong>Not yet cross-linked.</strong> Links to this paper's code, data, models and
+              DOME Registry annotation are reserved in the schema and filled in by a cross-linking
+              pass that has not run yet. Once it has, the linked resources appear here in place of
+              this note.
+            </p>
+          }
+        </div>
+      </div>
+
+      <!-- ===== Article sources, with access shown alongside them ===== -->
+      <div class="band band-tint">
+        <div class="band-inner">
+          <div class="card-header">
+            <span class="icon-badge"><i class="icon icon-common icon-globe" aria-hidden="true"></i></span>
+            <h2>Article sources</h2>
+          </div>
+          <p class="section-note">
+            Observatory holds the metadata. These are the resources that hold the article itself,
+            its full text and its indexing.
+          </p>
+
+          <ul class="access-tiles">
+            <li class="access-tile" [class]="'tone-' + access().openAccess.tone">
+              <span class="access-label">Access</span>
+              <span class="access-value">{{ access().openAccess.text }}</span>
+            </li>
+            <li class="access-tile" [class]="'tone-' + access().licence.tone">
+              <span class="access-label">Licence</span>
+              <span class="access-value">{{ access().licence.text }}</span>
+            </li>
+            <li class="access-tile" [class]="'tone-' + access().fulltext.tone">
+              <span class="access-label">Full text</span>
+              <span class="access-value">{{ access().fulltext.text }}</span>
+            </li>
+          </ul>
+
+          @if (sources().length) {
+            <div class="source-grid">
+              @for (source of sources(); track source.label) {
+                <div class="source-card info-panel">
+                  <div class="source-head">
+                    @if (source.logo) {
+                      <img [src]="source.logo" [alt]="source.label + ' logo'" class="source-logo" />
+                    } @else {
+                      <span class="source-icon" aria-hidden="true">
+                        <i class="icon icon-common" [class]="source.icon"></i>
+                      </span>
+                    }
+                    <h3>{{ source.label }}</h3>
+                  </div>
+                  <p class="source-explainer">{{ source.explainer }}</p>
+                  <div class="source-id">
+                    <span class="source-id-label">{{ source.idLabel }}</span>
+                    <code>{{ source.idValue }}</code>
+                    <app-copy-button [value]="source.idValue" [label]="source.idLabel" />
+                  </div>
+                  <a [href]="source.url" target="_blank" rel="noopener" class="source-open">
+                    Open at {{ source.label }}
+                    <span class="visually-hidden">(opens in a new tab)</span>
+                  </a>
+                </div>
+              }
+            </div>
+          } @else {
+            <p class="section-note">No external identifier is recorded for this article.</p>
+          }
         </div>
       </div>
 

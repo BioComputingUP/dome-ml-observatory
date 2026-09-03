@@ -47,6 +47,7 @@ export function articleSources(record: AiMlRecord): ArticleSource[] {
       url: `https://europepmc.org/article/MED/${ids.pmid}`,
       idLabel: 'PMID',
       idValue: ids.pmid,
+      logo: 'assets/img/europe-pmc-logo.png',
       icon: 'icon-book',
     });
     sources.push({
@@ -55,6 +56,7 @@ export function articleSources(record: AiMlRecord): ArticleSource[] {
       url: `https://pubmed.ncbi.nlm.nih.gov/${ids.pmid}/`,
       idLabel: 'PMID',
       idValue: ids.pmid,
+      logo: 'assets/img/pubmed-logo.svg',
       icon: 'icon-search',
     });
   }
@@ -113,11 +115,14 @@ function assetUrl(raw: string, template: (id: string) => string): string {
 /**
  * Data, code, models and structured annotations linked to this paper.
  *
- * Returns an empty array when nothing is linked, and the record page renders no section at all in
- * that case. That is the whole design: the previous version showed five permanently-greyed
- * "Not yet linked" boxes on every record, at the same visual weight as the real links above them,
- * which is what a placeholder wall looks like rather than a roadmap. The section appears by itself
- * the moment the cross-linking pass populates anything.
+ * Returns an empty array when nothing is linked. The record page still renders the section in that
+ * case, but as a single quiet "not yet cross-linked" note rather than content -- deliberately NOT
+ * the five permanently-greyed "Not yet linked" boxes an earlier version showed at the same visual
+ * weight as the real links above them, which is what a placeholder wall looks like rather than a
+ * roadmap. Hiding the section outright was the previous fix and overcorrected: with 0 of 827,061
+ * records carrying a cross-link, "absent" was every reader's experience of it, and two tinted bands
+ * then abutted and read as one section. The real cards replace the note the moment the
+ * cross-linking pass populates anything.
  */
 export function crossLinkedAssets(record: AiMlRecord): CrossLinkedAsset[] {
   const ids = record.identifiers;
@@ -129,7 +134,7 @@ export function crossLinkedAssets(record: AiMlRecord): CrossLinkedAsset[] {
       label: 'DOME Registry',
       explainer: 'The structured DOME annotation of this method.',
       url: assetUrl(ids.dome_registry, (id) => `https://registry.dome-ml.org/search?q=${id}`),
-      logo: 'assets/img/DOME_Registry_Rounded.svg',
+      logo: 'assets/img/DOME_Registry_Rounded-cropped.svg',
       icon: 'icon-classification',
     });
   }

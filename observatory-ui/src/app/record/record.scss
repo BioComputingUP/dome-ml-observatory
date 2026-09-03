@@ -280,6 +280,27 @@
   }
 }
 
+// ONE quiet dashed panel, deliberately not a grid of greyed-out placeholder boxes. The previous
+// version of this section rendered five permanently-empty "Not yet linked" cards at the same
+// visual weight as the real links above them, which reads as a broken page rather than a roadmap
+// (see outbound-links.ts). The section itself is always present, though: a section that vanishes
+// entirely is indistinguishable from one that doesn't exist, and 0 of 827,061 records carry a
+// cross-link today, so "absent" would be every record's experience of it.
+.crosslink-empty {
+  margin: 0;
+  padding: var(--space-4);
+  border: 1px dashed var(--border-default);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  color: var(--status-neutral);
+  max-width: 80ch;
+
+  strong {
+    color: var(--observatory-primary);
+  }
+}
+
 .asset-group {
   margin-bottom: var(--space-5);
 
@@ -293,9 +314,16 @@
   }
 }
 
-// ---------- Processing (screening + enrichment) -----------------------------------------------
+// ---------- AI/ML Methods Publication Information (screening + enrichment) --------------------
 // Two components of one section, side by side, so the machine-made judgement and the machine-made
 // tagging are read together rather than as unrelated blocks.
+
+// Wider than the shared 70ch .section-note. At 70ch this specific sentence broke across three
+// lines with only two words on the third; 88ch lands it on two full lines. Scoped rather than
+// applied to .section-note globally, since the Article sources note reads correctly at 70ch.
+.process-note {
+  max-width: 88ch;
+}
 .process-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
