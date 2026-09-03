@@ -30,5 +30,48 @@ h2 {
   color: var(--status-neutral);
   line-height: 1.6;
   margin-bottom: var(--space-5);
-  max-width: 720px;
+  // 70ch, matching the note measure the record and integrations pages use, so the three About
+  // sub-pages agree on line length instead of each picking their own pixel width.
+  max-width: 70ch;
+}
+
+// The shared .member-grid is `auto-fill, minmax(220px, 1fr)`, which is right for the Team page's
+// longer roster. With only three board members it produced four narrow tracks on a 1080px band --
+// three cramped cards clumped against the left edge with the fourth track left empty, and text
+// small enough to read as a footnote rather than as a section carrying the same weight as the
+// rest of the page. Overridden here only: the Team page keeps the auto-fill behaviour it needs.
+.member-grid {
+  // One column per board member, spanning the band. Not centred inside a narrower cap: the cards
+  // would then start further right than the heading and note above them, which is the same
+  // misalignment in the other direction. Sharing the band's left edge is what makes this section
+  // sit consistently with every other one on the site.
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+// Scaled up to match the wider cards. min-height on .member-role reserves a line for the shorter
+// Team roles; these are full sentences that wrap anyway, so it only added a gap here.
+.member-card {
+  padding: var(--space-5);
+}
+
+.member-photo {
+  width: 140px;
+  height: 140px;
+}
+
+.member-role {
+  font-size: var(--font-size-base);
+  min-height: 0;
+}
+
+.member-affiliation {
+  font-size: var(--font-size-sm);
 }

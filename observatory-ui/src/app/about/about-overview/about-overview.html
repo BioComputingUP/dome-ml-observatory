@@ -100,36 +100,39 @@
     </div>
     <ol class="method-steps">
       <li>
-        <span class="step-num" aria-hidden="true">1</span>
-        <h3>Method validation</h3>
+        <div class="step-head">
+          <span class="step-num" aria-hidden="true">1</span>
+          <h3>Method validation</h3>
+        </div>
         <p>
-          Before the method was scaled to the full corpus, it was benchmarked against
-          <strong>6,000 publications hand-annotated by an expert curator</strong> as positive or
-          negative — roughly half of each. Expert and LLM annotations were compared, every
-          disagreement adjudicated and resolved, and reconciled agreement exceeded
-          <strong>90%</strong>, meeting the curation criteria set for authorising the bulk run.
-          Individual records are <em>not</em> curator-reviewed: what was validated is the method
-          that classifies them.
+          The classification method was benchmarked against
+          <strong>6,000 publications hand-annotated by an expert curator</strong>. Every
+          expert–LLM disagreement was adjudicated, and reconciled agreement exceeded
+          <strong>90%</strong> before the bulk run was authorised. What was validated is the
+          method, <em>not</em> each record.
         </p>
       </li>
       <li>
-        <span class="step-num" aria-hidden="true">2</span>
-        <h3>Screening</h3>
+        <div class="step-head">
+          <span class="step-num" aria-hidden="true">2</span>
+          <h3>Screening</h3>
+        </div>
         <p>
-          Every publication is classified by an LLM as <em>positive</em> (a genuine AI/ML methods
-          paper), <em>negative</em>, or <em>undeterminable</em>, with a written rationale kept
-          alongside the verdict. Each <a routerLink="/search">record page</a> carries the model,
-          prompt version and rationale behind its own classification; the
-          <a routerLink="/about/processing">processing timeline</a> shows when each batch ran.
+          Every publication is classified by an LLM as <em>positive</em>, <em>negative</em> or
+          <em>undeterminable</em>, with a written rationale kept beside the verdict. Each record
+          page carries the model, prompt version and rationale behind its own decision; the
+          <a routerLink="/about/processing">processing history</a> shows when each batch ran.
         </p>
       </li>
       <li>
-        <span class="step-num" aria-hidden="true">3</span>
-        <h3>Enrichment</h3>
+        <div class="step-head">
+          <span class="step-num" aria-hidden="true">3</span>
+          <h3>Enrichment</h3>
+        </div>
         <p>
           A separate pass tags positively-classified records with EDAM domain, learning paradigm,
-          model family and model type, drawn from published controlled vocabularies. This is the
-          more expensive step and is still in progress across the corpus — the
+          model family and model type, drawn from published controlled vocabularies. This step is
+          still in progress across the corpus — the
           <a routerLink="/search">search page</a> shows live coverage.
         </p>
       </li>
@@ -141,19 +144,19 @@
   <div class="band-inner">
     <div class="card-header">
       <span class="icon-badge"><i class="icon icon-common icon-filter" aria-hidden="true"></i></span>
-      <h2>Limitations, stated plainly</h2>
+      <h2>Limitations</h2>
     </div>
     <ul class="limitations">
-      <li>Every classification and enrichment in the corpus is LLM-generated. The method behind
-        them was validated against a hand-annotated expert benchmark before being scaled (see
-        <em>Method validation</em> above), so accuracy is high-confidence at corpus scale — but no
-        individual record has been reviewed by a curator, and any single record's tags are a strong
-        starting point rather than a guarantee.</li>
-      <li>Enrichment coverage is partial while that pass is still running across the corpus; most
-        records currently show "not yet enriched" rather than a full tag set.</li>
-      <li>Cross-links to the DOME Registry, Hugging Face, Kaggle and Zenodo are reserved fields,
-        not yet populated for any record — see <a routerLink="/about/integrations">Integrations</a> for
-        what's live versus planned.</li>
+      <li><strong>Machine-generated throughout:</strong> every classification and enrichment in the
+        corpus is LLM-generated. The method behind them was validated against a hand-annotated
+        expert benchmark before being scaled (see <em>Method validation</em> above), so accuracy is
+        high-confidence at corpus scale — but no individual record has been reviewed by a curator,
+        and any single record's tags are a strong starting point rather than a guarantee.</li>
+      <li><strong>Enrichment coverage is partial:</strong> that pass is still running across the
+        corpus, so most records currently show "not yet enriched" rather than a full tag set.</li>
+      <li><strong>Cross-links are not yet populated:</strong> the DOME Registry, Hugging Face,
+        Kaggle and Zenodo fields are reserved in the schema but empty for every record — see
+        <a routerLink="/about/integrations">Integrations</a> for what's live versus planned.</li>
     </ul>
   </div>
 </div>
