@@ -16,6 +16,7 @@ Anything here that depends on the data depends on that list, so read it before p
 | 2 | [Finalise and optimise search](#2-finalise-and-optimise-search) | A plan, to be written |
 | 3 | [Verify the preprint fields](#3-verify-the-preprint-fields) | The backfill, in the sister repo |
 | 4 | [The Zenodo DOI on the site is dead](#4-the-zenodo-doi-on-the-site-is-dead) | Minting a real deposition |
+| 5 | [Final docs pass](#5-final-docs-pass) | Every other repo settling |
 
 ---
 
@@ -90,3 +91,14 @@ not registered: `doi.org` 404s and Zenodo's API reports "the persistent identifi
 registered" (re-checked 2026-09-07). Either mint the real deposition and replace the literal, or
 revert the page to describing the mechanism without asserting a DOI. The archive job that would
 produce that deposition belongs to the sister repository.
+
+## 5. Final docs pass
+
+Last, once the sister repositories have settled. `README.md`, `AGENTS.md` and
+`.claude/skills/` were written while the split across repositories was still moving, so re-read
+them against what is actually true then:
+
+- Every cross-repository claim and link still resolves, and names the right repository.
+- `AGENTS.md` matches the code — it says to trust the code and update the file where they differ.
+- The `schema-version` skill's procedure still matches the real release and alignment steps.
+- No stale counts, versions or file paths anywhere.
