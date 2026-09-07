@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { AiMlRecord } from '../../core/record.model';
 import { articleSources } from '../../core/outbound-links';
 import { richTitle, truncatePlain } from '../../core/rich-text';
+import { publicationVenue } from '../../core/venue';
 import { StatusBadge } from '../../shared/status-badge/status-badge';
 
 const SNIPPET_LENGTH = 240;
@@ -33,8 +34,14 @@ export class ResultCard {
   // -- each is its own fact and reads faster labelled than run together, and it's what makes
   // authors visually findable at all now that the search box can match on them (see search.ts).
   readonly authors = computed(() => this.record().publication_metadata.authors);
-  readonly journal = computed(() => this.record().publication_metadata.journal);
   readonly year = computed(() => this.record().publication_metadata.year);
+
+  /** The venue row: the journal, or for a preprint the server it was posted to. One row either
+   *  way, because a preprint has no journal at all (Europe PMC returns none for a SRC:PPR record)
+   *  and the row used to vanish entirely on 6.7% of the corpus, leaving the card silent about
+   *  where the paper actually is. core/venue.ts owns the journal-wins rule -- see it before
+   *  changing anything here. */
+  readonly venue = computed(() => publicationVenue(this.record()));
 
   /** Europe PMC's citation count. `null` means "not available" (no Europe PMC record answered for
    *  this paper's identifiers, ~2% of the corpus) and the row is omitted; zero is a real, cited-

@@ -14,6 +14,12 @@ import { AppConfig } from '../config/configuration';
  */
 const FIELD_PATHS: Record<string, string> = {
   journal: 'publication_metadata.journal',
+  // Around 30 distinct values once the preprint capture pass populates it (see preprint.md), so
+  // nothing like the keywords_author case above -- it caches trivially, and answers empty until
+  // then. Measured against the real corpus 2026-09-07: the boot-time distinct takes 2.2s and runs
+  // inside the existing Promise.all, so it adds nothing serial to boot and the Dockerfile's
+  // HEALTHCHECK --start-period is unaffected.
+  preprint_server: 'publication_metadata.preprint_server',
   mesh_headings: 'content_filters.mesh_headings',
   pub_types: 'content_filters.pub_types',
   license: 'source.access.license',

@@ -14,10 +14,10 @@
         <dd>{{ authors() }}</dd>
       </div>
     }
-    @if (journal()) {
+    @if (venue(); as v) {
       <div class="card-fact">
-        <dt>Journal:</dt>
-        <dd>{{ journal() }}</dd>
+        <dt>{{ v.label }}:</dt>
+        <dd>{{ v.value }}</dd>
       </div>
     }
     @if (year()) {

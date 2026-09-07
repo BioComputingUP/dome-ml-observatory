@@ -5,12 +5,20 @@ import { ApiProperty } from '@nestjs/swagger';
  * `.lean()` (see records.service.ts), never instantiated as this class or serialized through it.
  * Mirrors observatory-ui/src/app/core/record.model.ts, duplicated deliberately rather than shared
  * (there is no `-core` package in this project, by design -- see AGENTS.md) -- source of truth
- * for the real shape is schema/releases/v1.1.0/ai-ml-landscape.schema.json.
+ * for the real shape is schema/releases/v1.3.0/ai-ml-landscape.schema.json.
  */
 class RecordIdentifiersDto {
   @ApiProperty({ type: String, nullable: true }) pmid!: string | null;
   @ApiProperty({ type: String, nullable: true }) pmcid!: string | null;
   @ApiProperty({ type: String, nullable: true }) doi!: string | null;
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    description:
+      'Europe PMC\'s own accession, e.g. "PPR18364". A Europe PMC article URL is ' +
+      '/article/{epmc_source}/{epmc_id}. Null until the preprint capture pass runs.',
+  })
+  epmc_id!: string | null;
   @ApiProperty({
     type: String,
     nullable: true,
@@ -34,7 +42,35 @@ class PublicationMetadataDto {
   @ApiProperty({ type: String, nullable: true }) authors!: string | null;
   @ApiProperty({ type: Number, nullable: true }) year!: number | null;
   @ApiProperty({ type: String, nullable: true }) journal!: string | null;
-  @ApiProperty({ type: Number, nullable: true }) citation_count!: number | null;
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    description:
+      'Preprint server name as Europe PMC records it, e.g. "bioRxiv". Null on journal articles, ' +
+      'and null on preprints until the capture pass runs.',
+  })
+  preprint_server!: string | null;
+  @ApiProperty({
+    type: Number,
+    nullable: true,
+    description:
+      'Europe PMC citation count. Null means "not available", never zero -- sort and display ' +
+      'must treat the two differently.',
+  })
+  citation_count!: number | null;
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    format: 'date-time',
+    description: 'When citation_count was fetched. Null wherever citation_count is null.',
+  })
+  citation_count_updated!: string | null;
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    description: 'Where citation_count came from, e.g. "europepmc".',
+  })
+  citation_source!: string | null;
 }
 
 class SourceAccessDto {
@@ -46,6 +82,22 @@ class SourceAccessDto {
 class SourceDto {
   @ApiProperty({ type: String, nullable: true }) abstract_source!: string | null;
   @ApiProperty({ type: String, nullable: true }) metadata_repair_sources!: string | null;
+  @ApiProperty({
+    enum: ['llm', 'human_curated', 'registry_confirmed'],
+    description:
+      "Who decided this record's classification. Never null -- a null provider on " +
+      'llm_classification only fails to say "machine", which is why this field exists.',
+  })
+  decision_provenance!: string;
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    enum: ['MED', 'PPR', 'PMC', 'AGR', 'PAT'],
+    description:
+      'Which Europe PMC index the record came from. PPR is the authoritative preprint marker. ' +
+      'Null until the capture pass runs.',
+  })
+  epmc_source!: string | null;
   @ApiProperty({ type: SourceAccessDto }) access!: SourceAccessDto;
 }
 

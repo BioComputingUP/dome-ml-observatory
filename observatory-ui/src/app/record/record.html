@@ -41,10 +41,10 @@
                 <dd>{{ authors() }}</dd>
               </div>
             }
-            @if (journal()) {
+            @if (venue(); as v) {
               <div class="record-fact">
-                <dt><i class="icon icon-common icon-book" aria-hidden="true"></i> Journal</dt>
-                <dd>{{ journal() }}</dd>
+                <dt><i class="icon icon-common" [class]="v.icon" aria-hidden="true"></i> {{ v.label }}</dt>
+                <dd>{{ v.value }}</dd>
               </div>
             }
             @if (year()) {

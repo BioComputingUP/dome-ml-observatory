@@ -35,7 +35,7 @@ const REPO = 'https://github.com/BioComputingUP/dome-ml-observatory';
  * Stored bare, without the `v`, so it is the same shape `versionNumber` hands back. Anything that
  * displays a version decides for itself whether to prefix it.
  */
-export const FALLBACK_SCHEMA_VERSION = '1.1.0';
+export const FALLBACK_SCHEMA_VERSION = '1.3.0';
 
 /**
  * A version as a bare number, whichever way it arrived -- `v1.1.0` and `1.1.0` both give `1.1.0`.

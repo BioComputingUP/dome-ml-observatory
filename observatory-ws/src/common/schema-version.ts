@@ -10,7 +10,7 @@ const logger = new Logger('SchemaVersion');
  * response, never a functional break (nothing here validates documents against it at request
  * time), so this deliberately warns rather than crashing the app.
  */
-const FALLBACK_SCHEMA_VERSION = '1.1.0';
+const FALLBACK_SCHEMA_VERSION = '1.3.0';
 
 /**
  * Locates schema/CURRENT from either of the two working directories this app runs from: repo

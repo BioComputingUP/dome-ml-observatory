@@ -8,6 +8,7 @@ import { AiMlRecord, isEnriched } from '../core/record.model';
 import { modelTypeLabel } from '../core/facet-labels';
 import { articleSources, crossLinkedAssets, CrossLinkedAsset } from '../core/outbound-links';
 import { plainText, richAbstract, richTitle } from '../core/rich-text';
+import { publicationVenue } from '../core/venue';
 import { SearchStateService } from '../core/search-state.service';
 import { toBibtex, toRis } from '../core/citation';
 import { StatusBadge } from '../shared/status-badge/status-badge';
@@ -77,7 +78,10 @@ export class RecordPage {
 
   // ---- Header metadata: one labelled fact per row, never fused into a single line. -----------
   readonly authors = computed(() => this.rec().publication_metadata.authors);
-  readonly journal = computed(() => this.rec().publication_metadata.journal);
+  /** Journal, or the preprint server for a preprint -- one labelled row either way. The
+   *  journal-wins rule and the server lookup both live in core/venue.ts, shared with the result
+   *  card so the two can't drift. */
+  readonly venue = computed(() => publicationVenue(this.rec()));
   readonly year = computed(() => this.rec().publication_metadata.year);
   /** Europe PMC's citation count. Null means "not available" rather than zero -- no Europe PMC
    *  record answered for this paper's identifiers -- so the fact is omitted entirely in that case,

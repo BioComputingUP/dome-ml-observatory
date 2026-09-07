@@ -1,5 +1,5 @@
 /**
- * Mirrors schema/releases/v1.1.0/ai-ml-landscape.schema.json exactly -- that file (not this one)
+ * Mirrors schema/releases/v1.3.0/ai-ml-landscape.schema.json exactly -- that file (not this one)
  * is the source of truth. If the schema-version skill cuts a new release, update this to match
  * and note it in that release's CHANGELOG entry.
  */
@@ -10,6 +10,11 @@ export interface RecordIdentifiers {
   pmid: string | null;
   pmcid: string | null;
   doi: string | null;
+  /** Europe PMC's own accession, e.g. "PPR18364". A Europe PMC article URL is
+   *  /article/{epmc_source}/{epmc_id}. Optional because nothing populates it yet -- see
+   *  preprint.md -- so every record in the corpus and the dev fixture is missing the key
+   *  entirely, not merely null. */
+  epmc_id?: string | null;
   /** Reserved for a future linking pass -- always null until then. */
   dome_registry: string | null;
   bioai_repo: string | null;
@@ -25,7 +30,13 @@ export interface PublicationMetadata {
   /** Comma-separated plain-text string, e.g. "Liang L, Liang H, He M". */
   authors: string | null;
   year: number | null;
+  /** Null on 56,863 preprints, which have no journal by definition rather than by omission --
+   *  read `preprint_server` for those. See core/venue.ts, which resolves the one venue row. */
   journal: string | null;
+  /** Preprint server name as Europe PMC records it, e.g. "bioRxiv". Optional for the same reason
+   *  as `epmc_id`: schema v1.3.0 defines it, nothing populates it yet, so core/venue.ts falls
+   *  back to deriving it from the DOI prefix until the backfill runs. */
+  preprint_server?: string | null;
   /** Europe PMC citation count, real since the 2026-09-03 load (~98% of the corpus). `null` means
    *  "not available" -- no Europe PMC record answered for this paper's identifiers -- never zero,
    *  so anything displaying it has to distinguish the two. */
@@ -41,6 +52,12 @@ export interface SourceAccess {
 export interface Source {
   abstract_source: string | null;
   metadata_repair_sources: string | null;
+  /** Who decided this record's classification: 'llm' | 'human_curated' | 'registry_confirmed'.
+   *  Optional here only because the 200-record dev fixture predates schema v1.2.0. */
+  decision_provenance?: string;
+  /** Which Europe PMC index the record came from -- MED, PPR, PMC, AGR or PAT. 'PPR' is the
+   *  authoritative preprint marker; optional until the capture pass runs. */
+  epmc_source?: string | null;
   access: SourceAccess;
 }
 
