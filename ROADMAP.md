@@ -13,10 +13,9 @@ Anything here that depends on the data depends on that list, so read it before p
 | # | Item | Blocked on |
 |---|---|---|
 | 1 | [Matomo analytics](#1-matomo-analytics) — built, switched off | A site ID from the Matomo admin |
-| 2 | [Continuous integration](#2-continuous-integration) — nothing is checked automatically | Nothing |
-| 3 | [Finalise and optimise search](#3-finalise-and-optimise-search) | A plan, to be written |
-| 4 | [Verify the preprint fields](#4-verify-the-preprint-fields) | The backfill, in the sister repo |
-| 5 | [The Zenodo DOI on the site is dead](#5-the-zenodo-doi-on-the-site-is-dead) | Minting a real deposition |
+| 2 | [Finalise and optimise search](#2-finalise-and-optimise-search) | A plan, to be written |
+| 3 | [Verify the preprint fields](#3-verify-the-preprint-fields) | The backfill, in the sister repo |
+| 4 | [The Zenodo DOI on the site is dead](#4-the-zenodo-doi-on-the-site-is-dead) | Minting a real deposition |
 
 ---
 
@@ -62,33 +61,7 @@ same constant that turns tracking on, so its wording cannot drift.
 `MATOMO_SITE_ID` back to `null` and redeploy. The CSP entry can stay — a permitted host is not a
 contacted one.
 
-## 2. Continuous integration
-
-**What this means.** Every check this project has is run by hand, on one machine, by whoever
-remembers to. Lint, tests, the production build and the schema validator all exist and all pass,
-but nothing runs them when a change is pushed. `.github/` holds issue templates and no workflow.
-
-**Why it matters.** The gap is not "tests might fail" — it is that a change can reach `main`
-having been checked on nobody's machine. Two of this project's worst breakages were of exactly
-that kind: a bare `npm install` floated Mongoose past `8.x` and silently broke the database
-connection, and a cross-directory `COPY schema/` broke the Docker image while a plain
-`npm run build` still passed. Both are invisible to a local build and cheap for a machine to catch
-every time.
-
-**Proposed: one `ci.yml`, on pull request and push to `main`.** Build only, never deploy —
-deployment stays the hosting lab's.
-
-- Node from `.nvmrc`, dependencies with `npm ci`, never `npm install`.
-- Both apps: lint, test, build. Currently 187 tests in `observatory-ui`, 185 in `observatory-ws`.
-- `python3 schema/validate.py` against the current release.
-- `docker build` both images from the repo root context. This is what catches the `COPY schema/`
-  class of break.
-- Assert `build-prod` produces a flat `dist/` with `index.html` at its root — the single most
-  likely silent break to `deploy-prod-quick`.
-
-Branch protection and required status checks want this to exist first.
-
-## 3. Finalise and optimise search
+## 2. Finalise and optimise search
 
 Search works and is fast enough, but the behaviour was assembled incrementally and has known rough
 edges: `sort=relevance` actually sorts by `_id`, the text index is bypassed for a single bare word
@@ -96,7 +69,7 @@ and for any query that clears the classification filter, and facet counts are co
 than contextual. A plan for this is still to be written, and it depends on decisions in the sister
 repository — whether `citation_count` gets an index, and how open vocabularies become facets.
 
-## 4. Verify the preprint fields
+## 3. Verify the preprint fields
 
 Schema v1.3.0 defines `publication_metadata.preprint_server`, `source.epmc_source` and
 `identifiers.epmc_id`. Both apps read them; nothing populates them yet. Until then
@@ -109,7 +82,7 @@ re-verify against real data that the stored value wins over the derived one, res
 `core/outbound-links.ts` builds `/article/MED/{pmid}`, which is wrong for the 3,157 preprints that
 carry a PMID.
 
-## 5. The Zenodo DOI on the site is dead
+## 4. The Zenodo DOI on the site is dead
 
 `download-bulk.ts` hardcodes `ZENODO_DOI = '10.5281/zenodo.22259905'` and `/download/bulk`
 presents it as the permanent release identifier, with a copy button and a citation block. It is

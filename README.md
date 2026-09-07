@@ -1,5 +1,7 @@
 # DOME Observatory
 
+[![CI](https://github.com/BioComputingUP/dome-ml-observatory/actions/workflows/ci.yml/badge.svg)](https://github.com/BioComputingUP/dome-ml-observatory/actions/workflows/ci.yml)
+
 A searchable database of AI/ML methods-paper metadata: 846,716 publications screened, 366,234
 classified as AI/ML methods papers, and cross-linked to [Europe PMC](https://europepmc.org/).
 Most classifications come from LLM processing, using a method validated against a hand-annotated

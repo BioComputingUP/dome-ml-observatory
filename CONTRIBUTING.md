@@ -77,13 +77,21 @@ From the repo root the same commands are available unprefixed (`npm run start`,
 
 ### Gates
 
-There is no CI yet (see [`ROADMAP.md`](ROADMAP.md)). These local gates are the only gate — run the
-ones for whichever app you touched, and make sure they pass before opening a PR:
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs these on every pull request and every
+push to `main`, plus two things a local run cannot catch: both Docker images built from the repo
+root context, and every schema release validated against its own schema. It reports a tick or a
+cross on the commit; it does not block a push.
+
+Run the gates for whichever app you touched before opening a PR anyway — locally they take seconds
+and CI takes minutes:
 
 ```bash
 npm test        && npm run lint     && npm run build-prod   # observatory-ui
 npm run test:ws && npm run lint:ws  && npm run build:ws     # observatory-ws
 ```
+
+One difference worth knowing: CI runs `npm run lint:ci` in `observatory-ws`, not `lint`. The `lint`
+script carries `--fix`, which is convenient locally but would rewrite files and exit 0 on a runner.
 
 For backend changes touching database queries, also run the service against the real database and
 exercise the affected endpoint. Several defects in this service were reproducible only that way.
