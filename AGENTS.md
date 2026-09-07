@@ -27,9 +27,9 @@ deliberately, not linked. **The backend is the only thing that ever talks to the
 Never give the frontend a database connection string or expose a database port publicly; the
 backend is the entire security boundary. This is a hosting requirement, not a style choice.
 
-## Sibling repository: `dome-observatory-triage` (the write side)
+## Sibling repository: `dome-ml-observatory-triage` (the write side)
 
-[`BioComputingUP/dome-observatory-triage`](https://github.com/BioComputingUP/dome-observatory-triage)
+[`BioComputingUP/dome-ml-observatory-triage`](https://github.com/BioComputingUP/dome-ml-observatory-triage)
 is the only thing that writes to `dome_observatory.Content`: it fetches Europe PMC records,
 classifies and enriches them, builds documents and loads them, refreshes citation counts. This
 repository never writes; that one never serves reads. Two things cross the boundary and both
@@ -120,7 +120,7 @@ host are not.
 ## Skills
 
 - **`.claude/skills/schema-version/SKILL.md`** — the only skill in this repo. Use it for anything
-  that touches `schema/`: pulling vocab/schema updates from `dome-observatory-triage`, deciding the semver
+  that touches `schema/`: pulling vocab/schema updates from `dome-ml-observatory-triage`, deciding the semver
   bump, cutting a new immutable release, writing the changelog entry, and re-syncing
   `observatory-ui/src/assets/vocab/`. Don't hand-roll a release; the skill exists because the
   release folders are immutable and the sync/validate steps are easy to forget. Background on the

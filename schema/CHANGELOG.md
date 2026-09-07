@@ -4,6 +4,16 @@ All notable changes to the DOME Observatory record schema and its controlled voc
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/); versioning is semver —
 see `README.md` for what counts as major/minor/patch here.
 
+## Unreleased
+
+**Repository rename, 2026-09-07.** The upstream write-side repository was renamed
+`dome-observatory-triage` → `dome-ml-observatory-triage`, so its name matches this one and the pair
+reads as one system. Nothing about the schema changed. Every reference in this repository was
+updated except the two published releases below: `v1.2.0/` and `v1.3.0/` still name
+`dome-observatory-triage` in their `description`, because a release folder is immutable once
+published (see `README.md`) and is never edited in place. GitHub redirects the old name, so those
+strings still resolve. The next release will carry the new name.
+
 ## v1.3.0 — 2026-09-07
 
 Three additive fields so a preprint can say where it was posted. 56,863 corpus documents are
@@ -28,14 +38,14 @@ yet. `preprint.md` at the repo root is the specification for the Europe PMC capt
 DOI prefix at display time (`src/app/core/venue.ts`, table verified against Europe PMC 2026-09-07,
 100% prefix coverage of current preprints) and prefers the stored field the moment it appears.
 
-**Still pending:** the upstream `SCHEMA_VERSION` in `dome-observatory-triage`'s `schema.py` is
+**Still pending:** the upstream `SCHEMA_VERSION` in `dome-ml-observatory-triage`'s `schema.py` is
 still `1.2.0`. It has to be bumped to `1.3.0` in the same change that starts emitting these three
 fields, or newly-loaded documents will claim a version whose fields they lack.
 
 ## v1.2.0 — 2026-09-07 (catch-up; shape dated 2026-09-03)
 
 **A catch-up release, not new work.** The corpus has carried `schema_version: "1.2.0"` on every
-document since the 2026-09-03 load, and `dome-observatory-triage`'s `schema.py` has been at 1.2.0
+document since the 2026-09-03 load, and `dome-ml-observatory-triage`'s `schema.py` has been at 1.2.0
 since then, but this folder still stopped at v1.1.0. This publishes the shape that is already live
 so the changelog has no hole. Cut alongside v1.3.0.
 

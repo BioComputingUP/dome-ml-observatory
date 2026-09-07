@@ -3,7 +3,7 @@
 What is still open in this repository. Shipped work is not listed here — the record of what was
 built and why is in `AGENTS.md` and the code.
 
-**Check the sister repository first.** [`dome-observatory-triage`](https://github.com/BioComputingUP/dome-observatory-triage)
+**Check the sister repository first.** [`dome-ml-observatory-triage`](https://github.com/BioComputingUP/dome-ml-observatory-triage)
 is the write side: it builds the corpus, authors the document schema and loads the database. Its
 `ROADMAP.md` carries the data-side work, including the Zenodo archive and authoring schema v1.3.0.
 Anything here that depends on the data depends on that list, so read it before planning here.

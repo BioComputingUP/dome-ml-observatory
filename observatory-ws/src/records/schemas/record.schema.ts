@@ -4,7 +4,7 @@ import { Schema } from 'mongoose';
  * Mirrors schema/releases/v1.1.0/ai-ml-landscape.schema.json -- that file is the source of truth,
  * this is just enough shape for Mongoose/TypeScript to be useful. `strict: false` is deliberate:
  * unknown fields pass through untouched rather than being silently stripped, so a schema bump
- * upstream (dome-observatory-triage) doesn't lose data here before schema/ and this file catch up.
+ * upstream (dome-ml-observatory-triage) doesn't lose data here before schema/ and this file catch up.
  *
  * `_id` MUST be declared `String` explicitly. Every document's `_id` is a UUID5 string (confirmed
  * against the MongoDB server directly, 2026-09-01: e.g. "04fc0915-fded-5146-8847-4da33cf3a059"), not a Mongo

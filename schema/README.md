@@ -32,7 +32,7 @@ schema/
 ## Where this data actually comes from
 
 The corpus and its classification are produced by the sibling repository
-[`dome-observatory-triage`](https://github.com/BioComputingUP/dome-observatory-triage) — its
+[`dome-ml-observatory-triage`](https://github.com/BioComputingUP/dome-ml-observatory-triage) — its
 `mongo_landscape_export/scripts/schema.py` is where the document shape is *authored*
 (`SCHEMA_VERSION`, `build_document()`), and its `README.md` explains the pipeline. This `schema/`
 folder is downstream of it: there is where the data and vocabularies are *built*; here is where
@@ -40,7 +40,7 @@ they're *published* as a stable, versioned contract for this repo's UI and backe
 That repository's `schema/check_alignment.py` checks the two (and the live database) agree; run it
 before cutting a release here.
 
-The controlled vocabularies (`vocab/`) are decided and maintained in `dome-observatory-triage/curation_criteria/`
+The controlled vocabularies (`vocab/`) are decided and maintained in `dome-ml-observatory-triage/curation_criteria/`
 by the enrichment pipeline. When they change there, use the `schema-version` skill
 (`.claude/skills/schema-version/SKILL.md`) to pull the update in here properly, rather than
 hand-copying files.
@@ -63,14 +63,14 @@ Every bump gets a `CHANGELOG.md` entry with a migration note — even when "the 
 
 Use the `schema-version` skill rather than hand-editing:
 
-> "sync the schema from dome-observatory-triage" / "check for schema updates" / "cut a new schema version"
+> "sync the schema from dome-ml-observatory-triage" / "check for schema updates" / "cut a new schema version"
 
-It pulls the latest from `dome-observatory-triage`, diffs against `CURRENT`, proposes the right semver bump,
+It pulls the latest from `dome-ml-observatory-triage`, diffs against `CURRENT`, proposes the right semver bump,
 writes the changelog entry, publishes the new immutable release folder, moves `CURRENT`, re-syncs
 `observatory-ui`'s vocab assets, and validates the result. Manual steps if you're not using the
 skill:
 
-1. Copy the updated schema/vocab source from `dome-observatory-triage` into a **new**
+1. Copy the updated schema/vocab source from `dome-ml-observatory-triage` into a **new**
    `releases/vX.Y.Z/` folder — never edit an existing release.
 2. Update the example if the shape changed (`validate.py` will catch a stale example).
 3. Add the `CHANGELOG.md` entry.
