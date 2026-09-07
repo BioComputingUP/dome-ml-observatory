@@ -4,7 +4,7 @@
  * `MATOMO_SITE_ID` is null until the lab's Matomo administrator issues a site ID for
  * observatory.dome-ml.org. While it is null nothing is loaded, no request leaves the browser, and
  * the privacy page says so -- see MATOMO_ENABLED below. Setting it to the real ID is the entire
- * activation step on the frontend side; see docs/matomo-activation.local.md.
+ * activation step on the frontend side; see ROADMAP.md §1 for the full runbook.
  *
  * Deliberately a source constant rather than an environment variable or a build-time define. The
  * SPA has no runtime configuration of any kind (see the root README's Architecture section) and

@@ -1,452 +1,119 @@
-# Roadmap — DOME Observatory
+# Roadmap
 
-What is still to build. The record of what has shipped and why lives in [AGENTS.md](AGENTS.md)
-and in the code; this file is only the work ahead.
+What is still open in this repository. Shipped work is not listed here — the record of what was
+built and why is in `AGENTS.md` and the code.
 
-Last updated **2026-09-03**.
+**Check the sister repository first.** [`dome-observatory-triage`](https://github.com/BioComputingUP/dome-observatory-triage)
+is the write side: it builds the corpus, authors the document schema and loads the database. Its
+`ROADMAP.md` carries the data-side work, including the Zenodo archive and authoring schema v1.3.0.
+Anything here that depends on the data depends on that list, so read it before planning here.
 
-**Where things stand**: both apps are built, containerised and running against the MongoDB server
-(`dome_observatory.Content`, MongoDB 4.2.25, **846,716 documents at `schema_version` 1.2.0**).
-All three indexes are live — `_id_`, `class_year_id`, `positives_text`. **3,332 records are now
-enriched** (see §1a). There is no Zenodo deposit and no CI; analytics are built but not yet
-switched on (see §3).
+## At a glance
 
-The corpus changed materially on 2026-09-03 and this repository has not caught up with it yet —
-see §1. In short: 6,179 human-curated and registry-confirmed records were merged in (they had been
-the only records missing), every document gained a `source.decision_provenance`, and 98.11% of the
-corpus now carries a real Europe PMC citation count. **Two pages still assert that every
-classification is LLM-generated, and that is now false.**
-
----
-
-## 1. Data refresh — reloading the corpus, and new classification / enrichment runs
-
-The corpus turns over **6–12 times a year** and every cache in `observatory-ws` is sized around
-that. **There is now a runbook**: `moros_pipeline/README.md` in `dome-observatory-triage`, which replaced the
-one-off manual Compass import on 2026-09-03. Every write there is dry-run by default, restricted to
-an explicit allowlist of leaf field paths (so a refresh cannot blank a group it was not meant to
-touch), and reversible from a rollback snapshot taken before the first batch. `verify_corpus.py`
-asserts the corpus invariants against the live collection and prints the manual post-load
-checklist below.
-
-⚠️ **`mongoimport` does not work against this server**, despite being specified below and in
-the pipeline's earlier plan. Measured three times on 2026-09-03: it stalls at ~17% of a 21.4MB file,
-reports `use of closed network connection`, exits non-zero, and prints `0 document(s) imported
-successfully` — while the collection count had already risen by exactly 1,000. The loader uses
-pymongo `ReplaceOne(upsert=True)` instead, which has identical upsert semantics, and treats the
-collection count as the only honest authority. The same host took 811,036 pymongo bulk writes with
-zero errors in the citation load.
-
-**Upstream** is [`dome-observatory-triage`](https://github.com/BioComputingUP/dome-observatory-triage), not here. Two
-different jobs:
-
-- **Classification** (Step 23a) — adds new documents, may revise `llm_classification` on existing
-  ones.
-- **Enrichment** (Step 23b) — fills `content_filters`' six reserved fields and the whole
-  `llm_enrichment` group on documents that *already exist*. Update in place by `_id`, never a
-  re-import. **3,332 records are enriched as of 2026-09-03** — see §1a below; the search page's
-  coverage banner reads this live and now reports a real number.
-
-The staging chain that turns a classified batch into loadable JSONL exists and is tested in
-`dome-observatory-triage/mongo_landscape_export/scripts/` (`build_staged_documents.py`, through the
-same `schema.build_document()` every record was built with). `pid.py` mints a **deterministic
-UUID5** from `pmcid > doi > pmid`, so the same paper always gets the same `_id` — that property is
-what makes everything below possible.
-
-**To build:**
-
-- **An upsert loader, not drop-and-reimport.** Dropping `Content` destroys both indexes, and
-  `positives_text` takes ~3 minutes of tokenising plus a 1.5GB collection read to rebuild — during
-  which search silently degrades to the regex path.
-
-  ```bash
-  mongoimport --uri "$MONGODB_URI" --db dome_observatory --collection Content \
-    --file output/ai_ml_landscape.jsonl --mode upsert --upsertFields _id
-  ```
-
-  Decide the field-level merge policy explicitly: a classification refresh must not blank an
-  `llm_enrichment` group a later enrichment run has populated. `$set` of a whole document will
-  decide that by accident if nobody decides it on purpose.
-
-- **Fetch citation counts from Europe PMC before each load.** `publication_metadata.citation_count`
-  is a required field in the schema and is null on every record — reserved but never populated.
-  Europe PMC exposes counts per article, so the pull belongs in the staging chain alongside the
-  existing licence join, before the JSONL is written. Cheapest point to fix it is a refresh that
-  is happening anyway.
-
-  **Done, 2026-09-03** — in the corpus pipeline (`dome-observatory-triage/moros_pipeline/`). Verified live that
-  `citedByCount` comes back in the cheap `resultType=lite` — the licence fetch needs `core`, this
-  does not — and that `DOI:"…"` queries resolve records with no PMID, which is 67,985 of the
-  corpus. So the fetch keys `pmid → doi → pmcid` and reaches effectively all of it. Counts land
-  through a field-level `$set` on `publication_metadata.citation_count` rather than a reload, so
-  the 2.98GB JSONL is not re-imported to populate one integer.
-
-  Result: **830,689 of 846,716 documents (98.11%)** carry a real count. Yield by key was pmid
-  99.6%, pmcid 100%, doi 80.7%; the doi shortfall is genuine Europe PMC coverage (Cochrane reviews,
-  some preprints), not a query bug, and those records keep `citation_count: null`, which already
-  means "not available". Sanity check on the top of the distribution: DESeq2 81,547, PRISMA 2020
-  58,715, AlphaFold 2 34,984, LeCun/Bengio/Hinton 18,576.
-
-  Two fields came with it, because a bare number that cannot be dated is not much better than a
-  null: `citation_count_updated` (ISO-8601, when the count was fetched) and `citation_source`.
-  A refresh then only re-fetches entries older than a chosen age, which is what keeps the monthly
-  run cheap. `citations_desc` / `citations_asc` and the UI's "Most cited" option start doing real
-  work the moment this lands, with no change on this side — but `citation_count` is not indexed,
-  so a deep citation sort will be slow until it is. Measure before adding the index.
-
-- **Schema v1.2.0 is live in the database and still needs cutting HERE.** ⚠️ The collection is
-  already at `schema_version: "1.2.0"`, but `schema/releases/` still stops at v1.1.0 and
-  `schema/CURRENT` still reads `v1.1.0`. Cut the release with the `schema-version` skill; the
-  upstream reference copy of the exact shape is
-  `dome-observatory-triage/mongo_landscape_export/schema/ai_ml_landscape.schema.json`.
-  It is additive. Three new fields, no existing
-  field changed or removed: `source.decision_provenance`, plus the two citation fields above.
-  `llm_classification.classification` is deliberately left as the single queryable classification
-  field, so the `positives_text` partial filter and `canUseTextIndex` in `records.query.ts` are
-  untouched — that was the deciding argument against the alternative of a parallel `curation`
-  group with its own classification field.
-
-  `decision_provenance` takes exactly three values — `"llm"`, `"human_curated"`,
-  `"registry_confirmed"` — and is never null. Live distribution: **llm 827,061 · human_curated
-  5,960 · registry_confirmed 219**. The 827,061 pre-existing documents were set to `"llm"` by an
-  in-place migration (37 seconds) rather than a reload.
-
-  Two descriptions need rewriting rather than carrying forward. `llm_classification.rationale`
-  currently reads *"Always LLM-generated — surface this fact to users, don't present it as a human
-  judgement"*, which stops being true for 6,179 documents; it should say the rationale's origin
-  is given by `source.decision_provenance`. And `classification`'s description quotes corpus
-  counts of 355,569 / 464,603 / 6,923 — the pre-`filter_missing_rationale` figures, 34 records
-  ahead of the live collection. Regenerate them, do not copy them.
-
-- **⚠️ The curated set has ARRIVED, and two pages now assert something false.**
-  Upstream had excluded every human-curated and registry-confirmed record from the corpus — 3,471
-  human-confirmed positives, 378 of them DOME Registry entries, AlphaFold 2 among them. They were
-  left out of LLM classification on purpose and then never merged back. The merge landed
-  on 2026-09-03: **6,179 documents, total 833,240**, positives 355,558 → **358,865**.
-  Searching the live corpus for AlphaFold now returns Jumper et al. 2021 as a registry-confirmed
-  positive. Three consequences here, none of them optional, and all of them outstanding:
-
-  - `observatory-ui/src/app/about/about-overview/about-overview.html:151` and
-    `about-support/about-support.html:208` both state that every classification in the corpus is
-    LLM-generated. **That is false as of 2026-09-03 for 6,179 records.** Highest priority here.
-  - `AGENTS.md`'s guidance that records are *"not curator-reviewed; don't describe them as
-    such"* has to change with them, or the next agent will faithfully reintroduce the false
-    statement while fixing something else.
-  - `shared/status-badge/` and `record/record.html` should show provenance. A registry-confirmed
-    positive and a model's guess currently render identically, and making that visible is the
-    single biggest user-facing gain available from any of this work.
-
-- **Two things to do here now, before anything else in this section.** The load has already
-  landed, so these are not preparation — they are catching up:
-  1. Restart `observatory-ws`. `FacetsService` is boot-loaded with **no TTL**, so the ~6k new
-     records' journals, MeSH terms and licences are not in the typeaheads yet. The other three
-     caches are 24h TTL and will have aged out on their own.
-  2. Re-run `python3 schema/generate_facet_stats.py --from-api <url>` and check `/api/stats`
-     reconciles against 833,240.
-
-  Then the schema release and the three UI items above.
-
-- **Neither `positives_text` nor `canUseTextIndex` needed any change**, which was the deciding
-  argument for the v1.2.0 design. A curated positive is `llm_classification.classification:
-  "positive"` like any other, so it entered the partial text index on load and is searchable with
-  no code change here at all. `citations_desc` / `citations_asc` likewise started returning real
-  orderings the moment the counts landed. `publication_metadata.citation_count` is still
-  **unindexed**, so a deep citation sort is a candidate for `class_citations_id` —
-  the pipeline's `scripts/ensure_indexes.py --measure-citation-sort` times it against the real
-  10,000-result window so that decision can be made on numbers. (Note the window is a
-  `/api/records` browsing limit only — `/api/export` is unbounded and unaffected.)
-
-- **The first enrichment merge is its own milestone**, not part of a routine refresh. It writes
-  fields nothing has ever written, so run it against a copy first, verify a sample against the
-  [vocabularies in the current schema release](schema/releases/v1.1.0/vocab/), then merge. The search page's enrichment-coverage
-  banner reads its number live and starts reporting on its own once records land — no
-  regeneration step, no code change.
-
-- **An enrichment writer**, in `dome-observatory-triage` (`load_enrichment.py`, done). **Not here** — `observatory-ws` is read-only by
-  design and must never gain write credentials.
-
-- **A post-refresh checklist.** New data is not visible until the service restarts:
-
-  | | |
-  |---|---|
-  | `FacetsService` (journal / mesh / pub-type / licence typeaheads) | **boot-loaded, no TTL — a restart is required** |
-  | `StatsService`, `CountService`, `JournalsService` | 24h TTL |
-
-  Then re-run [`schema/generate_facet_stats.py`](schema/generate_facet_stats.py) `--from-api <url>`,
-  check `/api/stats`, and cut a schema release with the `schema-version` skill if the shape
-  changed — a new [`schema/releases/vX.Y.Z/`](schema/releases/) folder plus a
-  [`CHANGELOG.md`](schema/CHANGELOG.md) entry, never an edit to a published one.
-
-- **If the collection is ever dropped**, both indexes go with it. Recreate them:
-
-  ```js
-  db.Content.createIndex(
-    { "publication_metadata.title": "text", "publication_metadata.abstract": "text",
-      "publication_metadata.authors": "text" },
-    { partialFilterExpression: { "llm_classification.classification": "positive" },
-      weights: { "publication_metadata.title": 10, "publication_metadata.authors": 5,
-                 "publication_metadata.abstract": 1 },
-      name: "positives_text", background: true });
-
-  db.Content.createIndex(
-    { "llm_classification.classification": 1, "publication_metadata.year": -1, _id: 1 },
-    { name: "class_year_id", background: true });
-  ```
-
-  The backend detects their absence at boot and falls back to the regex path, so nothing breaks —
-  search just gets slow again.
-
-- **Fix the double-encoded titles at ingestion.** Some `publication_metadata.title` values are
-  stored as double-HTML-encoded markup (`&lt;i&gt;Halomonas elongata&lt;/i&gt;`) and render as
-  literal text. The repair belongs in the `dome-observatory-triage` conversion step (`schema.py` decodes entities since 1.2.0); a UI-side entity decode
-  would mis-render titles that legitimately contain `<` or `>`.
-
-## 1c. The licence facet was under-populated by 74,472 documents — fixed 2026-09-03
-
-`source.access.license` is now populated on **100%** of the corpus: 589,798 carry a real licence
-string and 256,918 were looked up and disclosed none. **Zero remain `null`**, which in this schema
-means "never looked up" and is distinct from `""`.
-
-It had been `null` on **74,472 documents**, and the cause was upstream key choice rather than
-Europe PMC coverage: the original licence fetch was **pmid-keyed only**, so the 68,103 corpus
-records with no pmid were unfetchable from the day it ran. They are now fetched by
-`pmid -> doi -> pmcid`, the same three passes the citation fetch uses.
-
-**What this means for the UI:** the licence facet has been understating coverage by ~9% of the
-corpus, and the newest documents were the worst affected. The values are correct now, but
-`FacetsService` is boot-loaded with no TTL — **the facet will keep serving the old distribution
-until `observatory-ws` restarts.**
-
-`open_access` moved on 104 documents (0.18% of those checked), applying the existing rule that
-EPMC's freshly-fetched flag wins wherever a real lookup happened.
-
-## 1b. The corpus is now refreshed incrementally, and grew on 2026-09-03
-
-`dome-observatory-triage`'s corpus pipeline runs the refresh end to end and was exercised whole for the first
-time on 2026-09-03: **833,240 → 846,716 documents**, +13,476 genuinely-new 2026 papers, with
-positives 358,865 → **366,234**. The loop fetches only the Europe PMC windows a coverage ledger has
-never covered, drops every record already carrying a corpus `_id`, classifies the remainder, and
-upserts. Re-running it afterwards offers nothing already loaded.
-
-**This changes the refresh assumption in §1.** There is now a runbook, it is idempotent, and it can
-run monthly rather than 6–12 times a year. The post-refresh checklist below still applies in full —
-in particular `FacetsService` is boot-loaded with no TTL, so **13,476 new documents' journals, MeSH
-terms and licences are invisible until `observatory-ws` restarts**.
-
-## 1a. Enrichment has landed — four journals, 3,332 records
-
-**This is the first enrichment ever merged into the corpus.** Until 2026-09-03 the
-`llm_enrichment` group and `content_filters`' six vocabulary fields were reserved-but-null on every
-document, and the search page's enrichment-coverage banner reported zero.
-
-| | |
-|---|---|
-| Enriched documents | **3,332** (of 846,716) |
-| Journals | Bioinformatics (Oxford, England), Nature, Science (New York, N.Y.), Cell — positives only |
-| `content_filters.domain_tier2` populated | 3,321 |
-| Vocabulary violations | 4.1% of records, against a 6.81% trial baseline |
-| Provider / prompt | `deepseek` flash, prompt `e1`, vocab `41db952f1511` |
-
-**⚠️ A restart is required before any of this is visible in the UI.** `FacetsService` is
-boot-loaded with no TTL, so the new `domain_tier1/2/3`, `learning_paradigm`, `model_family` and
-`model_type` values do not appear in any typeahead until `observatory-ws` restarts.
-`StatsService`, `CountService` and `JournalsService` are 24h TTL. The coverage banner itself reads
-`/api/stats` live and needs no regeneration.
-
-**What is worth building on top, now that the data exists.** The six `content_filters` fields have
-values for the first time, so they can become real facets. Two cautions from how the data was
-produced:
-
-- **`model_type` is an open vocabulary by design.** Unlisted methods are tagged verbatim, which
-  works (`graph attention network`, `node2vec`, `NOTEARS`, `protein language model` are real
-  methods the seed list lacks) but also captures **tool names** — `Popcorn`, `HyDRA`, `MICER`,
-  `mebipred`. A facet over it will show both. The other five fields are closed vocabularies and
-  are safe to facet directly.
-- **Coverage is deliberately partial**, so a filter on any enrichment field silently restricts to
-  the enriched 0.4% of the corpus. Whatever surfaces these fields should say so, or the result
-  count will read as a classification result rather than a coverage artefact.
-
-**Cost, for planning the rest.** Enrichment runs at a measured **$4.07 per 1,000 records** and that
-is not reducible: a four-arm paired ablation (recorded in `dome-observatory-triage/moros_pipeline/README.md`, "Things measured here") found
-`reasoning_effort: low` costs *more* than the default with six times the violations, a hierarchical
-vocabulary rendering saves nothing, and disabling thinking is 88% cheaper but agrees with the
-production configuration on all six fields for **0%** of records. Enriching all 366,234 positives
-would be roughly **$1,490**.
-
-## 2. Automated monthly Zenodo archive
-
-**First: the DOI on the site is dead.** `download-bulk.ts` hardcodes
-`ZENODO_DOI = '10.5281/zenodo.22259905'` and `/download/bulk` presents it as the permanent release
-identifier, with a copy button and a citation block. It is not registered — `doi.org` 404s and
-Zenodo's API reports "the persistent identifier is not registered" (checked 2026-09-03). Mint the
-real deposition and replace the literal, or revert the page to describing the mechanism without
-asserting a DOI.
-
-**Then**: a reusable Python script driven by `.github/workflows/zenodo-archive.yml` (monthly
-`schedule:` plus `workflow_dispatch`).
-
-**Reuse the working lifecycle in `DOME_zenodo_archive/download_dome_registry.py`**, which already
-archives the Registry to `10.5281/zenodo.18301461`. It gets the fiddly parts right — the 400
-"draft already exists" path, deleting inherited files before upload, a bare `Authorization` header
-on the bucket PUT (not `Content-Type: application/json`, which breaks it), stripping `doi` and
-`prereserve_doi` before `PUT`ting metadata back. Three things must change rather than be copied:
-
-- **The token is a literal in that script's source.** Here it is a `ZENODO_TOKEN` **GitHub
-  repository Actions secret**, referenced by name from the workflow and read from the environment
-  by the script, which refuses to start if unset rather than failing mid-publish. Nothing about it
-  is written to a file in this repository. Managing repository secrets needs admin — see §7.
-- **Parameterise it** — source URL, deposition ID, filenames — so one script serves both archives
-  instead of being forked.
-- **Cite the concept DOI**, not the version DOI, on a page that outlives any single release.
-
-✅ **The export blocker is resolved.** GitHub runners cannot reach the MongoDB server, so the dump
-has to come through the public API — and `MAX_RESULT_WINDOW` used to reject
-`page * pageSize > 10,000`, capping a paginated dump at 10,000 of the corpus. That cap is still
-not tunable (MongoDB 4.2's `find()` sort has no `allowDiskUse` and a deep skip blows the 32MB sort
-buffer), so it was routed around rather than raised.
-
-`GET /api/export` now exists: keyset-paginated NDJSON paging on `_id` (`{_id: {$gt: cursor}}`,
-sorted by `_id`, hinted onto the `_id_` index). No result window, no sort buffer, bounded memory
-on both ends. It takes every `/api/records` filter, so the workflow can deposit the whole corpus
-or any slice of it, and it gives `/download/bulk` something real to point at between releases.
-
-The workflow itself is still to build — what it needs is a cursor loop over `/api/export`
-(`X-Next-Cursor` until absent), gzip, and the Zenodo deposit steps below.
-
-Each deposit should carry the corpus as gzipped NDJSON, a metadata sidecar (count, size, sha256,
-source, `schema_version`), and the [schema release](schema/releases/v1.1.0/) itself so the deposit
-is self-describing.
-
-## 3. Analytics — Matomo, built and waiting on a site ID
-
-**Decided: Matomo alone, no Google Analytics, no cookie banner.** GA was dropped rather than
-gated. It sets non-essential cookies and transfers data outside the EU/EEA, so adding it would
-have meant building a consent banner, persisting and versioning consent state, offering a
-withdrawal path, honouring DNT/GPC, and disclosing a US transfer on the privacy page — a large
-amount of work, all of it avoided by not using it. Matomo is self-hosted by the university,
-cookieless (`disableCookies`) and IP-anonymised, so it needs no consent under ePrivacy.
-
-**The code is written and shipped, switched off.** Both halves are inert behind one switch each,
-and neither contacts anything while off:
-
-| Side | File | Switch |
+| # | Item | Blocked on |
 |---|---|---|
-| Browser page views | `observatory-ui/src/app/core/matomo.ts` | `MATOMO_SITE_ID` in `core/analytics.config.ts`, currently `null` |
-| API usage | `observatory-ws/src/analytics/matomo.interceptor.ts` | `MATOMO_TOKEN`, currently unset |
-
-API tracking is there because `/api/export` now makes the whole corpus retrievable, and
-browser-side analytics would see none of that traffic — the heaviest use of the service would be
-the one thing missing from the numbers. It reports through the same `matomo-tracker` library the
-sibling MobiDB service uses, to the same instance.
-
-The CSP relaxation is **already done** — `observatory-ui/nginx.conf` permits
-`matomo.biocomputingup.it` in `script-src`, `connect-src` and `img-src`, and nothing else moved
-off `'self'`. A permitted host is not a contacted one, so this changes nothing while the switches
-are off, and it means activation needs no container rebuild.
-
-The privacy page reads `MATOMO_ENABLED` directly, so its wording and the "Not yet active" badge
-are generated from the same constant that turns tracking on. It cannot drift out of date, and
-there is no "remember to update the privacy page" step to forget.
-
-**Blocked on** a site ID from the lab's Matomo administrator, and an auth token. The activation
-runbook is `docs/matomo-activation.local.md` (gitignored — it covers where the token goes).
-
-## 4. Continuous integration
-
-[`.github/`](.github/) holds issue templates and nothing else — there is no workflow in it.
-Nothing verified so far is verified automatically.
-
-`ci.yml`, on pull request and push to `main`:
-
-- Node from `.nvmrc`, `npm ci` — **never `npm install`**, which has already broken the MongoDB server
-  connection once by floating Mongoose past `8.x`.
-- Both apps: lint, test, build. Currently 136 tests in `observatory-ui`, 132 in `observatory-ws`.
-- [`python3 schema/validate.py`](schema/validate.py) against the current release.
-- `docker build` both images from the repo root context, build only, never push — this catches the
-  cross-directory `COPY schema/` breaking, which a plain `npm run build` will not.
-- **A guard on the deploy output path**: assert `build-prod` produces a flat `dist/` with
-  `index.html` at its root. This is the single most likely silent break to `deploy-prod-quick`.
-
-Explicitly not in scope: any workflow that deploys. Deployment is the hosting lab's.
+| 1 | [Matomo analytics](#1-matomo-analytics) — built, switched off | A site ID from the Matomo admin |
+| 2 | [Continuous integration](#2-continuous-integration) — nothing is checked automatically | Nothing |
+| 3 | [Finalise and optimise search](#3-finalise-and-optimise-search) | A plan, to be written |
+| 4 | [Verify the preprint fields](#4-verify-the-preprint-fields) | The backfill, in the sister repo |
+| 5 | [The Zenodo DOI on the site is dead](#5-the-zenodo-doi-on-the-site-is-dead) | Minting a real deposition |
 
 ---
 
-## 5. Repository access and visibility — done, 2026-09-07
+## 1. Matomo analytics
 
-**The repository is public.** The sanitisation pass was completed and verified first, over both
-the tracked tree and the entire history: no credentials, no auth tokens, no real hostnames, no
-private IPv4 address in any blob any commit has ever held, every `mongodb://` string a
-placeholder, `.env` never committed, and only the three intended public email addresses present.
+Both halves are written and shipped, each inert behind one switch. Nothing is contacted while they
+are off, so turning analytics on is flipping two values — no code change, no container rebuild.
 
-The internal server name that appeared in four roadmap references was removed from history rather
-than only from the current files, since publishing exposes history too. The rewrite replaced it in
-both file content and commit messages; the resulting tree hash was identical to the pre-rewrite
-one, so nothing but history changed. `main` was force-pushed on 2026-09-07 — anyone holding a
-clone from before that needs `git fetch origin && git reset --hard origin/main`.
+| Side | File | Switch | State |
+|---|---|---|---|
+| Browser page views | `observatory-ui/src/app/core/matomo.ts` | `MATOMO_SITE_ID` in `core/analytics.config.ts` | `null` |
+| API usage | `observatory-ws/src/analytics/matomo.interceptor.ts` | `MATOMO_TOKEN` env var | unset |
 
-One residual, worth knowing rather than acting on: GitHub keeps force-pushed commits reachable by
-their SHA until it garbage-collects, so the pre-rewrite commit is not instantly gone. Those SHAs
-were only ever visible to the three people with access while the repository was private, so this
-is a theoretical exposure rather than a practical one. Ask GitHub Support to run a GC if that is
-not good enough.
+API tracking exists because `/api/export` makes the whole corpus retrievable, and browser
+analytics would see none of that traffic.
 
-Admin on the repository is held by the maintainer doing the work, so releases, repository secrets
-(the `ZENODO_TOKEN` in §2 needs one) and branch protection can now be configured without a round
-trip. The schema links on `/download/bulk`, the About pages and the four issue templates resolve
-for anonymous visitors — verified unauthenticated.
+**Matomo only, no Google Analytics, no cookie banner.** GA sets non-essential cookies and
+transfers data outside the EU/EEA, which would require a consent banner, versioned consent state,
+a withdrawal path and a US-transfer disclosure. Matomo is self-hosted by the university,
+cookieless (`disableCookies`) and IP-anonymised, so none of that applies. Do not remove the
+`disableCookies` call.
 
-Still to do here: branch protection and required status checks, which want CI (§4) to exist first.
+The CSP already permits `matomo.biocomputingup.it` in `nginx.conf`. The privacy page reads the
+same constant that turns tracking on, so its wording cannot drift.
 
-## 6. Preprints can now name their server — the field exists, nothing fills it yet
+### Activation
 
-Schema v1.3.0 (2026-09-07) adds `publication_metadata.preprint_server`, `source.epmc_source` and
-`identifiers.epmc_id`, and both apps read them. **All three are null on every document**: this is
-the read side only. `preprint.md` at the repo root is the full specification for the Europe PMC
-capture and the ~56,863-document backfill that populates them, written to be moved into
-`dome-observatory-triage`.
+1. **Ask the `matomo.biocomputingup.it` administrator for a site ID.** Name: DOME Observatory.
+   URL: `https://observatory.dome-ml.org`. Also confirm, because the privacy page asserts all
+   three: IP anonymisation on, a retention period you are willing to publish, EU hosting.
+2. **Browser tracking** — set `MATOMO_SITE_ID` in `analytics.config.ts` to the issued ID, rebuild,
+   redeploy.
+3. **API tracking** — generate a Matomo auth token with tracking scope. Set `MATOMO_SITE_ID` and
+   `MATOMO_TOKEN` in the deployment environment for `observatory-ws`, never in a tracked file, and
+   restart. The token is required, not optional: without it Matomo attributes every API call to
+   the server's own IP rather than the caller's. It is the only credential this service has.
+4. **Verify in the container, not `ng serve`** — the CSP only exists in the container and a
+   CSP-blocked script fails silently. Check `matomo.js` loads, one request per navigation, no CSP
+   violation, and **no cookies set**. Then `curl` an API endpoint and confirm it appears in
+   Matomo's real-time log with the caller's IP.
 
-Until that runs, `observatory-ui/src/app/core/venue.ts` derives the server from the DOI prefix, so
-cards and record pages already say `Preprint: bioRxiv` instead of showing no venue at all. The
-table covers 100% of current preprints, was verified per registrant against Europe PMC on
-2026-09-07, and is preferred *below* the recorded field — so the backfill silently takes over.
+**Rollback**, independently on each side: unset `MATOMO_TOKEN` and restart; or set
+`MATOMO_SITE_ID` back to `null` and redeploy. The CSP entry can stay — a permitted host is not a
+contacted one.
 
-Three things follow from it, none built:
+## 2. Continuous integration
 
-- **`check_alignment.py` reports drift and will keep doing so** until the sibling repo authors the
-  same three fields and bumps its `SCHEMA_VERSION` to 1.3.0. Expected, not a regression — see
-  §5b of `preprint.md`.
-- **The Europe PMC link is wrong for preprints.** `core/outbound-links.ts` builds
-  `europepmc.org/article/MED/{pmid}`; a preprint is `/article/PPR/{epmc_id}`. 3,157 preprints carry
-  a PMID and get a wrong link today. `identifiers.epmc_id` is what fixes it, so this is blocked on
-  the backfill rather than on a decision.
-- **A preprint-server search facet.** The backend field path is already registered in
-  `facets.service.ts`, so `GET /api/facets/preprint_server` answers (empty) now. A real filter also
-  needs `records.query.ts` and its mirror `core/search-params.ts`, plus a facet-panel entry.
+**What this means.** Every check this project has is run by hand, on one machine, by whoever
+remembers to. Lint, tests, the production build and the schema validator all exist and all pass,
+but nothing runs them when a change is pushed. `.github/` holds issue templates and no workflow.
 
-Separately and not blocked on any of this: **`about-processing.html` does not disclose** that the
-screened corpus includes unreviewed preprints (6.7%), patents and Agricola. The page describes the
-search space as Europe PMC's full index without saying that no `SRC:` restriction is applied. That
-is a statement about what the corpus *is*, so it should be fixed regardless.
+**Why it matters.** The gap is not "tests might fail" — it is that a change can reach `main`
+having been checked on nobody's machine. Two of this project's worst breakages were of exactly
+that kind: a bare `npm install` floated Mongoose past `8.x` and silently broke the database
+connection, and a cross-directory `COPY schema/` broke the Docker image while a plain
+`npm run build` still passed. Both are invisible to a local build and cheap for a machine to catch
+every time.
 
-## Deferred, tracked
+**Proposed: one `ci.yml`, on pull request and push to `main`.** Build only, never deploy —
+deployment stays the hosting lab's.
 
-- **Mongoose is pinned to `8.x`.** Driver `7.x` cannot connect to the current database server at
-  all (max wire version 8 vs. the driver's required 9). Do not bump without re-verifying against
-  the real server. Moving the corpus to a MongoDB v8 host would remove this and several other
-  constraints (`allowDiskUse` on `find()`, better text search), and is worth revisiting if the
-  sort and export workarounds start to bite.
-- **Relevance ranking.** `sort=relevance` sorts by `_id`, and the dropdown honestly calls it
-  "Default order". `positives_text` has field weights, so a real `{ $meta: 'textScore' }` ranking
-  is available — but only for queries that take the index path, so the sort would be inconsistent
-  with the two cases that deliberately do not. Worth doing only with an answer to that.
-- **Contextual (within-filter) facet counts.** Deliberately not built: they cannot be precomputed,
-  so they reintroduce the per-query aggregation over 827k documents that precomputed stats exist
-  to avoid.
-- Ecosystem-wide dependency upgrades across the other DOME apps are out of scope here.
+- Node from `.nvmrc`, dependencies with `npm ci`, never `npm install`.
+- Both apps: lint, test, build. Currently 187 tests in `observatory-ui`, 185 in `observatory-ws`.
+- `python3 schema/validate.py` against the current release.
+- `docker build` both images from the repo root context. This is what catches the `COPY schema/`
+  class of break.
+- Assert `build-prod` produces a flat `dist/` with `index.html` at its root — the single most
+  likely silent break to `deploy-prod-quick`.
 
-## Out of scope for this repository
+Branch protection and required status checks want this to exist first.
 
-Production deployment and its Compose files, published port allocation, TLS termination, DNS, and
-the database server itself are operated by whoever hosts the service. This repository ships the
-images, the local Compose file and the deployment documentation in `README.md`; it does not
-contain production configuration or credentials.
+## 3. Finalise and optimise search
+
+Search works and is fast enough, but the behaviour was assembled incrementally and has known rough
+edges: `sort=relevance` actually sorts by `_id`, the text index is bypassed for a single bare word
+and for any query that clears the classification filter, and facet counts are corpus-wide rather
+than contextual. A plan for this is still to be written, and it depends on decisions in the sister
+repository — whether `citation_count` gets an index, and how open vocabularies become facets.
+
+## 4. Verify the preprint fields
+
+Schema v1.3.0 defines `publication_metadata.preprint_server`, `source.epmc_source` and
+`identifiers.epmc_id`. Both apps read them; nothing populates them yet. Until then
+`observatory-ui/src/app/core/venue.ts` derives the server from the DOI prefix, so cards already
+read `Preprint: bioRxiv`.
+
+Once the sister repository authors the fields and backfills the ~56,863 preprint records:
+re-verify against real data that the stored value wins over the derived one, restart
+`observatory-ws` so the boot-loaded facets pick the new values up, and fix the Europe PMC link —
+`core/outbound-links.ts` builds `/article/MED/{pmid}`, which is wrong for the 3,157 preprints that
+carry a PMID.
+
+## 5. The Zenodo DOI on the site is dead
+
+`download-bulk.ts` hardcodes `ZENODO_DOI = '10.5281/zenodo.22259905'` and `/download/bulk`
+presents it as the permanent release identifier, with a copy button and a citation block. It is
+not registered: `doi.org` 404s and Zenodo's API reports "the persistent identifier is not
+registered" (re-checked 2026-09-07). Either mint the real deposition and replace the literal, or
+revert the page to describing the mechanism without asserting a DOI. The archive job that would
+produce that deposition belongs to the sister repository.

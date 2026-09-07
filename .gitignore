@@ -66,6 +66,6 @@ id_rsa*
 observatory-ui/src/assets/vocab/
 
 # Internal runbooks -- notes that are for the maintainers, not for the public repository.
-# docs/matomo-activation.local.md is one; it walks through activating analytics, including where
-# the Matomo auth token goes, so it must never be committed.
+# Anything ending .local.md is treated as one and never committed. Nothing currently uses this;
+# the Matomo activation runbook that did now lives in ROADMAP.md, since it names no credential.
 *.local.md
