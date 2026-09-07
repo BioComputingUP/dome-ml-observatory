@@ -8,3 +8,5 @@
 export function escapeRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
+
+const ciRedTestUnused: number = 1;

@@ -19,7 +19,7 @@ WORKDIR /app
 # schema/ alone first, same layer-cache reasoning as observatory-ui/Dockerfile: this build stage
 # doesn't itself read schema/ (no build-time schema step here, unlike the ui's sync-schema.js) --
 # it exists here purely so the runtime stage below can COPY --from=build it.
-COPY schema/ ./schema/
+COPY observatory-ws/schema/ ./schema/
 
 COPY observatory-ws/package.json observatory-ws/package-lock.json ./observatory-ws/
 RUN cd observatory-ws && npm ci
