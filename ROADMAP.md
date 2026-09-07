@@ -22,7 +22,7 @@ classification is LLM-generated, and that is now false.**
 ## 1. Data refresh — reloading the corpus, and new classification / enrichment runs
 
 The corpus turns over **6–12 times a year** and every cache in `observatory-ws` is sized around
-that. **There is now a runbook**: the corpus pipeline's README in `dome-triage`, which replaced the
+that. **There is now a runbook**: `moros_pipeline/README.md` in `dome-observatory-triage`, which replaced the
 one-off manual Compass import on 2026-09-03. Every write there is dry-run by default, restricted to
 an explicit allowlist of leaf field paths (so a refresh cannot blank a group it was not meant to
 touch), and reversible from a rollback snapshot taken before the first batch. `verify_corpus.py`
@@ -30,14 +30,14 @@ asserts the corpus invariants against the live collection and prints the manual 
 checklist below.
 
 ⚠️ **`mongoimport` does not work against this server**, despite being specified below and in
-dome-triage's roadmap. Measured three times on 2026-09-03: it stalls at ~17% of a 21.4MB file,
+the pipeline's earlier plan. Measured three times on 2026-09-03: it stalls at ~17% of a 21.4MB file,
 reports `use of closed network connection`, exits non-zero, and prints `0 document(s) imported
 successfully` — while the collection count had already risen by exactly 1,000. The loader uses
 pymongo `ReplaceOne(upsert=True)` instead, which has identical upsert semantics, and treats the
 collection count as the only honest authority. The same host took 811,036 pymongo bulk writes with
 zero errors in the citation load.
 
-**Upstream** is [`dome-triage`](https://github.com/BioComputingUP/dome-triage), not here. Two
+**Upstream** is [`dome-observatory-triage`](https://github.com/BioComputingUP/dome-observatory-triage), not here. Two
 different jobs:
 
 - **Classification** (Step 23a) — adds new documents, may revise `llm_classification` on existing
@@ -47,9 +47,9 @@ different jobs:
   re-import. **3,332 records are enriched as of 2026-09-03** — see §1a below; the search page's
   coverage banner reads this live and now reports a real number.
 
-The staging chain that turns a classified CSV into loadable JSONL already exists and is tested in
-`dome-triage/mongo_landscape_export/scripts/` (`filter_missing_rationale` → `add_pid_column` →
-`drop_dead_columns` → `join_license` → `convert_to_jsonl`). `pid.py` mints a **deterministic
+The staging chain that turns a classified batch into loadable JSONL exists and is tested in
+`dome-observatory-triage/mongo_landscape_export/scripts/` (`build_staged_documents.py`, through the
+same `schema.build_document()` every record was built with). `pid.py` mints a **deterministic
 UUID5** from `pmcid > doi > pmid`, so the same paper always gets the same `_id` — that property is
 what makes everything below possible.
 
@@ -74,7 +74,7 @@ what makes everything below possible.
   existing licence join, before the JSONL is written. Cheapest point to fix it is a refresh that
   is happening anyway.
 
-  **Done, 2026-09-03** — in `dome-triage`'s corpus pipeline. Verified live that
+  **Done, 2026-09-03** — in the corpus pipeline (`dome-observatory-triage/moros_pipeline/`). Verified live that
   `citedByCount` comes back in the cheap `resultType=lite` — the licence fetch needs `core`, this
   does not — and that `DOI:"…"` queries resolve records with no PMID, which is 67,985 of the
   corpus. So the fetch keys `pmid → doi → pmcid` and reaches effectively all of it. Counts land
@@ -98,7 +98,7 @@ what makes everything below possible.
   already at `schema_version: "1.2.0"`, but `schema/releases/` still stops at v1.1.0 and
   `schema/CURRENT` still reads `v1.1.0`. Cut the release with the `schema-version` skill; the
   upstream reference copy of the exact shape is
-  `dome-triage/mongo_landscape_export/schema/ai_ml_landscape.schema.json`.
+  `dome-observatory-triage/mongo_landscape_export/schema/ai_ml_landscape.schema.json`.
   It is additive. Three new fields, no existing
   field changed or removed: `source.decision_provenance`, plus the two citation fields above.
   `llm_classification.classification` is deliberately left as the single queryable classification
@@ -162,7 +162,7 @@ what makes everything below possible.
   banner reads its number live and starts reporting on its own once records land — no
   regeneration step, no code change.
 
-- **An enrichment writer**, in `dome-triage`. **Not here** — `observatory-ws` is read-only by
+- **An enrichment writer**, in `dome-observatory-triage` (`load_enrichment.py`, done). **Not here** — `observatory-ws` is read-only by
   design and must never gain write credentials.
 
 - **A post-refresh checklist.** New data is not visible until the service restarts:
@@ -198,7 +198,7 @@ what makes everything below possible.
 
 - **Fix the double-encoded titles at ingestion.** Some `publication_metadata.title` values are
   stored as double-HTML-encoded markup (`&lt;i&gt;Halomonas elongata&lt;/i&gt;`) and render as
-  literal text. The repair belongs in the dome-triage conversion step; a UI-side entity decode
+  literal text. The repair belongs in the `dome-observatory-triage` conversion step (`schema.py` decodes entities since 1.2.0); a UI-side entity decode
   would mis-render titles that legitimately contain `<` or `>`.
 
 ## 1c. The licence facet was under-populated by 74,472 documents — fixed 2026-09-03
@@ -222,7 +222,7 @@ EPMC's freshly-fetched flag wins wherever a real lookup happened.
 
 ## 1b. The corpus is now refreshed incrementally, and grew on 2026-09-03
 
-`dome-triage`'s corpus pipeline runs the refresh end to end and was exercised whole for the first
+`dome-observatory-triage`'s corpus pipeline runs the refresh end to end and was exercised whole for the first
 time on 2026-09-03: **833,240 → 846,716 documents**, +13,476 genuinely-new 2026 papers, with
 positives 358,865 → **366,234**. The loop fetches only the Europe PMC windows a coverage ledger has
 never covered, drops every record already carrying a corpus `_id`, classifies the remainder, and
@@ -267,7 +267,7 @@ produced:
   count will read as a classification result rather than a coverage artefact.
 
 **Cost, for planning the rest.** Enrichment runs at a measured **$4.07 per 1,000 records** and that
-is not reducible: a four-arm paired ablation (`dome-triage/thinking_ablation/`, Round 3) found
+is not reducible: a four-arm paired ablation (recorded in `dome-observatory-triage/moros_pipeline/README.md`, "Things measured here") found
 `reasoning_effort: low` costs *more* than the default with six times the violations, a hierarchical
 vocabulary rendering saves nothing, and disabling thinking is 88% cheaper but agrees with the
 production configuration on all six fields for **0%** of records. Enriching all 366,234 positives
@@ -396,6 +396,37 @@ trip. The schema links on `/download/bulk`, the About pages and the four issue t
 for anonymous visitors — verified unauthenticated.
 
 Still to do here: branch protection and required status checks, which want CI (§4) to exist first.
+
+## 6. Preprints can now name their server — the field exists, nothing fills it yet
+
+Schema v1.3.0 (2026-09-07) adds `publication_metadata.preprint_server`, `source.epmc_source` and
+`identifiers.epmc_id`, and both apps read them. **All three are null on every document**: this is
+the read side only. `preprint.md` at the repo root is the full specification for the Europe PMC
+capture and the ~56,863-document backfill that populates them, written to be moved into
+`dome-observatory-triage`.
+
+Until that runs, `observatory-ui/src/app/core/venue.ts` derives the server from the DOI prefix, so
+cards and record pages already say `Preprint: bioRxiv` instead of showing no venue at all. The
+table covers 100% of current preprints, was verified per registrant against Europe PMC on
+2026-09-07, and is preferred *below* the recorded field — so the backfill silently takes over.
+
+Three things follow from it, none built:
+
+- **`check_alignment.py` reports drift and will keep doing so** until the sibling repo authors the
+  same three fields and bumps its `SCHEMA_VERSION` to 1.3.0. Expected, not a regression — see
+  §5b of `preprint.md`.
+- **The Europe PMC link is wrong for preprints.** `core/outbound-links.ts` builds
+  `europepmc.org/article/MED/{pmid}`; a preprint is `/article/PPR/{epmc_id}`. 3,157 preprints carry
+  a PMID and get a wrong link today. `identifiers.epmc_id` is what fixes it, so this is blocked on
+  the backfill rather than on a decision.
+- **A preprint-server search facet.** The backend field path is already registered in
+  `facets.service.ts`, so `GET /api/facets/preprint_server` answers (empty) now. A real filter also
+  needs `records.query.ts` and its mirror `core/search-params.ts`, plus a facet-panel entry.
+
+Separately and not blocked on any of this: **`about-processing.html` does not disclose** that the
+screened corpus includes unreviewed preprints (6.7%), patents and Agricola. The page describes the
+search space as Europe PMC's full index without saying that no `SRC:` restriction is applied. That
+is a statement about what the corpus *is*, so it should be fixed regardless.
 
 ## Deferred, tracked
 

@@ -27,6 +27,32 @@ deliberately, not linked. **The backend is the only thing that ever talks to the
 Never give the frontend a database connection string or expose a database port publicly; the
 backend is the entire security boundary. This is a hosting requirement, not a style choice.
 
+## Sibling repository: `dome-observatory-triage` (the write side)
+
+[`BioComputingUP/dome-observatory-triage`](https://github.com/BioComputingUP/dome-observatory-triage)
+is the only thing that writes to `dome_observatory.Content`: it fetches Europe PMC records,
+classifies and enriches them, builds documents and loads them, refreshes citation counts. This
+repository never writes; that one never serves reads. Two things cross the boundary and both
+must stay aligned, in both directions:
+
+- **The document schema is authored there and published here.** `SCHEMA_VERSION` and
+  `build_document()` live in its `mongo_landscape_export/scripts/schema.py`; the vocabularies live
+  in its `curation_criteria/*.json`. This repo publishes them as immutable `schema/releases/`
+  through the `schema-version` skill. Its `schema/check_alignment.py` compares the authored
+  shape, `schema/CURRENT` here and the live `schema_version` on moros, and both repositories run
+  it before a load or a release. If you change anything under `schema/` here, or a filter/field
+  the API depends on (`records.query.ts`, `record.schema.ts`), say so in that repo's
+  `AGENTS.md`/skills, and vice versa. `llm_classification.classification` stays the single
+  classification field: `positives_text` is partial on it and `canUseTextIndex` gates on it.
+- **Every load there needs a restart here.** `FacetsService` is boot-loaded with no TTL, so new
+  journals, MeSH terms, licences and enrichment values are invisible until `observatory-ws`
+  restarts; `StatsService`, `CountService` and `JournalsService` are 24h TTL. Its post-load
+  checklist ends with that restart and a `generate_facet_stats.py --from-api` reconciliation.
+
+Its `README.md` explains each process and its `COST_DASHBOARD.md` what a refresh or an
+enrichment costs. When a change here needs a change there (or the reverse), make both, or
+record the pending half in the other repository's `ROADMAP.md`.
+
 ## Environment
 
 - **Both apps pin Node `24.20.0`** in their own `.nvmrc`, as an explicit version rather than an
@@ -94,7 +120,7 @@ host are not.
 ## Skills
 
 - **`.claude/skills/schema-version/SKILL.md`** — the only skill in this repo. Use it for anything
-  that touches `schema/`: pulling vocab/schema updates from `dome-triage`, deciding the semver
+  that touches `schema/`: pulling vocab/schema updates from `dome-observatory-triage`, deciding the semver
   bump, cutting a new immutable release, writing the changelog entry, and re-syncing
   `observatory-ui/src/assets/vocab/`. Don't hand-roll a release; the skill exists because the
   release folders are immutable and the sync/validate steps are easy to forget. Background on the
