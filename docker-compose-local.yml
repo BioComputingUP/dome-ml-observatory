@@ -97,7 +97,7 @@ services:
       mongo:
         condition: service_healthy
     volumes:
-      - ./docker/mongo-seed/seed.sh:/seed/seed.sh:ro
+      - ./offline-database/seed.sh:/seed/seed.sh:ro
       - ./observatory-ui/fixtures/sample-records.json:/seed/sample-records.json:ro
     entrypoint: ["bash", "/seed/seed.sh"]
     restart: "no"

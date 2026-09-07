@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Seeds a throwaway local MongoDB with the tracked 200-record sample so the whole stack runs
 # with no network access to any real database. Idempotent: re-running replaces the collection.
+# Mounted into the mongo-seed service by docker-compose-local.yml, which only starts it under
+# `--profile offline`; nothing else in the repo runs this.
 set -euo pipefail
 
 HOST="${SEED_MONGO_HOST:-mongo}"

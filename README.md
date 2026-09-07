@@ -123,7 +123,8 @@ docker compose -f docker-compose-local.yml --profile offline up --build
 ```
 
 No network access to anything, no VPN, no credentials. The `offline` profile adds a throwaway
-MongoDB, seeds it from the tracked 200-record fixture
+MongoDB, then [`offline-database/seed.sh`](offline-database/seed.sh) seeds it from the tracked
+200-record fixture
 ([`observatory-ui/fixtures/sample-records.json`](observatory-ui/fixtures/sample-records.json)) and
 builds the same two indexes the real collection carries. The backend waits for the seed to finish
 before starting, because it warms its caches once at boot and then holds them for 24 h — start it

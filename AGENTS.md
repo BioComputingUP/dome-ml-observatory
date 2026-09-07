@@ -132,6 +132,10 @@ host are not.
   `src/assets/` on purpose (Phase 7) so it doesn't ship in production builds; nothing in the
   running app reads it directly any more (search hits the real API), but
   `generate_facet_stats.py`'s default mode and anyone testing offline still use it.
+- `offline-database/seed.sh` — loads that fixture into the throwaway MongoDB and builds the same
+  two indexes the real collection carries, so the seeded stack exercises production's code path
+  rather than the regex fallback. Mounted by `docker-compose-local.yml`'s `mongo-seed` service and
+  run only under `--profile offline`; inert in every other mode.
 - `observatory-ws/src/export/` — `GET /api/export`, whole-corpus retrieval as NDJSON. Reuses
   `records.query.ts`'s parser and filter builder verbatim, so the two endpoints accept identical
   filters; the only things it adds are a `cursor`/`limit` pair and the `_id`-ordered walk.
