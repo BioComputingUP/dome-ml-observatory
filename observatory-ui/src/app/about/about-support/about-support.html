@@ -177,8 +177,10 @@
       <p>
         Search covers the {{ corpus().positive | number }} papers classified as AI/ML methods
         papers. The rest were screened and judged not to be AI/ML methods papers, and the search
-        page does not reach them. They are kept, and the only way to get the full screened corpus is
-        <a routerLink="/download/bulk">bulk download</a>.
+        page does not reach them. They are kept, and reachable two ways: as one file from
+        <a routerLink="/download/bulk">bulk download</a>, or through the
+        <a routerLink="/download/api">API</a>’s <code>/api/export</code>, which will hand you the
+        whole screened corpus — or any filtered slice of it — a chunk at a time.
       </p>
       <p>
         The corpus comes from a Europe PMC search for "artificial intelligence" and "machine
@@ -207,9 +209,14 @@
       <p>
         Paging deeper than 10,000 results means asking the database to sort and skip past a large
         part of the corpus on every request, which it cannot do reliably at this scale. At 25
-        results a page, that is 400 pages. If you need more than the first 10,000 of a result set,
-        narrow the filters, or take the whole corpus in one file from
-        <a routerLink="/download">Download</a>.
+        results a page, that is 400 pages.
+      </p>
+      <p>
+        It is a limit on <em>browsing</em>, not on access. To go past it, narrow the filters, take
+        the whole corpus in one file from <a routerLink="/download">Download</a>, or use the
+        <a routerLink="/download/api">API</a>’s <code>/api/export</code> — it pages on a cursor
+        rather than an offset, so it has no such ceiling and accepts the same filters as this
+        search page.
       </p>
     </details>
 

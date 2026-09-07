@@ -152,7 +152,8 @@ what makes everything below possible.
   orderings the moment the counts landed. `publication_metadata.citation_count` is still
   **unindexed**, so a deep citation sort is a candidate for `class_citations_id` —
   the pipeline's `scripts/ensure_indexes.py --measure-citation-sort` times it against the real
-  10,000-result window so that decision can be made on numbers.
+  10,000-result window so that decision can be made on numbers. (Note the window is a
+  `/api/records` browsing limit only — `/api/export` is unbounded and unaffected.)
 
 - **The first enrichment merge is its own milestone**, not part of a routine refresh. It writes
   fields nothing has ever written, so run it against a copy first, verify a sample against the
@@ -297,17 +298,19 @@ on the bucket PUT (not `Content-Type: application/json`, which breaks it), strip
   instead of being forked.
 - **Cite the concept DOI**, not the version DOI, on a page that outlives any single release.
 
-⚠️ **The export blocker.** GitHub runners cannot reach the MongoDB server, so the dump has to come through the
-public API — but `MAX_RESULT_WINDOW` rejects `page * pageSize > 10,000`, so a paginated dump tops
-out at 10,000 of 827,061. That cap is not tunable: MongoDB 4.2's `find()` sort has no
-`allowDiskUse` and a deep skip blows the 32MB sort buffer.
+✅ **The export blocker is resolved.** GitHub runners cannot reach the MongoDB server, so the dump
+has to come through the public API — and `MAX_RESULT_WINDOW` used to reject
+`page * pageSize > 10,000`, capping a paginated dump at 10,000 of the corpus. That cap is still
+not tunable (MongoDB 4.2's `find()` sort has no `allowDiskUse` and a deep skip blows the 32MB sort
+buffer), so it was routed around rather than raised.
 
-- **Recommended: add `GET /api/export`** — keyset-paginated NDJSON, paging on `_id`
-  (`{_id: {$gt: lastId}}`, sorted by `_id`, which is indexed). No result window, no sort buffer,
-  bounded memory on both ends, and it gives `/download/bulk` something real to point at between
-  releases.
-- **Alternative:** dump lab-side and let Actions do only the upload. Fewer moving parts here, but
-  the schedule moves somewhere this repo cannot see or test.
+`GET /api/export` now exists: keyset-paginated NDJSON paging on `_id` (`{_id: {$gt: cursor}}`,
+sorted by `_id`, hinted onto the `_id_` index). No result window, no sort buffer, bounded memory
+on both ends. It takes every `/api/records` filter, so the workflow can deposit the whole corpus
+or any slice of it, and it gives `/download/bulk` something real to point at between releases.
+
+The workflow itself is still to build — what it needs is a cursor loop over `/api/export`
+(`X-Next-Cursor` until absent), gzip, and the Zenodo deposit steps below.
 
 Each deposit should carry the corpus as gzipped NDJSON, a metadata sidecar (count, size, sha256,
 source, `schema_version`), and the [schema release](schema/releases/v1.1.0/) itself so the deposit

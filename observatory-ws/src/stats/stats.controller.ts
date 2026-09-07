@@ -6,11 +6,17 @@ import {
   ApiTags,
   ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 import { StatsService, FacetStats } from './stats.service';
 
+// Subject to the 'default' throttler only -- 'export' exists for /api/export's much larger
+// per-request cost and would otherwise also apply here. See app.module.ts.
+@SkipThrottle({ export: true })
 @ApiTags('stats')
 @ApiTooManyRequestsResponse({
-  description: 'Rate limit exceeded (300 requests/minute/IP) -- back off and retry.',
+  description:
+    'Rate limit exceeded -- back off and retry. The limit is per client IP over a rolling ' +
+    'minute; see the Fair use section of this document for the current value.',
 })
 @ApiServiceUnavailableResponse({
   description: 'The corpus database is unreachable -- safe to retry with backoff.',

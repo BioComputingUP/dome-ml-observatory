@@ -8,6 +8,7 @@ import { AppModule } from './app.module';
 import { setupSwagger } from './swagger/swagger';
 import { AppConfig } from './config/configuration';
 import { MongoUnavailableFilter } from './common/mongo-unavailable.filter';
+import { NEXT_CURSOR_HEADER, RECORD_COUNT_HEADER } from './export/export.controller';
 
 async function bootstrap(): Promise<void> {
   // Typed as NestExpressApplication (not the platform-agnostic default) specifically so
@@ -41,7 +42,14 @@ async function bootstrap(): Promise<void> {
         `origin. This only matters if the frontend is served from a different origin than /api.`,
     );
   }
-  app.enableCors({ origin: frontendUrl });
+  // exposedHeaders is what makes /api/export usable from a browser at all: a cross-origin
+  // response's custom headers are invisible to JS unless the server lists them, so without this a
+  // fetch() client could read the NDJSON body but never the cursor telling it there is more.
+  // Same-origin callers (the shipped topology, and curl) are unaffected either way.
+  app.enableCors({
+    origin: frontendUrl,
+    exposedHeaders: [NEXT_CURSOR_HEADER, RECORD_COUNT_HEADER],
+  });
 
   // whitelist: true strips any query param that isn't declared on a DTO -- an unrecognised param
   // must never silently become a Mongo filter. transform: true lets Nest coerce query strings

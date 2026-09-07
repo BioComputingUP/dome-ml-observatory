@@ -146,8 +146,10 @@
             @if (cappedByResultWindow() && page() >= totalPages()) {
               <p class="window-cap-note">
                 Browsing is capped at {{ totalPages() | number }} pages to keep results fast on an
-                unindexed corpus. For the full result set, see
-                <a routerLink="/download/bulk">Download</a>.
+                unindexed corpus. The full result set is still available — take it as one file from
+                <a routerLink="/download/bulk">Download</a>, or walk it with the
+                <a routerLink="/download/api">API</a>’s <code>/api/export</code>, which has no such
+                cap and accepts these same filters.
               </p>
             }
           }

@@ -132,6 +132,17 @@ host are not.
   `src/assets/` on purpose (Phase 7) so it doesn't ship in production builds; nothing in the
   running app reads it directly any more (search hits the real API), but
   `generate_facet_stats.py`'s default mode and anyone testing offline still use it.
+- `observatory-ws/src/export/` — `GET /api/export`, whole-corpus retrieval as NDJSON. Reuses
+  `records.query.ts`'s parser and filter builder verbatim, so the two endpoints accept identical
+  filters; the only things it adds are a `cursor`/`limit` pair and the `_id`-ordered walk.
+  **Keyset, never skip** — `{_id: {$gt: cursor}}` sorted and hinted onto `_id_` is what makes it
+  cost the same at chunk 500 as at chunk 1, and what keeps it clear of MongoDB 4.2's 32MB sort
+  buffer. Free text is rejected (400) rather than supported: `$text` cannot be served under the
+  `_id` hint, and the regex fallback would rescan the corpus for every chunk.
+- `observatory-ws/src/common/ip-throttler.guard.ts` — the rate limiter's key generator. The stock
+  `ThrottlerGuard` keys on class + handler, which quietly makes every documented limit *per
+  endpoint* rather than per IP. If you touch throttling, re-measure across two different
+  endpoints, not one: the difference is invisible from a single route.
 - `observatory-ws/src/records/records.query.ts` — the pure, HTTP- and Mongo-free query-building
   core (filter/sort/pagination logic), deliberately mirroring `observatory-ui/src/app/core/
   search-params.ts`'s parsing rules field-for-field (e.g. absent `class` param defaults to

@@ -7,6 +7,13 @@
 export interface AppConfig {
   port: number;
   frontendUrl: string;
+  rateLimit: {
+    /** Requests per minute per client IP for the ordinary read endpoints. */
+    perMinute: number;
+    /** Requests per minute per client IP for /api/export specifically. Lower, because one
+     *  request there is up to 1000 documents rather than at most 100. */
+    exportPerMinute: number;
+  };
   mongo: {
     uri: string;
     db: string;
@@ -18,17 +25,30 @@ export interface AppConfig {
      *  budget above. The positives_text index cut the indexed cases to well under 4s, but a lone
      *  bare word deliberately still takes the regex path, so this budget stays. */
     searchMaxTimeMs: number;
+    /** Budget for one /api/export chunk. Larger than maxTimeMs because a chunk is up to 1000
+     *  documents rather than 25, but still bounded -- an export that cannot finish a chunk inside
+     *  this is a signal something is wrong with the plan, not something to wait out. */
+    exportMaxTimeMs: number;
   };
 }
+
+/** The rolling window both throttlers measure over. Not configurable: every published limit is
+ *  quoted per minute, and a different window would make the documented numbers wrong. */
+export const RATE_LIMIT_TTL_MS = 60_000;
 
 export const configuration = (): AppConfig => ({
   port: parseInt(process.env.PORT ?? '3000', 10),
   frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:4200',
+  rateLimit: {
+    perMinute: parseInt(process.env.RATE_LIMIT_PER_MINUTE ?? '1200', 10),
+    exportPerMinute: parseInt(process.env.EXPORT_RATE_LIMIT_PER_MINUTE ?? '60', 10),
+  },
   mongo: {
     uri: process.env.MONGODB_URI!,
     db: process.env.MONGODB_DB!,
     collection: process.env.MONGODB_COLLECTION!,
     maxTimeMs: parseInt(process.env.MONGO_MAX_TIME_MS ?? '5000', 10),
     searchMaxTimeMs: parseInt(process.env.MONGO_SEARCH_MAX_TIME_MS ?? '20000', 10),
+    exportMaxTimeMs: parseInt(process.env.MONGO_EXPORT_MAX_TIME_MS ?? '30000', 10),
   },
 });

@@ -2,15 +2,17 @@ import { Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
-import { configuration, AppConfig } from './config/configuration';
+import { configuration, AppConfig, RATE_LIMIT_TTL_MS } from './config/configuration';
 import { validate } from './config/env.validation';
 import { HealthModule } from './health/health.module';
 import { RecordsModule } from './records/records.module';
 import { FacetsModule } from './facets/facets.module';
 import { StatsModule } from './stats/stats.module';
 import { JournalsModule } from './journals/journals.module';
+import { ExportModule } from './export/export.module';
+import { IpThrottlerGuard } from './common/ip-throttler.guard';
 
 @Module({
   imports: [
@@ -20,10 +22,34 @@ import { JournalsModule } from './journals/journals.module';
       validate,
     }),
 
-    // 300 req/min per IP. Sized to the shared database host's capacity: the MongoDB server carries several
-    // other production databases, so a runaway client loop has to be capped here rather than
-    // allowed to degrade the host. Documented publicly in swagger.ts and on /download/api.
-    ThrottlerModule.forRoot([{ ttl: 60_000, limit: 300 }]),
+    // Two named throttlers, both per client IP over a rolling minute. Every route is subject to
+    // both by default, so each controller opts out of the one that does not apply to it with
+    // @SkipThrottle -- 'export' everywhere except ExportController, 'default' on ExportController,
+    // and both on HealthController.
+    //
+    // The limits are deliberately generous. They exist as a backstop against a runaway client on a
+    // database host shared with other services, not as a wall: the sibling MobiDB service runs the
+    // same shape of workload with no request limit at all, bounding cost by per-request size and
+    // query time instead. 'default' at 1200/min is 20 req/s, past anything an interactive client
+    // does; 'export' at 60/min is 60,000 records/min because each of those requests is up to 1000
+    // documents. Both are env-tunable (RATE_LIMIT_PER_MINUTE, EXPORT_RATE_LIMIT_PER_MINUTE) so the
+    // hosting deployment can retune without a code change. Documented publicly in swagger.ts and
+    // on /download/api -- those numbers are hand-copied, so they move together with these.
+    ThrottlerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService<AppConfig, true>) => [
+        {
+          name: 'default',
+          ttl: RATE_LIMIT_TTL_MS,
+          limit: config.get('rateLimit.perMinute', { infer: true }),
+        },
+        {
+          name: 'export',
+          ttl: RATE_LIMIT_TTL_MS,
+          limit: config.get('rateLimit.exportPerMinute', { infer: true }),
+        },
+      ],
+    }),
 
     MongooseModule.forRootAsync({
       inject: [ConfigService],
@@ -80,7 +106,10 @@ import { JournalsModule } from './journals/journals.module';
     FacetsModule,
     StatsModule,
     JournalsModule,
+    ExportModule,
   ],
-  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
+  // IpThrottlerGuard, not the stock ThrottlerGuard: the stock key includes the controller and
+  // handler, which would make each limit per-endpoint rather than per-IP. See that file.
+  providers: [{ provide: APP_GUARD, useClass: IpThrottlerGuard }],
 })
 export class AppModule {}

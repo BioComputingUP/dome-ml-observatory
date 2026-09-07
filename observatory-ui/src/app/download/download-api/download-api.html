@@ -3,8 +3,10 @@
     <h1>API</h1>
     <p class="lead">
       A read-only REST API over the same corpus <a routerLink="/search">Search</a> uses. Good for
-      targeted queries and small numbers of records; for the whole corpus, use
-      <a routerLink="/download/bulk">bulk download</a> instead so requests stay light for everyone.
+      targeted queries, and for taking the corpus out whole: <code>/api/export</code> pages on a
+      cursor with no result window, so any slice of the data — up to all of it — can be pulled
+      through the API. For a single citable file, <a routerLink="/download/bulk">bulk download</a>
+      is still the better route.
     </p>
 
     <div class="explorer-cta-row">
@@ -95,8 +97,9 @@
     <div class="recommendations info-panel">
       <h3><i class="icon icon-common icon-lightbulb" aria-hidden="true"></i>Recommendations</h3>
       <ul>
-        <li>Pulling the whole corpus? Use the <a routerLink="/download/bulk">bulk archive</a> instead of paging — it is faster for you and lighter on the service.</li>
-        <li>Request up to <code>pageSize=100</code> per call to cut down round trips.</li>
+        <li>Pulling the whole corpus, or any large slice of it? Use <code>/api/export</code> rather than paging <code>/api/records</code> — it is faster for you, lighter on the service, and it is the only route that reaches past 10,000 records.</li>
+        <li>Ask for <code>limit=1000</code> per export chunk, or <code>pageSize=100</code> per search page, to cut down round trips.</li>
+        <li>Keep the <code>X-Next-Cursor</code> value between export calls and stop when it stops coming back — do not guess at the number of chunks.</li>
         <li>On a <code>429</code> or <code>503</code>, back off exponentially rather than retrying immediately.</li>
         <li>Cache <code>/api/stats</code> client-side — it only changes when the server-side cache refreshes, at most once a day.</li>
       </ul>

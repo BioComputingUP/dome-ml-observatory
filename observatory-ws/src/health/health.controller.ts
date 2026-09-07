@@ -1,11 +1,23 @@
 import { Controller, Get, Inject, ServiceUnavailableException } from '@nestjs/common';
 import { ApiOperation, ApiServiceUnavailableResponse, ApiTags } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 import { InjectConnection } from '@nestjs/mongoose';
 import { Connection, ConnectionStates } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '../config/configuration';
 import { CURRENT_SCHEMA_VERSION } from '../common/schema-version';
 
+// Exempt from both throttlers -- BOTH have to be named. @SkipThrottle()'s default argument is
+// `{ default: true }`, which skips only the throttler literally called 'default' and would leave
+// health subject to 'export'. Confirmed the hard way: with a bare @SkipThrottle(), /api/health
+// started returning 429 once the export bucket was spent.
+//
+// This is what swagger.ts has always claimed ("never rate-limited")
+// and was not true until this decorator existed: the global guard applied here like everywhere
+// else. It matters in practice -- the Docker HEALTHCHECK polls /api/health every 10s, and a
+// liveness probe that can be rate-limited into failing would restart-loop a healthy container
+// under load, which is the exact opposite of what a liveness check is for.
+@SkipThrottle({ default: true, export: true })
 @ApiTags('health')
 @Controller('health')
 export class HealthController {

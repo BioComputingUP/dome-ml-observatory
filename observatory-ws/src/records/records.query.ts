@@ -76,9 +76,9 @@ export const DEFAULT_SORT: SortOrder = 'relevance';
  *  the resource's actual content (AI/ML methods papers), not the 464k+ screened-out majority. */
 export const DEFAULT_CLASSIFICATION: Classification[] = ['positive'];
 /** page * pageSize beyond this is rejected (400), not silently clamped -- see buildPagination.
- *  Deep pages exist to browse, not to reconstruct the corpus; that's what /download is for
- *  (see observatory-ui's api-docs page). Also makes Mongo's 32MB in-memory sort ceiling
- *  structurally unreachable. */
+ *  Deep pages exist to browse, not to reconstruct the corpus; that's what /api/export is for
+ *  (keyset-paginated, no window -- see export/export.service.ts). Also makes Mongo's 32MB
+ *  in-memory sort ceiling structurally unreachable. */
 export const MAX_RESULT_WINDOW = 10_000;
 
 const SORTS: SortOrder[] = [
@@ -462,7 +462,8 @@ export function buildPagination(rawPage: string | undefined, rawPageSize: string
   if (page * pageSize > MAX_RESULT_WINDOW) {
     throw new BadRequestException(
       `page * pageSize (${page * pageSize}) exceeds the maximum browsable result window ` +
-        `(${MAX_RESULT_WINDOW}). Narrow the filters, or use /download for the full corpus.`,
+        `(${MAX_RESULT_WINDOW}). Narrow the filters, or use /api/export to walk the whole ` +
+        `matching set with a cursor.`,
     );
   }
 

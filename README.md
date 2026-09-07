@@ -36,19 +36,38 @@ All routes sit under `/api`. Everything is read-only — the service issues no w
 | `GET /api/health/ready` | Readiness. Pings the database; returns db/collection name, estimated document count and the active schema version. |
 | `GET /api/records` | Paginated search. All filter params mirror the frontend's URL params exactly. |
 | `GET /api/records/:pid` | Single record. `pid` is a UUID5 string, not an ObjectId. |
+| `GET /api/export` | Whole-corpus retrieval as NDJSON, keyset-paginated on `_id`. No result window; takes every `/api/records` filter. |
 | `GET /api/stats` | Corpus headline figures and facet counts. Cached 24 h. |
 | `GET /api/facets/:field` | Typeahead for `journal`, `mesh_headings`, `pub_types`, `license`. Served from an in-memory cache — no database round trip. |
 | `GET /api/journals` | Journals ranked by AI/ML methods-paper count or share. |
 | `GET /api/journals/detail?journal=` | One journal: totals, year series, rank. |
 | `GET /api/docs` | Swagger UI. `/api/docs-json` for the raw OpenAPI document. |
 
-Publicly documented limits, enforced server-side:
+Publicly documented limits, enforced server-side. They exist to stop one runaway client degrading
+a shared database host, not to ration access — pulling the entire corpus through this API is
+supported:
 
-- **300 requests/minute per client IP** over a rolling 60 s window; 429 above it.
-- **Result window capped at 10,000** — `page × pageSize > 10000` returns 400 rather than silently
-  truncating. Use the bulk archive for whole-corpus retrieval.
-- **Query budget** 5 s for filter-only queries, 20 s for free-text (`q=`).
+- **1200 requests/minute per client IP** over a rolling 60 s window; 429 above it. One budget
+  across all endpoints, not one per endpoint. Health checks are exempt.
+- **`/api/export` has its own 60/minute budget**, because one request there returns up to 1000
+  records — 60,000 records/minute, so the whole corpus walks in well under half an hour. A
+  separate bucket, so an export cannot starve ordinary search traffic.
+- **Result window capped at 10,000 on `/api/records`** — `page × pageSize > 10000` returns 400
+  rather than silently truncating. A *browsing* limit specific to that endpoint, forced by
+  MongoDB 4.2's sort ceiling, and the reason `/api/export` exists. Export has no window.
+- **Query budget** 5 s for filter-only queries, 20 s for free-text (`q=`), 30 s per export chunk.
 - **503, not 500,** when the database is unreachable. Safe to retry with backoff.
+
+Walking the corpus is a cursor loop — repeat until `X-Next-Cursor` stops coming back:
+
+```bash
+cursor=""
+while :; do
+  curl -sD headers.txt "https://observatory.dome-ml.org/api/export?class=positive&limit=1000${cursor:+&cursor=$cursor}" >> corpus.ndjson
+  cursor=$(grep -i '^x-next-cursor:' headers.txt | tr -d '\r' | cut -d' ' -f2)
+  [ -n "$cursor" ] || break
+done
+```
 
 ## Local development
 

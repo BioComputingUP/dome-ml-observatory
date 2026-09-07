@@ -15,6 +15,11 @@ import {
  *  60s is already far beyond any measured query -- the slowest observed was ~24s. */
 const MAX_QUERY_BUDGET_MS = 60_000;
 
+/** Ceiling on both request-rate limits. High enough that no legitimate operator setting is
+ *  refused -- the shipped defaults are 1200 and 60 -- but it still catches the typo that would
+ *  effectively disable the limiter on a database host shared with other services. */
+const MAX_RATE_LIMIT = 100_000;
+
 /**
  * Every env var this app reads, validated once at boot. Fails fast with the offending variable
  * named, rather than a NestJS app that starts fine and only breaks on the first request that
@@ -56,6 +61,27 @@ class EnvironmentVariables {
   @Min(100)
   @Max(MAX_QUERY_BUDGET_MS)
   MONGO_SEARCH_MAX_TIME_MS?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(100)
+  @Max(MAX_QUERY_BUDGET_MS)
+  MONGO_EXPORT_MAX_TIME_MS?: number;
+
+  // Both rate limits are per minute per client IP. @Min(1) rather than @Min(0): zero would mean
+  // "refuse every request", which is never what an operator means to type, and is indistinguishable
+  // from the service being down.
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(MAX_RATE_LIMIT)
+  RATE_LIMIT_PER_MINUTE?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(MAX_RATE_LIMIT)
+  EXPORT_RATE_LIMIT_PER_MINUTE?: number;
 }
 
 export function validate(config: Record<string, unknown>): EnvironmentVariables {
