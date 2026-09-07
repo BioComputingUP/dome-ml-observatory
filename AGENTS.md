@@ -227,13 +227,22 @@ host are not.
   up" this pairing without re-running the VPN-down test (kill the Mongo route, confirm
   `/api/health` still returns 200 and the process doesn't die) — it's easy to write something that
   looks equivalent and isn't.
-- **The frontend loads no third-party resources, and that is enforced.** Fonts (`src/_fonts.scss`),
-  the EBI icon subset (`src/_ebi-icons.scss`) and the Creative Commons badges are all self-hosted,
-  and `observatory-ui/nginx.conf` ships a `default-src 'self'` CSP that blocks anything else. Add
-  an external stylesheet, font, image or script and it will silently fail to load in the container
+- **The frontend loads no third-party resources except Matomo, and that is enforced.** Fonts
+  (`src/_fonts.scss`), the EBI icon subset (`src/_ebi-icons.scss`) and the Creative Commons badges
+  are all self-hosted, and `observatory-ui/nginx.conf` ships a `default-src 'self'` CSP that blocks
+  anything else. The single exception is `matomo.biocomputingup.it`, permitted in `script-src`,
+  `connect-src` and `img-src` -- and even that loads nothing unless `MATOMO_SITE_ID` is set in
+  `src/app/core/analytics.config.ts` (it ships `null`). **Keep it to one exception.** Add another
+  external stylesheet, font, image or script and it will silently fail to load in the container
   even though it works under `ng serve` -- check a containerised page in a real browser, not just
-  the dev server. The privacy page states that no third-party resource is contacted; keep that
-  true.
+  the dev server.
+- **The privacy page is generated from the analytics switch, not maintained alongside it.**
+  `about-privacy.html` branches on `MATOMO_ENABLED` from that same config file, so setting the site
+  ID changes both the tracking and what the page says about it in one edit. Don't hardcode a claim
+  about analytics into that page -- the coupling is what stops the notice going stale, which is a
+  compliance problem and not just an accuracy one. Cookies are disabled in code
+  (`_paq.push(['disableCookies'])`); removing that call would require a consent banner, versioned
+  consent state and a withdrawal path. See ROADMAP.md §3.
 - **Angular's critical-CSS inlining is disabled on purpose** (`optimization.styles.inlineCritical:
   false` in `angular.json`). It rewrites the stylesheet link to `media="print"
   onload="this.media='all'"`, and that inline handler is blocked by the CSP -- leaving the page

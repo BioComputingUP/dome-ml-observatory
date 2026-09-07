@@ -30,6 +30,17 @@ export interface AppConfig {
      *  this is a signal something is wrong with the plan, not something to wait out. */
     exportMaxTimeMs: number;
   };
+  matomo: {
+    /** Tracking endpoint, ending in matomo.php -- the library asserts on that suffix. */
+    url: string;
+    siteId: string;
+    /** Empty disables API tracking entirely. Required for `cip` to be honoured, so without it the
+     *  data would attribute every request to this server rather than the client. */
+    token: string;
+    /** Prefixed to the request path when reporting, so hits are attributed to the public site
+     *  rather than to an internal container hostname. */
+    publicOrigin: string;
+  };
 }
 
 /** The rolling window both throttlers measure over. Not configurable: every published limit is
@@ -50,5 +61,11 @@ export const configuration = (): AppConfig => ({
     maxTimeMs: parseInt(process.env.MONGO_MAX_TIME_MS ?? '5000', 10),
     searchMaxTimeMs: parseInt(process.env.MONGO_SEARCH_MAX_TIME_MS ?? '20000', 10),
     exportMaxTimeMs: parseInt(process.env.MONGO_EXPORT_MAX_TIME_MS ?? '30000', 10),
+  },
+  matomo: {
+    url: process.env.MATOMO_URL ?? 'https://matomo.biocomputingup.it/matomo.php',
+    siteId: process.env.MATOMO_SITE_ID ?? '',
+    token: process.env.MATOMO_TOKEN ?? '',
+    publicOrigin: process.env.MATOMO_PUBLIC_ORIGIN ?? 'https://observatory.dome-ml.org',
   },
 });

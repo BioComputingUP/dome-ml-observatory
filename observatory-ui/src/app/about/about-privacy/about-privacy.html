@@ -19,7 +19,8 @@
       University of Padua, Department of Biomedical Sciences<br />
       Viale G. Colombo 3, 35131 Padua, Italy<br />
       Phone: +39 049 827 6269<br />
-      Email: <a href="mailto:contact@dome-ml.org">contact&#64;dome-ml.org</a>
+      Lab: <a href="mailto:management@biocomputingup.it">management&#64;biocomputingup.it</a><br />
+      Project: <a href="mailto:contact@dome-ml.org">contact&#64;dome-ml.org</a>
     </address>
   </div>
 </div>
@@ -43,9 +44,18 @@
       DOME Observatory has no user accounts and requires no sign-in. The personal data we process
       about <em>you</em> as a visitor is standard <strong>web server access logs</strong> — IP
       address, timestamp, requested URL and browser user-agent string — generated automatically by
-      the web server for every request, as almost every website does. Nothing else about your
-      visit is recorded, and no third-party service is contacted when you load a page: fonts,
-      icons and all other assets are served from this site.
+      the web server for every request, as almost every website does.
+    </p>
+    <p>
+      Fonts, icons and all other assets are served from this site rather than from an external
+      CDN, so loading a page contacts no advertising network, no font host and no content
+      delivery network.
+      @if (analyticsActive) {
+        The single exception is our own analytics, described below, which runs on a server
+        operated by the University of Padua.
+      } @else {
+        No third-party service is contacted at all when you load a page.
+      }
     </p>
     <p>
       Separately, the <strong>corpus itself</strong> contains personal data about the authors of
@@ -60,29 +70,41 @@
   </div>
 </div>
 
-<div class="band band-warn">
+<div class="band band-tint">
   <div class="band-inner">
     <h2>
       <i class="icon icon-common icon-chart-bar section-icon" aria-hidden="true"></i>
-      Planned: usage analytics
-      <span class="badge-chip tone-undeterminable">Not yet active</span>
+      Usage analytics
+      @if (!analyticsActive) {
+        <span class="badge-chip tone-undeterminable">Not yet active</span>
+      }
     </h2>
     <p>
-      To understand how the site is used, we intend to add:
+      To understand how the site is used, we
+      @if (analyticsActive) { use } @else { intend to use }
+      <strong><a href="https://matomo.org/" target="_blank" rel="noopener">Matomo</a></strong>, and
+      nothing else. It is <strong>self-hosted by the University of Padua</strong> on the
+      university's own server — the data is never sent to an analytics company, and never leaves
+      the EU/EEA.
     </p>
-    <ul>
-      <li><strong><a href="https://matomo.org/" target="_blank" rel="noopener">Matomo</a></strong>
-        — a self-hosted analytics platform, configured to anonymise IP addresses and avoid
-        identifying individual visitors where possible.</li>
-      <li><strong><a href="https://marketingplatform.google.com/about/analytics/" target="_blank" rel="noopener">Google
-        Analytics</a></strong> — a third-party analytics service. Because it sets non-essential
-        cookies and transfers data outside the EU/EEA, it will only load after you actively consent
-        via a cookie banner — never by default.</li>
-    </ul>
     <p>
-      Neither is active yet. This page will be updated, and a consent banner put in place, before
-      either goes live — not after.
+      <strong>It sets no cookies.</strong> Cookies are switched off explicitly in the tracker's
+      configuration, so nothing is stored in your browser, nothing follows you between sites, and
+      there is no cookie banner to dismiss — because there is nothing to consent to. IP addresses
+      are anonymised, and we do not attempt to identify individual visitors.
     </p>
+    <p>What is recorded for a page view: the page URL, the referring page if you followed a link,
+      an anonymised IP address, your browser's user-agent string, and the time. The same
+      information is recorded for requests to our
+      <a routerLink="/download/api">public API</a>, so we can see which parts of the service are
+      actually used.
+    </p>
+    @if (!analyticsActive) {
+      <p>
+        This is not running yet. This page will say so plainly when it is — the wording above is
+        generated from the same setting that switches the analytics on, so the two cannot disagree.
+      </p>
+    }
   </div>
 </div>
 
@@ -91,11 +113,11 @@
     <h2><i class="icon icon-common icon-balance-scale section-icon" aria-hidden="true"></i>Lawful basis</h2>
     <p>
       Server log processing is necessary for our legitimate interest in operating, securing and
-      troubleshooting the service. Once active,
-      <a href="https://marketingplatform.google.com/about/analytics/" target="_blank" rel="noopener">Google
-      Analytics</a> will rely on your consent, given via the cookie banner;
-      <a href="https://matomo.org/" target="_blank" rel="noopener">Matomo</a>, configured cookieless
-      as intended, will rely on legitimate interest in understanding aggregate usage.
+      troubleshooting the service.
+      <a href="https://matomo.org/" target="_blank" rel="noopener">Matomo</a> relies on the same
+      basis — our legitimate interest in understanding aggregate usage. Because it is cookieless
+      and stores nothing on your device, it needs no consent under the ePrivacy Directive, which is
+      precisely why it is the only analytics we use.
     </p>
   </div>
 </div>
@@ -104,15 +126,11 @@
   <div class="band-inner">
     <h2><i class="icon icon-common icon-globe section-icon" aria-hidden="true"></i>International data transfers</h2>
     <p>
-      No data is transferred outside the EU/EEA. The site loads no third-party resources — fonts
-      and icons are served from this origin rather than from an external CDN, so loading a page
-      contacts no other company. Once
-      <a href="https://marketingplatform.google.com/about/analytics/" target="_blank" rel="noopener">Google
-      Analytics</a> is active, data it collects will be transferred to Google LLC in the United
-      States, under
-      <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google's standard
-      contractual safeguards</a>. This section will be expanded with the specific safeguards in
-      place once that integration ships.
+      <strong>No data is transferred outside the EU/EEA</strong>, with no exceptions and no
+      onward transfer to any third country. Fonts and icons are served from this origin rather
+      than from an external CDN, and analytics run on a University of Padua server rather than a
+      third-party service, so using this site sends your data to no other company and to no other
+      jurisdiction.
     </p>
   </div>
 </div>
@@ -129,7 +147,9 @@
     <h2><i class="icon icon-common icon-history section-icon" aria-hidden="true"></i>Retention</h2>
     <p>
       Server access logs are retained only as long as needed for security and operational
-      troubleshooting, and are not kept indefinitely.
+      troubleshooting, and are not kept indefinitely. Analytics data is kept in aggregate for
+      trend reporting; because it is cookieless and IP-anonymised, it cannot be traced back to an
+      individual visitor.
     </p>
   </div>
 </div>

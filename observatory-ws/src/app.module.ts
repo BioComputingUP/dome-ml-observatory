@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { configuration, AppConfig, RATE_LIMIT_TTL_MS } from './config/configuration';
 import { validate } from './config/env.validation';
 import { HealthModule } from './health/health.module';
@@ -13,6 +13,7 @@ import { StatsModule } from './stats/stats.module';
 import { JournalsModule } from './journals/journals.module';
 import { ExportModule } from './export/export.module';
 import { IpThrottlerGuard } from './common/ip-throttler.guard';
+import { MatomoInterceptor } from './analytics/matomo.interceptor';
 
 @Module({
   imports: [
@@ -108,8 +109,13 @@ import { IpThrottlerGuard } from './common/ip-throttler.guard';
     JournalsModule,
     ExportModule,
   ],
-  // IpThrottlerGuard, not the stock ThrottlerGuard: the stock key includes the controller and
-  // handler, which would make each limit per-endpoint rather than per-IP. See that file.
-  providers: [{ provide: APP_GUARD, useClass: IpThrottlerGuard }],
+  providers: [
+    // IpThrottlerGuard, not the stock ThrottlerGuard: the stock key includes the controller and
+    // handler, which would make each limit per-endpoint rather than per-IP. See that file.
+    { provide: APP_GUARD, useClass: IpThrottlerGuard },
+    // Reports API usage to the lab's Matomo. Inert unless MATOMO_TOKEN is set, which is the
+    // shipped default -- it constructs no tracker and contacts no host in that case.
+    { provide: APP_INTERCEPTOR, useClass: MatomoInterceptor },
+  ],
 })
 export class AppModule {}

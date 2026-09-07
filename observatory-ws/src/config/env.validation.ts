@@ -82,6 +82,24 @@ class EnvironmentVariables {
   @Min(1)
   @Max(MAX_RATE_LIMIT)
   EXPORT_RATE_LIMIT_PER_MINUTE?: number;
+
+  // All four are optional and all four are inert unless MATOMO_TOKEN is set -- see
+  // analytics/matomo.interceptor.ts. MATOMO_TOKEN is the only credential this service has.
+  @IsOptional()
+  @IsUrl({ require_tld: false })
+  MATOMO_URL?: string;
+
+  @IsOptional()
+  @IsString()
+  MATOMO_SITE_ID?: string;
+
+  @IsOptional()
+  @IsString()
+  MATOMO_TOKEN?: string;
+
+  @IsOptional()
+  @IsUrl({ require_tld: false })
+  MATOMO_PUBLIC_ORIGIN?: string;
 }
 
 export function validate(config: Record<string, unknown>): EnvironmentVariables {

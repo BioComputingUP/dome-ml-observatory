@@ -24,3 +24,7 @@
 **/.env
 **/.env.*
 !**/.env.example
+
+# Internal runbooks. Same reasoning as **/.env above: these are maintainer notes that walk through
+# handling credentials, and they have no business in an image layer.
+**/*.local.md

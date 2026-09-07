@@ -8,7 +8,8 @@ Last updated **2026-09-03**.
 **Where things stand**: both apps are built, containerised and running against the MongoDB server
 (`dome_observatory.Content`, MongoDB 4.2.25, **846,716 documents at `schema_version` 1.2.0**).
 All three indexes are live — `_id_`, `class_year_id`, `positives_text`. **3,332 records are now
-enriched** (see §1a). There is no Zenodo deposit, no analytics, and no CI.
+enriched** (see §1a). There is no Zenodo deposit and no CI; analytics are built but not yet
+switched on (see §3).
 
 The corpus changed materially on 2026-09-03 and this repository has not caught up with it yet —
 see §1. In short: 6,179 human-curated and registry-confirmed records were merged in (they had been
@@ -316,33 +317,39 @@ Each deposit should carry the corpus as gzipped NDJSON, a metadata sidecar (coun
 source, `schema_version`), and the [schema release](schema/releases/v1.1.0/) itself so the deposit
 is self-describing.
 
-## 3. Analytics and cookie consent
+## 3. Analytics — Matomo, built and waiting on a site ID
 
-`/about/privacy` documents the intended stack and carries a **"Not yet active"** badge. That badge
-is accurate today and must not come off before the implementation ships.
+**Decided: Matomo alone, no Google Analytics, no cookie banner.** GA was dropped rather than
+gated. It sets non-essential cookies and transfers data outside the EU/EEA, so adding it would
+have meant building a consent banner, persisting and versioning consent state, offering a
+withdrawal path, honouring DNT/GPC, and disclosing a US transfer on the privacy page — a large
+amount of work, all of it avoided by not using it. Matomo is self-hosted by the university,
+cookieless (`disableCookies`) and IP-anonymised, so it needs no consent under ePrivacy.
 
-**Blocked on** a real self-hosted Matomo instance and site ID, and a GA measurement ID.
+**The code is written and shipped, switched off.** Both halves are inert behind one switch each,
+and neither contacts anything while off:
 
-The site currently loads **no third-party resources at all** — fonts, icons and badges are served
-from its own origin, and `observatory-ui/nginx.conf` ships a `default-src 'self'` CSP that keeps
-it that way. Adding analytics means deliberately relaxing that policy, so treat the CSP change as
-part of the work rather than as something discovered late.
+| Side | File | Switch |
+|---|---|---|
+| Browser page views | `observatory-ui/src/app/core/matomo.ts` | `MATOMO_SITE_ID` in `core/analytics.config.ts`, currently `null` |
+| API usage | `observatory-ws/src/analytics/matomo.interceptor.ts` | `MATOMO_TOKEN`, currently unset |
 
-**Recommendation: Matomo alone.** Self-hosted, cookieless (`disableCookies`), IP-anonymised — no
-consent banner needed under ePrivacy, so there is no banner to build, no consent state to persist
-and version, and nothing for a visitor to dismiss. Adding GA buys little and imports the whole
-gating problem plus an EU/EEA data transfer the privacy page then has to disclose.
+API tracking is there because `/api/export` now makes the whole corpus retrievable, and
+browser-side analytics would see none of that traffic — the heaviest use of the service would be
+the one thing missing from the numbers. It reports through the same `matomo-tracker` library the
+sibling MobiDB service uses, to the same instance.
 
-**If GA is added anyway**, half-gating it is worse than not having it:
+The CSP relaxation is **already done** — `observatory-ui/nginx.conf` permits
+`matomo.biocomputingup.it` in `script-src`, `connect-src` and `img-src`, and nothing else moved
+off `'self'`. A permitted host is not a contacted one, so this changes nothing while the switches
+are off, and it means activation needs no container rebuild.
 
-- Consent state persisted and **versioned**, so a policy change re-asks rather than inheriting a
-  stale answer.
-- Rejecting exactly as easy as accepting — same prominence, same clicks.
-- **No GA tag in `index.html`**; the script is injected only after affirmative consent.
-- A visible way to withdraw consent, linked from the privacy page.
-- Do Not Track / Global Privacy Control treated as a rejection.
+The privacy page reads `MATOMO_ENABLED` directly, so its wording and the "Not yet active" badge
+are generated from the same constant that turns tracking on. It cannot drift out of date, and
+there is no "remember to update the privacy page" step to forget.
 
-Update the privacy page in the same change that ships the implementation, never before.
+**Blocked on** a site ID from the lab's Matomo administrator, and an auth token. The activation
+runbook is `docs/matomo-activation.local.md` (gitignored — it covers where the token goes).
 
 ## 4. Continuous integration
 
