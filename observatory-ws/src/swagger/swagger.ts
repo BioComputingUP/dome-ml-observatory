@@ -20,8 +20,11 @@ export function setupSwagger(app: INestApplication): void {
         'expected.\n' +
         '- Rate limit: 1200 requests per minute per client IP, over a rolling 60-second window. ' +
         'Requests above the limit return HTTP 429. /api/export has its own budget of 60 ' +
-        'requests per minute, because one of those returns up to 1000 records -- 60,000 ' +
-        'records per minute. Health checks are not rate-limited.\n' +
+        'requests per minute, because one of those returns up to 1000 records. Health checks ' +
+        'are not rate-limited.\n' +
+        '- Export size: records average ~3.7 KB, so the whole corpus is roughly 3 GB and takes ' +
+        'hours to pull, bounded by your bandwidth rather than by the rate limit. Apply filters ' +
+        'if you do not need all of it.\n' +
         '- Whole-corpus retrieval: use /api/export, which pages on a cursor and has no result ' +
         'window at all. Every /api/records filter applies to it.\n' +
         '- Result window: page x pageSize above 10,000 on /api/records returns HTTP 400 rather ' +

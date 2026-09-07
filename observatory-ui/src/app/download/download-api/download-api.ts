@@ -130,7 +130,7 @@ export class DownloadApi {
       title: 'Export budget',
       value: '60 requests / minute / IP',
       detail:
-        '/api/export has its own separate budget, because one request there returns up to 1,000 records — 60,000 records a minute. Walking the whole corpus takes well under half an hour.',
+        '/api/export has its own separate budget, because one request there returns up to 1,000 records. The limit allows 60,000 records a minute, but your own bandwidth is usually what binds: records average ~3.7 KB, so the whole corpus is roughly 3 GB and takes hours rather than minutes. Filter it down if you do not need all of it.',
     },
     {
       icon: 'icon-ban',

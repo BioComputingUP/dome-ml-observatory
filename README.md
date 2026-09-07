@@ -51,8 +51,10 @@ supported:
 - **1200 requests/minute per client IP** over a rolling 60 s window; 429 above it. One budget
   across all endpoints, not one per endpoint. Health checks are exempt.
 - **`/api/export` has its own 60/minute budget**, because one request there returns up to 1000
-  records — 60,000 records/minute, so the whole corpus walks in well under half an hour. A
-  separate bucket, so an export cannot starve ordinary search traffic.
+  records. A separate bucket, so an export cannot starve ordinary search traffic. The limit
+  permits 60,000 records/minute, but in practice the client's bandwidth binds first, not the
+  limit: records average ~3.7 KB, so the full corpus is **roughly 3 GB** and a whole-corpus walk
+  is measured in hours, not minutes. Filter it down if you do not need all of it.
 - **Result window capped at 10,000 on `/api/records`** — `page × pageSize > 10000` returns 400
   rather than silently truncating. A *browsing* limit specific to that endpoint, forced by
   MongoDB 4.2's sort ceiling, and the reason `/api/export` exists. Export has no window.
