@@ -1,9 +1,10 @@
 # DOME Observatory
 
-A searchable database of AI/ML methods-paper metadata: 827,061 publications screened, 355,558
-classified as AI/ML methods papers by LLM processing, using a method validated against a
-hand-annotated expert benchmark before being scaled, and cross-linked to
-[Europe PMC](https://europepmc.org/). Individual records are not curator-reviewed.
+A searchable database of AI/ML methods-paper metadata: 846,716 publications screened, 366,234
+classified as AI/ML methods papers, and cross-linked to [Europe PMC](https://europepmc.org/).
+Most classifications come from LLM processing, using a method validated against a hand-annotated
+expert benchmark before being scaled; 6,179 records are human-curated or DOME Registry-confirmed.
+The rest are not individually curator-reviewed.
 
 Live at [observatory.dome-ml.org](https://observatory.dome-ml.org/). Part of the
 [DOME-ML](https://dome-ml.org/) family, alongside the [DOME Registry](https://registry.dome-ml.org/).
@@ -69,60 +70,19 @@ while :; do
 done
 ```
 
-## Local development
+## Running it locally
 
-### Quickstart
+Docker is the only supported way to run the service, and there are exactly two ways to run it:
+against the corpus database, or entirely self-contained on the bundled sample entries. Both start
+the same two containers with the same command; the only thing that differs is what `MONGODB_URI`
+points at.
 
-```bash
-git clone https://github.com/BioComputingUP/dome-ml-observatory.git
-cd dome-ml-observatory
-npm run setup                # npm ci in both apps
-cp .env.example .env         # then set MONGODB_URI -- see below
-```
+**Prerequisites.** Docker with a Compose v2 CLI — `docker compose`, space-separated. The Compose
+file deliberately has no `version:` key, which Compose v1 misparses. Nothing else: Node is not
+needed to *run* the service, only to work on the code (see
+[`CONTRIBUTING.md`](CONTRIBUTING.md#working-on-the-code)).
 
-Node 24 is required and pinned in each app's `.nvmrc` (`nvm install && nvm use`, or the
-equivalent for `fnm`/`asdf`). Each app keeps its own independent install; there is no root
-lockfile and no workspace hoisting.
-
-**You need a database.** Three options, in order of least setup:
-
-| | `MONGODB_URI` | Notes |
-|---|---|---|
-| Self-contained sample data | `mongodb://mongo:27017` | Run with `--profile offline` (below). 200 records, no network access needed. |
-| MongoDB on your own machine | `mongodb://host.docker.internal:27017` | Load your own data. `localhost` will not work from inside a container. |
-| The real corpus | the host your deployment provides | Read-only, and typically only reachable from inside its own network. |
-
-### Frontend
-
-```bash
-cd observatory-ui
-npm run start        # dev server at http://localhost:4200
-```
-
-`npm run build-prod` builds to `observatory-ui/dist/`. The dev server proxies `/api` to
-`http://localhost:3000` via [`observatory-ui/proxy.conf.json`](observatory-ui/proxy.conf.json), so
-development is same-origin exactly like production.
-
-### Backend
-
-```bash
-cd observatory-ws
-cp .env.example .env  # .env is gitignored and never committed
-npm run start:dev     # hot reload at http://localhost:3000
-```
-
-Backend development needs read-only network reach to the MongoDB host — over VPN if that host is
-network-restricted. Configuration is environment variables only, validated at boot — see
-[Environment variables](#environment-variables).
-
-From the repo root the same commands are available unprefixed (`npm run start`, `npm run build-prod`)
-for the frontend and suffixed (`npm run start:ws`, `npm run build:ws`, `npm run test:ws`,
-`npm run lint:ws`) for the backend. Each app keeps its own independent install; there is no root
-lockfile and no npm-workspaces hoisting.
-
-## Running the whole service locally with Docker
-
-Two images, no others:
+Two images are built, no others:
 
 | Image | Base | Size | Notes |
 |---|---|---|---|
@@ -130,38 +90,54 @@ Two images, no others:
 | `observatory-ws` | `node:24-alpine` | ~294 MB | Multi-stage, production deps only, runs as the non-root `node` user. |
 
 **Both build from the repo root as context** — each needs `schema/`, which sits outside its own
-directory, and Docker refuses to `COPY` anything outside the build context:
+directory, and Docker refuses to `COPY` anything outside the build context.
 
-Requires a Compose v2 CLI (`docker compose`, space-separated). The file has no `version:` key,
-which Compose v1 misparses.
+### Mode A — against the corpus database
 
 ```bash
-cp .env.example .env   # first time only
+cp .env.example .env    # first time only; .env is gitignored and never committed
+# set MONGODB_URI to the corpus host, then:
 docker compose -f docker-compose-local.yml up --build
 ```
+
+The corpus database is read-only and **not publicly routable** — it is reachable only from inside
+the hosting institution's network, so you need to be on its VPN (University of Padua) for the
+connection to resolve at all. The host itself is shared out of band, never through this
+repository; it is the one genuinely sensitive value in the configuration.
+
+Without that reachability the stack still comes up rather than failing: `/api/health` returns 200,
+`/api/health/ready` returns 503, and the frontend serves. That is deliberate — see
+[Expected startup behaviour](#expected-startup-behaviour).
+
+A MongoDB running on your own machine, outside Compose, is reachable as
+`mongodb://host.docker.internal:27017`. Plain `localhost` will not work from inside a container.
+
+### Mode B — self-contained, on the bundled sample entries
+
+```bash
+cp .env.example .env    # first time only
+# set MONGODB_URI=mongodb://mongo:27017, then:
+docker compose -f docker-compose-local.yml --profile offline up --build
+```
+
+No network access to anything, no VPN, no credentials. The `offline` profile adds a throwaway
+MongoDB, seeds it from the tracked 200-record fixture
+([`observatory-ui/fixtures/sample-records.json`](observatory-ui/fixtures/sample-records.json)) and
+builds the same two indexes the real collection carries. The backend waits for the seed to finish
+before starting, because it warms its caches once at boot and then holds them for 24 h — start it
+mid-seed and it caches "0 records" and serves that all day.
+
+This is what makes the repository runnable and reviewable on any machine. It is a demo dataset,
+not a mirror of production, and it is ephemeral: `down` discards it and the next `up` reseeds. The
+image defaults to `mongo:7` for multi-architecture support, while production runs MongoDB 4.2, so
+it is not a version-parity environment. Override with `MONGO_IMAGE` if you need closer parity.
+
+### Either mode
 
 | Service | Host port | Container port |
 |---|---|---|
 | `observatory-ui` | 8080 | 80 — **the only browser-facing origin** |
 | `observatory-ws` | 3000 | 3000 — host side is for `curl`ing the API directly; the browser never uses it |
-
-### Self-contained stack with sample data
-
-To run the whole service with no access to any real database — set
-`MONGODB_URI=mongodb://mongo:27017` in `.env`, then:
-
-```bash
-docker compose -f docker-compose-local.yml --profile offline up --build
-```
-
-This adds a throwaway MongoDB, seeds it from the tracked 200-record fixture
-(`observatory-ui/fixtures/sample-records.json`) and creates the same two indexes the real
-collection carries. The backend waits for the seed to finish before starting, because it warms
-its caches once at boot and holds them for 24 h.
-
-It is a demo dataset, not a mirror of production, and it is ephemeral: `down` discards it and the
-next `up` reseeds. The image defaults to `mongo:7` for multi-architecture support; production
-runs MongoDB 4.2, so this is not a version-parity environment. Override with `MONGO_IMAGE`.
 
 ### Coupled settings
 
@@ -190,39 +166,22 @@ the corpus stats aggregation, and the journals table. Consequently:
 
 ## Server deployment
 
-Two deployment shapes are supported. Both are first-class; the repository does not assume either.
+[`docker-compose-local.yml`](docker-compose-local.yml) is a working two-service project and the
+intended starting point for a production Compose file. It carries no volumes and no secrets. Build
+both images from the repository root as context.
 
-**Containers.** [`docker-compose-local.yml`](docker-compose-local.yml) is a working two-service
-project and the intended starting point for a production Compose file. It carries no volumes and no
-secrets. A production file differs from it in three places only: published ports, the `MONGODB_URI`
-and `FRONTEND_URL` values, and a restart policy. Build both images from the repository root as
-context.
-
-**Bare process.** `npm run start:prod` in `observatory-ws/` runs `node dist/main`, byte-identical to
-the container's `CMD`, so a systemd or equivalent deployment needs no Docker. The frontend in that
-shape is `npm run build-prod` plus serving `observatory-ui/dist/` as static files behind a web
-server that provides the SPA fallback and the `/api` proxy — [`observatory-ui/nginx.conf`](observatory-ui/nginx.conf)
-is a working reference for that configuration.
-
-`npm run deploy-prod-quick` builds the frontend and rsyncs `dist/` to `$DEPLOY_TARGET` with
-`--delete`. The target is not committed — set it in your environment:
-
-```bash
-DEPLOY_TARGET=user@host:/var/www/dome-ml-observatory/dist/ npm run deploy-prod-quick
-```
-
-Without it the script exits before building. It publishes immediately and has no staging step;
-run it only as a deliberate deploy.
-
-**What a production Compose file changes** relative to
-[`docker-compose-local.yml`](docker-compose-local.yml), which is otherwise a working starting
-point:
+**What a production Compose file changes** relative to it:
 
 - Do not publish the backend port. Only the frontend needs to be reachable; the backend is
   reached over the internal network by service name.
 - Set `MONGODB_URI` and `FRONTEND_URL` to real values.
 - Set a restart policy appropriate to the host's orchestration.
 - Do not enable the `offline` profile — it exists for local development only.
+
+Deploying without Docker is also possible — the backend's start command is byte-identical either
+way — but it is a contributor/operator path rather than the documented one, so it lives in
+[`CONTRIBUTING.md`](CONTRIBUTING.md#deploying-without-docker) alongside the rest of the npm
+workflow.
 
 ### Decisions the deployment makes
 
@@ -258,8 +217,8 @@ The repository is neutral on all of these, and none of them require code changes
 
 ### Secrets and configuration
 
-The service has **no credentials**. Every setting is one of the seven environment variables
-below; none is a password, token or key, and none reaches the browser — the SPA has no build-time
+The service has **no credentials**. Every setting is one of the environment variables below; none
+is a password, token or key, and none reaches the browser — the SPA has no build-time
 configuration and issues only relative-URL requests.
 
 - The real `.env` is **never committed**. `.gitignore` matches `.env` at any depth, and
@@ -287,6 +246,9 @@ that needs it.
 | `FRONTEND_URL` | no | `http://localhost:4200` | CORS origin allowlist. Never `*`. |
 | `MONGO_MAX_TIME_MS` | no | `5000` | `maxTimeMS` for filter-only queries, so a slow query fails fast instead of holding a connection on a shared host. |
 | `MONGO_SEARCH_MAX_TIME_MS` | no | `20000` | Larger budget, applied only when `q=` is present. |
+| `MONGO_EXPORT_MAX_TIME_MS` | no | `30000` | Budget for one `/api/export` chunk, which is up to 1000 documents rather than 25. |
+| `RATE_LIMIT_PER_MINUTE` | no | `1200` | Requests per minute per client IP, one budget across all endpoints. |
+| `EXPORT_RATE_LIMIT_PER_MINUTE` | no | `60` | Separate budget for `/api/export`, so a corpus walk cannot starve search traffic. |
 
 Two `.env.example` files exist and are kept identical: the root one feeds the Compose file's
 `env_file`, and [`observatory-ws/.env.example`](observatory-ws/.env.example) is what non-Docker local
@@ -333,29 +295,14 @@ load, but the fallback paths remain, because the service must survive their abse
 
 ## Tests and gates
 
-There is no CI yet (see [`ROADMAP.md`](ROADMAP.md)). The local gates are the only gate — run the
-ones for whichever app you touched:
+There is no CI yet (see [`ROADMAP.md`](ROADMAP.md)); the local gates are the only gate. They, the
+npm dev-server workflow and the repository's code conventions all live in
+[`CONTRIBUTING.md`](CONTRIBUTING.md#working-on-the-code) — running the service needs none of them,
+only Docker.
 
-```bash
-npm test        && npm run lint     && npm run build-prod   # observatory-ui
-npm run test:ws && npm run lint:ws  && npm run build:ws     # observatory-ws
-```
-
-For backend changes touching database queries, also run the service against the real database and
+One rule is worth repeating here because it is a deployment concern rather than a contributor one:
+for backend changes touching database queries, run the service against the real database and
 exercise the affected endpoint. Several defects in this service were reproducible only that way.
-
-## Conventions worth knowing
-
-- **`npm ci`, never `npm install`,** in either app. A bare install can silently upgrade a pinned
-  toolchain, and in the backend's case pull a Mongoose major that cannot connect to MongoDB 4.2 at
-  all.
-- **`dist/` and `observatory-ui/src/assets/vocab/` are generated and gitignored.** A fresh clone has
-  no vocabulary files until a build runs — `scripts/sync-schema.js` copies them out of `schema/` and
-  is wired to every `pre*` npm hook, so this is automatic, but it does mean `schema/` has to be
-  present in the build context.
-- **Never hand-edit a published [`schema/releases/vX.Y.Z/`](schema/releases/) folder.** Releases
-  are immutable; a change means a new release folder. See [`schema/README.md`](schema/README.md)
-  and [`schema/CHANGELOG.md`](schema/CHANGELOG.md).
 
 ## Support
 
@@ -388,7 +335,8 @@ release announcements is planned; until it exists, email is the route.
   refreshing the corpus on the MongoDB server, and the monthly Zenodo archive.
 - [`AGENTS.md`](AGENTS.md) — working conventions, and a record of the things that have gone wrong
   before. Read it before changing code, whether you are a person or an AI coding agent.
-- [`CONTRIBUTING.md`](CONTRIBUTING.md) · [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) — how to propose a change, and the npm dev workflow, local
+  gates and code conventions for working on either app. · [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)
 - [`CITATION.cff`](CITATION.cff) — how to cite this.
 - [`LICENSE.md`](LICENSE.md) — CC BY 4.0 on the classification/enrichment layer this project
   adds. The underlying bibliographic metadata and abstracts come largely from Europe PMC and keep

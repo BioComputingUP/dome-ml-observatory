@@ -11,6 +11,7 @@ are reviewed and merged by the UNIPD lead developer. For general enquiries or co
 starting a large contribution, you can reach the team at **contact@dome-ml.org**.
 
 ## On this page
+* [Working on the code](#working-on-the-code)
 * [How to Contribute](#how-to-contribute)
     * [Reporting Issues or Suggesting Improvements](#reporting-issues-or-suggesting-improvements)
     * [Submitting Changes via Pull Requests](#submitting-changes-via-pull-requests)
@@ -18,6 +19,110 @@ starting a large contribution, you can reach the team at **contact@dome-ml.org**
 * [What Not to Contribute](#what-not-to-contribute)
 * [Contribution Licensing](#contribution-licensing)
 * [Review Process](#review-process)
+
+---
+
+## Working on the code
+
+Running the service needs only Docker — see the root [`README.md`](README.md#running-it-locally).
+This section is for changing it, which does need a local Node toolchain.
+
+```bash
+git clone https://github.com/BioComputingUP/dome-ml-observatory.git
+cd dome-ml-observatory
+npm run setup                # npm ci in both apps
+cp .env.example .env         # then set MONGODB_URI
+```
+
+Node 24 is required and pinned in each app's `.nvmrc` (`nvm install && nvm use`, or the equivalent
+for `fnm`/`asdf`). This is a monorepo of two independent apps: each keeps its own install, with no
+root lockfile and no npm-workspaces hoisting.
+
+You still need a database to develop against. The options and what they need are the same two
+modes the README describes; the self-contained `--profile offline` stack is the one that needs no
+VPN and no real data, and it is usually the right one to develop against.
+
+### Frontend
+
+```bash
+cd observatory-ui
+npm run start        # dev server at http://localhost:4200
+```
+
+`npm run build-prod` builds to `observatory-ui/dist/`. The dev server proxies `/api` to
+`http://localhost:3000` via [`observatory-ui/proxy.conf.json`](observatory-ui/proxy.conf.json), so
+development is same-origin exactly like production.
+
+### Backend
+
+```bash
+cd observatory-ws
+cp .env.example .env   # observatory-ws/.env, not the root one -- see below
+npm run start:dev      # hot reload at http://localhost:3000
+```
+
+Backend development needs read-only network reach to the MongoDB host — over VPN if that host is
+network-restricted. Configuration is environment variables only, validated at boot, and every
+variable is documented in the root README's
+[Environment variables](README.md#environment-variables) table.
+
+Two `.env.example` files exist and are kept identical: the root one feeds the Compose file's
+`env_file`, and [`observatory-ws/.env.example`](observatory-ws/.env.example) is what non-Docker
+local dev reads (the npm scripts `chdir` into `observatory-ws/`, so that is where `@nestjs/config`
+looks). **Update both if either changes.**
+
+From the repo root the same commands are available unprefixed (`npm run start`,
+`npm run build-prod`) for the frontend and suffixed (`npm run start:ws`, `npm run build:ws`,
+`npm run test:ws`, `npm run lint:ws`) for the backend.
+
+### Gates
+
+There is no CI yet (see [`ROADMAP.md`](ROADMAP.md)). These local gates are the only gate — run the
+ones for whichever app you touched, and make sure they pass before opening a PR:
+
+```bash
+npm test        && npm run lint     && npm run build-prod   # observatory-ui
+npm run test:ws && npm run lint:ws  && npm run build:ws     # observatory-ws
+```
+
+For backend changes touching database queries, also run the service against the real database and
+exercise the affected endpoint. Several defects in this service were reproducible only that way.
+
+### Conventions worth knowing
+
+- **`npm ci`, never `npm install`,** in either app. A bare install can silently upgrade a pinned
+  toolchain, and in the backend's case pull a Mongoose major that cannot connect to MongoDB 4.2 at
+  all.
+- **`dist/` and `observatory-ui/src/assets/vocab/` are generated and gitignored.** A fresh clone
+  has no vocabulary files until a build runs — `scripts/sync-schema.js` copies them out of
+  `schema/` and is wired to every `pre*` npm hook, so this is automatic, but it does mean
+  `schema/` has to be present in the build context.
+- **Never hand-edit a published [`schema/releases/vX.Y.Z/`](schema/releases/) folder.** Releases
+  are immutable; a change means a new release folder. See [`schema/README.md`](schema/README.md)
+  and [`schema/CHANGELOG.md`](schema/CHANGELOG.md).
+
+[`AGENTS.md`](AGENTS.md) carries the rest: the working conventions in more depth, and a record of
+things that have gone wrong before. Read it before changing code, whether you are a person or an
+AI coding agent.
+
+### Deploying without Docker
+
+Supported, but not the documented path — the README covers the container deployment. The backend's
+`npm run start:prod` in `observatory-ws/` runs `node dist/main`, byte-identical to the container's
+`CMD`, so a systemd or equivalent deployment needs no Docker. The frontend in that shape is
+`npm run build-prod` plus serving `observatory-ui/dist/` as static files behind a web server
+providing the SPA fallback and the `/api` proxy — [`observatory-ui/nginx.conf`](observatory-ui/nginx.conf)
+is a working reference for that configuration.
+
+`npm run deploy-prod-quick` builds the frontend and rsyncs `dist/` to `$DEPLOY_TARGET` with
+`--delete`. The target is not committed — set it in your environment:
+
+```bash
+DEPLOY_TARGET=user@host:/var/www/dome-ml-observatory/dist/ npm run deploy-prod-quick
+```
+
+Without it the script exits before building. It publishes immediately and has no staging step; run
+it only as a deliberate deploy.
 
 ---
 
@@ -49,8 +154,8 @@ This is the preferred way to modify the frontend, backend, or documentation.
     * This is a monorepo -- `observatory-ui/` (Angular frontend) and `observatory-ws/` (NestJS
       backend) are independent apps with their own `package.json` and dependencies. Work inside
       the one relevant to your change, and match the existing style in whichever you touch.
-    * See the root [`README.md`](README.md)'s *Local development* section for the setup of
-      whichever app you're touching.
+    * See [Working on the code](#working-on-the-code) below for the dev setup of whichever app
+      you're touching, and run that app's gates before opening the PR.
 4. **Commit Your Changes:**
     ```bash
     git add .
