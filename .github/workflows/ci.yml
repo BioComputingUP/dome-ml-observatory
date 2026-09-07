@@ -1,0 +1,146 @@
+# Runs this project's existing gates on every change, so they no longer depend on someone
+# remembering to run them locally. Nothing here is new: it is the same lint, test, build and
+# schema-validation commands CONTRIBUTING.md documents.
+#
+# Report only, deliberately. `main` is not protected and these checks do not block a push -- they
+# put a tick or a cross on the commit. If required status checks are ever turned on, note that the
+# `paths-ignore` below means a docs-only pull request produces no run at all, so a required check
+# would never report and the PR would wait forever. Replace the filters with a job that reports
+# success before doing that.
+#
+# Never add a deploy job. `deploy-prod-quick` rsyncs to production with --delete and no staging
+# step; deployment belongs to whoever hosts the service, not to CI.
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - '.github/ISSUE_TEMPLATE/**'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - '.github/ISSUE_TEMPLATE/**'
+
+# The repository default is `write`, which nothing here needs: no job pushes an image, comments on
+# a PR, or writes to the repository.
+permissions:
+  contents: read
+
+# Pushing twice in a minute should not leave the first run burning a runner to report on a commit
+# nobody is looking at any more.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    name: observatory-ui
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # node-version-file reads the app's own .nvmrc (24.20.0) rather than repeating the version
+      # here, so the pin has one home. There is no .nvmrc at the repo root.
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: observatory-ui/.nvmrc
+          cache: npm
+          cache-dependency-path: observatory-ui/package-lock.json
+
+      # `npm ci`, never `npm install`. A bare install has already floated a pinned dependency in
+      # this repo once -- see AGENTS.md.
+      - run: npm ci
+        working-directory: observatory-ui
+
+      - run: npm run lint
+        working-directory: observatory-ui
+
+      # `pretest` runs scripts/sync-schema.js, which regenerates the gitignored vocab assets from
+      # schema/. That is why a fresh checkout needs no extra step here.
+      - run: npm test
+        working-directory: observatory-ui
+
+      - run: npm run build-prod
+        working-directory: observatory-ui
+
+      # angular.json sets outputPath.browser to "", and that empty string is the only thing keeping
+      # the build flat. deploy-prod-quick.sh rsyncs dist/ straight to the web root, so if that
+      # setting is ever lost, Angular emits dist/browser/ and the deploy ships a site with no
+      # index.html at its root -- while every other check still passes.
+      - name: Assert dist/ is flat, with index.html at its root
+        run: test -f observatory-ui/dist/index.html
+
+  backend:
+    name: observatory-ws
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: observatory-ws/.nvmrc
+          cache: npm
+          cache-dependency-path: observatory-ws/package-lock.json
+
+      - run: npm ci
+        working-directory: observatory-ws
+
+      # lint:ci, NOT lint. The `lint` script carries --fix, which would rewrite files on the runner
+      # and then exit 0, and this config makes every formatting rule auto-fixable. --max-warnings=0
+      # matters too: no-floating-promises and no-unsafe-argument are set to `warn`, and warnings do
+      # not affect eslint's exit code on their own.
+      - run: npm run lint:ci
+        working-directory: observatory-ws
+
+      # Hermetic: every spec stubs ConfigService, so env.validation.ts never runs and no .env is
+      # needed. Nothing opens a database connection.
+      - run: npm test
+        working-directory: observatory-ws
+
+      - run: npm run build
+        working-directory: observatory-ws
+
+  schema:
+    name: schema
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # validate.py is stdlib-only by design -- nothing to install, and no requirements.txt exists.
+      - name: Assert CURRENT names a release that exists
+        run: test -d "schema/releases/$(cat schema/CURRENT)"
+
+      # Every release, not just CURRENT: the cost is identical and it catches a release folder that
+      # was published broken. Each example is validated against its own release's schema, since a
+      # published release folder is immutable and must stay self-consistent.
+      - name: Validate every release's example against its own schema
+        run: |
+          set -eu
+          for release in schema/releases/*/; do
+            python3 schema/validate.py \
+              "${release}ai-ml-landscape.example.json" \
+              --schema "${release}ai-ml-landscape.schema.json"
+          done
+
+  docker:
+    name: docker images
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Both Dockerfiles COPY schema/ from the REPO ROOT, so the context is `.` and the Dockerfile
+      # is named with -f. This is the only check that exercises that: a break in the root context
+      # leaves `npm run build` passing and the container broken.
+      #
+      # Plain `docker build`, never `docker compose build` -- the compose file declares
+      # `env_file: [.env]`, and .env is gitignored and absent here, so compose would fail before
+      # building anything.
+      #
+      # Build only, never push. Nothing here logs in to a registry.
+      - name: Build observatory-ui image
+        run: docker build -f observatory-ui/Dockerfile -t observatory-ui:ci .
+
+      - name: Build observatory-ws image
+        run: docker build -f observatory-ws/Dockerfile -t observatory-ws:ci .
