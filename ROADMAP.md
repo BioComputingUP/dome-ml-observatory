@@ -371,19 +371,31 @@ Explicitly not in scope: any workflow that deploys. Deployment is the hosting la
 
 ---
 
-## 5. Repository access and visibility
+## 5. Repository access and visibility — done, 2026-09-07
 
-The repository is private and the account doing the development does not hold admin on it. That
-combination is the wrong way round for a project meant to be citable and externally reusable, and
-it blocks several items above: publishing releases, adding repository secrets for the scheduled
-archive, and enabling branch protection or required status checks alongside CI.
+**The repository is public.** The sanitisation pass was completed and verified first, over both
+the tracked tree and the entire history: no credentials, no auth tokens, no real hostnames, no
+private IPv4 address in any blob any commit has ever held, every `mongodb://` string a
+placeholder, `.env` never committed, and only the three intended public email addresses present.
 
-- Make the repository public, once the sanitisation pass above is confirmed — no internal
-  hostnames, addresses or credentials in tracked files. Until then the schema links on
-  `/download/bulk` and the About pages, and the issue templates the support page points at, 404 for
-  anyone outside the organisation. Nothing to change here when it flips; they simply start working.
-- Grant admin to the maintainer doing the work, so releases, secrets and branch protection can be
-  configured without a round trip.
+The internal server name that appeared in four roadmap references was removed from history rather
+than only from the current files, since publishing exposes history too. The rewrite replaced it in
+both file content and commit messages; the resulting tree hash was identical to the pre-rewrite
+one, so nothing but history changed. `main` was force-pushed on 2026-09-07 — anyone holding a
+clone from before that needs `git fetch origin && git reset --hard origin/main`.
+
+One residual, worth knowing rather than acting on: GitHub keeps force-pushed commits reachable by
+their SHA until it garbage-collects, so the pre-rewrite commit is not instantly gone. Those SHAs
+were only ever visible to the three people with access while the repository was private, so this
+is a theoretical exposure rather than a practical one. Ask GitHub Support to run a GC if that is
+not good enough.
+
+Admin on the repository is held by the maintainer doing the work, so releases, repository secrets
+(the `ZENODO_TOKEN` in §2 needs one) and branch protection can now be configured without a round
+trip. The schema links on `/download/bulk`, the About pages and the four issue templates resolve
+for anonymous visitors — verified unauthenticated.
+
+Still to do here: branch protection and required status checks, which want CI (§4) to exist first.
 
 ## Deferred, tracked
 
