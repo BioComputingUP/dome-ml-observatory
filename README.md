@@ -76,6 +76,42 @@ done
 
 ## Running it locally
 
+### The commands
+
+Both modes need a `.env` first: `cp .env.example .env` (gitignored, never committed). The only
+line that differs between them is `MONGODB_URI`.
+
+```bash
+# Build and run against the corpus database. Needs MONGODB_URI set to the corpus host,
+# and the University of Padua VPN.
+docker compose -f docker-compose-local.yml up --build
+
+# Build and run with NO backend database connection -- self-contained, no VPN, no credentials.
+# Set MONGODB_URI=mongodb://mongo:27017 in .env first. Starts a throwaway MongoDB and seeds it
+# with the 200-record sample fixture.
+docker compose -f docker-compose-local.yml --profile offline up --build
+```
+
+Then open **http://localhost:8080**. The API is on http://localhost:3000 for `curl`; the browser
+never uses it. `/api/*` returns 502 for the first 40-50 seconds while the backend warms its
+caches, which is expected.
+
+```bash
+# Same again without rebuilding the images -- much faster once built.
+docker compose -f docker-compose-local.yml up
+docker compose -f docker-compose-local.yml --profile offline up
+
+# Run in the background, then follow the logs.
+docker compose -f docker-compose-local.yml up --build -d
+docker compose -f docker-compose-local.yml logs -f
+
+# Stop and remove. Repeat the --profile offline flag, or the mongo containers are left behind.
+docker compose -f docker-compose-local.yml down
+docker compose -f docker-compose-local.yml --profile offline down -v
+```
+
+The rest of this section explains what those two modes actually do.
+
 Docker is the only supported way to run the service, and there are exactly two ways to run it:
 against the corpus database, or entirely self-contained on the bundled sample entries. Both start
 the same two containers with the same command; the only thing that differs is what `MONGODB_URI`
