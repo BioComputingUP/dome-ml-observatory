@@ -17,6 +17,11 @@ Anything here that depends on the data depends on that list, so read it before p
 | 3 | [Verify the preprint fields](#3-verify-the-preprint-fields) | The backfill, in the sister repo |
 | 4 | [The Zenodo DOI on the site is dead](#4-the-zenodo-doi-on-the-site-is-dead) | Minting a real deposition |
 | 5 | [Final docs pass](#5-final-docs-pass) | Every other repo settling |
+| 6 | [Citation-count liveness](#6-citation-count-liveness) | A last-processed date the API can serve |
+| 7 | [Finalise schema versioning](#7-finalise-schema-versioning) | v1.3.0 being authored in the sister repo |
+| 8 | [Link out to the curation criteria](#8-link-out-to-the-curation-criteria) | Nothing |
+| 9 | [A skill for the hardcoded figures](#9-a-skill-for-the-hardcoded-figures) | Nothing |
+| 10 | [Keep the two repositories aligned](#10-keep-the-two-repositories-aligned) | Everything above, both sides |
 
 ---
 
@@ -94,7 +99,7 @@ produce that deposition belongs to the sister repository.
 
 ## 5. Final docs pass
 
-Last, once the sister repositories have settled. `README.md`, `AGENTS.md` and
+Late, once the sister repositories have settled. `README.md`, `AGENTS.md` and
 `.claude/skills/` were written while the split across repositories was still moving, so re-read
 them against what is actually true then:
 
@@ -102,3 +107,36 @@ them against what is actually true then:
 - `AGENTS.md` matches the code — it says to trust the code and update the file where they differ.
 - The `schema-version` skill's procedure still matches the real release and alignment steps.
 - No stale counts, versions or file paths anywhere.
+
+## 6. Citation-count liveness
+
+Cards and record pages show `citation_count` without saying how fresh it is or when the corpus was
+last processed — the site's only date, `about-support.ts`'s hand-edited `lastUpdated`, is a page
+date, not a data one. Add a liveness disclaimer and a real last-processed date served by the API.
+
+## 7. Finalise schema versioning
+
+`schema/CURRENT` is v1.3.0 while the sister repository still authors 1.2.0 — drift by design, and
+`check_alignment.py` reports it as such. Once the authored side catches up, settle the release
+procedure — who bumps, when, and what a release must carry — and update the `schema-version` skill
+to match.
+
+## 8. Link out to the curation criteria
+
+`about-overview.html` says records are screened "against published criteria" but links to nothing.
+Point it at the sister repository's `curation_criteria/CRITERIA.md`, versioned by the
+`criteria_sha256` and `prompt_version` pinned in its `prompts/PROMPT_HASHES.json`.
+
+## 9. A skill for the hardcoded figures
+
+Corpus counts are typed into the UI by hand in a dozen files — `status-badge.ts`, `venue.ts`,
+`facet-panel.html`, `records.service.ts`, `download-api.ts`, `facet-stats.model.ts` — as displayed
+text and as prose in comments. Add a skill that finds every one, checks it against `/api/stats` and
+`schema/generate_facet_stats.py`'s `CORPUS` dict, and updates them together so they stay uniform.
+
+## 10. Keep the two repositories aligned
+
+Last, once both roadmaps are done. Run the sister repository's `schema/check_alignment.py` and
+confirm the authored schema, the `schema/CURRENT` published here and the live `schema_version` all
+agree — item 5 covers the prose, this covers the data contract. The sister roadmap carries the
+matching item; neither list is finished until both pass.
