@@ -39,7 +39,9 @@ export class AboutSupport {
     // DOM. Read once from the snapshot rather than subscribing: the app is zoneless, and the
     // fragment cannot change without leaving the page. Same approach as news.ts.
     afterNextRender(() => {
-      if (this.route.snapshot.fragment === 'faq') this.scrollToFaq();
+      const fragment = this.route.snapshot.fragment;
+      if (fragment === 'faq') this.scrollToFaq();
+      else if (fragment?.startsWith('faq-')) this.openQuestion(fragment);
     });
   }
 
@@ -58,6 +60,20 @@ export class AboutSupport {
 
   private scrollToFaq(): void {
     document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /**
+   * Opens the one question a #faq-* deep link names, and scrolls to it.
+   *
+   * The questions ship closed, so landing on `#faq-curation` would otherwise scroll a reader to a
+   * heading with the answer they were sent for still folded away. Browsers increasingly expand a
+   * targeted `<details>` on their own, but not uniformly, and this page cannot rely on it.
+   */
+  private openQuestion(id: string): void {
+    const item = document.getElementById(id);
+    if (!(item instanceof HTMLDetailsElement)) return;
+    item.open = true;
+    item.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   private readonly stats = toSignal(this.records.getFacetStats().pipe(catchError(() => of(null))), {

@@ -142,7 +142,7 @@
 
     <h3 class="faq-group">Searching and browsing</h3>
 
-    <details class="faq-item" id="faq-author-names" open>
+    <details class="faq-item" id="faq-author-names">
       <summary>How do I search for an author?</summary>
       <p>
         However you would normally write the name. Authors are stored the way the source literature
@@ -161,7 +161,7 @@
       </p>
     </details>
 
-    <details class="faq-item" id="faq-multiple-words" open>
+    <details class="faq-item" id="faq-multiple-words">
       <summary>How are multiple words treated?</summary>
       <p>
         They are AND-ed, not read as a phrase: every word has to appear somewhere in the title,
@@ -172,7 +172,7 @@
       </p>
     </details>
 
-    <details class="faq-item" id="faq-fewer-results" open>
+    <details class="faq-item" id="faq-fewer-results">
       <summary>Why do I get fewer results than the {{ corpus().total | number }} papers you screened?</summary>
       <p>
         Search covers the {{ corpus().positive | number }} papers classified as AI/ML methods
@@ -189,7 +189,7 @@
       </p>
     </details>
 
-    <details class="faq-item" id="faq-slow-single-word" open>
+    <details class="faq-item" id="faq-slow-single-word">
       <summary>Why can one uncommon word be slower than two?</summary>
       <p>
         A search of two or more words uses the text index, which is fast. A single bare word
@@ -204,7 +204,7 @@
       </p>
     </details>
 
-    <details class="faq-item" id="faq-page-400" open>
+    <details class="faq-item" id="faq-page-400">
       <summary>Why does browsing stop at page 400?</summary>
       <p>
         Paging deeper than 10,000 results means asking the database to sort and skip past a large
@@ -222,7 +222,7 @@
 
     <h3 class="faq-group">The data itself</h3>
 
-    <details class="faq-item" id="faq-curation" open>
+    <details class="faq-item" id="faq-curation">
       <summary>Are the classifications checked by a human?</summary>
       <p>
         Not record by record. Every classification and enrichment in the corpus is LLM-generated.
@@ -236,7 +236,7 @@
       </p>
     </details>
 
-    <details class="faq-item" id="faq-not-enriched" open>
+    <details class="faq-item" id="faq-not-enriched">
       <summary>What does "not yet enriched" mean on a record?</summary>
       <p>
         Enrichment is the second pass: domain, learning paradigm, model family and model type, drawn
@@ -251,7 +251,7 @@
       </p>
     </details>
 
-    <details class="faq-item" id="faq-wrong-record" open>
+    <details class="faq-item" id="faq-wrong-record">
       <summary>A record about my work is wrong, or my paper is missing entirely.</summary>
       <p>
         Please tell us. Open a
@@ -266,7 +266,7 @@
       </p>
     </details>
 
-    <details class="faq-item" id="faq-citing" open>
+    <details class="faq-item" id="faq-citing">
       <summary>How do I cite this in a paper?</summary>
       <p>
         Cite the specific release you analysed rather than the site, so your work stays reproducible

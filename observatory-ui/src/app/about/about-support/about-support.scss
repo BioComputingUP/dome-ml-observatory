@@ -197,10 +197,11 @@ h2 {
   }
 }
 
-// Collapsible, but every question ships `open`. Collapsing is there so a reader who has found
-// their answer can fold the rest away -- not to hide the content by default, which would break
-// find-in-page, defeat the anchor links each question carries, and turn a page of explanations
-// into a wall of headings that all have to be clicked to be useful.
+// Collapsed by default: the FAQ is long enough that opening every answer at once buries the
+// questions, and a reader scanning for their own problem wants the list of questions first. The
+// cost is that a closed answer is out of reach of find-in-page in older browsers, and that the
+// per-question anchors would land on a closed question -- the second is handled in
+// about-support.ts, which opens the question a #faq-* deep link names.
 //
 // Custom triangle rather than the native marker, matching the search facet panel: the default
 // disclosure marker sits at a different size and offset in every browser, and one of these is
