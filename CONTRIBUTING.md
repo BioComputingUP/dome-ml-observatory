@@ -63,8 +63,8 @@ npm run start:dev      # hot reload at http://localhost:3000
 
 Backend development needs read-only network reach to the MongoDB host — over VPN if that host is
 network-restricted. Configuration is environment variables only, validated at boot, and every
-variable is documented in the root README's
-[Environment variables](README.md#environment-variables) table.
+variable is documented in
+[`observatory-ws/README.md`](observatory-ws/README.md#environment-variables).
 
 Two `.env.example` files exist and are kept identical: the root one feeds the Compose file's
 `env_file`, and [`observatory-ws/.env.example`](observatory-ws/.env.example) is what non-Docker
