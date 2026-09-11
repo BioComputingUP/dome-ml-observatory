@@ -30,9 +30,13 @@ the same origin.
 
 ## Running it locally
 
-Docker is the only supported way to run the service, and there are two modes: against the corpus
-database, or self-contained on a bundled 200-record sample. Both start the same two containers with
-the same command; the only difference is what `MONGODB_URI` points at.
+Docker is the recommended way to run the service and the one this page documents, in two modes:
+against the corpus database, or self-contained on a bundled 200-record sample. Both start the same
+two containers with the same command; the only difference is what `MONGODB_URI` points at.
+
+Running the apps directly with npm is also supported — see
+[working on the code](CONTRIBUTING.md#working-on-the-code) for development, and
+[deploying without Docker](CONTRIBUTING.md#deploying-without-docker) for a deployment in that shape.
 
 Both need a `.env` first: `cp .env.example .env`.
 
@@ -66,7 +70,7 @@ docker compose -f docker-compose-local.yml --profile offline down -v
 ```
 
 **Prerequisites.** Docker with a Compose v2 CLI — `docker compose`, space-separated. Node is not
-needed to *run* the service, only to work on the code (see
+needed to run the service *this way* — only to work on the code, or to run it without Docker (see
 [`CONTRIBUTING.md`](CONTRIBUTING.md#working-on-the-code)). Both images build from the repo root as
 context, because each needs `schema/`, which sits outside its own directory.
 
