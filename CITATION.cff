@@ -1,6 +1,7 @@
 cff-version: 1.2.0
-message: "If you use DOME Observatory, please cite it as software below. There is no accompanying
-  publication yet -- this file will be updated with a preferred-citation entry once one exists."
+message: "If you use DOME Observatory, please cite the accompanying preprint, which will be posted on
+  arXiv. It is still in preparation, so check back for a preferred-citation entry in this file before
+  submitting. Until then, cite the software as below, and cite Europe PMC alongside it (see LICENSE.md)."
 authors:
   - family-names: Farrell
     given-names: Gavin

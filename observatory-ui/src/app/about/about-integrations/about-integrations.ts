@@ -58,8 +58,8 @@ const INTEGRATIONS: Integration[] = [
     direction: 'both',
     protocol: 'Web link + OAI-PMH',
     what: "Archival deposits — including Observatory's own bulk-download releases.",
-    how: 'Corpus-wide bulk releases (see Download) are deposited here with citable DOIs. Per-record code/data deposits remain a reserved field.',
-    benefit: 'Archived, citable artefacts at both the paper and dataset level.',
+    how: 'Corpus-wide bulk releases (see Download) are deposited here with persistent DOIs. Per-record code/data deposits remain a reserved field.',
+    benefit: 'Archived artefacts with persistent identifiers, at both the paper and dataset level.',
     logo: 'assets/img/zenodo-logo.svg',
   },
   // ---- Planned ----

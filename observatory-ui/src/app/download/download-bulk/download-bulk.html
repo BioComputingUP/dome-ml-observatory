@@ -82,8 +82,8 @@
         <div class="spec-row">
           <dt><i class="icon icon-common icon-sync" aria-hidden="true"></i>Update cadence</dt>
           <dd>
-            Monthly to bimonthly, as new triaged content is added. Each release is versioned and
-            citable in its own right, so an analysis can pin the exact snapshot it used.
+            Monthly to bimonthly, as new triaged content is added. Each release is versioned, so an
+            analysis can pin the exact snapshot it used.
           </dd>
         </div>
       </dl>
@@ -93,31 +93,22 @@
 
 <div class="band">
   <div class="band-inner">
-    <h2>Citing a release</h2>
+    <h2>Citing the corpus</h2>
     <p class="citation-intro">
-      Cite the specific release you used, not just the site — that's what makes an analysis
-      reproducible, since the corpus grows with each update. A preprint describing the corpus and
-      its methodology is the <strong>preferred citation</strong>; cite the Zenodo DOI alongside it
-      when you need to pin the exact data snapshot an analysis used.
+      Please cite the DOME Observatory preprint, which describes the corpus and the methodology
+      behind it, and cite Europe PMC alongside it — see
+      <a routerLink="/about/licensing">Licensing &amp; citation</a>. The preprint will be posted on
+      arXiv but is still in preparation, so check back here for the full citation before submitting
+      your work. The corpus grows with each update, so also note which release you used, to keep
+      the analysis reproducible.
     </p>
 
     <div class="citation-block">
       <div class="citation-heading">
         <span class="badge-chip tone-positive">Preferred citation</span>
-        <span class="citation-title">The preprint</span>
+        <span class="citation-title">The arXiv preprint</span>
       </div>
-      <pre class="code-block">Preprint citation forthcoming — check back here once it is posted.</pre>
-    </div>
-
-    <div class="citation-block">
-      <div class="citation-heading">
-        <span class="badge-chip tone-neutral">Release citation</span>
-        <span class="citation-title">This Zenodo deposit</span>
-      </div>
-      <div class="code-block-row">
-        <pre class="code-block">DOME Observatory. "AI/ML methods-paper corpus" (data release). Zenodo. https://doi.org/{{ zenodoDoi }}</pre>
-        <app-copy-button [value]="'DOME Observatory. \'AI/ML methods-paper corpus\' (data release). Zenodo. https://doi.org/' + zenodoDoi" label="the release citation" />
-      </div>
+      <pre class="code-block">In preparation — the full citation will appear here once the preprint is posted on arXiv. Please check back before submitting.</pre>
     </div>
   </div>
 </div>

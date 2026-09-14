@@ -77,10 +77,12 @@ you may do with the paper.
 
 ## Citing
 
-See [`CITATION.cff`](CITATION.cff) for the machine-readable citation for the software and corpus,
-and cite Europe PMC alongside it, as above. To cite an individual paper, use the BibTeX or RIS
-export on its record page — that citation is for the paper, under its own terms, not for
-Observatory's metadata about it.
+Please cite the DOME Observatory preprint, which will be posted on arXiv. It is still in
+preparation, so no reference or identifier exists yet — please check back here for the full
+citation before submitting your work. Until then, see [`CITATION.cff`](CITATION.cff) for the
+machine-readable citation for the software and corpus, and cite Europe PMC alongside it, as above.
+To cite an individual paper, use the BibTeX or RIS export on its record page — that citation is for
+the paper, under its own terms, not for Observatory's metadata about it.
 
 ## Corrections
 

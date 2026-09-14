@@ -49,7 +49,7 @@ code {
   font-size: var(--font-size-sm);
   color: var(--status-neutral);
 
-  // The "Preprint forthcoming" chip leads the paragraph it belongs to, so it needs to sit on the
+  // The "Preprint in preparation" chip leads the paragraph it belongs to, so it needs to sit on the
   // text baseline rather than on the line box's top edge.
   .badge-chip {
     vertical-align: middle;

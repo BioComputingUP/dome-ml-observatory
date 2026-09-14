@@ -91,7 +91,7 @@ carry a PMID.
 ## 4. The Zenodo DOI on the site is dead
 
 `download-bulk.ts` hardcodes `ZENODO_DOI = '10.5281/zenodo.22259905'` and `/download/bulk`
-presents it as the permanent release identifier, with a copy button and a citation block. It is
+presents it as the permanent release identifier, with a copy button. It is
 not registered: `doi.org` 404s and Zenodo's API reports "the persistent identifier is not
 registered" (re-checked 2026-09-07). Either mint the real deposition and replace the literal, or
 revert the page to describing the mechanism without asserting a DOI. The archive job that would
