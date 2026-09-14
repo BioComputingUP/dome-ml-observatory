@@ -21,19 +21,11 @@ export class AboutTeam {
   readonly core: Member[] = [
     {
       name: 'Gavin Farrell',
-      role: 'PhD Candidate',
+      role: 'Lead Developer',
       affiliation: 'University of Padova',
       photo: 'assets/img/gavin.jpeg',
       orcid: '0000-0001-5166-8551',
       github: 'gavinf97',
-    },
-    {
-      name: 'Omar A Attafi',
-      role: 'PhD Candidate',
-      affiliation: 'University of Padova',
-      photo: 'assets/img/omar.jpg',
-      orcid: '0009-0002-2327-9430',
-      github: 'Abdelghaniomar',
     },
     {
       name: 'Ivan Mičetić',

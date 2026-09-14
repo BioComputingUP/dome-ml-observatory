@@ -652,7 +652,7 @@ a.card:hover {
   border: 3px solid var(--observatory-accent);
 }
 
-// min-height reserves one line, not two: roles are short, uniform labels ("PhD Candidate", "Lab
+// min-height reserves one line, not two: roles are short, uniform labels ("Lead Developer", "Lab
 // Principal Investigator"), so reserving two lines just opened a gap under every card.
 .member-role {
   font-size: var(--font-size-sm);
