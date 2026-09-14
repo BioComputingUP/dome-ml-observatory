@@ -64,6 +64,18 @@ const INTEGRATIONS: Integration[] = [
   },
   // ---- Planned ----
   {
+    // Built and tested in the pipeline (schema v1.4.0, data_links); flips to live once the
+    // corpus backfill has landed and the record pages actually show the cards.
+    name: 'Europe PMC data links',
+    status: 'planned',
+    direction: 'out',
+    protocol: 'REST API (annotations + Scholix data links)',
+    what: 'The datasets, accessions and supplementary files Europe PMC links to each paper — PDB, UniProt, ENA, GEO, BioStudies, Zenodo, Dryad and more.',
+    how: 'Harvested per record by the pipeline and shown as one card per linked resource on the record page, with a Linked data filter on search.',
+    benefit: 'From a method paper straight to the data it was built and evaluated on.',
+    logo: 'assets/img/europe-pmc-logo.png',
+  },
+  {
     name: 'DOME Registry',
     status: 'planned',
     direction: 'both',

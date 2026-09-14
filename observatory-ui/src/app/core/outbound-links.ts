@@ -6,7 +6,9 @@
  *
  * Every URL template below was live-checked on 2026-08-31 against a real record
  * (pmid 19964568 / PMC4013747):
- *   - europepmc.org/article/MED/{pmid}        -> 200 (also the form used in dome-registry-ui + dome-triage)
+ *   - europepmc.org/article/MED/{pmid}        -> 200 (also the form used in dome-registry-ui + dome-triage);
+ *       superseded by /article/{epmc_source}/{epmc_id} where the record stores its Europe PMC
+ *       identity -- a preprint lives at /article/PPR/{PPR-id}, and the MED form 404s for it
  *   - pubmed.ncbi.nlm.nih.gov/{pmid}/         -> 2xx
  *   - pmc.ncbi.nlm.nih.gov/articles/{pmcid}/  -> 200 (canonical; the older
  *       www.ncbi.nlm.nih.gov/pmc/articles/... form 301-redirects here, so we link the target
@@ -33,6 +35,21 @@ export interface ArticleSource {
 }
 
 /**
+ * Europe PMC's article URL is `/article/{source}/{id}` -- MED/{pmid} for a MEDLINE record, but
+ * PPR/{PPR-id} for a preprint, which is why the pmid form was wrong for the 3,157 preprints that
+ * carry a PMID. Prefers the record's stored Europe PMC identity (schema v1.3.0,
+ * `source.epmc_source` + `identifiers.epmc_id`) and falls back to the pmid form for a record the
+ * capture pass has not reached. Null when neither exists.
+ */
+export function europePmcArticleUrl(record: AiMlRecord): string | null {
+  const ids = record.identifiers;
+  const source = record.source?.epmc_source;
+  if (source && ids.epmc_id) return `https://europepmc.org/article/${source}/${ids.epmc_id}`;
+  if (ids.pmid) return `https://europepmc.org/article/MED/${ids.pmid}`;
+  return null;
+}
+
+/**
  * The destinations that hold this article itself. Only ever populated entries -- a source the
  * record has no identifier for is simply not a source for that record.
  */
@@ -40,16 +57,27 @@ export function articleSources(record: AiMlRecord): ArticleSource[] {
   const ids = record.identifiers;
   const sources: ArticleSource[] = [];
 
-  if (ids.pmid) {
+  const epmcUrl = europePmcArticleUrl(record);
+  if (epmcUrl) {
+    const epmcSource = record.source?.epmc_source;
+    // A stored non-MED identity (PPR, PMC, AGR, ETH, ...) is reached by Europe PMC's own id; only
+    // PPR is a preprint.
+    const byEpmcId = !!(epmcSource && ids.epmc_id) && epmcSource !== 'MED';
+    const isPreprint = byEpmcId && epmcSource === 'PPR';
     sources.push({
       label: 'Europe PMC',
-      explainer: 'Abstract, citations and full text where open access.',
-      url: `https://europepmc.org/article/MED/${ids.pmid}`,
-      idLabel: 'PMID',
-      idValue: ids.pmid,
+      explainer: isPreprint
+        ? 'The preprint record: abstract, versions and full text where available.'
+        : 'Abstract, citations and full text where open access.',
+      url: epmcUrl,
+      idLabel: byEpmcId ? 'Europe PMC ID' : 'PMID',
+      idValue: (byEpmcId ? ids.epmc_id : ids.pmid ?? ids.epmc_id) as string,
       logo: 'assets/img/europe-pmc-logo.png',
       icon: 'icon-book',
     });
+  }
+
+  if (ids.pmid) {
     sources.push({
       label: 'PubMed',
       explainer: 'The MEDLINE record, MeSH indexing and related articles.',

@@ -90,6 +90,20 @@ def count_list_values(records: list[dict], path: list[str]) -> Counter:
     return counter
 
 
+def count_object_array_values(records: list[dict], path: list[str], key: str) -> Counter:
+    """Counts `key` across an array of subdocuments, e.g. data_links.resources[].resource."""
+    counter: Counter = Counter()
+    for rec in records:
+        node = rec
+        for step in path:
+            node = (node or {}).get(step)
+        for item in node or []:
+            value = (item or {}).get(key)
+            if value:
+                counter[value] += 1
+    return counter
+
+
 def as_facet(counter: Counter, limit: int | None = None) -> list[dict]:
     items = counter.most_common(limit)
     return [{"value": value, "count": count} for value, count in items]
@@ -150,6 +164,7 @@ def main() -> int:
             "domainTier1": as_facet(count_values(records, ["content_filters", "domain_tier1"])),
             "learningParadigm": as_facet(count_list_values(records, ["content_filters", "learning_paradigm"])),
             "modelFamily": as_facet(count_list_values(records, ["content_filters", "model_family"])),
+            "dataResources": as_facet(count_object_array_values(records, ["data_links", "resources"], "resource")),
             "yearRange": {"min": min(years), "max": max(years)} if years else None,
         },
     }

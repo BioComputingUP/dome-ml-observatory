@@ -53,6 +53,7 @@ const PARAM = {
   learningParadigm: 'para',
   modelFamily: 'fam',
   modelType: 'mt',
+  dataResources: 'dl',
   enrichedOnly: 'enriched',
   sort: 'sort',
   page: 'page',
@@ -172,6 +173,7 @@ export function paramsToQuery(params: RawParams): SearchQuery {
     learningParadigm: readList(params[PARAM.learningParadigm]),
     modelFamily: readList(params[PARAM.modelFamily]),
     modelType: readList(params[PARAM.modelType]),
+    dataResources: readList(params[PARAM.dataResources]),
     enrichedOnly: parseBool(readScalar(params[PARAM.enrichedOnly])),
   };
 
@@ -205,6 +207,7 @@ export function queryToParams(query: SearchQuery): Record<string, string | strin
     [PARAM.learningParadigm]: listOrNull(f.learningParadigm),
     [PARAM.modelFamily]: listOrNull(f.modelFamily),
     [PARAM.modelType]: listOrNull(f.modelType),
+    [PARAM.dataResources]: listOrNull(f.dataResources),
     [PARAM.enrichedOnly]: f.enrichedOnly ? 'true' : null,
     [PARAM.sort]: query.sort === DEFAULT_SORT ? null : query.sort,
     [PARAM.page]: query.page > 1 ? String(query.page) : null,
@@ -286,6 +289,7 @@ export function activeFilterCount(filters: SearchFilters): number {
   for (const key of [
     'license', 'journal', 'meshHeadings', 'keywordsAuthor', 'pubTypes',
     'domainTier1', 'domainTier2', 'domainTier3', 'learningParadigm', 'modelFamily', 'modelType',
+    'dataResources',
   ] as const) {
     if (filters[key]?.length) count++;
   }

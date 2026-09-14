@@ -38,6 +38,7 @@ const STATS_WITH_YEAR_RANGE: FacetStats = {
     domainTier1: [],
     learningParadigm: [],
     modelFamily: [],
+    dataResources: [],
     yearRange: { min: 1963, max: 2027 },
   },
 };

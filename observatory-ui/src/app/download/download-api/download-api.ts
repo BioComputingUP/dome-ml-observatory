@@ -101,7 +101,7 @@ export class DownloadApi {
     {
       method: 'GET',
       path: '/api/facets/:field',
-      summary: 'Typeahead suggestions for a facet field. Allowed fields: journal, mesh_headings, pub_types, license. keywords_author is excluded — it carries 694,411 distinct values, too many to serve as suggestions.',
+      summary: 'Typeahead suggestions for a facet field. Allowed fields: journal, preprint_server, mesh_headings, pub_types, license, data_resource. keywords_author is excluded — it carries 694,411 distinct values, too many to serve as suggestions.',
       params: [
         { name: 'q', type: 'string', note: 'Substring to filter suggestions by, case-insensitive.' },
         { name: 'limit', type: 'integer', note: 'Max suggestions to return. Defaults to 20.' },

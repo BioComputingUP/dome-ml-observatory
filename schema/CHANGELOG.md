@@ -14,6 +14,46 @@ updated except the two published releases below: `v1.2.0/` and `v1.3.0/` still n
 published (see `README.md`) and is never edited in place. GitHub redirects the old name, so those
 strings still resolve. The next release will carry the new name.
 
+## v1.4.0 — 2026-09-14
+
+Europe PMC's data links for every paper, and the upstream authoring of v1.3.0.
+
+**Added:**
+- `data_links` — a new group holding the datasets, database accessions, data citations and
+  supplementary files Europe PMC links to the paper, so a record can hand a reader straight to the
+  PDB entries, GEO series, Zenodo deposits or BioStudies files behind a method. Two layers:
+  - the summary captured from the Europe PMC search record: `has_data`, `tags`,
+    `accession_types`, `db_cross_references`. `has_data: null` means never captured;
+  - the links from a separate fetch (the annotations API, the `/datalinks` Scholix endpoint, the
+    derived BioStudies entry): `fetched_at`, `sources`, `link_count`, `truncated`, `resources[]`
+    (one entry per linked resource, always complete — the unit the record page renders a card
+    for) and `links[]` (deduplicated detail, capped at 50 per resource and 300 per record).
+    `fetched_at: null` means no fetch yet; a fetch that found nothing sets it with `link_count: 0`.
+  `resources` and `links` are the first arrays of objects in the record; `validate.py`'s `items`
+  support covers them.
+
+**Changed (descriptions only):** `identifiers.epmc_id`, `source.epmc_source` and
+`publication_metadata.preprint_server` now point at `docs/preprint.md` in
+`dome-ml-observatory-triage`, where the spec moved; the top-level description names that
+repository by its current name (see Unreleased below for why v1.2.0/v1.3.0 cannot).
+
+**Changed (widened, additive):** `source.epmc_source`'s enum now lists every Europe PMC source code
+(`MED`, `PPR`, `PMC`, `AGR`, `PAT`, `CBA`, `CTX`, `ETH`, `HIR`, `NBK`). v1.3.0 listed five, but the
+first corpus-wide capture (2026-09-14) found `ETH` (93 theses) and `CTX` (21) as well, which v1.3.0
+would have rejected. Nothing previously valid becomes invalid.
+
+**Migration note:** additive — no existing field changed, renamed or retyped, and no consumer
+breaks. `dome-ml-observatory-triage`'s `migrate_v1_4_0.py` sets every document from 1.2.0 to 1.4.0
+in one in-place `updateMany`, writing the three v1.3.0 fields as `null` and the `data_links` group
+at its never-looked-up values; the real values then arrive per document through
+`load_fields.py --mode preprints` and `--mode data_links`. Until that migration runs, documents
+carry no `data_links` key at all, which is why `record.model.ts` types it optional. The example
+record shows the group unpopulated: no corpus record carries real link data yet, and this folder
+never invents one.
+
+**Resolves v1.3.0's "Still pending":** `SCHEMA_VERSION` in `dome-ml-observatory-triage`'s
+`schema.py` is 1.4.0 and it emits all three preprint fields.
+
 ## v1.3.0 — 2026-09-07
 
 Three additive fields so a preprint can say where it was posted. 56,863 corpus documents are

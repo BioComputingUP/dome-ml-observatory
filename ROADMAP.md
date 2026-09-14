@@ -5,7 +5,7 @@ built and why is in `AGENTS.md` and the code.
 
 **Check the sister repository first.** [`dome-ml-observatory-triage`](https://github.com/BioComputingUP/dome-ml-observatory-triage)
 is the write side: it builds the corpus, authors the document schema and loads the database. Its
-`ROADMAP.md` carries the data-side work, including the Zenodo archive and authoring schema v1.3.0.
+`ROADMAP.md` carries the data-side work, including the Zenodo archive and the v1.4.0 backfill.
 Anything here that depends on the data depends on that list, so read it before planning here.
 
 ## At a glance
@@ -14,11 +14,11 @@ Anything here that depends on the data depends on that list, so read it before p
 |---|---|---|
 | 1 | [Matomo analytics](#1-matomo-analytics) — built, switched off | A site ID from the Matomo admin |
 | 2 | [Finalise and optimise search](#2-finalise-and-optimise-search) | A plan, to be written |
-| 3 | [Verify the preprint fields](#3-verify-the-preprint-fields) | The backfill, in the sister repo |
+| 3 | [Verify the preprint fields and data links](#3-verify-the-preprint-fields-and-data-links) | The backfill, in the sister repo |
 | 4 | [The Zenodo DOI on the site is dead](#4-the-zenodo-doi-on-the-site-is-dead) | Minting a real deposition |
 | 5 | [Final docs pass](#5-final-docs-pass) | Every other repo settling |
 | 6 | [Citation-count liveness](#6-citation-count-liveness) | A last-processed date the API can serve |
-| 7 | [Finalise schema versioning](#7-finalise-schema-versioning) | v1.3.0 being authored in the sister repo |
+| 7 | [Finalise schema versioning](#7-finalise-schema-versioning) | A release procedure, agreed with the sister repo |
 | 8 | [Link out to the curation criteria](#8-link-out-to-the-curation-criteria) | Nothing |
 | 9 | [A skill for the hardcoded figures](#9-a-skill-for-the-hardcoded-figures) | Nothing |
 | 10 | [Keep the two repositories aligned](#10-keep-the-two-repositories-aligned) | Everything above, both sides |
@@ -75,18 +75,22 @@ and for any query that clears the classification filter, and facet counts are co
 than contextual. A plan for this is still to be written, and it depends on decisions in the sister
 repository — whether `citation_count` gets an index, and how open vocabularies become facets.
 
-## 3. Verify the preprint fields
+## 3. Verify the preprint fields and data links
 
-Schema v1.3.0 defines `publication_metadata.preprint_server`, `source.epmc_source` and
-`identifiers.epmc_id`. Both apps read them; nothing populates them yet. Until then
-`observatory-ui/src/app/core/venue.ts` derives the server from the DOI prefix, so cards already
-read `Preprint: bioRxiv`.
+Schema v1.4.0 (released here 2026-09-14) carries the v1.3.0 preprint fields and the new
+`data_links` group. The code is in: `record.dto.ts` / `record.model.ts` types, the record page's
+data-link cards (`core/data-links.ts`, one card per linked resource with its icon), the Linked data
+filter (`?dl=`, `data_resource` facet, `/api/stats` `dataResources`), and the Europe PMC link now
+built as `/article/{epmc_source}/{epmc_id}` (`core/outbound-links.ts`), which fixes the 3,157
+preprints that carry a PMID. `venue.ts` already prefers the stored server.
 
-Once the sister repository authors the fields and backfills the ~56,863 preprint records:
-re-verify against real data that the stored value wins over the derived one, restart
-`observatory-ws` so the boot-loaded facets pick the new values up, and fix the Europe PMC link —
-`core/outbound-links.ts` builds `/article/MED/{pmid}`, which is wrong for the 3,157 preprints that
-carry a PMID.
+Once the sister repository has migrated moros to 1.4.0 and loaded the `preprints` and `data_links`
+fields: deploy, restart `observatory-ws` (the facet cache is boot-loaded), measure the boot-time
+`distinct` on `data_links.resources.resource` against the Dockerfile's `--start-period`, check a
+preprint's venue and Europe PMC link and a data-rich record's cards against real data, and flip
+the "Europe PMC data links" integration to live. The cards use icon-font glyphs for resources with
+no logo in `assets/img/`; self-hosted logos for PDBe, UniProt, ENA, GEO, BioStudies and the data
+repositories are still to add, as a content-only commit.
 
 ## 4. The Zenodo DOI on the site is dead
 
@@ -116,10 +120,11 @@ date, not a data one. Add a liveness disclaimer and a real last-processed date s
 
 ## 7. Finalise schema versioning
 
-`schema/CURRENT` is v1.3.0 while the sister repository still authors 1.2.0 — drift by design, and
-`check_alignment.py` reports it as such. Once the authored side catches up, settle the release
-procedure — who bumps, when, and what a release must carry — and update the `schema-version` skill
-to match.
+The authored and published sides agree again: the sister repository's `schema.py` authors 1.4.0,
+`schema/CURRENT` here is v1.4.0, and `check_alignment.py` reports `aligned`. The live corpus
+catches up when the sister repository runs `migrate_v1_4_0.py`. Settle the release procedure now —
+who bumps, when, and what a release must carry — so the published side never again runs ahead of
+the authored one, and update the `schema-version` skill to match.
 
 ## 8. Link out to the curation criteria
 

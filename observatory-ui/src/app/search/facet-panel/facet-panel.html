@@ -126,6 +126,30 @@
         }
       </details>
     }
+
+    @if (dataResources().length) {
+      <details class="facet-block">
+        <summary>
+          <span>Linked data</span>
+          @if (countOf('dataResources')) {
+            <span class="active-value">{{ countOf('dataResources') }}</span>
+          }
+        </summary>
+        @for (res of dataResources(); track res) {
+          <label class="check">
+            <input
+              type="checkbox"
+              [checked]="isChecked(filters().dataResources, res)"
+              (change)="toggleInList('dataResources', res, $any($event.target).checked)"
+            />
+            <span>{{ resourceLabel(res) }}</span>
+            @if (countFor('dataResources', res); as n) {
+              <span class="count">{{ n | number }}</span>
+            }
+          </label>
+        }
+      </details>
+    }
   </section>
 
   <!-- ============ AI/ML enrichment ============ -->

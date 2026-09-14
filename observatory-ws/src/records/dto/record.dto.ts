@@ -5,7 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
  * `.lean()` (see records.service.ts), never instantiated as this class or serialized through it.
  * Mirrors observatory-ui/src/app/core/record.model.ts, duplicated deliberately rather than shared
  * (there is no `-core` package in this project, by design -- see AGENTS.md) -- source of truth
- * for the real shape is schema/releases/v1.3.0/ai-ml-landscape.schema.json.
+ * for the real shape is schema/releases/v1.4.0/ai-ml-landscape.schema.json.
  */
 class RecordIdentifiersDto {
   @ApiProperty({ type: String, nullable: true }) pmid!: string | null;
@@ -92,7 +92,7 @@ class SourceDto {
   @ApiProperty({
     type: String,
     nullable: true,
-    enum: ['MED', 'PPR', 'PMC', 'AGR', 'PAT'],
+    enum: ['MED', 'PPR', 'PMC', 'AGR', 'PAT', 'CBA', 'CTX', 'ETH', 'HIR', 'NBK'],
     description:
       'Which Europe PMC index the record came from. PPR is the authoritative preprint marker. ' +
       'Null until the capture pass runs.',
@@ -120,6 +120,84 @@ class ContentFiltersDto {
   @ApiProperty({ type: [String], description: 'max_tags 3.' })
   model_family!: string[];
   @ApiProperty({ type: [String] }) model_type!: string[];
+}
+
+class DataLinkResourceDto {
+  @ApiProperty({
+    description:
+      'Stable resource key assigned by the pipeline catalogue -- "pdb", "uniprot", "geo", ' +
+      '"zenodo", "biostudies", ... The record page keys its cards and icons on it and ' +
+      '/api/records filters on it (?dl=pdb).',
+  })
+  resource!: string;
+  @ApiProperty({ description: 'Display name, e.g. "Protein Data Bank in Europe".' })
+  label!: string;
+  @ApiProperty({ description: 'Europe PMC-style grouping, e.g. "Protein Structures".' })
+  category!: string;
+  @ApiProperty({ type: String, nullable: true }) id_scheme!: string | null;
+  @ApiProperty({ type: String, nullable: true }) publisher!: string | null;
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    description:
+      'tm_accession (text-mined from the article), tm_supplementary (from supplementary files), ' +
+      'ext_links (a data citation or external link) or derived (the BioStudies entry).',
+  })
+  obtained_by!: string | null;
+  @ApiProperty({ description: 'True number of links to this resource, before any cap.' })
+  count!: number;
+}
+
+class DataLinkDto {
+  @ApiProperty() resource!: string;
+  @ApiProperty({ description: 'The accession or DOI.' }) id!: string;
+  @ApiProperty({ type: String, nullable: true }) url!: string | null;
+  @ApiProperty({ type: String, nullable: true }) title!: string | null;
+  @ApiProperty({ type: String, nullable: true }) obtained_by!: string | null;
+  @ApiProperty({ type: String, nullable: true }) relationship!: string | null;
+  @ApiProperty({ type: String, nullable: true }) section!: string | null;
+  @ApiProperty({ type: Number, nullable: true }) frequency!: number | null;
+}
+
+class DataLinksDto {
+  @ApiProperty({
+    type: Boolean,
+    nullable: true,
+    description:
+      "Europe PMC's hasData flag for the record. Null = never captured; false = captured, no data.",
+  })
+  has_data!: boolean | null;
+  @ApiProperty({ type: [String], description: 'Europe PMC dataLinksTagsList values.' })
+  tags!: string[];
+  @ApiProperty({ type: [String], description: 'Text-mined accession types, e.g. ["pdb","geo"].' })
+  accession_types!: string[];
+  @ApiProperty({ type: [String], description: 'Curated database cross-references, by name.' })
+  db_cross_references!: string[];
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    format: 'date-time',
+    description:
+      'When the links were last fetched. Null = no link fetch yet; a fetch that found nothing ' +
+      'sets this with link_count 0.',
+  })
+  fetched_at!: string | null;
+  @ApiProperty({ type: [String], description: 'Which routes produced the links.' })
+  sources!: string[];
+  @ApiProperty({ type: Number, nullable: true, description: 'True total before caps.' })
+  link_count!: number | null;
+  @ApiProperty({ type: Boolean, nullable: true, description: 'links[] hit a cap.' })
+  truncated!: boolean | null;
+  @ApiProperty({
+    type: [DataLinkResourceDto],
+    description: 'One entry per linked resource; always complete.',
+  })
+  resources!: DataLinkResourceDto[];
+  @ApiProperty({
+    type: [DataLinkDto],
+    description: 'Link detail, capped at 50 per resource / 300 per record.',
+  })
+  links!: DataLinkDto[];
 }
 
 class LlmRunProvenanceDto {
@@ -164,6 +242,13 @@ export class RecordDto {
   publication_metadata!: PublicationMetadataDto;
   @ApiProperty({ type: SourceDto }) source!: SourceDto;
   @ApiProperty({ type: ContentFiltersDto }) content_filters!: ContentFiltersDto;
+  @ApiProperty({
+    type: DataLinksDto,
+    description:
+      "Europe PMC's data links for the paper (schema v1.4.0). Absent as a key on documents " +
+      'written before the v1.4.0 migration.',
+  })
+  data_links!: DataLinksDto;
   @ApiProperty({ type: LlmClassificationDto })
   llm_classification!: LlmClassificationDto;
   @ApiProperty({ type: LlmEnrichmentDto }) llm_enrichment!: LlmEnrichmentDto;

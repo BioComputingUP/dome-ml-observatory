@@ -14,6 +14,7 @@ import {
   MAX_RESULT_WINDOW,
 } from '../core/search-params';
 import { modelTypeLabel, pubTypeLabel, sentenceCase } from '../core/facet-labels';
+import { resourceLabel } from '../core/data-links';
 import { FacetPanel } from './facet-panel/facet-panel';
 import { ResultCard } from './result-card/result-card';
 
@@ -25,6 +26,7 @@ const CHIP_VALUE_DISPLAY: Partial<Record<keyof SearchFilters, (v: string) => str
   learningParadigm: sentenceCase,
   modelFamily: sentenceCase,
   modelType: modelTypeLabel,
+  dataResources: resourceLabel,
 };
 
 interface ActiveChip {
@@ -178,6 +180,7 @@ export class Search {
       { key: 'learningParadigm', label: 'Paradigm' },
       { key: 'modelFamily', label: 'Family' },
       { key: 'modelType', label: 'Method' },
+      { key: 'dataResources', label: 'Linked data' },
     ];
     for (const facet of listFacets) {
       const display = CHIP_VALUE_DISPLAY[facet.key];

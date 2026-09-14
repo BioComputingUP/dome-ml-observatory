@@ -29,8 +29,9 @@ export class FacetsController {
   @Get(':field')
   @ApiOperation({
     summary:
-      'Typeahead suggestions for a facet field. Allowed fields: journal, mesh_headings, ' +
-      'pub_types, license. keywords_author is deliberately not offered -- see /api for why.',
+      'Typeahead suggestions for a facet field. Allowed fields: journal, preprint_server, ' +
+      'mesh_headings, pub_types, license, data_resource. keywords_author is deliberately not ' +
+      'offered -- see /api for why.',
   })
   @ApiOkResponse({ type: [String] })
   search(@Param('field') field: string, @Query() query: FacetSearchDto): string[] {

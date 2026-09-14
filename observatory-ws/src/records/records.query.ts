@@ -34,6 +34,7 @@ export interface RawSearchParams {
   para?: string | string[];
   fam?: string | string[];
   mt?: string | string[];
+  dl?: string | string[];
   enriched?: string;
   sort?: string;
   page?: string;
@@ -58,6 +59,8 @@ export interface ParsedFilters {
   learningParadigm?: string[];
   modelFamily?: string[];
   modelType?: string[];
+  /** Resource slugs from data_links.resources[].resource (schema v1.4.0): pdb, geo, zenodo, ... */
+  dataResources?: string[];
   enrichedOnly?: boolean;
 }
 
@@ -439,6 +442,7 @@ export function parseSearchParams(
     learningParadigm: readList(raw.para),
     modelFamily: readList(raw.fam),
     modelType: readList(raw.mt),
+    dataResources: readList(raw.dl),
     enrichedOnly: parseBool(raw.enriched),
   };
 
@@ -627,6 +631,11 @@ function structuredClauses(filters: ParsedFilters): FilterQuery<RecordDocument>[
     });
   if (filters.modelType?.length)
     clauses.push({ 'content_filters.model_type': { $in: filters.modelType } });
+  // Dot notation into the array of subdocuments: a record matches when ANY of its linked
+  // resources is in the list -- Mongo's native semantics, the same any-element-matches rule the
+  // string-array filters above rely on.
+  if (filters.dataResources?.length)
+    clauses.push({ 'data_links.resources.resource': { $in: filters.dataResources } });
   if (filters.enrichedOnly) clauses.push({ 'llm_enrichment.provider': { $ne: null } });
 
   return clauses;
@@ -925,6 +934,7 @@ export function canonicalCacheKey(filters: ParsedFilters): string {
     learningParadigm: sortedArray(filters.learningParadigm),
     modelFamily: sortedArray(filters.modelFamily),
     modelType: sortedArray(filters.modelType),
+    dataResources: sortedArray(filters.dataResources),
     enrichedOnly: filters.enrichedOnly ?? null,
   };
 

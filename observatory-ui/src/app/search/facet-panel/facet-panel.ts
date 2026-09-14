@@ -6,6 +6,7 @@ import { SearchFilters } from '../../core/records.service';
 import { FacetStats } from '../../core/facet-stats.model';
 import { Vocabularies } from '../../core/vocab.model';
 import { PUB_TYPE_LABELS, modelTypeLabel, pubTypeLabel, sentenceCase } from '../../core/facet-labels';
+import { resourceLabel } from '../../core/data-links';
 import { FacetTypeahead } from '../facet-typeahead/facet-typeahead';
 
 /** https://www.nlm.nih.gov/mesh/meshhome.html -- the canonical browser for the MeSH vocabulary
@@ -42,6 +43,7 @@ export class FacetPanel {
   readonly pubTypeLabel = pubTypeLabel;
   readonly sentenceCase = sentenceCase;
   readonly modelTypeLabel = modelTypeLabel;
+  readonly resourceLabel = resourceLabel;
   readonly meshBrowserUrl = MESH_BROWSER_URL;
 
   readonly licences = computed(() => this.stats()?.facets.license.map((l) => l.value) ?? []);
@@ -56,6 +58,12 @@ export class FacetPanel {
    *  bounds of what a search on this page can return, e.g. 1963-2027, not the corpus-wide
    *  1961-2027 (which includes two years' worth of screened-out-only records). */
   readonly yearBounds = computed(() => this.stats()?.facets.yearRange ?? null);
+  /** Linked data resources (schema v1.4.0), in the API's descending-count order. Empty -- and the
+   *  group hidden -- until the data-links backfill has landed. `?.` because a stats payload from
+   *  an API older than v1.4.0 carries no such key. */
+  readonly dataResources = computed(
+    () => this.stats()?.facets.dataResources?.map((d) => d.value) ?? [],
+  );
 
   readonly domainTier1 = computed(() => this.terms('domain', 'domain_tier1'));
   readonly domainTier2 = computed(() => this.terms('domain', 'domain_tier2'));

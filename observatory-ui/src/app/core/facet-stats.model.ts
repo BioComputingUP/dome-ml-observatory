@@ -79,6 +79,9 @@ export interface FacetStats {
     domainTier1: FacetCount[];
     learningParadigm: FacetCount[];
     modelFamily: FacetCount[];
+    /** Linked data resources (schema v1.4.0): slugs from data_links.resources[].resource with
+     *  the number of positive records carrying each. core/data-links.ts names them. */
+    dataResources: FacetCount[];
     yearRange: YearRange | null;
   };
 }

@@ -192,8 +192,10 @@
             <h2>Cross-linked assets</h2>
           </div>
           <p class="section-note">
-            The data, code, models and structured annotations this paper released, linked from
-            the repositories that hold them.
+            The data, code, models and structured annotations this paper released or cites,
+            linked from the repositories that hold them. Data links come from Europe PMC: accessions
+            text-mined from the article and its supplementary files, data citations, curated
+            cross-references, and the supplementary files archived in BioStudies.
           </p>
           @if (assetGroups().length) {
             @for (group of assetGroups(); track group.group) {
@@ -219,12 +221,21 @@
                 </div>
               </section>
             }
+            @if (dataLinksNote(); as note) {
+              <p class="section-note crosslink-provenance">{{ note }}</p>
+            }
+          } @else if (dataLinksNote(); as note) {
+            <p class="crosslink-empty">
+              <strong>No linked resources.</strong> {{ note }} The reserved cross-links to code,
+              models and the DOME Registry annotation are filled in by a separate pass that has
+              not run yet.
+            </p>
           } @else {
             <p class="crosslink-empty">
-              <strong>Not yet cross-linked.</strong> Links to this paper's code, data, models and
-              DOME Registry annotation are reserved in the schema and filled in by a cross-linking
-              pass that has not run yet. Once it has, the linked resources appear here in place of
-              this note.
+              <strong>Not yet cross-linked.</strong> Europe PMC's data links for this paper have not
+              been fetched yet, and the reserved cross-links to code, models and the DOME Registry
+              annotation are filled in by a separate pass that has not run yet. Once either has,
+              the linked resources appear here in place of this note.
             </p>
           }
         </div>

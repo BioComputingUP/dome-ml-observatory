@@ -127,6 +127,12 @@ export class SearchRecordsDto {
   @RepeatableParam('Model type.')
   mt?: string | string[];
 
+  @RepeatableParam(
+    'Linked data resources: the slugs in data_links.resources[].resource (pdb, uniprot, geo, ' +
+      'zenodo, biostudies, ...); a record matches when any of its resources is listed.',
+  )
+  dl?: string | string[];
+
   @ApiPropertyOptional({
     description: 'Only records the enrichment pass has touched.',
     enum: ['true', 'false'],

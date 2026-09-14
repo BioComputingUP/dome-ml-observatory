@@ -6,7 +6,8 @@ import { map, switchMap, catchError, of } from 'rxjs';
 import { RecordsService } from '../core/records.service';
 import { AiMlRecord, isEnriched } from '../core/record.model';
 import { modelTypeLabel } from '../core/facet-labels';
-import { articleSources, crossLinkedAssets, CrossLinkedAsset } from '../core/outbound-links';
+import { articleSources, crossLinkedAssets } from '../core/outbound-links';
+import { dataLinkAssets, dataLinksNote, DataLinkAsset, DataLinkGroup } from '../core/data-links';
 import { plainText, richAbstract, richTitle } from '../core/rich-text';
 import { publicationVenue } from '../core/venue';
 import { SearchStateService } from '../core/search-state.service';
@@ -15,7 +16,7 @@ import { StatusBadge } from '../shared/status-badge/status-badge';
 import { CopyButton } from '../shared/copy-button/copy-button';
 
 /** Groups render in this order when present -- assets a reader is most likely to want first. */
-const ASSET_GROUP_ORDER = ['Code', 'Data', 'Models', 'Annotation'] as const;
+const ASSET_GROUP_ORDER: DataLinkGroup[] = ['Code', 'Data', 'Models', 'Supplementary', 'Annotation'];
 
 @Component({
   selector: 'app-record',
@@ -96,17 +97,27 @@ export class RecordPage {
 
   // ---- Article sources and assets ------------------------------------------------------------
   readonly sources = computed(() => articleSources(this.rec()));
-  readonly assets = computed(() => crossLinkedAssets(this.rec()));
+  /** The reserved cross-links (identifiers.*) and Europe PMC's data links, as one list of cards.
+   *  Each data-link card is one linked resource -- PDB, GEO, Zenodo, the BioStudies supplementary
+   *  entry -- with its icon; see core/data-links.ts. */
+  readonly assets = computed((): DataLinkAsset[] => [
+    ...crossLinkedAssets(this.rec()).map((a) => ({ ...a, resource: '', count: 1 })),
+    ...dataLinkAssets(this.rec()),
+  ]);
 
-  /** Assets grouped for display. Empty when nothing is cross-linked, and the template renders no
-   *  section at all in that case rather than a wall of "not yet linked" placeholders. */
+  /** Assets grouped for display. Empty when nothing is cross-linked, and the template renders a
+   *  single quiet note in that case rather than a wall of "not yet linked" placeholders. */
   readonly assetGroups = computed(() => {
     const assets = this.assets();
     return ASSET_GROUP_ORDER.map((group) => ({
       group,
-      items: assets.filter((a: CrossLinkedAsset) => a.group === group),
+      items: assets.filter((a) => a.group === group),
     })).filter((g) => g.items.length > 0);
   });
+
+  /** When Europe PMC's links were fetched and how many there are -- null until the data-links
+   *  pass has reached this record, in which case the empty state says so. */
+  readonly dataLinksNote = computed(() => dataLinksNote(this.rec()));
 
   // ---- Access. `null` means "not recorded", which is not the same as "no". -------------------
   readonly access = computed(() => {

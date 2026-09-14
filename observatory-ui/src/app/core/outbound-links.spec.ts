@@ -1,13 +1,13 @@
-import { articleSources, crossLinkedAssets } from './outbound-links';
+import { articleSources, crossLinkedAssets, europePmcArticleUrl } from './outbound-links';
 import { AiMlRecord } from './record.model';
 
-function record(ids: Partial<AiMlRecord['identifiers']> = {}): AiMlRecord {
+function record(ids: Partial<AiMlRecord['identifiers']> = {}, source: Partial<AiMlRecord['source']> = {}): AiMlRecord {
   return {
     _id: 'pid-1',
     schema_version: '1.1.0',
     identifiers: { pmid: '19964568', pmcid: 'PMC4013747', doi: '10.1109/iembs.2009.5333926', dome_registry: null, bioai_repo: null, huggingface: null, kaggle: null, zenodo: null, ...ids },
     publication_metadata: { title: 't', abstract: null, authors: null, year: 2009, journal: null, citation_count: null },
-    source: { abstract_source: null, metadata_repair_sources: null, access: { open_access: true, license: null, fulltext_available: true } },
+    source: { abstract_source: null, metadata_repair_sources: null, access: { open_access: true, license: null, fulltext_available: true }, ...source },
     content_filters: { mesh_headings: [], pub_types: [], keywords_author: [], domain_tier1: null, domain_tier2: [], domain_tier3: [], learning_paradigm: [], model_family: [], model_type: [] },
     llm_classification: { provider: null, model_tier: null, model_id: null, mode: null, classification: 'positive', rationale: null, prompt_version: null, ruleset_sha256: null, batch_id: null, timestamp: null },
     llm_enrichment: { provider: null, model_tier: null, model_id: null, mode: null, rationale: null, prompt_version: null, ruleset_sha256: null, batch_id: null, timestamp: null, vocab_violations: null, parse_status: null, input_tokens: null, output_tokens: null, cache_hit_tokens: null, parse_fallback_used: null },
@@ -52,6 +52,39 @@ describe('articleSources', () => {
 
   it('returns an empty list rather than throwing when a record has no identifiers at all', () => {
     expect(articleSources(record({ pmid: null, pmcid: null, doi: null }))).toEqual([]);
+  });
+
+  it('links a preprint to its own Europe PMC record, never the MED form', () => {
+    // 3,157 preprints carry a PMID; /article/MED/{pmid} is the wrong page for every one of them.
+    const preprint = record({ pmid: '3157', pmcid: null, epmc_id: 'PPR18364' }, { epmc_source: 'PPR' });
+    expect(europePmcArticleUrl(preprint)).toBe('https://europepmc.org/article/PPR/PPR18364');
+    const epmc = articleSources(preprint).find((s) => s.label === 'Europe PMC');
+    expect(epmc?.url).toBe('https://europepmc.org/article/PPR/PPR18364');
+    expect([epmc?.idLabel, epmc?.idValue]).toEqual(['Europe PMC ID', 'PPR18364']);
+    // PubMed is still reached by the PMID
+    expect(articleSources(preprint).map((s) => s.label)).toContain('PubMed');
+  });
+
+  it('keeps the PMID label for a MEDLINE record whose identity is stored', () => {
+    const med = record({ epmc_id: '19964568' }, { epmc_source: 'MED' });
+    const epmc = articleSources(med).find((s) => s.label === 'Europe PMC');
+    expect(epmc?.url).toBe('https://europepmc.org/article/MED/19964568');
+    expect([epmc?.idLabel, epmc?.idValue]).toEqual(['PMID', '19964568']);
+  });
+
+  it('does not call a PMC-only record a preprint', () => {
+    const pmcOnly = record({ pmid: null, pmcid: 'PMC12739028', epmc_id: 'PMC12739028' }, { epmc_source: 'PMC' });
+    const epmc = articleSources(pmcOnly).find((s) => s.label === 'Europe PMC');
+    expect(epmc?.url).toBe('https://europepmc.org/article/PMC/PMC12739028');
+    expect([epmc?.idLabel, epmc?.idValue]).toEqual(['Europe PMC ID', 'PMC12739028']);
+    expect(epmc?.explainer).not.toContain('preprint');
+  });
+
+  it('reaches Europe PMC through the stored identity when there is no PMID at all', () => {
+    const noPmid = record({ pmid: null, epmc_id: 'PPR99' }, { epmc_source: 'PPR' });
+    const labels = articleSources(noPmid).map((s) => s.label);
+    expect(labels).toContain('Europe PMC');
+    expect(labels).not.toContain('PubMed');
   });
 });
 

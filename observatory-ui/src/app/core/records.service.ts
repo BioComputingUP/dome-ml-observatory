@@ -23,6 +23,9 @@ export interface SearchFilters {
   learningParadigm?: string[];
   modelFamily?: string[];
   modelType?: string[];
+  /** Linked data resources (data_links.resources[].resource slugs: pdb, geo, zenodo, ...). A
+   *  record matches when any of its resources is selected. Schema v1.4.0. */
+  dataResources?: string[];
   /** Only records the enrichment pass has actually touched. */
   enrichedOnly?: boolean;
 }

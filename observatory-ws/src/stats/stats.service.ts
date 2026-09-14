@@ -61,6 +61,9 @@ export interface FacetStats {
     domainTier1: FacetCount[];
     learningParadigm: FacetCount[];
     modelFamily: FacetCount[];
+    /** Linked data resources (schema v1.4.0, data_links.resources[].resource), counted per
+     *  positive record carrying each. Empty until the data-links backfill lands. */
+    dataResources: FacetCount[];
     /** Mirrors search_space.yearRange exactly -- kept here too since the facet panel's year
      *  inputs read counts/bounds from `facets`, not `search_space`. */
     yearRange: { min: number; max: number } | null;
@@ -161,6 +164,7 @@ interface RawSearchSpaceResult {
   domainTier1: { _id: string | null; count: number }[];
   learningParadigm: { _id: string | null; count: number }[];
   modelFamily: { _id: string | null; count: number }[];
+  dataResources: { _id: string | null; count: number }[];
   yearRange: { min: number | null; max: number | null }[];
 }
 
@@ -263,6 +267,12 @@ function buildSearchSpacePipeline() {
         domainTier1: countBy('content_filters.domain_tier1'),
         learningParadigm: countByArrayElement('content_filters.learning_paradigm'),
         modelFamily: countByArrayElement('content_filters.model_family'),
+        // An array of subdocuments, not strings: unwind the array, group on the slug inside.
+        // One entry per resource per record (the pipeline dedupes), so the count is records.
+        dataResources: [
+          { $unwind: '$data_links.resources' },
+          { $group: { _id: '$data_links.resources.resource', count: { $sum: 1 } } },
+        ],
         yearRange: [
           {
             $group: {
@@ -346,6 +356,7 @@ function shapeFacetStats(
       domainTier1: toFacetCounts(rawSearchSpace?.domainTier1 ?? []),
       learningParadigm: toFacetCounts(rawSearchSpace?.learningParadigm ?? []),
       modelFamily: toFacetCounts(rawSearchSpace?.modelFamily ?? []),
+      dataResources: toFacetCounts(rawSearchSpace?.dataResources ?? []),
       yearRange,
     },
   };

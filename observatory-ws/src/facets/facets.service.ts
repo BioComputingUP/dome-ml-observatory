@@ -23,6 +23,11 @@ const FIELD_PATHS: Record<string, string> = {
   mesh_headings: 'content_filters.mesh_headings',
   pub_types: 'content_filters.pub_types',
   license: 'source.access.license',
+  // The slugs of the resources a record's Europe PMC data links point at (schema v1.4.0,
+  // data_links.resources[].resource): a few dozen distinct values (pdb, uniprot, geo, zenodo,
+  // biostudies, ...). Mongo's distinct() walks into the array of subdocuments, so nothing here
+  // needs to know it is one. Answers empty until the data-links backfill lands.
+  data_resource: 'data_links.resources.resource',
 };
 
 export const ALLOWED_FACET_FIELDS = Object.keys(FIELD_PATHS);

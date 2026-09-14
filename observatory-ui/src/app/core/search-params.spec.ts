@@ -9,6 +9,21 @@ import {
 import { SearchQuery } from './records.service';
 
 describe('search-params', () => {
+  describe('data resources (dl)', () => {
+    it('round-trips a repeatable, verbatim list', () => {
+      expect(paramsToQuery({ dl: 'pdb' }).filters.dataResources).toEqual(['pdb']);
+      expect(paramsToQuery({ dl: ['pdb', 'geo'] }).filters.dataResources).toEqual(['pdb', 'geo']);
+      const query = paramsToQuery({ dl: ['pdb', 'geo'] });
+      expect(queryToParams(query)['dl']).toEqual(['pdb', 'geo']);
+      expect(queryToHttpParams(query).getAll('dl')).toEqual(['pdb', 'geo']);
+      expect(activeFilterCount(query.filters)).toBe(1);
+    });
+
+    it('is omitted from the URL when unset', () => {
+      expect(queryToParams(paramsToQuery({}))['dl']).toBeNull();
+    });
+  });
+
   describe('paramsToQuery', () => {
     it('applies the positive default when classification is absent entirely', () => {
       expect(paramsToQuery({}).filters.classification).toEqual(['positive']);

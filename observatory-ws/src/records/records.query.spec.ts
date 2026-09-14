@@ -944,3 +944,30 @@ describe('shouldFallBackFromText', () => {
     expect(shouldFallBackFromText(f, 45116)).toBe(false);
   });
 });
+
+describe('data resources filter (schema v1.4.0)', () => {
+  it('reads dl as a repeatable, verbatim list', () => {
+    expect(parseSearchParams({ dl: 'pdb' }).filters.dataResources).toEqual(['pdb']);
+    expect(parseSearchParams({ dl: ['pdb', 'geo'] }).filters.dataResources).toEqual(['pdb', 'geo']);
+    expect(parseSearchParams({}).filters.dataResources).toBeUndefined();
+  });
+
+  it('matches any linked resource through the array of subdocuments', () => {
+    const filter = buildMongoFilter({ ...emptyFilters, dataResources: ['pdb', 'zenodo'] });
+    expect(JSON.stringify(filter)).toContain(
+      JSON.stringify({ 'data_links.resources.resource': { $in: ['pdb', 'zenodo'] } }),
+    );
+  });
+});
+
+describe('canonicalCacheKey and the data resources filter', () => {
+  it('keys a dl-filtered count separately from the unfiltered one, order-insensitively', () => {
+    // Without this the count cache would answer ?dl=pdb with the unfiltered total.
+    expect(canonicalCacheKey({ ...emptyFilters, dataResources: ['pdb'] })).not.toBe(
+      canonicalCacheKey(emptyFilters),
+    );
+    expect(canonicalCacheKey({ ...emptyFilters, dataResources: ['pdb', 'geo'] })).toBe(
+      canonicalCacheKey({ ...emptyFilters, dataResources: ['geo', 'pdb'] }),
+    );
+  });
+});
