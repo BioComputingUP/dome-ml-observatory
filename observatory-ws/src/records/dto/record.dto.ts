@@ -5,7 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
  * `.lean()` (see records.service.ts), never instantiated as this class or serialized through it.
  * Mirrors observatory-ui/src/app/core/record.model.ts, duplicated deliberately rather than shared
  * (there is no `-core` package in this project, by design -- see AGENTS.md) -- source of truth
- * for the real shape is schema/releases/v1.4.0/ai-ml-landscape.schema.json.
+ * for the real shape is schema/releases/v1.5.0/ai-ml-landscape.schema.json.
  */
 class RecordIdentifiersDto {
   @ApiProperty({ type: String, nullable: true }) pmid!: string | null;
@@ -22,7 +22,10 @@ class RecordIdentifiersDto {
   @ApiProperty({
     type: String,
     nullable: true,
-    description: 'Reserved for a future linking pass.',
+    description:
+      'The DOME Registry entry naming this paper (its id; the page is ' +
+      'https://registry.dome-ml.org/review/{id}). "" = looked up, no entry names it; null = never ' +
+      'looked up. Filled for positives from schema v1.5.0.',
   })
   dome_registry!: string | null;
   @ApiProperty({ type: String, nullable: true }) bioai_repo!: string | null;
@@ -141,11 +144,29 @@ class DataLinkResourceDto {
     nullable: true,
     description:
       'tm_accession (text-mined from the article), tm_supplementary (from supplementary files), ' +
-      'ext_links (a data citation or external link) or derived (the BioStudies entry).',
+      'ext_links (a data citation or external link), derived (the BioStudies entry), and from ' +
+      'schema v1.5.0 ebisearch_xref / ebisearch_domain (found through EBI Search).',
   })
   obtained_by!: string | null;
   @ApiProperty({ description: 'True number of links to this resource, before any cap.' })
   count!: number;
+  @ApiProperty({
+    type: [String],
+    required: false,
+    description:
+      'Schema v1.5.0: every route that found a link to this resource -- tm_accession, ' +
+      'tm_supplementary, ext_links, derived, ebisearch_xref, ebisearch_domain.',
+  })
+  routes?: string[];
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    required: false,
+    description:
+      'Schema v1.5.0: one page at the source listing every entry of this resource for the paper, ' +
+      'where the source has one.',
+  })
+  browse_url?: string | null;
 }
 
 class DataLinkDto {
@@ -157,6 +178,21 @@ class DataLinkDto {
   @ApiProperty({ type: String, nullable: true }) relationship!: string | null;
   @ApiProperty({ type: String, nullable: true }) section!: string | null;
   @ApiProperty({ type: Number, nullable: true }) frequency!: number | null;
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    required: false,
+    enum: ['pmid', 'pmcid', 'doi'],
+    description: "Schema v1.5.0: which of the paper's identifiers the EBI Search entry named.",
+  })
+  matched_by?: 'pmid' | 'pmcid' | 'doi' | null;
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    required: false,
+    description: 'Schema v1.5.0: the EBI Search domain that asserted the link, e.g. "sra-study".',
+  })
+  source_domain?: string | null;
 }
 
 class DataLinksDto {
@@ -182,7 +218,12 @@ class DataLinksDto {
       'sets this with link_count 0.',
   })
   fetched_at!: string | null;
-  @ApiProperty({ type: [String], description: 'Which routes produced the links.' })
+  @ApiProperty({
+    type: [String],
+    description:
+      'Which routes were consulted: epmc_search, epmc_annotations, epmc_datalinks, ' +
+      'epmc_textmined_bulk, derived, and ebisearch (schema v1.5.0).',
+  })
   sources!: string[];
   @ApiProperty({ type: Number, nullable: true, description: 'True total before caps.' })
   link_count!: number | null;
@@ -235,7 +276,7 @@ export class RecordDto {
   })
   _id!: string;
 
-  @ApiProperty({ example: '1.1.0' }) schema_version!: string;
+  @ApiProperty({ example: '1.5.0' }) schema_version!: string;
   @ApiProperty({ type: RecordIdentifiersDto })
   identifiers!: RecordIdentifiersDto;
   @ApiProperty({ type: PublicationMetadataDto })
@@ -245,8 +286,8 @@ export class RecordDto {
   @ApiProperty({
     type: DataLinksDto,
     description:
-      "Europe PMC's data links for the paper (schema v1.4.0). Absent as a key on documents " +
-      'written before the v1.4.0 migration.',
+      "The paper's data links: Europe PMC's and, for positives from schema v1.5.0, EBI Search's. " +
+      'Absent as a key on documents written before the v1.4.0 migration.',
   })
   data_links!: DataLinksDto;
   @ApiProperty({ type: LlmClassificationDto })

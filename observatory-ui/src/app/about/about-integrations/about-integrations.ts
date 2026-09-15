@@ -64,14 +64,14 @@ const INTEGRATIONS: Integration[] = [
   },
   // ---- Planned ----
   {
-    // Built and tested in the pipeline (schema v1.4.0, data_links); flips to live once the
-    // corpus backfill has landed and the record pages actually show the cards.
+    // Built and tested in the pipeline (schema v1.4.0, data_links; EBI Search's links for positives
+    // from v1.5.0); flips to live once the corpus load has landed and the record pages show the cards.
     name: 'Europe PMC data links',
     status: 'planned',
     direction: 'out',
     protocol: 'REST API (annotations + Scholix data links)',
     what: 'The datasets, accessions and supplementary files Europe PMC links to each paper — PDB, UniProt, ENA, GEO, BioStudies, Zenodo, Dryad and more.',
-    how: 'Harvested per record by the pipeline and shown as one card per linked resource on the record page, with a Linked data filter on search.',
+    how: 'Harvested per record by the pipeline, joined for AI/ML papers by the entries EBI Search holds that name the paper, and shown as one card per linked resource on the record page, with a Linked data filter on search.',
     benefit: 'From a method paper straight to the data it was built and evaluated on.',
     logo: 'assets/img/europe-pmc-logo.png',
   },
@@ -81,7 +81,9 @@ const INTEGRATIONS: Integration[] = [
     direction: 'both',
     protocol: 'Cross-reference',
     what: 'The sibling registry of structured, community-reviewed DOME method annotations.',
-    how: 'A reserved identifier field (identifiers.dome_registry) will link a record to its matching Registry entry once the cross-linking pass runs.',
+    // Schema v1.5.0 fills identifiers.dome_registry from the Registry's EBI Search entries; flips to
+    // live with the corpus load, as the data links above.
+    how: 'The pipeline matches Registry entries to AI/ML papers by PMID or PMCID through EBI Search, stores the entry on the record (identifiers.dome_registry), and links the record page straight to its Registry review.',
     benefit: 'Move between "this paper exists" (Observatory) and "here is its full structured method annotation" (Registry).',
     // The -cropped variant, not the full one: DOME_Registry_Rounded.svg is a 375x375 canvas whose
     // wordmark occupies a 349x78 band, so ~80% of it is empty and object-fit shrank the mark to an

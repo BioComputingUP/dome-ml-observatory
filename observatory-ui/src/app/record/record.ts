@@ -6,8 +6,15 @@ import { map, switchMap, catchError, of } from 'rxjs';
 import { RecordsService } from '../core/records.service';
 import { AiMlRecord, isEnriched } from '../core/record.model';
 import { modelTypeLabel } from '../core/facet-labels';
-import { articleSources, crossLinkedAssets } from '../core/outbound-links';
-import { dataLinkAssets, dataLinksNote, DataLinkAsset, DataLinkGroup } from '../core/data-links';
+import { articleSources } from '../core/outbound-links';
+import {
+  chipsFor,
+  dataLinksNote,
+  DataLinkAsset,
+  DataLinkGroup,
+  INLINE_CHIPS,
+  recordAssets,
+} from '../core/data-links';
 import { plainText, richAbstract, richTitle } from '../core/rich-text';
 import { publicationVenue } from '../core/venue';
 import { SearchStateService } from '../core/search-state.service';
@@ -37,6 +44,9 @@ export class RecordPage {
    *  when the record might well exist and Mongo just isn't reachable right now. */
   readonly unavailable = signal(false);
 
+  /** The multi-link cards whose entries are expanded past the first few. Reset per record. */
+  readonly expanded = signal<ReadonlySet<string>>(new Set());
+
   private readonly record = toSignal(
     this.route.paramMap.pipe(
       map((params) => params.get('pid') ?? ''),
@@ -52,6 +62,7 @@ export class RecordPage {
       }),
       map((record) => {
         this.loading.set(false);
+        this.expanded.set(new Set());
         return record;
       }),
     ),
@@ -97,13 +108,28 @@ export class RecordPage {
 
   // ---- Article sources and assets ------------------------------------------------------------
   readonly sources = computed(() => articleSources(this.rec()));
-  /** The reserved cross-links (identifiers.*) and Europe PMC's data links, as one list of cards.
-   *  Each data-link card is one linked resource -- PDB, GEO, Zenodo, the BioStudies supplementary
-   *  entry -- with its icon; see core/data-links.ts. */
-  readonly assets = computed((): DataLinkAsset[] => [
-    ...crossLinkedAssets(this.rec()).map((a) => ({ ...a, resource: '', count: 1 })),
-    ...dataLinkAssets(this.rec()),
-  ]);
+  /** The reserved cross-links (identifiers.*) and the data links, as one list of cards. Each
+   *  data-link card is one linked resource -- PDB, GEO, bio.tools, the DOME Registry, the BioStudies
+   *  supplementary entry -- one click from the source; see core/data-links.ts. */
+  readonly assets = computed((): DataLinkAsset[] => recordAssets(this.rec()));
+
+  /** How many entries a multi-link card shows before its expander. */
+  readonly inlineChips = INLINE_CHIPS;
+
+  /** The chips a multi-link card shows: its first entries, or all of them once expanded. */
+  chips(asset: DataLinkAsset): ReturnType<typeof chipsFor> {
+    return chipsFor(asset, this.expanded().has(asset.key));
+  }
+
+  toggleExpanded(key: string): void {
+    const next = new Set(this.expanded());
+    if (next.has(key)) {
+      next.delete(key);
+    } else {
+      next.add(key);
+    }
+    this.expanded.set(next);
+  }
 
   /** Assets grouped for display. Empty when nothing is cross-linked, and the template renders a
    *  single quiet note in that case rather than a wall of "not yet linked" placeholders. */

@@ -196,6 +196,71 @@
   color: inherit;
 }
 
+// A card that stands for several entries is not itself a link: its entries are, as chips, with the
+// rest behind an expander and one link to a page listing them all (see core/data-links.ts).
+.asset-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.asset-chip {
+  display: inline-block;
+  padding: 2px var(--space-2);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-mono, monospace);
+  font-size: var(--font-size-xs);
+  color: var(--observatory-primary);
+  text-decoration: none;
+  word-break: break-all;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--observatory-accent-dark);
+    color: var(--observatory-accent-dark);
+  }
+}
+
+.asset-chip-plain {
+  color: var(--status-neutral);
+}
+
+.asset-more {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--observatory-primary);
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--observatory-accent-dark);
+    text-decoration: underline;
+  }
+}
+
+.asset-see-all {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-decoration: none;
+
+  &::after {
+    content: ' →';
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--observatory-accent-dark);
+  }
+}
+
 .source-head {
   display: flex;
   align-items: center;

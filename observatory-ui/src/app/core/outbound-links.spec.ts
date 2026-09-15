@@ -102,8 +102,8 @@ describe('crossLinkedAssets', () => {
   });
 
   it('passes a value through unchanged when it is already a URL', () => {
-    // The cross-linking pass has never run, so whether it writes bare accessions or full URLs is
-    // not yet observable -- both are handled rather than one being guessed at.
+    // Only dome_registry is written yet (a bare id, schema v1.5.0); whether the other fields' pass
+    // writes bare accessions or full URLs is not yet observable -- both are handled.
     const [asset] = crossLinkedAssets(record({ zenodo: 'https://zenodo.org/records/12345' }));
     expect(asset.url).toBe('https://zenodo.org/records/12345');
   });

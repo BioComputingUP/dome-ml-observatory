@@ -14,6 +14,56 @@ updated except the two published releases below: `v1.2.0/` and `v1.3.0/` still n
 published (see `README.md`) and is never edited in place. GitHub redirects the old name, so those
 strings still resolve. The next release will carry the new name.
 
+## v1.5.0 — 2026-09-14
+
+EBI Search's database-side links join Europe PMC's in `data_links`, and the DOME Registry
+cross-reference is filled.
+
+**Added (inside the existing arrays; no field path added or removed):**
+- `data_links.sources` may carry `"ebisearch"`: the record's links were also looked up in EBI
+  Search, where a repository, bio.tools or the DOME Registry names the paper by its PMID, PMCID or
+  DOI. Positives only; present even when EBI Search found nothing.
+- `data_links.resources[].routes`: every route that found a link to the resource
+  (`tm_accession`, `tm_supplementary`, `ext_links`, `derived`, `ebisearch_xref`,
+  `ebisearch_domain`), so a card can say when the article and the repository agree.
+- `data_links.resources[].browse_url`: one page at the source listing every entry of the resource
+  for the paper, where the source has one (NCBI GEO today); null otherwise.
+- `data_links.links[].matched_by` (`pmid` | `pmcid` | `doi`) and `.source_domain` (the EBI Search
+  domain that asserted the link); null for the Europe PMC routes.
+- Documented values: `obtained_by` gains `ebisearch_xref` and `ebisearch_domain`; `relationship`
+  gains `IsReviewedBy` (DOME Registry) and `IsDescribedBy` (bio.tools); categories gain
+  `Software Registries` and `Transparency Reports`; resources gain bio.tools, DOME Registry, iProX,
+  jPOST, Panorama Public, MassIVE, NODE, European Variation Archive, DGVa, Single Cell Expression
+  Atlas, FAIRDOMHub, Physiome Model Repository and Cell Collective.
+
+**Changed (value, not shape):** `identifiers.dome_registry` is filled for positives from the DOME
+Registry's EBI Search entries: the entry id, `""` when looked up and none names the paper, `null`
+when never looked up.
+
+**Changed (what existing records hold):** every link is filed under its home resource before the
+dedupe, so an ArrayExpress `E-GEOD-n` mirror is the GEO series `GSEn`, a versioned dbGaP study
+(`phs000310.v1.p1`) is the study, and a PXD dataset sits under the ProteomeXchange partner EBI
+Search says hosts it.
+
+**Which EBI Search domains count** (decided 2026-09-14; listed with reasons in
+dome-ml-observatory-triage's `docs/data_links_sources.md`): assets from the paper -- deposited data
+(ENA, GEO, ArrayExpress, PRIDE and the ProteomeXchange partners, MassIVE, PDBe, EMDB, EMPIAR,
+BioImage Archive, BioStudies, BioModels, MetaboLights, EGA, dbGaP, EVA, DGVa, NODE, FAIRDOMHub,
+Physiome, Cell Collective, Single Cell Expression Atlas), bio.tools, the DOME Registry and
+BioStudies' literature entries. Databases that cite a paper as curation evidence (UniProt, PDBe-KB,
+InterPro, GO, IntAct, Reactome, ChEMBL, GWAS Catalog, ...), MeSH, Expression Atlas experiments and
+GEO DataSets are not data links.
+
+**Migration note:** additive for consumers — every new element key is optional (a record the build
+withholds keeps its v1.4.0 elements until a later build completes it) and no existing key changed
+meaning. In dome-ml-observatory-triage, `migrate_v1_5_0.py` moves `schema_version` from 1.4.0 to
+1.5.0 in one `updateMany`; the rebuilt links and the identifier then arrive through
+`load_fields.py --mode data_links` and `--mode identifiers`. Deploy this release's apps before that
+load, and restart `observatory-ws` after it: the `data_resource` facet is boot-loaded.
+
+**Pending at release:** the corpus load. Until it runs, live records stay at v1.4.0 and carry none
+of the new keys or values; the apps render both shapes.
+
 ## v1.4.0 — 2026-09-14
 
 Europe PMC's data links for every paper, and the upstream authoring of v1.3.0.

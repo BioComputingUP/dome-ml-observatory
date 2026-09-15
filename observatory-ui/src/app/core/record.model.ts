@@ -1,5 +1,5 @@
 /**
- * Mirrors schema/releases/v1.4.0/ai-ml-landscape.schema.json exactly -- that file (not this one)
+ * Mirrors schema/releases/v1.5.0/ai-ml-landscape.schema.json exactly -- that file (not this one)
  * is the source of truth. If the schema-version skill cuts a new release, update this to match
  * and note it in that release's CHANGELOG entry.
  */
@@ -100,6 +100,13 @@ export interface DataLinkResource {
   obtained_by: string | null;
   /** True number of links to this resource, before any cap. */
   count: number;
+  /** Every route that found a link to this resource (schema v1.5.0): tm_accession,
+   *  tm_supplementary, ext_links, derived, ebisearch_xref, ebisearch_domain. Absent on a record the
+   *  v1.5.0 build has not reached. */
+  routes?: string[];
+  /** One page at the source listing every entry of this resource for the paper, where the source
+   *  has one (schema v1.5.0). */
+  browse_url?: string | null;
 }
 
 /** One link. `links` is capped at 50 per resource / 300 per record; `resources[].count` and
@@ -113,6 +120,11 @@ export interface DataLink {
   relationship: string | null;
   section: string | null;
   frequency: number | null;
+  /** Which of the paper's identifiers the EBI Search entry named (schema v1.5.0); null for the
+   *  Europe PMC routes. */
+  matched_by?: 'pmid' | 'pmcid' | 'doi' | null;
+  /** The EBI Search domain that asserted the link, e.g. "sra-study" (schema v1.5.0). */
+  source_domain?: string | null;
 }
 
 /**

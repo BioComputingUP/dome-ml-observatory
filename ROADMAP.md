@@ -14,7 +14,7 @@ Anything here that depends on the data depends on that list, so read it before p
 |---|---|---|
 | 1 | [Matomo analytics](#1-matomo-analytics) — built, switched off | A site ID from the Matomo admin |
 | 2 | [Finalise and optimise search](#2-finalise-and-optimise-search) | A plan, to be written |
-| 3 | [Verify the preprint fields and data links](#3-verify-the-preprint-fields-and-data-links) | The backfill, in the sister repo |
+| 3 | [Verify the preprint fields and data links](#3-verify-the-preprint-fields-and-data-links) | The v1.5.0 load, in the sister repo |
 | 4 | [The Zenodo DOI on the site is dead](#4-the-zenodo-doi-on-the-site-is-dead) | Minting a real deposition |
 | 5 | [Final docs pass](#5-final-docs-pass) | Every other repo settling |
 | 6 | [Citation-count liveness](#6-citation-count-liveness) | A last-processed date the API can serve |
@@ -91,6 +91,17 @@ preprint's venue and Europe PMC link and a data-rich record's cards against real
 the "Europe PMC data links" integration to live. The cards use icon-font glyphs for resources with
 no logo in `assets/img/`; self-hosted logos for PDBe, UniProt, ENA, GEO, BioStudies and the data
 repositories are still to add, as a content-only commit.
+
+Schema v1.5.0 (released here 2026-09-14, not yet loaded) adds EBI Search's database-side links for
+positives -- deposits, bio.tools and the DOME Registry -- inside the same `data_links` block, and
+fills `identifiers.dome_registry`. The code is in: optional `routes` / `browse_url` / `matched_by` /
+`source_domain` in `record.dto.ts` and `record.model.ts`; a card that lists several entries as
+chips with a "+N more" expander and a "See all" link (`core/data-links.ts`, `record/record.html`);
+one DOME Registry card, not two, when both the identifier and a data link name the entry; the DOME
+link built as `/review/{id}`. After the sister repository's v1.5.0 migration and its `data_links`
+and `identifiers` loads: deploy first, restart `observatory-ws`, check a DOME paper, a bio.tools
+paper and a GEO-heavy paper against real data, confirm the new slugs in the Linked data facet, and
+flip the "DOME Registry" integration to live alongside "Europe PMC data links".
 
 ## 4. The Zenodo DOI on the site is dead
 

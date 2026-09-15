@@ -131,10 +131,10 @@ export interface CrossLinkedAsset {
 /**
  * Passes a value straight through when it is already a URL, otherwise builds the canonical one.
  *
- * These fields are reserved in schema v1.1.0 and populated by a cross-linking pass that has not run
- * yet -- confirmed against the MongoDB server 2026-09-02: **0 of all 827,061 records** carry any of them. Whether
- * the pass will write bare accessions or full URLs is therefore not yet observable, so this handles
- * both rather than guessing one and breaking on the other.
+ * These fields are reserved in schema v1.1.0. From v1.5.0 the pipeline fills `dome_registry` with a
+ * bare Registry id (`3mm086r5pw`); the other four are still written by nothing -- 0 of all 827,061
+ * records carried any field on 2026-09-02 -- so whether their pass will write bare accessions or
+ * full URLs is not yet observable, and this handles both rather than guessing one.
  */
 function assetUrl(raw: string, template: (id: string) => string): string {
   return /^https?:\/\//i.test(raw) ? raw : template(encodeURIComponent(raw));
@@ -149,8 +149,8 @@ function assetUrl(raw: string, template: (id: string) => string): string {
  * weight as the real links above them, which is what a placeholder wall looks like rather than a
  * roadmap. Hiding the section outright was the previous fix and overcorrected: with 0 of 827,061
  * records carrying a cross-link, "absent" was every reader's experience of it, and two tinted bands
- * then abutted and read as one section. The real cards replace the note the moment the
- * cross-linking pass populates anything.
+ * then abutted and read as one section. The real cards replace the note the moment a record carries
+ * a cross-link or a data link.
  */
 export function crossLinkedAssets(record: AiMlRecord): CrossLinkedAsset[] {
   const ids = record.identifiers;
@@ -161,7 +161,7 @@ export function crossLinkedAssets(record: AiMlRecord): CrossLinkedAsset[] {
       group: 'Annotation',
       label: 'DOME Registry',
       explainer: 'The structured DOME annotation of this method.',
-      url: assetUrl(ids.dome_registry, (id) => `https://registry.dome-ml.org/search?q=${id}`),
+      url: assetUrl(ids.dome_registry, (id) => `https://registry.dome-ml.org/review/${id}`),
       logo: 'assets/img/DOME_Registry_Rounded-cropped.svg',
       icon: 'icon-classification',
     });
