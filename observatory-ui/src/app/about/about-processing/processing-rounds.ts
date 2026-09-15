@@ -61,9 +61,58 @@ export const CLASSIFICATION_ROUNDS: readonly ClassificationRound[] = [
     promptVersion: 'v1',
     outcome: { positive: 358_865, negative: 467_445, undeterminable: 6_930 },
   },
+  {
+    number: 2,
+    title: 'Incremental update',
+    started: '2026-09-03',
+    finished: '2026-09-03',
+    searchSpace: CORE_SEARCH_SPACE,
+    window: 'First published from 1 January to 3 September 2026 and not yet in the corpus.',
+    processed: '13,476 publications new to the corpus, fetched from Europe PMC on 3 September 2026.',
+    model: 'DeepSeek V4 Flash',
+    promptVersion: 'v1',
+    outcome: { positive: 7_369, negative: 6_058, undeterminable: 49 },
+  },
+  {
+    number: 3,
+    title: 'Incremental update',
+    started: '2026-09-15',
+    finished: '2026-09-15',
+    searchSpace: CORE_SEARCH_SPACE,
+    window:
+      'First indexed by Europe PMC from 3 to 10 September 2026, and papers dated after 3 September, ' +
+      'not yet in the corpus.',
+    processed:
+      '7,342 publications new to the corpus, fetched from Europe PMC on 15 September 2026; the ' +
+      '6,215 with an abstract were classified and added.',
+    model: 'DeepSeek V4.1 Flash',
+    promptVersion: 'v1',
+    outcome: { positive: 1_791, negative: 4_416, undeterminable: 8 },
+  },
 ];
 
-export const ENRICHMENT_ROUNDS: readonly EnrichmentRound[] = [];
+export const ENRICHMENT_ROUNDS: readonly EnrichmentRound[] = [
+  {
+    number: 1,
+    title: 'Four journals',
+    started: '2026-09-03',
+    finished: '2026-09-03',
+    cohort: 'Positive records in Bioinformatics, Nature, Science and Cell.',
+    model: 'DeepSeek V4 Flash',
+    promptVersion: 'e1',
+    records: 3_332,
+  },
+  {
+    number: 2,
+    title: 'Positives from classification round 3',
+    started: '2026-09-15',
+    finished: '2026-09-15',
+    cohort: '200 of the positive records added in classification round 3.',
+    model: 'DeepSeek V4.1 Flash',
+    promptVersion: 'e1',
+    records: 200,
+  },
+];
 
 export function roundTotal(outcome: RoundOutcome): number {
   return outcome.positive + outcome.negative + outcome.undeterminable;

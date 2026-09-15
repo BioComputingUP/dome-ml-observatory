@@ -65,9 +65,18 @@ describe('AboutProcessing', () => {
     expect(root.textContent).toContain(`${LIVE.enriched.toLocaleString('en-US')} of`);
   });
 
-  it('says enrichment has not run only while no batch is logged', () => {
-    const pending = (root.textContent ?? '').includes('Not yet run');
-    expect(pending).toBe(ENRICHMENT_ROUNDS.length === 0);
+  it('logs each enrichment round, and says so only while none has run', () => {
+    // Scoped to the enrichment section: the "Last enriched" pill above it also reads "Not yet run"
+    // whenever the API has no enrichment date, which is a different statement.
+    const band = [...root.querySelectorAll('.band')].find(
+      (b) => b.querySelector('h2')?.textContent?.includes('Enrichment'),
+    );
+    const text = band?.textContent ?? '';
+    expect(text.includes('Not yet run')).toBe(ENRICHMENT_ROUNDS.length === 0);
+    ENRICHMENT_ROUNDS.forEach((round) => {
+      expect(text).toContain(round.title);
+      expect(text).toContain(round.records.toLocaleString('en-US'));
+    });
   });
 });
 
