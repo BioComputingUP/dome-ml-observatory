@@ -85,7 +85,7 @@ Mode A still comes up if the database is unreachable: `/api/health` returns 200,
 Mode B is what makes the repository runnable on any machine. The `offline` profile adds a throwaway
 MongoDB, then [`offline-database/seed.sh`](offline-database/seed.sh) seeds it from the tracked
 fixture ([`observatory-ui/fixtures/sample-records.json`](observatory-ui/fixtures/sample-records.json))
-and builds the same two indexes the real collection carries. It is a demo dataset, not a mirror of
+and stamps each record's `record_modified` and builds the same three indexes the real collection carries. It is a demo dataset, not a mirror of
 production, and it is ephemeral: `down` discards it and the next `up` reseeds. It defaults to
 `mongo:7` for multi-architecture support while production runs MongoDB 4.2, so it is not a
 version-parity environment; override with `MONGO_IMAGE` for closer parity.

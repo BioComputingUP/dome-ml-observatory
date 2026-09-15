@@ -37,7 +37,9 @@ first harvest is a full one whatever the date says; the group timestamps stay as
 on positives), the keyset the OAI-PMH and sitemap walks page by. The example predates the migration,
 so its `record_modified` is null.
 
-**Pending at release:** the migration and the index on moros.
+**Migrated 2026-09-15:** `migrate_v1_6_0.py` stamped all 846,716 documents (`record_modified` = 2026-09-15T20:09:03Z)
+and `ensure_indexes.py` built `record_modified_positive` in 2.8 s. `verify_corpus.py` passed and
+`check_alignment.py --live` reported `aligned`.
 
 ## v1.5.1 — 2026-09-15
 

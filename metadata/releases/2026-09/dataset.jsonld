@@ -1,0 +1,327 @@
+{
+  "@context": {
+    "@vocab": "https://schema.org/",
+    "dcat": "http://www.w3.org/ns/dcat#",
+    "dct": "http://purl.org/dc/terms/",
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "prov": "http://www.w3.org/ns/prov#",
+    "vcard": "http://www.w3.org/2006/vcard/ns#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  },
+  "@graph": [
+    {
+      "@id": "https://observatory.dome-ml.org/#catalog",
+      "@type": [
+        "dcat:Catalog",
+        "DataCatalog"
+      ],
+      "dct:conformsTo": {
+        "@id": "https://bioschemas.org/profiles/DataCatalog/0.3-RELEASE-2019_07_01"
+      },
+      "name": "DOME Observatory",
+      "dct:title": "DOME Observatory",
+      "description": "A catalogue of AI/ML methods papers in the life sciences, screened and annotated from Europe PMC to support the DOME recommendations for machine-learning reporting.",
+      "url": "https://observatory.dome-ml.org",
+      "dcat:landingPage": {
+        "@id": "https://observatory.dome-ml.org"
+      },
+      "publisher": {
+        "@id": "https://biocomputingup.it"
+      },
+      "dct:publisher": {
+        "@id": "https://biocomputingup.it"
+      },
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "dct:license": {
+        "@id": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "dataset": {
+        "@id": "https://observatory.dome-ml.org/download/bulk#corpus"
+      },
+      "dcat:dataset": {
+        "@id": "https://observatory.dome-ml.org/download/bulk#corpus"
+      },
+      "dcat:service": {
+        "@id": "https://observatory.dome-ml.org/api"
+      },
+      "dct:relation": {
+        "@id": "https://registry.dome-ml.org"
+      }
+    },
+    {
+      "@id": "https://observatory.dome-ml.org/download/bulk#corpus",
+      "@type": [
+        "dcat:DatasetSeries",
+        "Dataset"
+      ],
+      "dct:conformsTo": {
+        "@id": "https://bioschemas.org/profiles/Dataset/1.0-RELEASE"
+      },
+      "name": "DOME Observatory corpus",
+      "dct:title": "DOME Observatory corpus",
+      "description": "AI/ML methods papers in the life sciences, screened from Europe PMC and annotated with controlled vocabularies and linked research outputs; released monthly.",
+      "url": "https://observatory.dome-ml.org/download/bulk",
+      "dcat:landingPage": {
+        "@id": "https://observatory.dome-ml.org/download/bulk"
+      },
+      "keywords": [
+        "machine learning",
+        "artificial intelligence",
+        "life sciences",
+        "literature",
+        "DOME recommendations",
+        "FAIR"
+      ],
+      "dcat:keyword": [
+        "machine learning",
+        "artificial intelligence",
+        "life sciences"
+      ],
+      "creator": [
+        {
+          "@id": "https://orcid.org/0000-0001-5166-8551"
+        }
+      ],
+      "dct:creator": [
+        {
+          "@id": "https://orcid.org/0000-0001-5166-8551"
+        }
+      ],
+      "publisher": {
+        "@id": "https://biocomputingup.it"
+      },
+      "dct:publisher": {
+        "@id": "https://biocomputingup.it"
+      },
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "dct:license": {
+        "@id": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "dct:rights": "CC BY 4.0 covers what DOME Observatory adds: the AI/ML screening verdicts, the controlled-vocabulary enrichment and the data-link annotations. Titles, abstracts and other bibliographic metadata come from Europe PMC and remain under Europe PMC's terms of use and each article's own licence.",
+      "isAccessibleForFree": true,
+      "includedInDataCatalog": {
+        "@id": "https://observatory.dome-ml.org/#catalog"
+      },
+      "hasPart": {
+        "@id": "https://observatory.dome-ml.org/download/bulk#release-2026-09"
+      },
+      "dcat:last": {
+        "@id": "https://observatory.dome-ml.org/download/bulk#release-2026-09"
+      },
+      "dcat:contactPoint": {
+        "@id": "https://observatory.dome-ml.org/about/support#contact"
+      }
+    },
+    {
+      "@id": "https://observatory.dome-ml.org/download/bulk#release-2026-09",
+      "@type": [
+        "dcat:Dataset",
+        "Dataset"
+      ],
+      "dct:conformsTo": [
+        {
+          "@id": "https://bioschemas.org/profiles/Dataset/1.0-RELEASE"
+        },
+        {
+          "@id": "https://github.com/BioComputingUP/dome-ml-observatory/tree/main/schema/releases/v1.6.0"
+        }
+      ],
+      "name": "DOME Observatory corpus, 2026-09 release",
+      "dct:title": "DOME Observatory corpus, 2026-09 release",
+      "description": "Release 2026-09 of the DOME Observatory corpus: 846,716 publications from Europe PMC screened against the DOME Observatory curation criteria, 366,234 of them classified as AI/ML methods papers (473,503 not, 6,979 undeterminable). 3,332 carry controlled-vocabulary enrichment (EDAM domains, learning paradigm, model family, model type) and 311,025 link to research outputs such as deposited data, software and DOME Registry entries. Record schema v1.6.0.",
+      "dct:description": "Release 2026-09 of the DOME Observatory corpus: 846,716 publications from Europe PMC screened against the DOME Observatory curation criteria, 366,234 of them classified as AI/ML methods papers (473,503 not, 6,979 undeterminable). 3,332 carry controlled-vocabulary enrichment (EDAM domains, learning paradigm, model family, model type) and 311,025 link to research outputs such as deposited data, software and DOME Registry entries. Record schema v1.6.0.",
+      "url": "https://observatory.dome-ml.org/download/bulk",
+      "version": "2026-09",
+      "dcat:version": "2026-09",
+      "datePublished": "2026-09-15",
+      "dct:issued": {
+        "@value": "2026-09-15",
+        "@type": "xsd:date"
+      },
+      "isPartOf": {
+        "@id": "https://observatory.dome-ml.org/download/bulk#corpus"
+      },
+      "dcat:inSeries": {
+        "@id": "https://observatory.dome-ml.org/download/bulk#corpus"
+      },
+      "schemaVersion": "https://github.com/BioComputingUP/dome-ml-observatory/tree/main/schema/releases/v1.6.0",
+      "size": {
+        "@type": "QuantitativeValue",
+        "value": 846716,
+        "unitText": "records"
+      },
+      "variableMeasured": [
+        "AI/ML methods-paper classification",
+        "EDAM topic (domain tiers 1-3)",
+        "learning paradigm",
+        "model family",
+        "model type",
+        "linked research outputs"
+      ],
+      "creator": [
+        {
+          "@id": "https://orcid.org/0000-0001-5166-8551"
+        }
+      ],
+      "dct:creator": [
+        {
+          "@id": "https://orcid.org/0000-0001-5166-8551"
+        }
+      ],
+      "publisher": {
+        "@id": "https://biocomputingup.it"
+      },
+      "dct:publisher": {
+        "@id": "https://biocomputingup.it"
+      },
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "dct:license": {
+        "@id": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "dct:rights": "CC BY 4.0 covers what DOME Observatory adds: the AI/ML screening verdicts, the controlled-vocabulary enrichment and the data-link annotations. Titles, abstracts and other bibliographic metadata come from Europe PMC and remain under Europe PMC's terms of use and each article's own licence.",
+      "isAccessibleForFree": true,
+      "includedInDataCatalog": {
+        "@id": "https://observatory.dome-ml.org/#catalog"
+      },
+      "distribution": {
+        "@id": "https://observatory.dome-ml.org/api/export#ndjson"
+      },
+      "dcat:distribution": {
+        "@id": "https://observatory.dome-ml.org/api/export#ndjson"
+      },
+      "dcat:contactPoint": {
+        "@id": "https://observatory.dome-ml.org/about/support#contact"
+      },
+      "prov:wasGeneratedBy": {
+        "@type": "prov:Activity",
+        "name": "DOME Observatory triage pipeline",
+        "prov:endedAtTime": {
+          "@value": "2026-09-15T20:10:12.286097+00:00",
+          "@type": "xsd:dateTime"
+        },
+        "prov:wasAssociatedWith": {
+          "@id": "https://github.com/BioComputingUP/dome-ml-observatory-triage/tree/2d8b72a3e267776cff3cde26cf2ac4cb0c445ef3",
+          "@type": "SoftwareSourceCode",
+          "name": "dome-ml-observatory-triage",
+          "codeRepository": "https://github.com/BioComputingUP/dome-ml-observatory-triage",
+          "version": "2d8b72a3e267776cff3cde26cf2ac4cb0c445ef3"
+        },
+        "prov:used": [
+          {
+            "@type": "CreativeWork",
+            "name": "DOME Observatory curation criteria (classification prompt)",
+            "url": "https://github.com/BioComputingUP/dome-ml-observatory-triage/blob/2d8b72a3e267776cff3cde26cf2ac4cb0c445ef3/curation_criteria/CRITERIA.md",
+            "version": "v1",
+            "identifier": "sha256:bd9d66dd892e6c0a231ac59ba102543ea6caa89db67fc1b914795501f4f60449"
+          },
+          {
+            "@type": "CreativeWork",
+            "name": "DOME Observatory controlled vocabularies (enrichment prompt)",
+            "url": "https://github.com/BioComputingUP/dome-ml-observatory/tree/main/schema/releases/v1.6.0",
+            "version": "e1",
+            "identifier": "sha256:41db952f15118176fa27dac724eff9dff59714b62854859d9606ef440ee473c7"
+          },
+          {
+            "@type": "CreativeWork",
+            "name": "Europe PMC search space",
+            "url": "https://europepmc.org",
+            "identifier": "sha256:10a68780c930b8f716f465f7cf393df69d5290de8ac2ea594042d98d5645e82d"
+          }
+        ]
+      }
+    },
+    {
+      "@id": "https://observatory.dome-ml.org/api/export#ndjson",
+      "@type": [
+        "dcat:Distribution",
+        "DataDownload"
+      ],
+      "name": "Whole-corpus export as NDJSON, through the API",
+      "dct:title": "Whole-corpus export as NDJSON, through the API",
+      "description": "Newline-delimited JSON, one record per line, paged on a cursor (X-Next-Cursor); every search filter applies.",
+      "contentUrl": "https://observatory.dome-ml.org/api/export",
+      "dcat:accessURL": {
+        "@id": "https://observatory.dome-ml.org/api/export"
+      },
+      "encodingFormat": "application/x-ndjson",
+      "dct:format": "application/x-ndjson",
+      "dct:conformsTo": {
+        "@id": "https://github.com/BioComputingUP/dome-ml-observatory/tree/main/schema/releases/v1.6.0"
+      },
+      "dcat:accessService": {
+        "@id": "https://observatory.dome-ml.org/api"
+      },
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "dct:license": {
+        "@id": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    },
+    {
+      "@id": "https://observatory.dome-ml.org/api",
+      "@type": [
+        "dcat:DataService",
+        "WebAPI"
+      ],
+      "name": "DOME Observatory API",
+      "dct:title": "DOME Observatory API",
+      "description": "Read-only REST API: search, single records, whole-corpus export, statistics, per-record JSON-LD and OAI-PMH harvesting.",
+      "url": "https://observatory.dome-ml.org/api",
+      "dcat:endpointURL": {
+        "@id": "https://observatory.dome-ml.org/api"
+      },
+      "dcat:endpointDescription": {
+        "@id": "https://observatory.dome-ml.org/api/docs-json"
+      },
+      "documentation": "https://observatory.dome-ml.org/download/api",
+      "termsOfService": "https://observatory.dome-ml.org/download/api",
+      "dcat:servesDataset": {
+        "@id": "https://observatory.dome-ml.org/download/bulk#corpus"
+      },
+      "provider": {
+        "@id": "https://biocomputingup.it"
+      },
+      "dct:publisher": {
+        "@id": "https://biocomputingup.it"
+      }
+    },
+    {
+      "@id": "https://biocomputingup.it",
+      "@type": [
+        "foaf:Organization",
+        "Organization"
+      ],
+      "name": "BioComputingUP, University of Padua",
+      "foaf:name": "BioComputingUP, University of Padua",
+      "url": "https://biocomputingup.it",
+      "parentOrganization": {
+        "@id": "https://ror.org/00240q980",
+        "@type": "Organization",
+        "name": "University of Padua"
+      }
+    },
+    {
+      "@id": "https://observatory.dome-ml.org/about/support#contact",
+      "@type": [
+        "vcard:Organization",
+        "ContactPoint"
+      ],
+      "vcard:fn": "DOME Observatory",
+      "vcard:hasEmail": {
+        "@id": "mailto:contact@dome-ml.org"
+      },
+      "name": "DOME Observatory",
+      "email": "contact@dome-ml.org",
+      "contactType": "dataset enquiries"
+    },
+    {
+      "@type": [
+        "foaf:Person",
+        "Person"
+      ],
+      "name": "Gavin Farrell",
+      "foaf:name": "Gavin Farrell",
+      "@id": "https://orcid.org/0000-0001-5166-8551",
+      "identifier": "https://orcid.org/0000-0001-5166-8551"
+    }
+  ]
+}
