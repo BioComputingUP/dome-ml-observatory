@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { RecordsService } from '../../core/records.service';
+import { embedCorpusCatalog } from '../../core/structured-data';
 import { CopyButton } from '../../shared/copy-button/copy-button';
 import {
   FALLBACK_SCHEMA_VERSION,
@@ -50,4 +51,9 @@ export class DownloadBulk {
 
   readonly zenodoDoi = ZENODO_DOI;
   readonly zenodoUrl = `https://doi.org/${ZENODO_DOI}`;
+
+  constructor() {
+    // The corpus catalogue never names ZENODO_DOI: that DOI is not registered (ROADMAP.md).
+    embedCorpusCatalog();
+  }
 }

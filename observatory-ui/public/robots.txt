@@ -1,0 +1,7 @@
+# Crawl everything, /api/ included: pages are rendered in the browser from API responses, so a
+# crawler that may not fetch /api/ would see empty pages. Only AI/ML methods-paper records are listed
+# in the sitemap; the others carry a noindex robots tag.
+User-agent: *
+Allow: /
+
+Sitemap: https://observatory.dome-ml.org/sitemap.xml

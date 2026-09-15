@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -15,7 +15,8 @@ import {
   INLINE_CHIPS,
   recordAssets,
 } from '../core/data-links';
-import { plainText, richAbstract, richTitle } from '../core/rich-text';
+import { plainText, richAbstract, richTitle, truncatePlain } from '../core/rich-text';
+import { StructuredData } from '../core/structured-data';
 import { publicationVenue } from '../core/venue';
 import { SearchStateService } from '../core/search-state.service';
 import { toBibtex, toRis } from '../core/citation';
@@ -35,6 +36,7 @@ export class RecordPage {
   private readonly route = inject(ActivatedRoute);
   private readonly records = inject(RecordsService);
   private readonly searchState = inject(SearchStateService);
+  private readonly structuredData = inject(StructuredData);
 
   readonly loading = signal(true);
   /** True when the last lookup failed for a reason other than "no such record" (a 503, a network
@@ -71,6 +73,33 @@ export class RecordPage {
 
   readonly found = computed(() => this.record() !== undefined);
   readonly rec = computed(() => this.record() as AiMlRecord);
+
+  constructor() {
+    // Title, description, canonical link, robots directive and JSON-LD, for crawlers and link
+    // previews. Only AI/ML methods papers are offered to search engines -- the sitemap lists only
+    // them too -- so every other record page asks not to be indexed.
+    effect((onCleanup) => {
+      const record = this.record();
+      if (!record) {
+        this.structuredData.resetPage();
+        return;
+      }
+      this.structuredData.describePage({
+        title: plainText(record.publication_metadata.title) || 'Untitled record',
+        description: truncatePlain(record.publication_metadata.abstract, 160) || undefined,
+        canonicalPath: `/record/${record._id}`,
+        noindex: record.llm_classification.classification !== 'positive',
+      });
+      const subscription = this.records.getRecordJsonLd(record._id).subscribe((jsonld) => {
+        if (jsonld) this.structuredData.setJsonLd('record', jsonld);
+      });
+      onCleanup(() => {
+        subscription.unsubscribe();
+        this.structuredData.removeJsonLd('record');
+      });
+    });
+    inject(DestroyRef).onDestroy(() => this.structuredData.resetPage());
+  }
 
   /** Returns the reader to the results they came from -- filters, page and sort intact. Empty on a
    *  bookmarked or shared link, which correctly lands on a plain /search. */

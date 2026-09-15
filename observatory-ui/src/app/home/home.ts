@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { RecordsService } from '../core/records.service';
+import { embedCorpusCatalog } from '../core/structured-data';
 
 interface ConstellationNode {
   x: number;
@@ -180,6 +181,10 @@ export class Home {
   readonly searchSpace = computed(() => this.stats()?.search_space ?? this.records.getSearchSpaceStats());
 
   readonly query = signal('');
+
+  constructor() {
+    embedCorpusCatalog();
+  }
 
   search(): void {
     const q = this.query().trim();

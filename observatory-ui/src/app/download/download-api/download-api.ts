@@ -100,6 +100,38 @@ export class DownloadApi {
     },
     {
       method: 'GET',
+      path: '/api/records/:pid/jsonld',
+      summary:
+        'A record as schema.org / Bioschemas JSON-LD, in two nodes of one graph: the Observatory’s record of the paper (screening verdict, vocabulary terms as EDAM and MeSH identifiers, provenance; CC BY 4.0) and the article it describes (Europe PMC metadata, under the article’s own licence). A record page answers Accept: application/ld+json with the same document, and its Link headers point here.',
+      example:
+        '{\n  "@context": { "@vocab": "https://schema.org/", "...": "..." },\n  "@graph": [\n    { "@id": "https://observatory.dome-ml.org/record/8b720ad0-...", "@type": "CreativeWork", "about": { "@id": "https://doi.org/10.3389/fimmu.2025.1608262" }, "license": "https://creativecommons.org/licenses/by/4.0/" },\n    { "@id": "https://doi.org/10.3389/fimmu.2025.1608262", "@type": "ScholarlyArticle", "name": "..." }\n  ]\n}',
+    },
+    {
+      method: 'GET',
+      path: '/api/catalog',
+      summary:
+        'The corpus as a DCAT 3 and schema.org dataset: the catalogue, the corpus as a dataset series, the current monthly release with its counts and provenance, and this API as a data service.',
+      example:
+        '{\n  "@graph": [\n    { "@id": "https://observatory.dome-ml.org/#catalog", "@type": ["dcat:Catalog", "DataCatalog"] },\n    { "@id": "https://observatory.dome-ml.org/download/bulk#corpus", "@type": ["dcat:DatasetSeries", "Dataset"] },\n    "..."\n  ]\n}',
+    },
+    {
+      method: 'GET',
+      path: '/api/oai',
+      summary:
+        'OAI-PMH 2.0 harvesting of the AI/ML methods papers in Dublin Core (oai_dc), incrementally by the date each record last changed. POST works too. Identifiers are oai:observatory.dome-ml.org:<PID>; follow resumptionToken to the end of a list.',
+      params: [
+        { name: 'verb', type: 'Identify | ListMetadataFormats | ListIdentifiers | ListRecords | GetRecord | ListSets', note: 'Required. The repository has no sets.' },
+        { name: 'metadataPrefix', type: 'oai_dc', note: 'Required by ListIdentifiers, ListRecords and GetRecord.' },
+        { name: 'from, until', type: 'YYYY-MM-DD or YYYY-MM-DDThh:mm:ssZ', note: 'Inclusive datestamp range; both at the same granularity.' },
+        { name: 'identifier', type: 'string', note: 'For GetRecord and ListMetadataFormats.' },
+        { name: 'resumptionToken', type: 'string', note: 'From the previous response; excludes every other argument.' },
+      ],
+      example:
+        "curl '/api/oai?verb=ListRecords&metadataPrefix=oai_dc&from=2026-09-01'\n" +
+        '<OAI-PMH ...><ListRecords><record><header><identifier>oai:observatory.dome-ml.org:8b720ad0-...</identifier><datestamp>2026-09-15T18:30:00Z</datestamp></header> ...',
+    },
+    {
+      method: 'GET',
       path: '/api/facets/:field',
       summary: 'Typeahead suggestions for a facet field. Allowed fields: journal, preprint_server, mesh_headings, pub_types, license, data_resource. keywords_author is excluded — it carries 694,411 distinct values, too many to serve as suggestions.',
       params: [
@@ -131,6 +163,13 @@ export class DownloadApi {
       value: '60 requests / minute / IP',
       detail:
         '/api/export has its own separate budget, because one request there returns up to 1,000 records. The limit allows 60,000 records a minute, but your own bandwidth is usually what binds: records average ~3.7 KB, so the whole corpus is roughly 3 GB and takes hours rather than minutes. Filter it down if you do not need all of it.',
+    },
+    {
+      icon: 'icon-sitemap',
+      title: 'OAI-PMH budget',
+      value: '120 requests / minute / IP',
+      detail:
+        '/api/oai has its own separate budget too, because a harvest is a long run of sequential requests. ListRecords pages hold 200 records, so harvesting every AI/ML methods paper takes about a quarter of an hour.',
     },
     {
       icon: 'icon-ban',

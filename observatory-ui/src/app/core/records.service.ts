@@ -106,6 +106,7 @@ const FACET_TYPEAHEAD_LIMIT = 20;
 
 @Injectable({ providedIn: 'root' })
 export class RecordsService {
+  private catalog$?: Observable<object | undefined>;
   private readonly http = inject(HttpClient);
 
   /** Fetched once, shared -- `schema/` (via observatory-ui/scripts/sync-schema.js) is the source
@@ -167,6 +168,25 @@ export class RecordsService {
         return throwError(() => err);
       }),
     );
+  }
+
+  /** GET /api/records/:pid/jsonld -- the record as schema.org JSON-LD, for the record page to
+   *  embed. Any failure resolves to undefined: structured data is for crawlers, never a reason for
+   *  the page itself to fail. */
+  getRecordJsonLd(pid: string): Observable<object | undefined> {
+    return this.http
+      .get<object>(`/api/records/${encodeURIComponent(pid)}/jsonld`)
+      .pipe(catchError(() => of(undefined)));
+  }
+
+  /** GET /api/catalog -- the corpus as DCAT / schema.org JSON-LD, requested once per session.
+   *  Undefined when no release metadata is published or the request fails. */
+  getCatalog(): Observable<object | undefined> {
+    this.catalog$ ??= this.http.get<object>('/api/catalog').pipe(
+      catchError(() => of(undefined)),
+      shareReplay(1),
+    );
+    return this.catalog$;
   }
 
   /** GET /api/facets/:field -- typeahead suggestions from observatory-ws's in-memory boot cache
