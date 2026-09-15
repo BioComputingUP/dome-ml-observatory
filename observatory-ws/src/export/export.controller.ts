@@ -23,7 +23,7 @@ export const RECORD_COUNT_HEADER = 'X-Record-Count';
 // budget that is generous for /api/records would be far heavier work here -- see app.module.ts
 // where both throttlers are configured. At the default 60/min a client still pulls 60,000
 // records per minute, walking the whole corpus in well under half an hour.
-@SkipThrottle({ default: true })
+@SkipThrottle({ default: true, oai: true })
 @ApiTags('export')
 @ApiTooManyRequestsResponse({
   description:

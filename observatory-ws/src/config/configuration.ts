@@ -7,12 +7,18 @@
 export interface AppConfig {
   port: number;
   frontendUrl: string;
+  /** The public origin every URL in the published metadata is built on -- JSON-LD ids, sitemap
+   *  locations, the OAI-PMH baseURL. No trailing slash. */
+  publicOrigin: string;
   rateLimit: {
     /** Requests per minute per client IP for the ordinary read endpoints. */
     perMinute: number;
     /** Requests per minute per client IP for /api/export specifically. Lower, because one
      *  request there is up to 1000 documents rather than at most 100. */
     exportPerMinute: number;
+    /** Requests per minute per client IP for /api/oai. Its own bucket, so a harvester working
+     *  through the corpus page by page never spends a browsing client's budget, or theirs its. */
+    oaiPerMinute: number;
   };
   mongo: {
     uri: string;
@@ -50,9 +56,14 @@ export const RATE_LIMIT_TTL_MS = 60_000;
 export const configuration = (): AppConfig => ({
   port: parseInt(process.env.PORT ?? '3000', 10),
   frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:4200',
+  publicOrigin: (process.env.PUBLIC_ORIGIN ?? 'https://observatory.dome-ml.org').replace(
+    /\/+$/,
+    '',
+  ),
   rateLimit: {
     perMinute: parseInt(process.env.RATE_LIMIT_PER_MINUTE ?? '1200', 10),
     exportPerMinute: parseInt(process.env.EXPORT_RATE_LIMIT_PER_MINUTE ?? '60', 10),
+    oaiPerMinute: parseInt(process.env.OAI_RATE_LIMIT_PER_MINUTE ?? '120', 10),
   },
   mongo: {
     uri: process.env.MONGODB_URI!,
@@ -66,6 +77,9 @@ export const configuration = (): AppConfig => ({
     url: process.env.MATOMO_URL ?? 'https://matomo.biocomputingup.it/matomo.php',
     siteId: process.env.MATOMO_SITE_ID ?? '',
     token: process.env.MATOMO_TOKEN ?? '',
-    publicOrigin: process.env.MATOMO_PUBLIC_ORIGIN ?? 'https://observatory.dome-ml.org',
+    publicOrigin:
+      process.env.MATOMO_PUBLIC_ORIGIN ??
+      process.env.PUBLIC_ORIGIN ??
+      'https://observatory.dome-ml.org',
   },
 });

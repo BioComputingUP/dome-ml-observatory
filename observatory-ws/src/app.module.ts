@@ -12,6 +12,8 @@ import { FacetsModule } from './facets/facets.module';
 import { StatsModule } from './stats/stats.module';
 import { JournalsModule } from './journals/journals.module';
 import { ExportModule } from './export/export.module';
+import { MetadataModule } from './metadata/metadata.module';
+import { OaiModule } from './oai/oai.module';
 import { IpThrottlerGuard } from './common/ip-throttler.guard';
 import { MatomoInterceptor } from './analytics/matomo.interceptor';
 
@@ -23,18 +25,21 @@ import { MatomoInterceptor } from './analytics/matomo.interceptor';
       validate,
     }),
 
-    // Two named throttlers, both per client IP over a rolling minute. Every route is subject to
-    // both by default, so each controller opts out of the one that does not apply to it with
-    // @SkipThrottle -- 'export' everywhere except ExportController, 'default' on ExportController,
-    // and both on HealthController.
+    // Three named throttlers, all per client IP over a rolling minute. Every route is subject to
+    // all three by default, so each controller opts out of the ones that do not apply to it with
+    // @SkipThrottle -- 'export' and 'oai' everywhere except their own controllers, 'default' on
+    // ExportController and OaiController, and all three on HealthController. A new named throttler
+    // therefore means naming it in every controller's @SkipThrottle.
     //
     // The limits are deliberately generous. They exist as a backstop against a runaway client on a
     // database host shared with other services, not as a wall: the sibling MobiDB service runs the
     // same shape of workload with no request limit at all, bounding cost by per-request size and
     // query time instead. 'default' at 1200/min is 20 req/s, past anything an interactive client
     // does; 'export' at 60/min is 60,000 records/min because each of those requests is up to 1000
-    // documents. Both are env-tunable (RATE_LIMIT_PER_MINUTE, EXPORT_RATE_LIMIT_PER_MINUTE) so the
-    // hosting deployment can retune without a code change. Documented publicly in swagger.ts and
+    // documents; 'oai' at 120/min lets a harvester walk the positives in ListRecords pages of 200
+    // in about fifteen minutes. All are env-tunable (RATE_LIMIT_PER_MINUTE,
+    // EXPORT_RATE_LIMIT_PER_MINUTE, OAI_RATE_LIMIT_PER_MINUTE) so the hosting deployment can retune
+    // without a code change. Documented publicly in swagger.ts and
     // on /download/api -- those numbers are hand-copied, so they move together with these.
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],
@@ -48,6 +53,11 @@ import { MatomoInterceptor } from './analytics/matomo.interceptor';
           name: 'export',
           ttl: RATE_LIMIT_TTL_MS,
           limit: config.get('rateLimit.exportPerMinute', { infer: true }),
+        },
+        {
+          name: 'oai',
+          ttl: RATE_LIMIT_TTL_MS,
+          limit: config.get('rateLimit.oaiPerMinute', { infer: true }),
         },
       ],
     }),
@@ -108,6 +118,8 @@ import { MatomoInterceptor } from './analytics/matomo.interceptor';
     StatsModule,
     JournalsModule,
     ExportModule,
+    MetadataModule,
+    OaiModule,
   ],
   providers: [
     // IpThrottlerGuard, not the stock ThrottlerGuard: the stock key includes the controller and

@@ -20,6 +20,11 @@ service serves the same reference as Swagger UI at
 | `GET /api/records` | Paginated search. All filter params mirror the frontend's URL params exactly. |
 | `GET /api/records/:pid` | Single record. `pid` is a UUID5 string, not an ObjectId. |
 | `GET /api/export` | Whole-corpus retrieval as NDJSON, keyset-paginated on `_id`. No result window; takes every `/api/records` filter. |
+| `GET /api/records/:pid/jsonld` | The record as schema.org / Bioschemas JSON-LD: the Observatory record (CC BY 4.0) and the article it describes, as separate nodes. See [FAIR metadata](#fair-metadata). |
+| `GET /api/records/:pid/linkset` | FAIR Signposting links for the record page, as an RFC 9264 linkset. |
+| `GET /api/catalog` | The corpus as DCAT 3 / schema.org JSON-LD: catalogue, dataset series, current release, API. 404 until a release is published in `metadata/`. |
+| `GET /api/sitemap`, `/api/sitemaps/pages`, `/api/sitemaps/records/:n` | Sitemap index, the site's pages, and positive record pages 50,000 at a time. Public at `/sitemap.xml`, `/sitemaps/pages.xml` and `/sitemaps/records-<n>.xml` through nginx. |
+| `GET`, `POST /api/oai` | OAI-PMH 2.0 over the positives in Dublin Core (`oai_dc`), datestamped by `record_modified`. |
 | `GET /api/stats` | Corpus headline figures and facet counts. Cached 24 h. |
 | `GET /api/facets/:field` | Typeahead for `journal`, `mesh_headings`, `pub_types`, `license`. Served from an in-memory cache — no database round trip. |
 | `GET /api/journals` | Journals ranked by AI/ML methods-paper count or share. |
@@ -37,6 +42,8 @@ to ration access — pulling the entire corpus through this API is supported.
   records. A separate bucket, so an export cannot starve ordinary search traffic. In practice the
   client's bandwidth binds first: the full corpus is **roughly 3 GB** and a whole-corpus walk is
   measured in hours, not minutes. Filter it down if you do not need all of it.
+- **`/api/oai` has its own 120/minute budget**, for the same reason: a harvest is a long run of
+  sequential requests. At 200 records a page, the positives take about a quarter of an hour.
 - **Result window capped at 10,000 on `/api/records`** — `page × pageSize > 10000` returns 400
   rather than silently truncating. A *browsing* limit specific to that endpoint, forced by
   MongoDB 4.2's sort ceiling, and the reason `/api/export` exists. Export has no window.
@@ -74,6 +81,8 @@ rather than failing on the first request that needs it.
 | `MONGO_EXPORT_MAX_TIME_MS` | no | `30000` | Budget for one `/api/export` chunk, which is up to 1000 documents rather than 25. |
 | `RATE_LIMIT_PER_MINUTE` | no | `1200` | Requests per minute per client IP, one budget across all endpoints. |
 | `EXPORT_RATE_LIMIT_PER_MINUTE` | no | `60` | Separate budget for `/api/export`, so a corpus walk cannot starve search traffic. |
+| `OAI_RATE_LIMIT_PER_MINUTE` | no | `120` | Separate budget for `/api/oai`, so a harvester neither starves nor is starved by other traffic. |
+| `PUBLIC_ORIGIN` | no | `https://observatory.dome-ml.org` | The origin every published URL names: JSON-LD ids, sitemap locations, the OAI-PMH `baseURL`. Set it only for a staging or local stack. |
 
 Two `.env.example` files exist and are kept identical: the root one feeds the Compose file's
 `env_file`, and [`observatory-ws/.env.example`](.env.example) is what non-Docker local dev reads
@@ -109,11 +118,56 @@ db.Content.createIndex(
 db.Content.createIndex(
   { "llm_classification.classification": 1, "publication_metadata.year": -1, _id: 1 },
   { name: "class_year_id", background: true });
+
+db.Content.createIndex(
+  { record_modified: 1, _id: 1 },
+  { name: "record_modified_positive",
+    partialFilterExpression: { "llm_classification.classification": "positive" },
+    background: true });
 ```
 
 Measured on the live collection: `class_year_id` builds in ~4 s for ~37 MB; `positives_text` takes
 ~3 minutes for ~390 MB, plus roughly 1 GB of transient sort files. Both use `background: true`, and
-the collection stayed readable throughout the build.
+the collection stayed readable throughout the build. `record_modified_positive` (schema v1.6.0)
+is the keyset OAI-PMH and the record sitemaps page by; without it every harvest page sorts the
+positives. The sister repository's `ensure_indexes.py` owns all three definitions.
+
+## FAIR metadata
+
+The documents stay the validated, versioned shape the sister repository writes. Every metadata
+standard is a projection of a stored document, computed on request in `src/metadata/` and
+`src/oai/`, so nothing is stored twice and a mapping change is never a data migration.
+
+| Level | Standard | Where |
+|---|---|---|
+| A record | schema.org + Bioschemas, with DCMI terms and PROV, in JSON-LD | `/api/records/:pid/jsonld`; embedded on the record page; served for `Accept: application/ld+json` on `/record/:pid` (nginx) |
+| A record | FAIR Signposting | `Link` headers on `/record/:pid` (nginx); `/api/records/:pid/linkset` |
+| A record | Dublin Core (`oai_dc`) over OAI-PMH 2.0 | `/api/oai` |
+| The corpus | DCAT 3 and schema.org `Dataset` | `/api/catalog`, from `metadata/` (built by the sister repository at each release); embedded on the home and bulk-download pages |
+| Crawling | Sitemaps | `/sitemap.xml` and the files it lists (nginx), `robots.txt` |
+
+What the projections hold to:
+
+- **The record and the article are different things with different licences.** The record node --
+  the screening verdict, vocabulary terms as EDAM / MeSH / ontology IRIs, provenance -- is CC BY 4.0.
+  The article node carries Europe PMC's metadata under the article's own licence. `oai_dc` cannot
+  keep them apart, so its `rights` says so and it leaves the abstract out.
+- **Internal processing fields are never published**: the model's rationale, token counts, parse
+  status.
+- **Only positives are advertised.** The sitemap and OAI-PMH list them; every other record page still
+  resolves and serves JSON-LD but carries `noindex`. OAI-PMH declares `deletedRecord=transient`: a
+  record reclassified out of the positives simply leaves.
+- **Datestamps are `record_modified`** (schema v1.6.0), which the write side moves only when a
+  harvested value changes. Paging is keyset over `(record_modified, _id)` on the
+  `record_modified_positive` index -- see `src/metadata/record-keyset.ts`.
+- **Vocabulary IRIs come from the deployed release's `vocab/`.** `PROJECTED_PATHS` in
+  `src/metadata/record-view.ts` lists every document path the projections read, and a test checks
+  each exists in the `schema/CURRENT` release, so a field renamed upstream fails CI, not the
+  published metadata.
+- **`PUBLIC_ORIGIN`** is the origin every published URL names.
+
+The specs expand the JSON-LD and check every term against schema.org, DCMI and PROV, and validate
+every OAI-PMH and sitemap response against the protocols' XSDs, offline (`test-fixtures/`).
 
 ## Startup behaviour
 

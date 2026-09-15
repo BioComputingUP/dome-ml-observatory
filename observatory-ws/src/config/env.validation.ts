@@ -50,6 +50,12 @@ class EnvironmentVariables {
   @IsUrl({ require_tld: false })
   FRONTEND_URL?: string;
 
+  // The origin the published metadata names (JSON-LD ids, sitemaps, the OAI-PMH baseURL). Defaults
+  // to the production site, so only a staging or test deployment needs to set it.
+  @IsOptional()
+  @IsUrl({ require_tld: false })
+  PUBLIC_ORIGIN?: string;
+
   @IsOptional()
   @IsInt()
   @Min(100)
@@ -82,6 +88,12 @@ class EnvironmentVariables {
   @Min(1)
   @Max(MAX_RATE_LIMIT)
   EXPORT_RATE_LIMIT_PER_MINUTE?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(MAX_RATE_LIMIT)
+  OAI_RATE_LIMIT_PER_MINUTE?: number;
 
   // All four are optional and all four are inert unless MATOMO_TOKEN is set -- see
   // analytics/matomo.interceptor.ts. MATOMO_TOKEN is the only credential this service has.

@@ -29,7 +29,7 @@ function toInt(raw: string | undefined, fallback: number): number {
 
 // Subject to the 'default' throttler only -- 'export' exists for /api/export's much larger
 // per-request cost and would otherwise also apply here. See app.module.ts.
-@SkipThrottle({ export: true })
+@SkipThrottle({ export: true, oai: true })
 @ApiTags('journals')
 @ApiTooManyRequestsResponse({
   description:

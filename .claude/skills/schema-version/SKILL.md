@@ -18,6 +18,9 @@ its real upstream source, `dome-ml-observatory-triage`, without ever hand-editin
 
 Read `schema/README.md` first if you haven't — it explains the layout, the versioning rules, and
 why this folder is deliberately leaner than `BioComputingUP/dome-schema`, which it's modelled on.
+The release procedure this skill is one step of (step 2: publish) is in
+`dome-ml-observatory-triage/schema/README.md`: every release, a vocabulary-only one included, bumps
+`SCHEMA_VERSION` there first and restamps the corpus with a migration after it is published here.
 
 ## Ground rules — non-negotiable
 
@@ -105,6 +108,10 @@ why this folder is deliberately leaner than `BioComputingUP/dome-schema`, which 
     - `observatory-ws/src/records/records.query.ts` — if a field that search filters on changed
       path or type, the query builder and its frontend twin (`core/search-params.ts`) both need
       the matching change. See `AGENTS.md` on why those two mirror each other.
+    - `observatory-ws/src/metadata/record-view.ts` (`PROJECTED_PATHS`, `RecordView`) and the
+      mappers beside it (`record-jsonld.mapper.ts`, `oai-dc.ts`) — the FAIR metadata projections.
+      Their spec fails when a listed path is missing from the new `CURRENT` release; a renamed field
+      needs the path and the mapper updated, and a new field worth publishing needs adding to both.
 
 ## When there's nothing to report
 

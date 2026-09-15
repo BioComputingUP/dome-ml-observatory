@@ -20,6 +20,9 @@ WORKDIR /app
 # doesn't itself read schema/ (no build-time schema step here, unlike the ui's sync-schema.js) --
 # it exists here purely so the runtime stage below can COPY --from=build it.
 COPY schema/ ./schema/
+# metadata/ for the same reason: /api/catalog serves metadata/releases/<CURRENT>/dataset.jsonld,
+# found at ../metadata from the runtime WORKDIR exactly as schema/ is (metadata/README.md).
+COPY metadata/ ./metadata/
 
 COPY observatory-ws/package.json observatory-ws/package-lock.json ./observatory-ws/
 RUN cd observatory-ws && npm ci
@@ -48,10 +51,11 @@ RUN npm ci --omit=dev
 
 COPY --from=build /app/observatory-ws/dist ./dist
 COPY --from=build /app/schema /app/schema
+COPY --from=build /app/metadata /app/metadata
 
 # Alpine's official node image ships a built-in `node` user/group (uid/gid 1000) for exactly
 # this -- a long-lived, network-facing container has no reason to run as root.
-RUN chown -R node:node /app/observatory-ws /app/schema
+RUN chown -R node:node /app/observatory-ws /app/schema /app/metadata
 USER node
 
 # Documentation only -- EXPOSE doesn't enforce anything. What actually matters is main.ts calling

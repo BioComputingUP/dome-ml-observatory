@@ -20,8 +20,9 @@ export function setupSwagger(app: INestApplication): void {
         'expected.\n' +
         '- Rate limit: 1200 requests per minute per client IP, over a rolling 60-second window. ' +
         'Requests above the limit return HTTP 429. /api/export has its own budget of 60 ' +
-        'requests per minute, because one of those returns up to 1000 records. Health checks ' +
-        'are not rate-limited.\n' +
+        'requests per minute, because one of those returns up to 1000 records, and /api/oai ' +
+        'one of 120 requests per minute for OAI-PMH harvesters. Health checks are not ' +
+        'rate-limited.\n' +
         '- Export size: records average ~3.7 KB, so the whole corpus is roughly 3 GB and takes ' +
         'hours to pull, bounded by your bandwidth rather than by the rate limit. Apply filters ' +
         'if you do not need all of it.\n' +
@@ -50,6 +51,15 @@ export function setupSwagger(app: INestApplication): void {
     )
     .addTag('facets', 'Typeahead suggestions for the high-cardinality search facets.')
     .addTag('stats', 'Corpus-wide headline figures and facet counts, cached server-side.')
+    .addTag(
+      'metadata',
+      'FAIR metadata computed from the records: schema.org / Bioschemas JSON-LD and FAIR ' +
+        'Signposting per record, the sitemaps, and the corpus catalogue as DCAT / schema.org.',
+    )
+    .addTag(
+      'oai-pmh',
+      'OAI-PMH 2.0 harvesting of the AI/ML methods papers in Dublin Core (oai_dc).',
+    )
     .setContact('DOME Observatory', 'https://observatory.dome-ml.org', 'contact@dome-ml.org')
     .setLicense('CC BY 4.0', 'https://creativecommons.org/licenses/by/4.0/')
     .setExternalDoc('Fair use & recommendations', 'https://observatory.dome-ml.org/download/api')

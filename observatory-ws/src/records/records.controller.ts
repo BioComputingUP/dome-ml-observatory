@@ -14,9 +14,9 @@ import { PaginatedRecordsDto } from './dto/paginated.dto';
 import { RecordDto } from './dto/record.dto';
 import { RecordDocument } from './schemas/record.schema';
 
-// Subject to the 'default' throttler only -- 'export' exists for /api/export's much larger
-// per-request cost and would otherwise also apply here. See app.module.ts.
-@SkipThrottle({ export: true })
+// Subject to the 'default' throttler only -- 'export' and 'oai' exist for their endpoints' own
+// traffic and would otherwise also apply here. See app.module.ts.
+@SkipThrottle({ export: true, oai: true })
 @ApiTags('records')
 @ApiTooManyRequestsResponse({
   description:

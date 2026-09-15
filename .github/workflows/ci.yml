@@ -124,6 +124,15 @@ jobs:
               --schema "${release}ai-ml-landscape.schema.json"
           done
 
+      # The corpus catalogue /api/catalog serves (metadata/README.md). Nothing to check until the
+      # first release is published; from then on CURRENT must name a release whose file parses.
+      - name: Assert metadata/CURRENT names a published, parseable release
+        run: |
+          set -eu
+          if [ -f metadata/CURRENT ]; then
+            python3 -c "import json; r = open('metadata/CURRENT').read().strip(); json.load(open(f'metadata/releases/{r}/dataset.jsonld'))"
+          fi
+
   docker:
     name: docker images
     runs-on: ubuntu-latest

@@ -45,10 +45,11 @@ async function bootstrap(): Promise<void> {
   // exposedHeaders is what makes /api/export usable from a browser at all: a cross-origin
   // response's custom headers are invisible to JS unless the server lists them, so without this a
   // fetch() client could read the NDJSON body but never the cursor telling it there is more.
-  // Same-origin callers (the shipped topology, and curl) are unaffected either way.
+  // Same-origin callers (the shipped topology, and curl) are unaffected either way. `Link` is the
+  // FAIR Signposting relation the JSON-LD endpoint sends back to its record page.
   app.enableCors({
     origin: frontendUrl,
-    exposedHeaders: [NEXT_CURSOR_HEADER, RECORD_COUNT_HEADER],
+    exposedHeaders: [NEXT_CURSOR_HEADER, RECORD_COUNT_HEADER, 'Link'],
   });
 
   // whitelist: true strips any query param that isn't declared on a DTO -- an unrecognised param

@@ -19,7 +19,9 @@ are *not* curator-reviewed; don't describe them as such). **Monorepo, two indepe
   `observatory-ui/nginx.conf`.
 - **`observatory-ws/`** — NestJS backend, read-only API over the record dataset (`GET /api/health`,
   `/api/health/ready`, `/api/records`, `/api/records/:pid`, `/api/stats`, `/api/facets/:field`,
-  `/api/journals`, `/api/journals/detail`, Swagger at `/api/docs`). The only thing in this repo
+  `/api/journals`, `/api/journals/detail`, `/api/export`, the FAIR metadata routes
+  `/api/records/:pid/jsonld`, `/api/records/:pid/linkset`, `/api/catalog` and `/api/sitemap*`,
+  OAI-PMH at `/api/oai`, Swagger at `/api/docs`). The only thing in this repo
   that ever opens a connection to Mongo.
 
 No shared `-core` package between them — overlapping types/shapes are duplicated on each side
@@ -48,6 +50,11 @@ must stay aligned, in both directions:
   journals, MeSH terms, licences and enrichment values are invisible until `observatory-ws`
   restarts; `StatsService`, `CountService` and `JournalsService` are 24h TTL. Its post-load
   checklist ends with that restart and a `generate_facet_stats.py --from-api` reconciliation.
+- **The corpus description is built there and published here.** Its `build_release_metadata.py`
+  writes `metadata/releases/<YYYY-MM>/dataset.jsonld` and `metadata/CURRENT` at each monthly
+  release; this repo serves the file at `/api/catalog` and never edits a committed release. The
+  release procedure for the schema -- what bumps, who moves first, the order of publish, migrate,
+  load, verify and deploy -- is in that repository's `schema/README.md`.
 
 Its `README.md` explains each process and its `COST_DASHBOARD.md` what a refresh or an
 enrichment costs. When a change here needs a change there (or the reverse), make both, or
@@ -147,6 +154,8 @@ host are not.
   published `schema/releases/vX.Y.Z/` folder** — use the `schema-version` skill, which also
   re-syncs `observatory-ui/src/assets/vocab/` (generated, gitignored — don't hand-edit that
   either). See `schema/README.md`.
+- `metadata/` -- the corpus as DCAT / schema.org JSON-LD, one immutable folder per monthly release,
+  written by the sister repository and served at `/api/catalog`. See `metadata/README.md`.
 - `schema/generate_facet_stats.py` — writes `schema/stats/facet-stats.json`. **Not a UI input as
   of Phase 7**: `observatory-ui`'s search page now reads facet counts and corpus-wide metrics live
   from `observatory-ws`'s `GET /api/stats` (`RecordsService.getFacetStats()`), not this file. The
@@ -158,9 +167,10 @@ host are not.
   `src/assets/` on purpose (Phase 7) so it doesn't ship in production builds; nothing in the
   running app reads it directly any more (search hits the real API), but
   `generate_facet_stats.py`'s default mode and anyone testing offline still use it.
-- `offline-database/seed.sh` — loads that fixture into the throwaway MongoDB and builds the same
-  two indexes the real collection carries, so the seeded stack exercises production's code path
-  rather than the regex fallback. Mounted by `docker-compose-local.yml`'s `mongo-seed` service and
+- `offline-database/seed.sh` — loads that fixture into the throwaway MongoDB, stamps each document's
+  `record_modified` as the v1.6.0 migration does, and builds the same three indexes the real
+  collection carries, so the seeded stack exercises production's code path rather than the regex
+  fallback, and OAI-PMH and the sitemaps have records to page through. Mounted by `docker-compose-local.yml`'s `mongo-seed` service and
   run only under `--profile offline`; inert in every other mode.
 - `observatory-ws/src/export/` — `GET /api/export`, whole-corpus retrieval as NDJSON. Reuses
   `records.query.ts`'s parser and filter builder verbatim, so the two endpoints accept identical
@@ -169,10 +179,26 @@ host are not.
   cost the same at chunk 500 as at chunk 1, and what keeps it clear of MongoDB 4.2's 32MB sort
   buffer. Free text is rejected (400) rather than supported: `$text` cannot be served under the
   `_id` hint, and the regex fallback would rescan the corpus for every chunk.
+- `observatory-ws/src/metadata/` and `src/oai/` — the FAIR metadata: per-record JSON-LD and
+  Signposting linkset, sitemaps, the corpus catalogue, and OAI-PMH 2.0 in `oai_dc`. Pure mappers
+  (`record-jsonld.mapper.ts`, `oai-dc.ts`, `oai.query.ts`) under thin services, read-only like
+  everything else here (`observatory-ws/README.md`, "FAIR metadata"). Three rules:
+  - **`PROJECTED_PATHS` in `record-view.ts` is a schema mirror**, like `record.model.ts`: every
+    document path a projection reads must be listed, and a spec checks each against the
+    `schema/CURRENT` release. Add the path when a projection starts reading one.
+  - **OAI-PMH and the record sitemaps page by keyset over `(record_modified, _id)`**, resuming with
+    an `$or` of two bounded ranges on the partial `record_modified_positive` index
+    (`record-keyset.ts`). The v1.6.0 migration gave every document one identical stamp, so a
+    `$gte`-and-filter resume would rescan the whole tie on every page.
+  - **`/api/oai` reads the raw query and body, not a DTO**: the global `ValidationPipe` would drop an
+    undeclared argument, and the protocol must answer it with `badArgument`. It answers a database
+    outage with a plain 503 and `Retry-After` itself, because `MongoUnavailableFilter` speaks JSON.
 - `observatory-ws/src/common/ip-throttler.guard.ts` — the rate limiter's key generator. The stock
   `ThrottlerGuard` keys on class + handler, which quietly makes every documented limit *per
   endpoint* rather than per IP. If you touch throttling, re-measure across two different
-  endpoints, not one: the difference is invisible from a single route.
+  endpoints, not one: the difference is invisible from a single route. There are three named
+  throttlers (`default`, `export`, `oai`); every controller must name the ones it skips, and
+  `HealthController` all three.
 - `observatory-ws/src/records/records.query.ts` — the pure, HTTP- and Mongo-free query-building
   core (filter/sort/pagination logic), deliberately mirroring `observatory-ui/src/app/core/
   search-params.ts`'s parsing rules field-for-field (e.g. absent `class` param defaults to
@@ -290,8 +316,8 @@ host are not.
 - Run the test suite for whichever app you touched before considering a change done
   (`observatory-ui`: `npm test` + `npm run lint` + `npm run build-prod`; `observatory-ws`:
   `npm run test:ws` + `npm run lint:ws` + `npm run build:ws` from the repo root, or the
-  equivalents from inside `observatory-ws/`) — this project has no CI yet, so these local checks
-  are the only gate. For `observatory-ws` changes touching Mongo queries, also actually run it
+  equivalents from inside `observatory-ws/`). CI (`.github/workflows/ci.yml`) runs the same checks
+  on every push, but run them locally first. For `observatory-ws` changes touching Mongo queries, also actually run it
   (`npm run start:ws`) against the MongoDB server over the VPN and hit the affected endpoint with `curl` —
   several real bugs in this backend (wrong collection name, a Mongo-driver version that silently
   can't connect to the MongoDB server at all, a boot sequence that looked fine but crashed the whole process

@@ -20,9 +20,11 @@ mongoimport \
   --jsonArray \
   --drop
 
-# The same two indexes the real collection carries. Without them the backend still works -- it
-# detects their absence at boot and uses the regex path -- but the seeded stack should exercise
-# the same code path production does.
+# The same three indexes the real collection carries. Without the first two the backend still
+# works -- it detects their absence at boot and uses the regex path -- but the seeded stack should
+# exercise the same code path production does. Before the third, every document gets one
+# record_modified stamp, as migrate_v1_6_0.py gives the real corpus, so OAI-PMH and the sitemaps
+# have something to page through (the fixture predates schema v1.6.0).
 mongosh "mongodb://${HOST}:27017/${DB}" --quiet --eval '
   const c = db.getCollection("'"${COLL}"'");
   c.createIndex(
@@ -37,6 +39,13 @@ mongosh "mongodb://${HOST}:27017/${DB}" --quiet --eval '
   c.createIndex(
     { "llm_classification.classification": 1, "publication_metadata.year": -1, _id: 1 },
     { name: "class_year_id" });
+  c.updateMany(
+    { record_modified: { $exists: false } },
+    { $set: { record_modified: new Date().toISOString().slice(0, 19) + "Z" } });
+  c.createIndex(
+    { record_modified: 1, _id: 1 },
+    { partialFilterExpression: { "llm_classification.classification": "positive" },
+      name: "record_modified_positive" });
   print("documents: " + c.countDocuments({}));
   print("positives:  " + c.countDocuments({ "llm_classification.classification": "positive" }));
   print("indexes:   " + c.getIndexes().map(i => i.name).join(", "));

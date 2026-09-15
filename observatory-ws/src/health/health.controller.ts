@@ -7,9 +7,9 @@ import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '../config/configuration';
 import { CURRENT_SCHEMA_VERSION } from '../common/schema-version';
 
-// Exempt from both throttlers -- BOTH have to be named. @SkipThrottle()'s default argument is
-// `{ default: true }`, which skips only the throttler literally called 'default' and would leave
-// health subject to 'export'. Confirmed the hard way: with a bare @SkipThrottle(), /api/health
+// Exempt from all three throttlers -- EVERY one has to be named. @SkipThrottle()'s default argument
+// is `{ default: true }`, which skips only the throttler literally called 'default' and would leave
+// health subject to 'export' and 'oai'. Confirmed the hard way: with a bare @SkipThrottle(), /api/health
 // started returning 429 once the export bucket was spent.
 //
 // This is what swagger.ts has always claimed ("never rate-limited")
@@ -17,7 +17,7 @@ import { CURRENT_SCHEMA_VERSION } from '../common/schema-version';
 // else. It matters in practice -- the Docker HEALTHCHECK polls /api/health every 10s, and a
 // liveness probe that can be rate-limited into failing would restart-loop a healthy container
 // under load, which is the exact opposite of what a liveness check is for.
-@SkipThrottle({ default: true, export: true })
+@SkipThrottle({ default: true, export: true, oai: true })
 @ApiTags('health')
 @Controller('health')
 export class HealthController {
