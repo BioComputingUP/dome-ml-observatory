@@ -5,7 +5,7 @@ built and why is in `AGENTS.md` and the code.
 
 **Check the sister repository first.** [`dome-ml-observatory-triage`](https://github.com/BioComputingUP/dome-ml-observatory-triage)
 is the write side: it builds the corpus, authors the document schema and loads the database. Its
-`ROADMAP.md` carries the data-side work, including the Zenodo archive and the v1.4.0 backfill.
+`ROADMAP.md` carries the data-side work, including the Zenodo archive.
 Anything here that depends on the data depends on that list, so read it before planning here.
 
 ## At a glance
@@ -18,9 +18,9 @@ Anything here that depends on the data depends on that list, so read it before p
 | 4 | [The Zenodo DOI on the site is dead](#4-the-zenodo-doi-on-the-site-is-dead) | Minting a real deposition |
 | 5 | [Final docs pass](#5-final-docs-pass) | Every other repo settling |
 | 6 | [Citation-count liveness](#6-citation-count-liveness) | A last-processed date the API can serve |
-| 7 | [Finalise schema versioning](#7-finalise-schema-versioning) | A release procedure, agreed with the sister repo |
-| 8 | [Link out to the curation criteria](#8-link-out-to-the-curation-criteria) | Nothing |
-| 9 | [A skill for the hardcoded figures](#9-a-skill-for-the-hardcoded-figures) | Nothing |
+| 7 | [Link out to the curation criteria](#7-link-out-to-the-curation-criteria) | Nothing |
+| 8 | [A skill for the hardcoded figures](#8-a-skill-for-the-hardcoded-figures) | Nothing |
+| 9 | [Cross links](#9-cross-links) | — |
 | 10 | [Keep the two repositories aligned](#10-keep-the-two-repositories-aligned) | Everything above, both sides |
 
 ---
@@ -110,7 +110,8 @@ presents it as the permanent release identifier, with a copy button. It is
 not registered: `doi.org` 404s and Zenodo's API reports "the persistent identifier is not
 registered" (re-checked 2026-09-07). Either mint the real deposition and replace the literal, or
 revert the page to describing the mechanism without asserting a DOI. The archive job that would
-produce that deposition belongs to the sister repository.
+produce that deposition belongs to the sister repository, and adds the deposit to the corpus's
+release metadata (`metadata/`) when it lands; until then that description names no DOI.
 
 ## 5. Final docs pass
 
@@ -129,26 +130,24 @@ Cards and record pages show `citation_count` without saying how fresh it is or w
 last processed — the site's only date, `about-support.ts`'s hand-edited `lastUpdated`, is a page
 date, not a data one. Add a liveness disclaimer and a real last-processed date served by the API.
 
-## 7. Finalise schema versioning
-
-The authored and published sides agree again: the sister repository's `schema.py` authors 1.4.0,
-`schema/CURRENT` here is v1.4.0, and `check_alignment.py` reports `aligned`. The live corpus
-catches up when the sister repository runs `migrate_v1_4_0.py`. Settle the release procedure now —
-who bumps, when, and what a release must carry — so the published side never again runs ahead of
-the authored one, and update the `schema-version` skill to match.
-
-## 8. Link out to the curation criteria
+## 7. Link out to the curation criteria
 
 `about-overview.html` says records are screened "against published criteria" but links to nothing.
 Point it at the sister repository's `curation_criteria/CRITERIA.md`, versioned by the
 `criteria_sha256` and `prompt_version` pinned in its `prompts/PROMPT_HASHES.json`.
 
-## 9. A skill for the hardcoded figures
+## 8. A skill for the hardcoded figures
 
 Corpus counts are typed into the UI by hand in a dozen files — `status-badge.ts`, `venue.ts`,
 `facet-panel.html`, `records.service.ts`, `download-api.ts`, `facet-stats.model.ts` — as displayed
 text and as prose in comments. Add a skill that finds every one, checks it against `/api/stats` and
 `schema/generate_facet_stats.py`'s `CORPUS` dict, and updates them together so they stay uniform.
+
+## 9. Cross links
+
+`identifiers.dome_registry` and the `identifiers` write mode are built with v1.5.0. Left: derive
+`identifiers.zenodo` and `bioai_repo` from `data_links`, and build the fetch process for Hugging
+Face and Kaggle per [`cross_links/README.md`](https://github.com/BioComputingUP/dome-ml-observatory-triage/blob/main/cross_links/README.md).
 
 ## 10. Keep the two repositories aligned
 
@@ -156,3 +155,15 @@ Last, once both roadmaps are done. Run the sister repository's `schema/check_ali
 confirm the authored schema, the `schema/CURRENT` published here and the live `schema_version` all
 agree — item 5 covers the prose, this covers the data contract. The sister roadmap carries the
 matching item; neither list is finished until both pass.
+
+---
+
+Short list, unranked, to judge later:
+
+1. Self-hosted logos for the data-link resources (PDBe, UniProt, ENA, GEO, BioStudies, Dryad,
+   figshare, ...) in this repository; the cards use icon-font glyphs until then.
+2. FAIR registrations and scoring, once the FAIR metadata is deployed: register the Observatory in
+   FAIRsharing and re3data, consider an identifiers.org prefix for record PIDs (the DOME Registry
+   has `dome`), and score a record page and `/api/catalog` with F-UJI and FAIR-Checker. Check a
+   record page in the Schema.org validator and Google's Rich Results Test, run the openarchives.org
+   validator against `/api/oai`, and submit `/sitemap.xml` to the search consoles.
