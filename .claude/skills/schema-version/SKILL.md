@@ -43,7 +43,7 @@ why this folder is deliberately leaner than `BioComputingUP/dome-schema`, which 
      `model_type_seed_vocab.json`
 
 3. **Diff against `CURRENT`.** For the schema: any group/field added, removed, renamed, or
-   retyped? For each vocab file: any term added, removed, or relabelled; any `max_tags` changed?
+   retyped? For each vocab file: any term added, removed, or relabelled; any `max_tags` changed; any key added to every term (provenance metadata, a patch)?
 
 4. **Decide the version bump**, per `schema/README.md`'s rules:
    - Field removed/renamed/retyped, or a vocab term removed/relabelled in a way that changes what

@@ -14,6 +14,25 @@ updated except the two published releases below: `v1.2.0/` and `v1.3.0/` still n
 published (see `README.md`) and is never edited in place. GitHub redirects the old name, so those
 strings still resolve. The next release will carry the new name.
 
+## v1.5.1 — 2026-09-15
+
+The two modelling vocabularies carry ontology ids for their terms.
+
+**Changed (vocabulary metadata, additive):** every term in `vocab/modelling-branch.json` and
+`vocab/model-type-seed.json` gains `ontology_mappings`, plus an `ontology_mappings_added` note,
+copied verbatim from upstream. Each entry is an accepted match to a MeSH, AIO, NCIT, OBI, SWO,
+STATO or EDAM term, with its `id`, `iri`, `label`, SKOS `predicate` and provenance. 87 mappings:
+13 of the 17 learning-paradigm and model-family terms, and 31 of the 76 model-type seed terms (16
+with a MeSH id, up from 2). No term, label, alias, `mesh_id` or `max_tags` changed.
+`vocab/domain.json` and the record shape are unchanged; the schema differs from v1.5.0 only in `$id`
+and the `content_filters` description. How the ids were sourced:
+[`docs/vocabulary_ontology_mappings.md`](https://github.com/BioComputingUP/dome-ml-observatory-triage/blob/main/docs/vocabulary_ontology_mappings.md) in dome-ml-observatory-triage.
+
+**Migration note:** nothing for consumers. Nothing previously valid became invalid, and the
+enrichment prompt renders identically. In dome-ml-observatory-triage, `migrate_v1_5_1.py` moves
+`schema_version` from 1.5.0 to 1.5.1 in one `updateMany`. Rebuild the apps so `CURRENT` and the UI
+vocabulary copy follow.
+
 ## v1.5.0 — 2026-09-14
 
 EBI Search's database-side links join Europe PMC's in `data_links`, and the DOME Registry

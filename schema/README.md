@@ -25,8 +25,8 @@ schema/
         ├── ai-ml-landscape.example.json  # one real record from the corpus (not fabricated)
         └── vocab/
             ├── domain.json               # EDAM topic branch: domain_tier1/2/3 + max_tags
-            ├── modelling-branch.json     # learning_paradigm, model_family + max_tags
-            └── model-type-seed.json      # 76 canonical model_type terms + aliases (open vocab)
+            ├── modelling-branch.json     # learning_paradigm, model_family + max_tags; ontology_mappings per term
+            └── model-type-seed.json      # 76 canonical model_type terms + aliases (open vocab); ontology_mappings per term
 ```
 
 ## Where this data actually comes from
@@ -43,7 +43,8 @@ before cutting a release here.
 The controlled vocabularies (`vocab/`) are decided and maintained in `dome-ml-observatory-triage/curation_criteria/`
 by the enrichment pipeline. When they change there, use the `schema-version` skill
 (`.claude/skills/schema-version/SKILL.md`) to pull the update in here properly, rather than
-hand-copying files.
+hand-copying files. How the vocabulary terms' ontology ids were sourced is in that repository's
+[`docs/vocabulary_ontology_mappings.md`](https://github.com/BioComputingUP/dome-ml-observatory-triage/blob/main/docs/vocabulary_ontology_mappings.md).
 
 ## Versioning rules
 
