@@ -58,7 +58,7 @@ must stay aligned, in both directions:
 
 Its `README.md` explains each process and its `COST_DASHBOARD.md` what a refresh or an
 enrichment costs. When a change here needs a change there (or the reverse), make both, or
-record the pending half in the other repository's `ROADMAP.md`.
+record the pending half in `ROADMAP.md` here, which is the one roadmap for both repositories.
 
 ## Environment
 
@@ -298,7 +298,7 @@ host are not.
   about analytics into that page -- the coupling is what stops the notice going stale, which is a
   compliance problem and not just an accuracy one. Cookies are disabled in code
   (`_paq.push(['disableCookies'])`); removing that call would require a consent banner, versioned
-  consent state and a withdrawal path. See ROADMAP.md §3.
+  consent state and a withdrawal path. See ROADMAP.md §1.
 - **Angular's critical-CSS inlining is disabled on purpose** (`optimization.styles.inlineCritical:
   false` in `angular.json`). It rewrites the stylesheet link to `media="print"
   onload="this.media='all'"`, and that inline handler is blocked by the CSP -- leaving the page

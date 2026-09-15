@@ -1,12 +1,12 @@
 # Roadmap
 
-What is still open in this repository. Shipped work is not listed here — the record of what was
-built and why is in `AGENTS.md` and the code.
+What is still open across both repositories. Shipped work is not listed here — the record of what
+was built and why is in each repository's `AGENTS.md` and its code.
 
-**Check the sister repository first.** [`dome-ml-observatory-triage`](https://github.com/BioComputingUP/dome-ml-observatory-triage)
-is the write side: it builds the corpus, authors the document schema and loads the database. Its
-`ROADMAP.md` carries the data-side work, including the Zenodo archive.
-Anything here that depends on the data depends on that list, so read it before planning here.
+**One roadmap, two repositories.** [`dome-ml-observatory-triage`](https://github.com/BioComputingUP/dome-ml-observatory-triage)
+is the write side: it builds the corpus, authors the document schema and is the only writer to the
+database. This repository is the read side: the UI, the API and the published schema releases. Each
+item below says which side does the work; the triage repository keeps no separate list.
 
 ## At a glance
 
@@ -15,7 +15,7 @@ Anything here that depends on the data depends on that list, so read it before p
 | 1 | [Matomo analytics](#1-matomo-analytics) — built, switched off | A site ID from the Matomo admin |
 | 2 | [Finalise and optimise search](#2-finalise-and-optimise-search) | A plan, to be written |
 | 3 | [Verify the preprint fields and data links](#3-verify-the-preprint-fields-and-data-links) | The v1.5.0 load, in the sister repo |
-| 4 | [The Zenodo DOI on the site is dead](#4-the-zenodo-doi-on-the-site-is-dead) | Minting a real deposition |
+| 4 | [The Zenodo archive, and the dead DOI on the site](#4-the-zenodo-archive-and-the-dead-doi-on-the-site) | Building the archive job, in the sister repo |
 | 5 | [Final docs pass](#5-final-docs-pass) | Every other repo settling |
 | 6 | [Citation-count liveness](#6-citation-count-liveness) | A last-processed date the API can serve |
 | 7 | [Link out to the curation criteria](#7-link-out-to-the-curation-criteria) | Nothing |
@@ -103,15 +103,22 @@ and `identifiers` loads: deploy first, restart `observatory-ws`, check a DOME pa
 paper and a GEO-heavy paper against real data, confirm the new slugs in the Linked data facet, and
 flip the "DOME Registry" integration to live alongside "Europe PMC data links".
 
-## 4. The Zenodo DOI on the site is dead
+## 4. The Zenodo archive, and the dead DOI on the site
 
-`download-bulk.ts` hardcodes `ZENODO_DOI = '10.5281/zenodo.22259905'` and `/download/bulk`
-presents it as the permanent release identifier, with a copy button. It is
+**The dead DOI, here.** `download-bulk.ts` hardcodes `ZENODO_DOI = '10.5281/zenodo.22259905'` and
+`/download/bulk` presents it as the permanent release identifier, with a copy button. It is
 not registered: `doi.org` 404s and Zenodo's API reports "the persistent identifier is not
 registered" (re-checked 2026-09-07). Either mint the real deposition and replace the literal, or
-revert the page to describing the mechanism without asserting a DOI. The archive job that would
-produce that deposition belongs to the sister repository, and adds the deposit to the corpus's
-release metadata (`metadata/`) when it lands; until then that description names no DOI.
+revert the page to describing the mechanism without asserting a DOI. Until a real one exists, that
+description names no DOI.
+
+**The archive job that mints it, in the sister repository.** A monthly GitHub Actions workflow:
+cursor-loop `GET /api/export`, gzip, deposit through the Zenodo API with a sidecar (count, size,
+sha256, `schema_version`) and the schema release. Reuse
+`DOME_zenodo_archive/download_dome_registry.py`, `ZENODO_TOKEN` from Actions secrets. Then add the
+deposit to that month's release metadata as a Zenodo distribution with its DOI (the sister
+repository's `build_release_metadata.py` and `docs/release_metadata.md`, which writes into
+`metadata/` here), and replace the literal on `/download/bulk`.
 
 ## 5. Final docs pass
 
@@ -151,10 +158,12 @@ Face and Kaggle per [`cross_links/README.md`](https://github.com/BioComputingUP/
 
 ## 10. Keep the two repositories aligned
 
-Last, once both roadmaps are done. Run the sister repository's `schema/check_alignment.py` and
+Last, once everything above is done. Run the sister repository's `schema/check_alignment.py` and
 confirm the authored schema, the `schema/CURRENT` published here and the live `schema_version` all
-agree — item 5 covers the prose, this covers the data contract. The sister roadmap carries the
-matching item; neither list is finished until both pass.
+agree. Then the prose: no claim, count or link in either repository's `README.md`, in this
+`ROADMAP.md` or in either repository's skills contradicting the other's — item 5 does that pass
+here, this item is what makes it a two-sided check. This is the single list for both repositories,
+so nothing is finished until both sides pass.
 
 ---
 
