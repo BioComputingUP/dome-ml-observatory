@@ -32,6 +32,8 @@ export const RECORD_SCHEMA_DEFINITION = new Schema(
 export interface RecordDocument {
   _id: string;
   schema_version?: string;
+  /** v1.6.0: `YYYY-MM-DDThh:mm:ssZ`; what OAI-PMH and the sitemap page by. */
+  record_modified?: string | null;
   publication_metadata?: { year?: number | null; [key: string]: unknown };
   llm_classification?: {
     classification?: string | null;

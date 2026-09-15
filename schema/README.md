@@ -62,6 +62,14 @@ Every bump gets a `CHANGELOG.md` entry with a migration note — even when "the 
 
 ## Updating
 
+The release procedure both repositories follow -- what counts as a release, who moves first, and the
+order of publishing here, migrating the corpus, loading, verifying and deploying -- lives with the
+authored side, in `dome-ml-observatory-triage`'s
+[`schema/README.md`](https://github.com/BioComputingUP/dome-ml-observatory-triage/blob/main/schema/README.md).
+Its `check_alignment.py` checks everything a release carries on this side too: `CURRENT`, the
+release folder, the `CHANGELOG.md` entry, the example's `schema_version` and both
+`FALLBACK_SCHEMA_VERSION` constants.
+
 Use the `schema-version` skill rather than hand-editing:
 
 > "sync the schema from dome-ml-observatory-triage" / "check for schema updates" / "cut a new schema version"

@@ -14,6 +14,31 @@ updated except the two published releases below: `v1.2.0/` and `v1.3.0/` still n
 published (see `README.md`) and is never edited in place. GitHub redirects the old name, so those
 strings still resolve. The next release will carry the new name.
 
+## v1.6.0 — 2026-09-15
+
+A record-level datestamp, so the corpus can be harvested incrementally.
+
+**Added:** top-level `record_modified` (`string | null`, date-time): when the record last changed in
+a field the Observatory's metadata exposes -- the Dublin Core served over OAI-PMH and the schema.org
+JSON-LD on record pages. UTC to the second, `YYYY-MM-DDThh:mm:ssZ`, which is OAI-PMH's granularity
+and one fixed width, so values compare correctly as strings. It moves when a load writes the
+document, or when an enrichment, licence, preprint, data-links or identifiers write changes one of
+its values; never for a citation-count refresh or a version-stamp migration, so neither forces a
+full re-harvest. OAI-PMH `from`/`until` and the sitemap's `lastmod` read it.
+
+**Changed (description):** `schema_version` is bumped on every release, a vocabulary-only release
+included (the v1.5.1 precedent), not only when the document shape changes.
+
+**Migration note:** additive for consumers; a reader that ignores unknown fields needs nothing. In
+dome-ml-observatory-triage, `migrate_v1_6_0.py` moves `schema_version` from 1.5.1 to 1.6.0 and sets
+`record_modified` to the migration's run time on every document, in one `updateMany` (a harvester's
+first harvest is a full one whatever the date says; the group timestamps stay as provenance). Its
+`ensure_indexes.py` then builds `record_modified_positive` (`{record_modified: 1, _id: 1}`, partial
+on positives), the keyset the OAI-PMH and sitemap walks page by. The example predates the migration,
+so its `record_modified` is null.
+
+**Pending at release:** the migration and the index on moros.
+
 ## v1.5.1 — 2026-09-15
 
 The two modelling vocabularies carry ontology ids for their terms.
@@ -82,6 +107,9 @@ load, and restart `observatory-ws` after it: the `data_resource` facet is boot-l
 
 **Pending at release:** the corpus load. Until it runs, live records stay at v1.4.0 and carry none
 of the new keys or values; the apps render both shapes.
+
+**Loaded 2026-09-15:** `load_fields.py --mode data_links` and `--mode identifiers` ran against
+the whole corpus; every document then moved to v1.5.1.
 
 ## v1.4.0 — 2026-09-14
 

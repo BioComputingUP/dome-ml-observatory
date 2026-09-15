@@ -174,6 +174,9 @@ export interface LlmEnrichment extends LlmRunProvenance {
 export interface AiMlRecord {
   _id: string;
   schema_version: string;
+  /** v1.6.0: when the record last changed in a field the metadata exposes, `YYYY-MM-DDThh:mm:ssZ`.
+   *  Absent on documents written before the v1.6.0 migration. */
+  record_modified?: string | null;
   identifiers: RecordIdentifiers;
   publication_metadata: PublicationMetadata;
   source: Source;

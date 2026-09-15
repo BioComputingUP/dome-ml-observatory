@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { CURRENT_SCHEMA_VERSION } from '../../common/schema-version';
 
 /**
  * Documents the response shape for Swagger only -- responses are returned as-is from Mongo's
  * `.lean()` (see records.service.ts), never instantiated as this class or serialized through it.
  * Mirrors observatory-ui/src/app/core/record.model.ts, duplicated deliberately rather than shared
  * (there is no `-core` package in this project, by design -- see AGENTS.md) -- source of truth
- * for the real shape is schema/releases/v1.5.0/ai-ml-landscape.schema.json.
+ * for the real shape is the release schema/CURRENT names, schema/releases/<CURRENT>/.
  */
 class RecordIdentifiersDto {
   @ApiProperty({ type: String, nullable: true }) pmid!: string | null;
@@ -276,7 +277,17 @@ export class RecordDto {
   })
   _id!: string;
 
-  @ApiProperty({ example: '1.5.0' }) schema_version!: string;
+  @ApiProperty({ example: CURRENT_SCHEMA_VERSION.replace(/^v/, '') }) schema_version!: string;
+  @ApiProperty({
+    type: String,
+    nullable: true,
+    format: 'date-time',
+    example: '2026-09-15T18:30:00Z',
+    description:
+      'v1.6.0: when the record last changed in a field the metadata exposes (UTC, to the second). ' +
+      'What OAI-PMH from/until and the sitemap lastmod read. Absent before the v1.6.0 migration.',
+  })
+  record_modified!: string | null;
   @ApiProperty({ type: RecordIdentifiersDto })
   identifiers!: RecordIdentifiersDto;
   @ApiProperty({ type: PublicationMetadataDto })

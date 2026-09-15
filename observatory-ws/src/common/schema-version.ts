@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import { Logger } from '@nestjs/common';
 
 const logger = new Logger('SchemaVersion');
@@ -10,7 +10,7 @@ const logger = new Logger('SchemaVersion');
  * response, never a functional break (nothing here validates documents against it at request
  * time), so this deliberately warns rather than crashing the app.
  */
-const FALLBACK_SCHEMA_VERSION = '1.5.1';
+const FALLBACK_SCHEMA_VERSION = '1.6.0';
 
 /**
  * Locates schema/CURRENT from either of the two working directories this app runs from: repo
@@ -48,3 +48,12 @@ function readCurrentSchemaVersion(): string {
 
 /** Read once at module load, not per-request -- schema/CURRENT only changes on a deploy. */
 export const CURRENT_SCHEMA_VERSION = readCurrentSchemaVersion();
+
+/** The published release folder CURRENT names (schema/releases/v1.6.0/), or undefined when schema/
+ *  cannot be found. The metadata projections read that release's vocab/ from here. */
+export function currentReleaseDir(): string | undefined {
+  const current = findCurrentFile();
+  if (!current) return undefined;
+  const dir = resolve(dirname(current), 'releases', readFileSync(current, 'utf8').trim());
+  return existsSync(dir) ? dir : undefined;
+}
