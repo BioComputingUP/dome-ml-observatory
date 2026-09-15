@@ -6,6 +6,7 @@ import { RecordsService } from '../../core/records.service';
 import type { CorpusStats, FacetStats } from '../../core/facet-stats.model';
 import {
   CLASSIFICATION_ROUNDS,
+  CORRECTIONS,
   ENRICHMENT_ROUNDS,
   type ClassificationRound,
   type EnrichmentRound,
@@ -65,6 +66,14 @@ describe('AboutProcessing', () => {
     expect(root.textContent).toContain(`${LIVE.enriched.toLocaleString('en-US')} of`);
   });
 
+  it('shows corrections only when documents have been removed', () => {
+    const heading = [...root.querySelectorAll('h2')].some((h) => h.textContent?.includes('Corrections'));
+    expect(heading).toBe(CORRECTIONS.length > 0);
+    CORRECTIONS.forEach((correction) =>
+      expect(root.textContent).toContain(correction.documents.toLocaleString('en-US')),
+    );
+  });
+
   it('logs each enrichment round, and says so only while none has run', () => {
     // Scoped to the enrichment section: the "Last enriched" pill above it also reads "Not yet run"
     // whenever the API has no enrichment date, which is a different statement.
@@ -103,5 +112,14 @@ describe('processing rounds log', () => {
   it('numbers enrichment rounds in the order they ran, with dates, a model and a size', () => {
     wellFormed(ENRICHMENT_ROUNDS);
     ENRICHMENT_ROUNDS.forEach((round) => expect(round.records).toBeGreaterThan(0));
+  });
+
+  it('dates every correction and says how many documents it removed', () => {
+    CORRECTIONS.forEach((correction, i) => {
+      expect(correction.number).toBe(i + 1);
+      expect(correction.date).toMatch(iso);
+      expect(correction.documents).toBeGreaterThan(0);
+      expect(correction.why.trim().length).toBeGreaterThan(0);
+    });
   });
 });

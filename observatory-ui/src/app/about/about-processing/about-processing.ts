@@ -5,7 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { RecordsService } from '../../core/records.service';
 import { FALLBACK_SCHEMA_VERSION, schemaReleaseUrl } from '../../core/schema-links';
-import { CLASSIFICATION_ROUNDS, ENRICHMENT_ROUNDS, roundTotal } from './processing-rounds';
+import { CLASSIFICATION_ROUNDS, CORRECTIONS, ENRICHMENT_ROUNDS, roundTotal } from './processing-rounds';
 
 /**
  * Hand-maintained processing-round log, following the same "corpus figures live, narrative
@@ -31,6 +31,7 @@ export class AboutProcessing {
 
   readonly classificationRounds = CLASSIFICATION_ROUNDS;
   readonly enrichmentRounds = ENRICHMENT_ROUNDS;
+  readonly corrections = CORRECTIONS;
   readonly roundTotal = roundTotal;
 
   readonly corpus = computed(() => this.stats()?.corpus ?? this.records.getStats());

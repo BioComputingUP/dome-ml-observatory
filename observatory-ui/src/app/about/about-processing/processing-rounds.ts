@@ -114,6 +114,19 @@ export const ENRICHMENT_ROUNDS: readonly EnrichmentRound[] = [
   },
 ];
 
+/** Documents removed from the corpus after a round: the rounds above say what each round
+ *  processed, and what the corpus holds now is those totals less these. */
+export interface Correction {
+  number: number;
+  title: string;
+  date: string;
+  /** Documents removed. */
+  documents: number;
+  why: string;
+}
+
+export const CORRECTIONS: readonly Correction[] = [];
+
 export function roundTotal(outcome: RoundOutcome): number {
   return outcome.positive + outcome.negative + outcome.undeterminable;
 }
