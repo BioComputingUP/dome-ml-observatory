@@ -5,13 +5,16 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { RecordsService } from '../../core/records.service';
 import { FALLBACK_SCHEMA_VERSION, schemaReleaseUrl } from '../../core/schema-links';
+import { CLASSIFICATION_ROUNDS, ENRICHMENT_ROUNDS, roundTotal } from './processing-rounds';
 
 /**
  * Hand-maintained processing-round log, following the same "corpus figures live, narrative
- * hand-written" split as about-overview.ts -- the headline date and counts below come straight
- * from GET /api/stats (never hardcoded, so they can't drift from the database), but there is no
- * runs/batches collection anywhere in this stack to build the per-round cards themselves from,
- * so a new card is added by hand each time a processing round completes.
+ * hand-written" split as about-overview.ts -- the headline dates and the enrichment coverage come
+ * straight from GET /api/stats (never hardcoded, so they can't drift from the database). There is
+ * no runs/batches collection anywhere in this stack to build the per-round cards from, so each
+ * round is an entry in processing-rounds.ts, appended when the round completes and carrying that
+ * round's own figures: a card never shows the live corpus total, which would count every later
+ * round into it.
  */
 @Component({
   selector: 'app-about-processing',
@@ -25,6 +28,10 @@ export class AboutProcessing {
   private readonly stats = toSignal(this.records.getFacetStats().pipe(catchError(() => of(null))), {
     initialValue: null,
   });
+
+  readonly classificationRounds = CLASSIFICATION_ROUNDS;
+  readonly enrichmentRounds = ENRICHMENT_ROUNDS;
+  readonly roundTotal = roundTotal;
 
   readonly corpus = computed(() => this.stats()?.corpus ?? this.records.getStats());
   readonly lastClassifiedAt = computed(() => this.stats()?.last_classification?.timestamp ?? null);

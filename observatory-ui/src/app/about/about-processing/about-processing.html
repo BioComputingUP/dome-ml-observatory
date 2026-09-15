@@ -43,63 +43,74 @@
   <div class="band-inner">
     <h2><i class="icon icon-common icon-flag-checkered" aria-hidden="true"></i>Classification rounds</h2>
 
-    <div class="round-card info-panel">
-      <div class="round-header">
-        <span class="round-badge">1</span>
-        <h3>Initial classification batch</h3>
-        <span class="badge-chip tone-positive">Complete</span>
+    @for (round of classificationRounds; track round.number) {
+      <div class="round-card info-panel">
+        <div class="round-header">
+          <span class="round-badge">{{ round.number }}</span>
+          <h3>{{ round.title }}</h3>
+          <span class="badge-chip tone-positive">Complete</span>
+        </div>
+
+        <dl class="round-facts">
+          <div>
+            <dt><i class="icon icon-common icon-link" aria-hidden="true"></i>Source</dt>
+            <dd><a href="https://europepmc.org/" target="_blank" rel="noopener">Europe PMC</a></dd>
+          </div>
+          <div>
+            <dt><i class="icon icon-common icon-search" aria-hidden="true"></i>Search space</dt>
+            <dd>{{ round.searchSpace }}</dd>
+          </div>
+          <div>
+            <dt><i class="icon icon-common icon-filter" aria-hidden="true"></i>Publications</dt>
+            <dd>{{ round.window }}</dd>
+          </div>
+          <div>
+            <dt><i class="icon icon-common icon-database" aria-hidden="true"></i>Processed</dt>
+            <dd>{{ round.processed }}</dd>
+          </div>
+          <div>
+            <dt><i class="icon icon-common icon-microchip" aria-hidden="true"></i>Model</dt>
+            <dd>{{ round.model }}, prompt version {{ round.promptVersion }}.</dd>
+          </div>
+          <div>
+            <dt><i class="icon icon-common icon-calendar" aria-hidden="true"></i>Run date</dt>
+            <dd>
+              {{ round.started | date: 'd MMM y' }}@if (round.finished !== round.started) {
+                – {{ round.finished | date: 'd MMM y' }}
+              }
+            </dd>
+          </div>
+        </dl>
+
+        <div class="outcome-grid">
+          <div class="outcome-tile tone-positive">
+            <span class="outcome-value">{{ round.outcome.positive | number }}</span>
+            <span class="outcome-label">Positive</span>
+          </div>
+          <div class="outcome-tile tone-neutral">
+            <span class="outcome-value">{{ round.outcome.negative | number }}</span>
+            <span class="outcome-label">Negative</span>
+          </div>
+          <div class="outcome-tile tone-undeterminable">
+            <span class="outcome-value">{{ round.outcome.undeterminable | number }}</span>
+            <span class="outcome-label">Undeterminable</span>
+          </div>
+          <div class="outcome-tile tone-primary">
+            <span class="outcome-value">{{ roundTotal(round.outcome) | number }}</span>
+            <span class="outcome-label">Total screened</span>
+          </div>
+        </div>
       </div>
+    }
 
-      <dl class="round-facts">
-        <div>
-          <dt><i class="icon icon-common icon-link" aria-hidden="true"></i>Source</dt>
-          <dd><a href="https://europepmc.org/" target="_blank" rel="noopener">Europe PMC</a></dd>
-        </div>
-        <div>
-          <dt><i class="icon icon-common icon-search" aria-hidden="true"></i>Search space</dt>
-          <dd>
-            "Artificial intelligence" and "machine learning" as search terms, deduplicated across
-            Europe PMC's full index of roughly 50 million articles.
-          </dd>
-        </div>
-        <div>
-          <dt><i class="icon icon-common icon-database" aria-hidden="true"></i>Processed</dt>
-          <dd>Approximately 850,000 candidate publications retrieved and screened.</dd>
-        </div>
-        <div>
-          <dt><i class="icon icon-common icon-microchip" aria-hidden="true"></i>Model</dt>
-          <dd>DeepSeek v4 Flash, prompt version v1.</dd>
-        </div>
-      </dl>
-
-      <div class="outcome-grid">
-        <div class="outcome-tile tone-positive">
-          <span class="outcome-value">{{ corpus().positive | number }}</span>
-          <span class="outcome-label">Positive</span>
-        </div>
-        <div class="outcome-tile tone-neutral">
-          <span class="outcome-value">{{ corpus().negative | number }}</span>
-          <span class="outcome-label">Negative</span>
-        </div>
-        <div class="outcome-tile tone-undeterminable">
-          <span class="outcome-value">{{ corpus().undeterminable | number }}</span>
-          <span class="outcome-label">Undeterminable</span>
-        </div>
-        <div class="outcome-tile tone-primary">
-          <span class="outcome-value">{{ corpus().total | number }}</span>
-          <span class="outcome-label">Total screened</span>
-        </div>
-      </div>
-
-      <p class="round-note">
-        Every publication is classified as <em>positive</em> (a genuine AI/ML methods paper),
-        <em>negative</em>, or <em>undeterminable</em>, with a written rationale kept alongside the
-        verdict on each record — see <a routerLink="/about">how the corpus is built</a> for the
-        full method. Undeterminable records are held for a later pass rather than discarded; that
-        pass may need a different approach than this round used, such as pulling full text where
-        it's available, rather than the abstract alone.
-      </p>
-    </div>
+    <p class="round-note">
+      Every publication is classified as <em>positive</em> (a genuine AI/ML methods paper),
+      <em>negative</em>, or <em>undeterminable</em>, with a written rationale kept alongside the
+      verdict on each record — see <a routerLink="/about">how the corpus is built</a> for the
+      full method. Undeterminable records are held for a later pass rather than discarded; that
+      pass may need a different approach than these rounds used, such as pulling full text where
+      it's available, rather than the abstract alone.
+    </p>
   </div>
 </div>
 
@@ -107,39 +118,50 @@
   <div class="band-inner">
     <h2><i class="icon icon-common icon-tags" aria-hidden="true"></i>Enrichment</h2>
 
-    <div class="round-card info-panel">
-      <div class="round-header">
-        <span class="icon-badge round-badge-icon"><i class="icon icon-common icon-tags" aria-hidden="true"></i></span>
-        <h3>Domain &amp; method tagging</h3>
-        <span class="badge-chip tone-undeterminable">Not yet run</span>
-      </div>
-
+    @if (enrichmentRounds.length > 0) {
       <p class="round-intro">
-        A separate pass tags each positively-classified record with EDAM domain, learning
-        paradigm, model family and model type — the fields and their permitted terms are defined in
-        <a [href]="schemaUrl()" target="_blank" rel="noopener">the current schema release</a>,
-        reserved on every record and empty until this runs. This section gains its own dated
-        fields — model, prompt version and batch size — once the first enrichment batch completes.
+        A separate pass tags positively-classified records with EDAM domain, learning paradigm,
+        model family and model type — the fields and their permitted terms are defined in
+        <a [href]="schemaUrl()" target="_blank" rel="noopener">the current schema release</a>. It
+        runs in batches, one cohort of records at a time, and each batch is logged below.
       </p>
 
-      <dl class="round-facts round-facts-pending">
-        <div>
-          <dt><i class="icon icon-common icon-microchip" aria-hidden="true"></i>Model</dt>
-          <dd>—</dd>
+      @for (round of enrichmentRounds; track round.number) {
+        <div class="round-card info-panel">
+          <div class="round-header">
+            <span class="round-badge">{{ round.number }}</span>
+            <h3>{{ round.title }}</h3>
+            <span class="badge-chip tone-positive">Complete</span>
+          </div>
+
+          <dl class="round-facts">
+            <div>
+              <dt><i class="icon icon-common icon-filter" aria-hidden="true"></i>Cohort</dt>
+              <dd>{{ round.cohort }}</dd>
+            </div>
+            <div>
+              <dt><i class="icon icon-common icon-microchip" aria-hidden="true"></i>Model</dt>
+              <dd>{{ round.model }}</dd>
+            </div>
+            <div>
+              <dt><i class="icon icon-common icon-code-branch" aria-hidden="true"></i>Prompt version</dt>
+              <dd>{{ round.promptVersion }}</dd>
+            </div>
+            <div>
+              <dt><i class="icon icon-common icon-database" aria-hidden="true"></i>Batch size</dt>
+              <dd>{{ round.records | number }} records</dd>
+            </div>
+            <div>
+              <dt><i class="icon icon-common icon-calendar" aria-hidden="true"></i>Run date</dt>
+              <dd>
+                {{ round.started | date: 'd MMM y' }}@if (round.finished !== round.started) {
+                  – {{ round.finished | date: 'd MMM y' }}
+                }
+              </dd>
+            </div>
+          </dl>
         </div>
-        <div>
-          <dt><i class="icon icon-common icon-code-branch" aria-hidden="true"></i>Prompt version</dt>
-          <dd>—</dd>
-        </div>
-        <div>
-          <dt><i class="icon icon-common icon-database" aria-hidden="true"></i>Batch size</dt>
-          <dd>—</dd>
-        </div>
-        <div>
-          <dt><i class="icon icon-common icon-calendar" aria-hidden="true"></i>Run date</dt>
-          <dd>—</dd>
-        </div>
-      </dl>
+      }
 
       <div class="coverage">
         <div class="coverage-header">
@@ -150,7 +172,52 @@
           <div class="coverage-bar-fill" [style.width.%]="enrichedPercent()"></div>
         </div>
       </div>
-    </div>
+    } @else {
+      <div class="round-card info-panel">
+        <div class="round-header">
+          <span class="icon-badge round-badge-icon"><i class="icon icon-common icon-tags" aria-hidden="true"></i></span>
+          <h3>Domain &amp; method tagging</h3>
+          <span class="badge-chip tone-undeterminable">Not yet run</span>
+        </div>
+
+        <p class="round-intro">
+          A separate pass tags each positively-classified record with EDAM domain, learning
+          paradigm, model family and model type — the fields and their permitted terms are defined in
+          <a [href]="schemaUrl()" target="_blank" rel="noopener">the current schema release</a>,
+          reserved on every record and empty until this runs. This section gains its own dated
+          fields — model, prompt version and batch size — once the first enrichment batch completes.
+        </p>
+
+        <dl class="round-facts round-facts-pending">
+          <div>
+            <dt><i class="icon icon-common icon-microchip" aria-hidden="true"></i>Model</dt>
+            <dd>—</dd>
+          </div>
+          <div>
+            <dt><i class="icon icon-common icon-code-branch" aria-hidden="true"></i>Prompt version</dt>
+            <dd>—</dd>
+          </div>
+          <div>
+            <dt><i class="icon icon-common icon-database" aria-hidden="true"></i>Batch size</dt>
+            <dd>—</dd>
+          </div>
+          <div>
+            <dt><i class="icon icon-common icon-calendar" aria-hidden="true"></i>Run date</dt>
+            <dd>—</dd>
+          </div>
+        </dl>
+
+        <div class="coverage">
+          <div class="coverage-header">
+            <span class="coverage-label">Enrichment coverage</span>
+            <span class="coverage-value">{{ corpus().enriched | number }} of {{ corpus().positive | number }} positive records ({{ enrichedPercent() }}%)</span>
+          </div>
+          <div class="coverage-bar">
+            <div class="coverage-bar-fill" [style.width.%]="enrichedPercent()"></div>
+          </div>
+        </div>
+      </div>
+    }
   </div>
 </div>
 
