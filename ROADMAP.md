@@ -167,3 +167,7 @@ Short list, unranked, to judge later:
    has `dome`), and score a record page and `/api/catalog` with F-UJI and FAIR-Checker. Check a
    record page in the Schema.org validator and Google's Rich Results Test, run the openarchives.org
    validator against `/api/oai`, and submit `/sitemap.xml` to the search consoles.
+3. Settle the refresh cadence (monthly or bimonthly) as stated policy, and make the sister
+   repository's skills, the "Monthly to bimonthly" update cadence on `/download/bulk` and the "6-12
+   times a year" in `core/facet-stats.model.ts` agree. The processing history page already logs each
+   round (the sister repository's `processing-log` skill); the cadence is what is left.
