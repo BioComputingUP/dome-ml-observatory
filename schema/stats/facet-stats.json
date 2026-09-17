@@ -1,26 +1,26 @@
 {
-  "generated": "2026-09-15T22:38:38.731Z",
-  "schema_version": "v1.5.1",
+  "generated": "2026-09-17T13:48:28.115Z",
+  "schema_version": "v1.6.0",
   "source": "full-corpus",
-  "records_counted": 852931,
+  "records_counted": 876324,
   "corpus": {
-    "total": 852931,
-    "positive": 368025,
-    "negative": 477919,
-    "undeterminable": 6987,
-    "openAccess": 557487,
-    "fulltextAvailable": 624112,
+    "total": 876324,
+    "positive": 367348,
+    "negative": 502002,
+    "undeterminable": 6974,
+    "openAccess": 589529,
+    "fulltextAvailable": 657676,
     "enriched": 3532
   },
   "corpus_provenance": "Computed live from dome_observatory.Content on the MongoDB server via GET /api/stats.",
   "last_classification": {
-    "timestamp": "2026-09-15T22:20:52.598913+00:00",
+    "timestamp": "2026-09-15T23:21:27.743026+00:00",
     "enriched_timestamp": "2026-09-15T22:35:21.173766+00:00"
   },
   "search_space": {
-    "total": 368025,
-    "fulltextAvailable": 232310,
-    "openAccess": 207462,
+    "total": 367348,
+    "fulltextAvailable": 237377,
+    "openAccess": 212302,
     "enriched": 3532,
     "yearRange": {
       "min": 1963,
@@ -31,41 +31,41 @@
     "classification": [
       {
         "value": "negative",
-        "count": 477919
+        "count": 502002
       },
       {
         "value": "positive",
-        "count": 368025
+        "count": 367348
       },
       {
         "value": "undeterminable",
-        "count": 6987
+        "count": 6974
       }
     ],
     "license": [
       {
         "value": "cc by",
-        "count": 176518
+        "count": 178982
       },
       {
         "value": "cc by-nc-nd",
-        "count": 42547
+        "count": 43023
       },
       {
         "value": "cc by-nc",
-        "count": 15775
+        "count": 15900
       },
       {
         "value": "cc by-nc-sa",
-        "count": 919
+        "count": 917
       },
       {
         "value": "cc0",
-        "count": 576
+        "count": 575
       },
       {
         "value": "cc by-nd",
-        "count": 409
+        "count": 410
       },
       {
         "value": "cc by-sa",
@@ -75,43 +75,43 @@
     "pubTypes": [
       {
         "value": "Journal Article",
-        "count": 324019
+        "count": 323766
       },
       {
         "value": "research-article",
-        "count": 220557
+        "count": 225549
       },
       {
         "value": "Research Support, Non-U.S. Gov't",
-        "count": 65348
+        "count": 65355
       },
       {
         "value": "Preprint",
-        "count": 39305
+        "count": 38880
       },
       {
         "value": "Research Support, N.I.H., Extramural",
-        "count": 18454
+        "count": 18446
       },
       {
         "value": "Research Support, U.S. Gov't, Non-P.H.S.",
-        "count": 8401
+        "count": 8399
       },
       {
         "value": "Comparative Study",
-        "count": 5357
+        "count": 5302
       },
       {
         "value": "Multicenter Study",
-        "count": 5091
+        "count": 5050
       },
       {
         "value": "Validation Study",
-        "count": 5019
+        "count": 4979
       },
       {
         "value": "Evaluation Study",
-        "count": 3663
+        "count": 3656
       },
       {
         "value": "Abstract",
@@ -119,19 +119,19 @@
       },
       {
         "value": "Observational Study",
-        "count": 2157
+        "count": 2147
       },
       {
         "value": "brief-report",
-        "count": 1632
+        "count": 1664
       },
       {
         "value": "Review",
-        "count": 1543
+        "count": 1536
       },
       {
         "value": "Randomized Controlled Trial",
-        "count": 1435
+        "count": 1428
       },
       {
         "value": "Retracted Publication",
@@ -139,35 +139,35 @@
       },
       {
         "value": "Research Support, U.S. Gov't, P.H.S.",
-        "count": 1028
+        "count": 1023
       },
       {
         "value": "data-paper",
-        "count": 995
+        "count": 1022
       },
       {
         "value": "Letter",
-        "count": 920
+        "count": 921
       },
       {
         "value": "review-article",
-        "count": 799
+        "count": 806
       },
       {
         "value": "Research Support, N.I.H., Intramural",
-        "count": 751
+        "count": 753
       },
       {
         "value": "methods-article",
-        "count": 707
+        "count": 716
       },
       {
         "value": "Clinical Trial",
-        "count": 685
+        "count": 680
       },
       {
         "value": "English Abstract",
-        "count": 648
+        "count": 638
       },
       {
         "value": "Comment",
@@ -175,7 +175,7 @@
       },
       {
         "value": "Dataset",
-        "count": 526
+        "count": 513
       },
       {
         "value": "chapter-article",
@@ -187,27 +187,27 @@
       },
       {
         "value": "Meta-Analysis",
-        "count": 406
+        "count": 401
       },
       {
         "value": "other",
-        "count": 371
+        "count": 376
       },
       {
         "value": "Video-Audio Media",
-        "count": 341
-      },
-      {
-        "value": "News",
-        "count": 220
+        "count": 342
       },
       {
         "value": "Systematic Review",
-        "count": 219
+        "count": 227
+      },
+      {
+        "value": "News",
+        "count": 222
       },
       {
         "value": "case-report",
-        "count": 182
+        "count": 186
       },
       {
         "value": "letter",
@@ -219,22 +219,22 @@
       },
       {
         "value": "Case Reports",
-        "count": 147
+        "count": 149
+      },
+      {
+        "value": "IM",
+        "count": 144
       },
       {
         "value": "rapid-communication",
         "count": 137
       },
       {
-        "value": "IM",
-        "count": 114
+        "value": "Clinical Trial, Phase II",
+        "count": 94
       },
       {
         "value": "Clinical Trial, Phase III",
-        "count": 93
-      },
-      {
-        "value": "Clinical Trial, Phase II",
         "count": 91
       },
       {
@@ -243,7 +243,7 @@
       },
       {
         "value": "Historical Article",
-        "count": 79
+        "count": 78
       },
       {
         "value": "Dissertation",
@@ -263,11 +263,11 @@
       },
       {
         "value": "report",
-        "count": 54
+        "count": 55
       },
       {
         "value": "systematic-review",
-        "count": 40
+        "count": 50
       },
       {
         "value": "Other",
@@ -279,11 +279,11 @@
       },
       {
         "value": "Equivalence Trial",
-        "count": 34
+        "count": 33
       },
       {
         "value": "Clinical Study",
-        "count": 30
+        "count": 31
       },
       {
         "value": "Pragmatic Clinical Trial",
@@ -295,10 +295,6 @@
       },
       {
         "value": "Scoping Review",
-        "count": 23
-      },
-      {
-        "value": "Clinical Trial, Phase I",
         "count": 22
       },
       {
@@ -306,8 +302,12 @@
         "count": 22
       },
       {
+        "value": "Clinical Trial, Phase I",
+        "count": 21
+      },
+      {
         "value": "Published Erratum",
-        "count": 19
+        "count": 20
       },
       {
         "value": "Research Support, American Recovery and Reinvestment Act",
@@ -315,7 +315,7 @@
       },
       {
         "value": "correction",
-        "count": 14
+        "count": 15
       },
       {
         "value": "Meeting Report",
@@ -346,6 +346,10 @@
         "count": 6
       },
       {
+        "value": "case-study",
+        "count": 5
+      },
+      {
         "value": "Introductory Journal Article",
         "count": 5
       },
@@ -354,15 +358,15 @@
         "count": 5
       },
       {
-        "value": "case-study",
-        "count": 4
-      },
-      {
         "value": "Practice Guideline",
         "count": 4
       },
       {
         "value": "Observational Study, Veterinary",
+        "count": 3
+      },
+      {
+        "value": "Clinical Trial, Veterinary",
         "count": 3
       },
       {
@@ -374,19 +378,15 @@
         "count": 3
       },
       {
-        "value": "Clinical Trial, Veterinary",
-        "count": 3
-      },
-      {
-        "value": "Technical Report",
-        "count": 2
-      },
-      {
         "value": "Biography",
         "count": 2
       },
       {
         "value": "Conference Proceedings",
+        "count": 2
+      },
+      {
+        "value": "Technical Report",
         "count": 2
       },
       {
@@ -398,11 +398,11 @@
         "count": 1
       },
       {
-        "value": "Lecture",
+        "value": "Festschrift",
         "count": 1
       },
       {
-        "value": "Festschrift",
+        "value": "Lecture",
         "count": 1
       },
       {
@@ -414,11 +414,7 @@
         "count": 1
       },
       {
-        "value": "in-brief",
-        "count": 1
-      },
-      {
-        "value": "Evidence Synthesis",
+        "value": "addendum",
         "count": 1
       },
       {
@@ -426,7 +422,11 @@
         "count": 1
       },
       {
-        "value": "addendum",
+        "value": "in-brief",
+        "count": 1
+      },
+      {
+        "value": "Evidence Synthesis",
         "count": 1
       }
     ],
@@ -559,23 +559,23 @@
     "dataResources": [
       {
         "value": "biostudies",
-        "count": 129674
+        "count": 129381
       },
       {
         "value": "geo",
-        "count": 14438
+        "count": 14489
       },
       {
         "value": "ena",
-        "count": 6460
+        "count": 6519
       },
       {
         "value": "pdb",
-        "count": 6431
+        "count": 6478
       },
       {
         "value": "clinicaltrials",
-        "count": 5793
+        "count": 5809
       },
       {
         "value": "biotools",
@@ -583,31 +583,31 @@
       },
       {
         "value": "zenodo",
-        "count": 3361
+        "count": 3388
       },
       {
         "value": "bioproject",
-        "count": 3284
+        "count": 3304
       },
       {
         "value": "uniprot",
-        "count": 2750
+        "count": 2783
       },
       {
         "value": "refsnp",
-        "count": 2098
+        "count": 2097
       },
       {
         "value": "go",
-        "count": 1628
+        "count": 1634
       },
       {
         "value": "rrid",
-        "count": 1613
+        "count": 1625
       },
       {
         "value": "figshare",
-        "count": 1273
+        "count": 1274
       },
       {
         "value": "dome_registry",
@@ -615,11 +615,11 @@
       },
       {
         "value": "omim",
-        "count": 880
+        "count": 882
       },
       {
         "value": "refseq",
-        "count": 737
+        "count": 746
       },
       {
         "value": "pride",
@@ -627,71 +627,71 @@
       },
       {
         "value": "arrayexpress",
-        "count": 499
+        "count": 505
       },
       {
         "value": "igsr",
-        "count": 497
+        "count": 503
       },
       {
         "value": "mendeley_data",
-        "count": 464
+        "count": 470
       },
       {
         "value": "dbgap",
-        "count": 388
+        "count": 387
       },
       {
         "value": "ensembl",
-        "count": 333
+        "count": 339
       },
       {
         "value": "pfam",
-        "count": 312
+        "count": 314
       },
       {
         "value": "dryad",
-        "count": 306
+        "count": 311
       },
       {
         "value": "ega",
-        "count": 305
+        "count": 309
       },
       {
         "value": "cellosaurus",
-        "count": 270
+        "count": 268
       },
       {
         "value": "chembl",
-        "count": 258
+        "count": 261
       },
       {
         "value": "gwas",
-        "count": 239
+        "count": 242
       },
       {
         "value": "ena_assembly",
-        "count": 227
+        "count": 234
       },
       {
         "value": "hpa",
-        "count": 202
+        "count": 204
       },
       {
         "value": "osf",
-        "count": 174
+        "count": 173
       },
       {
         "value": "dataverse",
-        "count": 165
+        "count": 167
       },
       {
         "value": "reactome",
-        "count": 133
+        "count": 131
       },
       {
         "value": "interpro",
-        "count": 114
+        "count": 115
       },
       {
         "value": "tcia",
@@ -699,39 +699,39 @@
       },
       {
         "value": "iprox",
-        "count": 106
+        "count": 104
       },
       {
         "value": "eudract",
-        "count": 102
+        "count": 101
       },
       {
         "value": "emdb",
-        "count": 99
+        "count": 101
       },
       {
         "value": "gisaid",
-        "count": 84
+        "count": 85
       },
       {
         "value": "metabolights",
-        "count": 82
+        "count": 83
       },
       {
         "value": "empiar",
-        "count": 75
+        "count": 76
       },
       {
         "value": "brenda",
-        "count": 61
+        "count": 63
       },
       {
         "value": "gbif",
-        "count": 57
+        "count": 62
       },
       {
         "value": "rfam",
-        "count": 54
+        "count": 55
       },
       {
         "value": "biomodels",
@@ -743,7 +743,7 @@
       },
       {
         "value": "kaggle",
-        "count": 41
+        "count": 40
       },
       {
         "value": "massive",
@@ -759,18 +759,18 @@
       },
       {
         "value": "bioimage_archive",
-        "count": 26
-      },
-      {
-        "value": "biosample",
-        "count": 23
+        "count": 27
       },
       {
         "value": "efo",
-        "count": 23
+        "count": 24
       },
       {
         "value": "hgnc",
+        "count": 23
+      },
+      {
+        "value": "biosample",
         "count": 23
       },
       {
@@ -779,38 +779,38 @@
       },
       {
         "value": "4tu",
-        "count": 20
-      },
-      {
-        "value": "alphafold",
-        "count": 18
+        "count": 19
       },
       {
         "value": "proteomexchange",
         "count": 18
       },
       {
-        "value": "hpscreg",
+        "value": "pangaea",
         "count": 18
+      },
+      {
+        "value": "alphafold",
+        "count": 18
+      },
+      {
+        "value": "hpscreg",
+        "count": 17
       },
       {
         "value": "orphanet",
         "count": 17
       },
       {
-        "value": "pangaea",
-        "count": 17
-      },
-      {
         "value": "doi",
-        "count": 14
-      },
-      {
-        "value": "huggingface",
         "count": 13
       },
       {
         "value": "apollo",
+        "count": 13
+      },
+      {
+        "value": "huggingface",
         "count": 13
       },
       {
@@ -822,19 +822,19 @@
         "count": 11
       },
       {
-        "value": "edinburgh_datashare",
-        "count": 8
-      },
-      {
-        "value": "uniparc",
-        "count": 8
-      },
-      {
         "value": "node",
         "count": 8
       },
       {
+        "value": "edinburgh_datashare",
+        "count": 8
+      },
+      {
         "value": "gigadb",
+        "count": 7
+      },
+      {
+        "value": "uniparc",
         "count": 7
       },
       {
@@ -843,7 +843,7 @@
       },
       {
         "value": "rhea",
-        "count": 3
+        "count": 4
       },
       {
         "value": "cath",
@@ -854,15 +854,15 @@
         "count": 3
       },
       {
-        "value": "morphosource",
-        "count": 2
-      },
-      {
-        "value": "intact",
+        "value": "hipsci",
         "count": 1
       },
       {
-        "value": "hipsci",
+        "value": "morphosource",
+        "count": 1
+      },
+      {
+        "value": "intact",
         "count": 1
       }
     ],
