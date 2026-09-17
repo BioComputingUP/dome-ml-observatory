@@ -89,6 +89,22 @@ export const CLASSIFICATION_ROUNDS: readonly ClassificationRound[] = [
     promptVersion: 'v1',
     outcome: { positive: 1_791, negative: 4_416, undeterminable: 8 },
   },
+  {
+    number: 4,
+    title: 'Catch-up: 2026 papers missed by round 2',
+    started: '2026-09-15',
+    finished: '2026-09-15',
+    searchSpace: CORE_SEARCH_SPACE,
+    window:
+      'First published from 1 January to 10 September 2026 and not yet in the corpus, re-read in full ' +
+      'after the fetch for round 2 stopped short.',
+    processed:
+      '37,327 publications new to the corpus, fetched from Europe PMC on 15 September 2026; 33,961 were ' +
+      'classified and added, and 3,366 without an abstract or a readable verdict were not.',
+    model: 'DeepSeek V4.1 Flash',
+    promptVersion: 'v1',
+    outcome: { positive: 5_306, negative: 28_632, undeterminable: 23 },
+  },
 ];
 
 export const ENRICHMENT_ROUNDS: readonly EnrichmentRound[] = [
@@ -125,7 +141,18 @@ export interface Correction {
   why: string;
 }
 
-export const CORRECTIONS: readonly Correction[] = [];
+export const CORRECTIONS: readonly Correction[] = [
+  {
+    number: 1,
+    title: 'Duplicate records removed',
+    date: '2026-09-16',
+    documents: 10_568,
+    why:
+      'The same publication had been added twice, once with and once without its PubMed Central ' +
+      'identifier, almost all of them in round 2. The copy with the fuller identifiers was kept, ' +
+      'together with any licence or citation count held only by the other copy.',
+  },
+];
 
 export function roundTotal(outcome: RoundOutcome): number {
   return outcome.positive + outcome.negative + outcome.undeterminable;
