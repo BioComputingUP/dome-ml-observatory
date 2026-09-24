@@ -28,8 +28,25 @@ side rather than linked.
 The SPA uses relative URLs only, so it must be served from a domain root with the API at `/api` on
 the same origin.
 
-## Running it locally
+## Quick usage instructions
+### Local development
+Build and run the local Docker compose file:
+```bash
+docker compose -f docker-compose-local.yml up -d --build
+# xdg-open http://localhost:8080/
+```
 
+### Production deployment
+Build and deploy a production image to the production server:
+```bash
+docker compose -f docker-compose-build.yml build --push \
+  observatory-ws \
+  observatory-ui
+docker -c $remote_context compose -f docker-compose-prod.yml up -d --pull always
+# xdg-open https://observatory.dome-ml.org/
+```
+
+## Running it locally
 Docker is the recommended way to run the service and the one this page documents, in two modes:
 against the corpus database, or self-contained on a bundled 200-record sample. Both start the same
 two containers with the same command; the only difference is what `MONGODB_URI` points at.
