@@ -29,7 +29,7 @@ and does not own. **CC BY 4.0 does not extend to it, and nothing here relicenses
 
 ### Source and attribution
 
-The great majority of that data is retrieved from **[Europe PMC](https://europepmc.org/)** through
+The majority of data is retrieved from **[Europe PMC](https://europepmc.org/)** through
 their public APIs — roughly 93.5% of abstracts in the corpus are sourced from Europe PMC, with the
 remainder from Crossref and PubMed, and a small fraction of records carrying no abstract at all.
 The open-access flag and the per-paper licence string on each record come from the Europe PMC
