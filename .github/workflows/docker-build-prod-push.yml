@@ -1,0 +1,62 @@
+# Builds the two production images and pushes them to the lab registry, once CI has passed on main.
+# Adapted from BioComputingUP/bup-ui's workflow of the same name.
+#
+# Build and push only -- this never deploys. Production changes only when someone with the lab's
+# docker context runs the step in README.md ("Production deployment"):
+#   docker -c <context> compose -f docker-compose-prod.yml up -d --pull always
+#
+# Each image is pushed as :latest, which docker-compose-prod.yml pulls, and as :<short sha>, so any
+# earlier build can be put back by retagging it as :latest.
+#
+# Needs the repository Actions secrets DOCKER_USERNAME and DOCKER_PASSWORD: the registry
+# credentials, from the lab sysadmin. They are never written to a tracked file.
+name: Build and push production images
+
+on:
+  # After CI, not alongside it, so a commit that fails lint, tests or the build produces no image.
+  # CI ignores docs-only pushes, which cannot change an image either.
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Never cancel a run half way through pushing; queue the next one instead.
+concurrency:
+  group: docker-build-prod-push
+  cancel-in-progress: false
+
+env:
+  REGISTRY: registry.biocomputingup.it
+  IMAGE_PREFIX: registry.biocomputingup.it/dome-ml-observatory/dome-ml-observatory
+
+jobs:
+  build-and-push:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The commit CI passed on, not whatever main has moved to since.
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Log in to the lab registry
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: echo "$DOCKER_PASSWORD" | docker login "$REGISTRY" -u "$DOCKER_USERNAME" --password-stdin
+
+      - name: Build and push :latest
+        run: docker compose -f docker-compose-build.yml build --push observatory-ws observatory-ui
+
+      - name: Tag and push :<short sha>
+        run: |
+          sha=$(git rev-parse --short HEAD)
+          for app in ws ui; do
+            docker tag "$IMAGE_PREFIX-$app:latest" "$IMAGE_PREFIX-$app:$sha"
+            docker push "$IMAGE_PREFIX-$app:$sha"
+          done

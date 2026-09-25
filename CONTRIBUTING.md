@@ -113,6 +113,22 @@ exercise the affected endpoint. Several defects in this service were reproducibl
 things that have gone wrong before. Read it before changing code, whether you are a person or an
 AI coding agent.
 
+### Production deployment
+
+Production runs the two containers from the lab registry; the commands are in the README's
+"Production deployment" section. The docker context for the production host and the registry
+credentials come from the lab sysadmin and are never committed. Two things to know:
+
+- **`docker-compose-prod.yml` reads `.env` on the machine you run it from**, not on the server.
+  Running it from a checkout whose `.env` is a development one sends those values (the database
+  URI included) to production. Run it with the production values in `.env`, from a copy kept
+  outside the repository.
+- **Images are built by CI.** [`docker-build-prod-push.yml`](.github/workflows/docker-build-prod-push.yml)
+  pushes `:latest` and `:<short sha>` for both images after CI passes on `main`, using the
+  `DOCKER_USERNAME` / `DOCKER_PASSWORD` repository secrets. It never deploys: production changes
+  only when someone runs the `up -d --pull always` step. To roll back, retag an earlier
+  `:<short sha>` as `:latest`, push it, and run that step again.
+
 ### Deploying without Docker
 
 Supported, but not the documented path — the README covers the container deployment. The backend's
