@@ -37,11 +37,32 @@ describe('rich-text', () => {
       );
     });
 
-    it('does NOT decode entities -- double-encoded titles are an ingestion bug, not ours to guess at', () => {
-      expect(richTitle('&lt;i&gt;Halomonas elongata&lt;/i&gt;')).toBe(
-        '&lt;i&gt;Halomonas elongata&lt;/i&gt;',
+    it('renders the entity-encoded emphasis 14,450 PubMed titles are stored with', () => {
+      expect(
+        richTitle('The &lt;i&gt;Drosophila&lt;/i&gt; Connectome as a Computational Reservoir for Time-Series Prediction.'),
+      ).toBe('The <i>Drosophila</i> Connectome as a Computational Reservoir for Time-Series Prediction.');
+      expect(richTitle('Fast 3D UTE in vivo T&lt;sub&gt;1&lt;/sub&gt; mapping')).toBe(
+        'Fast 3D UTE in vivo T<sub>1</sub> mapping',
       );
+    });
+
+    it('strips an encoded tag the title allowlist does not keep, as it would a raw one', () => {
+      expect(
+        richTitle(
+          "&lt;p&gt;Converting 'cold' to 'hot' hepatocellular carcinoma for improved immunotherapy (Review)&lt;/p&gt;.",
+        ),
+      ).toBe("Converting 'cold' to 'hot' hepatocellular carcinoma for improved immunotherapy (Review).");
+    });
+
+    it('never touches an encoded angle bracket that is a comparison, not a tag', () => {
+      expect(richTitle('survival at P&lt;0.05 and &lt;74 years')).toBe('survival at P&lt;0.05 and &lt;74 years');
+      expect(richTitle('when x &lt; y and z &gt; 3')).toBe('when x &lt; y and z &gt; 3');
       expect(richTitle('survival at P<0.05 and <74 years')).toBe('survival at P<0.05 and <74 years');
+    });
+
+    it('does not revive an encoded tag it has no business emitting', () => {
+      expect(richTitle('&lt;script&gt;evil()&lt;/script&gt;')).toBe('&lt;script&gt;evil()&lt;/script&gt;');
+      expect(richTitle('&lt;i onclick="x"&gt;y&lt;/i&gt;')).toBe('&lt;i onclick="x"&gt;y</i>');
     });
 
     it('handles absent titles', () => {
@@ -56,7 +77,37 @@ describe('rich-text', () => {
       expect(plainText('<h4>Background</h4>Rheumatoid arthritis is')).toBe(
         'Background Rheumatoid arthritis is',
       );
-      expect(plainText('non-<i>ab initio</i> features')).toBe('non- ab initio features');
+    });
+
+    it('lets inline emphasis vanish without splitting the word it sits in', () => {
+      expect(plainText('non-<i>ab initio</i> features')).toBe('non-ab initio features');
+      expect(plainText('efficient CO<sub>2</sub> reduction catalysts')).toBe('efficient CO2 reduction catalysts');
+      expect(plainText('<sup>18</sup>F-FDG PET/CT imaging')).toBe('18F-FDG PET/CT imaging');
+    });
+
+    it('strips entity-encoded tags too', () => {
+      expect(plainText('The &lt;i&gt;Drosophila&lt;/i&gt; Connectome')).toBe('The Drosophila Connectome');
+    });
+
+    it('decodes the entities live titles carry, so a page title or citation never shows one', () => {
+      expect(plainText('H&amp;E-based MSI/MMR testing with AI in colorectal cancer')).toBe(
+        'H&E-based MSI/MMR testing with AI in colorectal cancer',
+      );
+      expect(plainText('Predicting Heat Meters&rsquo; Failures')).toBe('Predicting Heat Meters\u2019 Failures');
+      expect(plainText('Spatiotemporal&nbsp;Prediction of COVID-19 Mortality&nbsp;')).toBe(
+        'Spatiotemporal Prediction of COVID-19 Mortality',
+      );
+      expect(plainText('survival at P&lt;0.05 and &#8805;74 years')).toBe('survival at P<0.05 and \u226574 years');
+    });
+
+    it('leaves an entity it does not know as written', () => {
+      expect(plainText('a &madeup; entity')).toBe('a &madeup; entity');
+    });
+
+    it('keeps the text between two comparison signs', () => {
+      expect(plainText('moderate (0.5 < ICC ≤ 0.75) for first-order features, and ICC >0.9')).toBe(
+        'moderate (0.5 < ICC ≤ 0.75) for first-order features, and ICC >0.9',
+      );
     });
 
     it('handles absent input', () => {
@@ -123,6 +174,15 @@ describe('rich-text', () => {
       expect(out).toBe(
         'see <a href="http://x.test/y" target="_blank" rel="noopener nofollow">http://x.test/y</a>',
       );
+    });
+
+    it('keeps the text between two comparison signs instead of reading them as one tag', () => {
+      const raw = 'without toxicity < grade 3 in most patients, and > grade 1 in <i>older</i> adults';
+      expect(richAbstract(raw)).toBe(raw);
+    });
+
+    it('renders entity-encoded emphasis in an abstract as it does in a title', () => {
+      expect(richAbstract('in &lt;i&gt;Drosophila&lt;/i&gt; larvae')).toBe('in <i>Drosophila</i> larvae');
     });
 
     it('handles absent abstracts', () => {

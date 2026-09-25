@@ -55,6 +55,21 @@ describe('recordJsonLd', () => {
     },
   );
 
+  it('names the article in plain text when its title is stored with encoded emphasis', () => {
+    const doc = enrichedRecord();
+    doc.publication_metadata = {
+      ...doc.publication_metadata,
+      title:
+        'Enteric viral infections promote systemic accelerated aging in &lt;i&gt;Drosophila&lt;/i&gt;.',
+    };
+    const [record, article] = graph(doc);
+    const plain = 'Enteric viral infections promote systemic accelerated aging in Drosophila.';
+    expect(article.name).toBe(plain);
+    expect(article.headline).toBe(plain);
+    expect(record.name).toBe(`DOME Observatory record: ${plain}`);
+    expect(oaiDcElements(doc, ORIGIN)).toContainEqual(['title', plain]);
+  });
+
   it('keeps the licences apart: CC BY 4.0 on the record, the article’s own on the article', () => {
     const [record, article] = graph(enrichedRecord());
     expect(record.license).toBe(CC_BY_4);

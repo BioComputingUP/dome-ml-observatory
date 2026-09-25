@@ -58,6 +58,17 @@ describe('citation', () => {
       expect(lastField.endsWith(',')).toBe(false);
     });
 
+    it('writes a title stored with encoded emphasis as plain text', () => {
+      const out = toBibtex(record({ title: 'The &lt;i&gt;Drosophila&lt;/i&gt; Connectome' }));
+      expect(out).toContain('title = {The Drosophila Connectome}');
+    });
+
+    it('decodes entities and escapes the LaTeX specials they turn into', () => {
+      const out = toBibtex(record({ title: 'H&amp;E-based MSI/MMR testing with 95% accuracy' }));
+      expect(out).toContain('title = {H\\&E-based MSI/MMR testing with 95\\% accuracy}');
+      expect(out).not.toContain('&amp;');
+    });
+
     it('opens and closes the entry', () => {
       const out = toBibtex(record());
       expect(out.startsWith('@article{')).toBe(true);
@@ -75,6 +86,11 @@ describe('citation', () => {
       const out = toRis(record());
       expect(out).toContain('AB  - Background Some text.');
       expect(out).not.toContain('<h4>');
+    });
+
+    it('writes the title as plain text, with no encoded tag or entity left in it', () => {
+      const out = toRis(record({ title: 'Q&amp;A on &lt;i&gt;Escherichia coli&lt;/i&gt; CO<sub>2</sub> uptake' }));
+      expect(out).toContain('TI  - Q&A on Escherichia coli CO2 uptake');
     });
 
     it('starts with TY and ends with ER', () => {

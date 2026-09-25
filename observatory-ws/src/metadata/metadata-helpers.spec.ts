@@ -50,6 +50,40 @@ describe('small helpers', () => {
     );
   });
 
+  it('plainText lets inline emphasis vanish without splitting the word it sits in', () => {
+    expect(plainText('efficient CO<sub>2</sub> reduction, non-<i>ab initio</i> features')).toBe(
+      'efficient CO2 reduction, non-ab initio features',
+    );
+  });
+
+  it('plainText strips the entity-encoded tags 14,450 PubMed titles carry', () => {
+    expect(
+      plainText(
+        'The &lt;i&gt;Drosophila&lt;/i&gt; Connectome as a Computational Reservoir for Time-Series Prediction.',
+      ),
+    ).toBe('The Drosophila Connectome as a Computational Reservoir for Time-Series Prediction.');
+    expect(plainText('&lt;p&gt;Converting cold to hot (Review)&lt;/p&gt;.')).toBe(
+      'Converting cold to hot (Review) .',
+    );
+  });
+
+  it('plainText decodes entities, and reads an encoded comparison as text, not a tag', () => {
+    expect(plainText('H&amp;E-based MSI/MMR testing')).toBe('H&E-based MSI/MMR testing');
+    expect(plainText('Heat Meters&rsquo;&nbsp;Failures')).toBe('Heat Meters\u2019 Failures');
+    expect(plainText('survival at P&lt;0.05 and &#8805;74 years')).toBe(
+      'survival at P<0.05 and \u226574 years',
+    );
+    expect(plainText('&lt;script&gt;x&lt;/script&gt; and a &madeup; entity')).toBe(
+      '<script>x</script> and a &madeup; entity',
+    );
+  });
+
+  it('plainText keeps the text between two comparison signs', () => {
+    expect(plainText('moderate (0.5 < ICC ≤ 0.75) for first-order features, and ICC >0.9')).toBe(
+      'moderate (0.5 < ICC ≤ 0.75) for first-order features, and ICC >0.9',
+    );
+  });
+
   it('splitAuthors handles the corpus string with its trailing full stop', () => {
     expect(splitAuthors('Liang L, Liang H, He M.')).toEqual(['Liang L', 'Liang H', 'He M']);
   });

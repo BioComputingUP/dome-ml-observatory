@@ -14,11 +14,16 @@
  * runs over the result -- see record.ts. Every attribute is dropped here regardless, so nothing
  * with an attribute payload can survive this far anyway.
  *
- * No entity decoding happens anywhere below. A handful of live titles carry double-encoded markup
- * (`&lt;i&gt;Halomonas elongata&lt;/i&gt;`) which is an ingestion data-quality problem; blanket
- * decoding would mis-render every title that legitimately contains `<` or `>` (`P<0.05`, `<74
- * years`) in order to fix those few. The real fix belongs in the ingestion pipeline, in
- * dome-ml-observatory-triage, which would decode them once at load.
+ * Entity-encoded tags are a second, equally large group. 14,450 titles (1.6% of the corpus, measured
+ * 2026-09-25, every one a PubMed record) store their emphasis as `&lt;i&gt;Drosophila&lt;/i&gt;`,
+ * which `[innerHTML]` shows as the literal text `<i>Drosophila</i>`. dome-ml-observatory-triage has
+ * decoded entities at build time since schema v1.2.0, but the documents already loaded were only
+ * re-stamped by later migrations, never rebuilt, so they still carry the encoded form (ROADMAP.md
+ * tracks the data repair). A blanket entity decode here would be wrong: it would turn `P&lt;0.05` or
+ * `&lt;74 years` into something the allowlist has to guess about. `decodeEncodedTags` is narrow
+ * instead: it revives only a bare `&lt;name&gt;` whose name is one this file already knows, which
+ * every one of those titles uses and no comparison can look like. Once the stored data is repaired
+ * it matches nothing.
  */
 
 /** Inline emphasis, safe in a heading, a card title or a sentence. */
@@ -41,7 +46,25 @@ const TAG_ALIASES: Record<string, string> = {
   title: 'h4',
 };
 
-const TAG_RE = /<\s*(\/?)\s*([a-zA-Z][a-zA-Z0-9-]*)[^>]*>/g;
+/**
+ * The name has to follow `<` or `</` directly, as it must for an HTML parser to see a tag. Allowing
+ * whitespace there made a comparison like `0.5 < ICC ≤ 0.75 ... >` read as one long tag and deleted
+ * the text between the two signs (237 live abstracts). `:` admits namespaced tags (`<mml:math>`).
+ */
+const TAG_RE = /<(\/?)([a-zA-Z][a-zA-Z0-9:-]*)(?:\s[^<>]*)?\/?>/g;
+
+/** Every tag name the functions below keep, remap or know to strip. */
+const KNOWN_TAGS = new Set([...INLINE_TAGS, ...BLOCK_TAGS, ...Object.keys(TAG_ALIASES), 'u', 'span']);
+
+/** A bare encoded tag -- no attributes: none of the encoded titles carries one. */
+const ENCODED_TAG_RE = /&lt;(\/?)([a-zA-Z][a-zA-Z0-9]*)\s*&gt;/g;
+
+/** `&lt;i&gt;` -> `<i>`, for known tag names only; any other `&lt;` is left exactly as it was. */
+function decodeEncodedTags(raw: string): string {
+  return raw.replace(ENCODED_TAG_RE, (match, closing: string, name: string) =>
+    KNOWN_TAGS.has(name.toLowerCase()) ? `<${closing}${name}>` : match,
+  );
+}
 
 /**
  * Rewrites `raw` to contain only `allowed` tags, with every attribute dropped. A tag that isn't
@@ -65,20 +88,59 @@ const ABSTRACT_ALLOWED = new Set([...INLINE_TAGS, ...BLOCK_TAGS, 'u', 'span']);
  */
 export function richTitle(raw: string | null | undefined): string {
   if (!raw) return '';
-  return toAllowlist(raw, TITLE_ALLOWED);
+  return toAllowlist(decodeEncodedTags(raw), TITLE_ALLOWED);
+}
+
+/** Emphasis sits inside a word as often as around one (`CO<sub>2</sub>`, `non-<i>ab initio</i>`). */
+const INLINE_SET = new Set([...INLINE_TAGS, 'u', 'span']);
+
+/** The named entities the live titles carry (2026-09-25), plus the handful that travel with them. */
+const NAMED_ENTITIES: Record<string, string> = {
+  amp: '&',
+  lt: '<',
+  gt: '>',
+  quot: '"',
+  apos: "'",
+  nbsp: '\u00a0',
+  lsquo: '\u2018',
+  rsquo: '\u2019',
+  ldquo: '\u201c',
+  rdquo: '\u201d',
+  ndash: '\u2013',
+  mdash: '\u2014',
+  hellip: '\u2026',
+  trade: '\u2122',
+};
+
+const ENTITY_RE = /&(?:#(\d{1,7})|#[xX]([0-9a-fA-F]{1,6})|([a-zA-Z][a-zA-Z0-9]{1,31}));/g;
+
+/**
+ * One pass, as the browser makes over `[innerHTML]`, so the plain form reads exactly as the rendered
+ * one does. An unknown name is left as written rather than guessed at.
+ */
+function decodeEntities(text: string): string {
+  return text.replace(ENTITY_RE, (match, dec?: string, hex?: string, name?: string) => {
+    if (name) return NAMED_ENTITIES[name] ?? match;
+    const code = dec ? Number(dec) : parseInt(hex ?? '', 16);
+    return code > 0 && code <= 0x10ffff ? String.fromCodePoint(code) : match;
+  });
 }
 
 /**
- * Tags stripped and whitespace collapsed. This is what length-based truncation, `aria-label`s and
- * citation output must use -- truncating the marked-up string would cut mid-tag and leave a
- * dangling `<i` in the DOM, and a reference manager should never receive `<i>` in a title field.
+ * Tags stripped, entities decoded and whitespace collapsed. This is what length-based truncation,
+ * `aria-label`s, the page title and citation output must use -- truncating the marked-up string
+ * would cut mid-tag and leave a dangling `<i` in the DOM, and a reference manager should never
+ * receive `<i>` or `&amp;` in a title field. Inline tags vanish without a trace, so `CO<sub>2</sub>`
+ * reads `CO2`; block tags leave a space, so a heading doesn't run into the sentence after it.
+ * Decoding is safe here and only here: the result is text, and whatever displays it escapes it.
  */
 export function plainText(raw: string | null | undefined): string {
   if (!raw) return '';
-  return raw
-    .replace(TAG_RE, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+  const stripped = decodeEncodedTags(raw).replace(TAG_RE, (_match, _closing: string, name: string) => {
+    const tag = TAG_ALIASES[name.toLowerCase()] ?? name.toLowerCase();
+    return INLINE_SET.has(tag) ? '' : ' ';
+  });
+  return decodeEntities(stripped).replace(/\s+/g, ' ').trim();
 }
 
 /**
@@ -118,5 +180,5 @@ function linkify(html: string): string {
  */
 export function richAbstract(raw: string | null | undefined): string {
   if (!raw) return '';
-  return linkify(toAllowlist(raw, ABSTRACT_ALLOWED));
+  return linkify(toAllowlist(decodeEncodedTags(raw), ABSTRACT_ALLOWED));
 }

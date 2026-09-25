@@ -31,8 +31,14 @@ export function bibtexKey(record: AiMlRecord): string {
   return `${surname}${year}${firstWord}`;
 }
 
+/**
+ * Braces would unbalance the field; `&`, `%` and `#` are LaTeX specials that plain titles and journal
+ * names use as themselves ("Q&A", "95%", "Biosensors & bioelectronics") and that break a build when
+ * bare. `$` and `_` are left alone: the titles that carry them are mostly LaTeX math, which BibTeX
+ * should keep.
+ */
 function bibtexEscape(value: string): string {
-  return value.replace(/[{}]/g, '');
+  return value.replace(/[{}]/g, '').replace(/[&%#]/g, '\\$&');
 }
 
 export function toBibtex(record: AiMlRecord): string {
