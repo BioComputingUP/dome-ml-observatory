@@ -52,7 +52,8 @@ Short list, unranked, to judge later:
 
 1. Self-hosted logos for the data-link resources (PDBe, UniProt, ENA, GEO, BioStudies, Dryad,
    figshare, ...); the cards use icon-font glyphs until then.
-2. FAIR registrations and scoring: register the Observatory in FAIRsharing and re3data, score a
+2. FAIR registrations and scoring: register the Observatory in re3data (the FAIRsharing record is
+   submitted and awaiting curation; link it from the integrations page once public), score a
    record page and `/api/catalog` with F-UJI and FAIR-Checker, check a record page in the
    Schema.org validator and Google's Rich Results Test, run the openarchives.org validator against
    `/api/oai`, and submit `/sitemap.xml` to the search consoles.
