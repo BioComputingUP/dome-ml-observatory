@@ -10,9 +10,9 @@
 }
 
 // The bar is the inactive colour and the active tab paints over it, so News (active on load)
-// starts dark blue and Events sits in orange -- the muted one, not the full-strength accent.
+// starts dark blue and Events sits in the site's standard orange.
 .content-nav {
-  background-color: var(--observatory-accent-muted);
+  background-color: var(--observatory-accent);
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 2rem;
@@ -76,12 +76,12 @@
   }
 
   &:hover .card-date {
-    background-color: var(--observatory-accent-muted);
+    background-color: var(--observatory-accent);
   }
 }
 
 // Blue at rest, orange only on hover -- the reverse of the old orange strips, which put the
-// full-strength accent on every card at once.
+// accent on every card at once.
 .card-date {
   background-color: var(--observatory-primary);
   color: white;
@@ -118,7 +118,7 @@
   transition: color 0.3s ease;
 
   &:hover {
-    color: var(--observatory-accent-muted);
+    color: var(--observatory-accent);
   }
 }
 
