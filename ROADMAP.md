@@ -1,7 +1,9 @@
 # Roadmap
 
 What is still open across both repositories. Shipped work is not listed here — the record of what
-was built and why is in each repository's `AGENTS.md` and its code.
+was built and why is in each repository's `AGENTS.md` and its code. When the last item goes, so does
+this file, along with the pointers to it in `README.md`, `AGENTS.md` and the sister repository's
+stub `ROADMAP.md`.
 
 **One roadmap, two repositories.** [`dome-ml-observatory-triage`](https://github.com/BioComputingUP/dome-ml-observatory-triage)
 is the write side: it builds the corpus, authors the document schema and is the only writer to the
@@ -10,62 +12,22 @@ item below says which side does the work; the triage repository keeps no separat
 
 ## At a glance
 
-| # | Item | Blocked on |
-|---|---|---|
-| 1 | [Matomo analytics](#1-matomo-analytics) — built, switched off | A site ID from the Matomo admin |
-| 2 | [Finalise and optimise search](#2-finalise-and-optimise-search) | A plan, to be written |
-| 3 | [Verify the preprint fields and data links](#3-verify-the-preprint-fields-and-data-links) | The v1.5.0 load, in the sister repo |
-| 4 | [The Zenodo archive, and the dead DOI on the site](#4-the-zenodo-archive-and-the-dead-doi-on-the-site) | Building the archive job, in the sister repo |
-| 5 | [Final docs pass](#5-final-docs-pass) | Every other repo settling |
-| 6 | [Citation-count liveness](#6-citation-count-liveness) | A last-processed date the API can serve |
-| 7 | [Link out to the curation criteria](#7-link-out-to-the-curation-criteria) | Nothing |
-| 8 | [A skill for the hardcoded figures](#8-a-skill-for-the-hardcoded-figures) | Nothing |
-| 9 | [Cross links](#9-cross-links) | — |
-| 10 | [Keep the two repositories aligned](#10-keep-the-two-repositories-aligned) | Everything above, both sides |
+| # | Item | Side | Blocked on |
+|---|---|---|---|
+| 1 | [The Zenodo release in the release metadata](#1-the-zenodo-release-in-the-release-metadata) | triage | Nothing |
+| 2 | [Finalise and optimise search](#2-finalise-and-optimise-search) | this repository | A plan, to be written |
+| 3 | [Cross links](#3-cross-links) | triage | Nothing |
 
 ---
 
-## 1. Matomo analytics
+## 1. The Zenodo release in the release metadata
 
-Both halves are written and shipped, each inert behind one switch. Nothing is contacted while they
-are off, so turning analytics on is flipping two values — no code change, no container rebuild.
-
-| Side | File | Switch | State |
-|---|---|---|---|
-| Browser page views | `observatory-ui/src/app/core/matomo.ts` | `MATOMO_SITE_ID` in `core/analytics.config.ts` | `null` |
-| API usage | `observatory-ws/src/analytics/matomo.interceptor.ts` | `MATOMO_TOKEN` env var | unset |
-
-API tracking exists because `/api/export` makes the whole corpus retrievable, and browser
-analytics would see none of that traffic.
-
-**Matomo only, no Google Analytics, no cookie banner.** GA sets non-essential cookies and
-transfers data outside the EU/EEA, which would require a consent banner, versioned consent state,
-a withdrawal path and a US-transfer disclosure. Matomo is self-hosted by the university,
-cookieless (`disableCookies`) and IP-anonymised, so none of that applies. Do not remove the
-`disableCookies` call.
-
-The CSP already permits `matomo.biocomputingup.it` in `nginx.conf`. The privacy page reads the
-same constant that turns tracking on, so its wording cannot drift.
-
-### Activation
-
-1. **Ask the `matomo.biocomputingup.it` administrator for a site ID.** Name: DOME Observatory.
-   URL: `https://observatory.dome-ml.org`. Also confirm, because the privacy page asserts all
-   three: IP anonymisation on, a retention period you are willing to publish, EU hosting.
-2. **Browser tracking** — set `MATOMO_SITE_ID` in `analytics.config.ts` to the issued ID, rebuild,
-   redeploy.
-3. **API tracking** — generate a Matomo auth token with tracking scope. Set `MATOMO_SITE_ID` and
-   `MATOMO_TOKEN` in the deployment environment for `observatory-ws`, never in a tracked file, and
-   restart. The token is required, not optional: without it Matomo attributes every API call to
-   the server's own IP rather than the caller's. It is the only credential this service has.
-4. **Verify in the container, not `ng serve`** — the CSP only exists in the container and a
-   CSP-blocked script fails silently. Check `matomo.js` loads, one request per navigation, no CSP
-   violation, and **no cookies set**. Then `curl` an API endpoint and confirm it appears in
-   Matomo's real-time log with the caller's IP.
-
-**Rollback**, independently on each side: unset `MATOMO_TOKEN` and restart; or set
-`MATOMO_SITE_ID` back to `null` and redeploy. The CSP entry can stay — a permitted host is not a
-contacted one.
+Each load is archived to Zenodo as a new version of the Observatory's record (the sister
+repository's `refresh-cycle` step 8, `scripts/zenodo_archive.py`), under the concept DOI
+10.5281/zenodo.22259905 that `/download/bulk` names. What is left, in the sister repository:
+`build_release_metadata.py` should add the month's Zenodo version to `metadata/releases/<YYYY-MM>/`
+as a DCAT distribution with its DOI, so `/api/catalog` names it. Until then `metadata/README.md`
+says the catalogue carries no DOI.
 
 ## 2. Finalise and optimise search
 
@@ -75,108 +37,25 @@ and for any query that clears the classification filter, and facet counts are co
 than contextual. A plan for this is still to be written, and it depends on decisions in the sister
 repository — whether `citation_count` gets an index, and how open vocabularies become facets.
 
-## 3. Verify the preprint fields and data links
-
-Schema v1.4.0 (released here 2026-09-14) carries the v1.3.0 preprint fields and the new
-`data_links` group. The code is in: `record.dto.ts` / `record.model.ts` types, the record page's
-data-link cards (`core/data-links.ts`, one card per linked resource with its icon), the Linked data
-filter (`?dl=`, `data_resource` facet, `/api/stats` `dataResources`), and the Europe PMC link now
-built as `/article/{epmc_source}/{epmc_id}` (`core/outbound-links.ts`), which fixes the 3,157
-preprints that carry a PMID. `venue.ts` already prefers the stored server.
-
-Once the sister repository has migrated moros to 1.4.0 and loaded the `preprints` and `data_links`
-fields: deploy, restart `observatory-ws` (the facet cache is boot-loaded), measure the boot-time
-`distinct` on `data_links.resources.resource` against the Dockerfile's `--start-period`, check a
-preprint's venue and Europe PMC link and a data-rich record's cards against real data, and flip
-the "Europe PMC data links" integration to live. The cards use icon-font glyphs for resources with
-no logo in `assets/img/`; self-hosted logos for PDBe, UniProt, ENA, GEO, BioStudies and the data
-repositories are still to add, as a content-only commit.
-
-Schema v1.5.0 (released here 2026-09-14, not yet loaded) adds EBI Search's database-side links for
-positives -- deposits, bio.tools and the DOME Registry -- inside the same `data_links` block, and
-fills `identifiers.dome_registry`. The code is in: optional `routes` / `browse_url` / `matched_by` /
-`source_domain` in `record.dto.ts` and `record.model.ts`; a card that lists several entries as
-chips with a "+N more" expander and a "See all" link (`core/data-links.ts`, `record/record.html`);
-one DOME Registry card, not two, when both the identifier and a data link name the entry; the DOME
-link built as `/review/{id}`. After the sister repository's v1.5.0 migration and its `data_links`
-and `identifiers` loads: deploy first, restart `observatory-ws`, check a DOME paper, a bio.tools
-paper and a GEO-heavy paper against real data, confirm the new slugs in the Linked data facet, and
-flip the "DOME Registry" integration to live alongside "Europe PMC data links".
-
-## 4. The Zenodo archive, and the dead DOI on the site
-
-**The dead DOI, here.** `download-bulk.ts` hardcodes `ZENODO_DOI = '10.5281/zenodo.22259905'` and
-`/download/bulk` presents it as the permanent release identifier, with a copy button. It is
-not registered: `doi.org` 404s and Zenodo's API reports "the persistent identifier is not
-registered" (re-checked 2026-09-07). Either mint the real deposition and replace the literal, or
-revert the page to describing the mechanism without asserting a DOI. Until a real one exists, that
-description names no DOI.
-
-**The archive job that mints it, in the sister repository.** A monthly GitHub Actions workflow:
-cursor-loop `GET /api/export`, gzip, deposit through the Zenodo API with a sidecar (count, size,
-sha256, `schema_version`) and the schema release. Reuse
-`DOME_zenodo_archive/download_dome_registry.py`, `ZENODO_TOKEN` from Actions secrets. Then add the
-deposit to that month's release metadata as a Zenodo distribution with its DOI (the sister
-repository's `build_release_metadata.py` and `docs/release_metadata.md`, which writes into
-`metadata/` here), and replace the literal on `/download/bulk`.
-
-## 5. Final docs pass
-
-Late, once the sister repositories have settled. `README.md`, `AGENTS.md` and
-`.claude/skills/` were written while the split across repositories was still moving, so re-read
-them against what is actually true then:
-
-- Every cross-repository claim and link still resolves, and names the right repository.
-- `AGENTS.md` matches the code — it says to trust the code and update the file where they differ.
-- The `schema-version` skill's procedure still matches the real release and alignment steps.
-- No stale counts, versions or file paths anywhere.
-
-## 6. Citation-count liveness
-
-Cards and record pages show `citation_count` without saying how fresh it is or when the corpus was
-last processed — the site's only date, `about-support.ts`'s hand-edited `lastUpdated`, is a page
-date, not a data one. Add a liveness disclaimer and a real last-processed date served by the API.
-
-## 7. Link out to the curation criteria
-
-`about-overview.html` says records are screened "against published criteria" but links to nothing.
-Point it at the sister repository's `curation_criteria/CRITERIA.md`, versioned by the
-`criteria_sha256` and `prompt_version` pinned in its `prompts/PROMPT_HASHES.json`.
-
-## 8. A skill for the hardcoded figures
-
-Corpus counts are typed into the UI by hand in a dozen files — `status-badge.ts`, `venue.ts`,
-`facet-panel.html`, `records.service.ts`, `download-api.ts`, `facet-stats.model.ts` — as displayed
-text and as prose in comments. Add a skill that finds every one, checks it against `/api/stats` and
-`schema/generate_facet_stats.py`'s `CORPUS` dict, and updates them together so they stay uniform.
-
-## 9. Cross links
+## 3. Cross links
 
 `identifiers.dome_registry` and the `identifiers` write mode are built with v1.5.0. Left: derive
 `identifiers.zenodo` and `bioai_repo` from `data_links`, and build the fetch process for Hugging
 Face and Kaggle per [`cross_links/README.md`](https://github.com/BioComputingUP/dome-ml-observatory-triage/blob/main/cross_links/README.md).
-
-## 10. Keep the two repositories aligned
-
-Last, once everything above is done. Run the sister repository's `schema/check_alignment.py` and
-confirm the authored schema, the `schema/CURRENT` published here and the live `schema_version` all
-agree. Then the prose: no claim, count or link in either repository's `README.md`, in this
-`ROADMAP.md` or in either repository's skills contradicting the other's — item 5 does that pass
-here, this item is what makes it a two-sided check. This is the single list for both repositories,
-so nothing is finished until both sides pass.
+That fills the reserved Zenodo, source-repository, Hugging Face and Kaggle cards on record pages,
+which are empty today; data links already reach 13 Hugging Face and 40 Kaggle positives, and the
+integrations page lists both as planned until this lands.
 
 ---
 
 Short list, unranked, to judge later:
 
 1. Self-hosted logos for the data-link resources (PDBe, UniProt, ENA, GEO, BioStudies, Dryad,
-   figshare, ...) in this repository; the cards use icon-font glyphs until then.
-2. FAIR registrations and scoring, once the FAIR metadata is deployed: register the Observatory in
-   FAIRsharing and re3data, consider an identifiers.org prefix for record PIDs (the DOME Registry
-   has `dome`), and score a record page and `/api/catalog` with F-UJI and FAIR-Checker. Check a
-   record page in the Schema.org validator and Google's Rich Results Test, run the openarchives.org
-   validator against `/api/oai`, and submit `/sitemap.xml` to the search consoles.
+   figshare, ...); the cards use icon-font glyphs until then.
+2. FAIR registrations and scoring: register the Observatory in FAIRsharing and re3data, score a
+   record page and `/api/catalog` with F-UJI and FAIR-Checker, check a record page in the
+   Schema.org validator and Google's Rich Results Test, run the openarchives.org validator against
+   `/api/oai`, and submit `/sitemap.xml` to the search consoles.
 3. Settle the refresh cadence (monthly or bimonthly) as stated policy, and make the sister
    repository's skills, the "Monthly to bimonthly" update cadence on `/download/bulk` and the "6-12
-   times a year" in `core/facet-stats.model.ts` agree. The processing history page already logs each
-   round (the sister repository's `processing-log` skill); the cadence is what is left.
+   times a year" in `core/facet-stats.model.ts` agree.
