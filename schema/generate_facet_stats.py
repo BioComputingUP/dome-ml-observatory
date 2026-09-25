@@ -53,7 +53,7 @@ CORPUS = {
     "negative": 502_002,
     "undeterminable": 6_974,
     "openAccess": 589_529,
-    "fulltextAvailable": 657_676,
+    "fulltextAvailable": 669_109,
     "enriched": 3_532,
 }
 CORPUS_PROVENANCE = (

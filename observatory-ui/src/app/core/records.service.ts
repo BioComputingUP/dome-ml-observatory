@@ -66,9 +66,9 @@ export interface SearchResult {
  * outright. RecordsService.getFacetStats() is the primary source now (Phase 7) -- these values
  * are a snapshot, not live, and drift from the real corpus with every load.
  *
- * corpus-figures: GET /api/stats `corpus` on 2026-09-25, kept equal to the CORPUS dict in
- * schema/generate_facet_stats.py. The sister repository's refresh-cycle skill refreshes every
- * block marked `corpus-figures` after a load.
+ * corpus-figures: GET /api/stats `corpus` on 2026-09-25 (full text as corrected that day), kept
+ * equal to the CORPUS dict in schema/generate_facet_stats.py. The sister repository's
+ * refresh-cycle skill refreshes every block marked `corpus-figures` after a load.
  */
 export const CORPUS_STATS: CorpusStats = {
   total: 876_324,
@@ -76,7 +76,7 @@ export const CORPUS_STATS: CorpusStats = {
   negative: 502_002,
   undeterminable: 6_974,
   openAccess: 589_529,
-  fulltextAvailable: 657_676,
+  fulltextAvailable: 669_109,
   enriched: 3_532,
 };
 
@@ -85,7 +85,7 @@ export const CORPUS_STATS: CorpusStats = {
  *  corpus-figures: GET /api/stats `search_space` on 2026-09-25. */
 export const SEARCH_SPACE_STATS: SearchSpaceStats = {
   total: 367_348,
-  fulltextAvailable: 237_377,
+  fulltextAvailable: 243_678,
   openAccess: 212_302,
   enriched: 3_532,
   yearRange: { min: 1963, max: 2027 },
