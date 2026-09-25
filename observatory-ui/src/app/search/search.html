@@ -21,10 +21,12 @@
         <button type="submit" class="search-field-button">Search</button>
       </form>
       <p class="search-author-hint">
-        Search an author as <strong>Farrell G</strong>, <strong>G Farrell</strong> or
-        <strong>Gavin Farrell</strong> — case, dots and commas make no difference. Just
-        <strong>Farrell</strong> gives the wider set. Use "quotation marks" to keep words together
-        as a phrase.
+        Words match whole, with their forms (<strong>cell</strong> finds cells and cellular);
+        add <strong>*</strong> for word beginnings (<strong>neuro*</strong>). Use "quotation marks"
+        to keep words together. A method name or acronym also finds its other spellings
+        (<strong>svm</strong>, support vector machine), and a DOI or PMID finds that record. Search
+        an author as <strong>Farrell G</strong>, <strong>G Farrell</strong> or
+        <strong>Gavin Farrell</strong> — case, dots and commas make no difference.
       </p>
     </div>
   </section>
@@ -74,8 +76,8 @@
           <p class="result-count">
             @if (loading()) {
               Searching…
-              @if (searchingFullText()) {
-                <span class="search-hint">Searching the full corpus — this can take a few seconds.</span>
+              @if (searchingByPrefix()) {
+                <span class="search-hint">Matching word beginnings means scanning the corpus — this can take a few seconds.</span>
               }
             } @else if (total() === 0) {
               No results
@@ -108,6 +110,15 @@
           </div>
         </div>
 
+        @if (matchNote(); as note) {
+          <p class="match-note">
+            {{ note.text }}
+            @if (note.suggest) {
+              <button type="button" class="link-button" (click)="searchNow(note.suggest)">{{ note.suggest }}</button>
+            }
+          </p>
+        }
+
         @if (error()) {
           <div class="state error" role="alert">
             <p>{{ error() }}</p>
@@ -123,17 +134,25 @@
           <div class="state timeout" role="alert">
             <h2>That search took too long to complete</h2>
             <p>Try adding another word, or narrowing with a filter — the database itself is fine, this specific search was just too broad to finish in time.</p>
-            <button type="button" class="cta-button" (click)="clearAll()">Clear all filters</button>
+            <button type="button" class="cta-button" (click)="clearFilters()">Clear the filters, keep the search</button>
           </div>
         } @else if (total() === 0) {
           <div class="state empty">
-            <h2>Nothing matched those filters</h2>
-            <p>Try removing a filter or broadening your search.</p>
-            <button type="button" class="cta-button" (click)="clearAll()">Clear all filters</button>
+            @if (freeText()) {
+              <h2>Nothing matched “{{ freeText() }}”</h2>
+              <p>Check the spelling, try fewer words, or remove a filter.</p>
+              @if (activeCount()) {
+                <button type="button" class="cta-button" (click)="clearFilters()">Clear the filters, keep the search</button>
+              }
+            } @else {
+              <h2>Nothing matched those filters</h2>
+              <p>Try removing a filter or broadening your search.</p>
+              <button type="button" class="cta-button" (click)="clearAll()">Clear all filters</button>
+            }
           </div>
         } @else {
           @for (record of items(); track record._id) {
-            <app-result-card [record]="record" />
+            <app-result-card [record]="record" [terms]="highlightTerms()" />
           }
 
           @if (totalPages() > 1) {

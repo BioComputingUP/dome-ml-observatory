@@ -75,6 +75,16 @@
   line-height: 1.6;
 }
 
+// The search terms, in the title and the snippet. A tint of the accent rather than the browser's
+// yellow, and the text colour left alone, so a marked word still reads as part of its sentence.
+.card-title mark,
+.card-snippet mark {
+  background-color: color-mix(in srgb, var(--observatory-accent) 22%, transparent);
+  color: inherit;
+  padding: 0 0.1em;
+  border-radius: 2px;
+}
+
 .card-outbound {
   display: flex;
   flex-wrap: wrap;

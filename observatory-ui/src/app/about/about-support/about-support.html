@@ -181,10 +181,36 @@
       <summary>How are multiple words treated?</summary>
       <p>
         They are AND-ed, not read as a phrase: every word has to appear somewhere in the title,
-        abstract or author list, in any order. Matching is anchored to the start of a word, so
-        <code>cell</code> finds "cells" and "cellular" but not "excellent". If you want the words
-        next to each other, quote them: <code>"random forest"</code> is matched as a phrase, and
-        still matches titles that hyphenate it or split it with inline markup.
+        abstract or author list, in any order. If you want the words next to each other, quote
+        them: <code>"random forest"</code> is matched as a phrase, and still matches titles that
+        hyphenate it or split it with inline markup. A hyphenated word is matched either way, so
+        <code>single-cell</code> also finds "single cell".
+      </p>
+    </details>
+
+    <details class="faq-item" id="faq-word-matching">
+      <summary>What exactly does a word match?</summary>
+      <p>
+        The whole word and its forms, the way PubMed does: <code>cell</code> finds "cells" and
+        "cellular", <code>predict</code> finds "prediction" and "predicting". It does not match
+        the inside of another word, so <code>dome</code> no longer brings back "domestic". To
+        match word beginnings instead, add a star: <code>neuro*</code> finds neuroimaging,
+        neuroscience and the rest. That takes a slower path through the corpus, a few seconds
+        rather than under one. When no whole word matches at all, the star form is tried for you,
+        and the line under the result count says which happened.
+      </p>
+      <p>
+        A method name or acronym from the published vocabulary is also searched under its other
+        spellings: <code>svm</code> finds papers that only ever say "support vector machine",
+        <code>gnn</code> those that say "graph neural network", and quoting the full name
+        (<code>"large language model"</code>) finds its acronym. Acronyms with another common
+        meaning in the biomedical literature (GBM, MDS, LOF) are deliberately not expanded.
+        Pasting a DOI, PMID or PMCID finds that record directly.
+      </p>
+      <p>
+        Results are ordered by how well the title matches: a title that opens with your term or
+        carries it as an acronym comes first, then titles containing every word, then matches in
+        the abstract or author list, with more-cited papers ahead within each group.
       </p>
     </details>
 
@@ -206,17 +232,13 @@
     </details>
 
     <details class="faq-item" id="faq-slow-single-word">
-      <summary>Why can one uncommon word be slower than two?</summary>
+      <summary>Why is a word-beginning search slower?</summary>
       <p>
-        A search of two or more words uses the text index, which is fast. A single bare word
-        deliberately does not: the index stems words, and a lone term has no second word to rescue
-        what stemming drops. For the combining forms biologists actually type, such as
-        <code>neuro</code> or <code>bioinform</code>, that loss is severe enough to hide most of the
-        matches.
-      </p>
-      <p>
-        So a lone word takes the thorough path instead and can take several seconds. Recall is never
-        given up for speed, and adding a second word puts you back on the fast path.
+        Every ordinary search is answered from the text index, in about a second. The index knows
+        whole words, so <code>neuro*</code> — every word that begins with neuro — cannot use it
+        and has to scan the corpus instead, which takes a few seconds. The same is true of a
+        search with the classification filter cleared through the API, which the index does not
+        cover.
       </p>
     </details>
 

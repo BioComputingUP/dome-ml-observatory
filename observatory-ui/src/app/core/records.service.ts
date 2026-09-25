@@ -30,10 +30,8 @@ export interface SearchFilters {
   enrichedOnly?: boolean;
 }
 
-/** citations_desc/citations_asc sort on publication_metadata.citation_count, which is null for
- *  every record in the current corpus (a forward-compatible schema placeholder) -- wired now so
- *  the option works unchanged once that field is populated. See search.html's not-yet-populated
- *  note, shown whenever one of these is the active sort. */
+/** citations_desc/citations_asc sort on publication_metadata.citation_count, a real Europe PMC
+ *  figure on ~98% of records since the 2026-09-03 load; the rest are null and sort last. */
 export type SortOrder = 'relevance' | 'year_desc' | 'year_asc' | 'citations_desc' | 'citations_asc';
 
 export interface SearchQuery {
@@ -42,6 +40,21 @@ export interface SearchQuery {
   sort: SortOrder;
   page: number;
   pageSize: number;
+}
+
+/** How the free text was matched -- observatory-ws's SearchInfo (records.service.ts there). */
+export interface SearchInfo {
+  /**
+   *  'word'       whole words and their inflections, from the index -- the ordinary case.
+   *  'prefix'     word beginnings on the scan path: a `*` term, or the automatic retry after the
+   *               index found nothing for the words as typed.
+   *  'author'     the initials-first name probe answered ("G Farrell").
+   *  'identifier' a DOI, PMID or PMCID looked up directly.
+   */
+  matched: 'word' | 'prefix' | 'author' | 'identifier';
+  /** Synonyms the query picked up from the published vocabulary: "svm" also searched as
+   *  "support vector machine". Empty when none applied. */
+  expansions: { term: string; alternatives: string[] }[];
 }
 
 export interface SearchResult {
@@ -58,6 +71,8 @@ export interface SearchResult {
    *  200 with an honest "that specific search was too slow" result. Only ever true for a
    *  free-text (q=) search. See observatory-ws/src/records/records.service.ts. */
   timedOut?: boolean;
+  /** Absent when there was no free text. */
+  search?: SearchInfo;
 }
 
 /**

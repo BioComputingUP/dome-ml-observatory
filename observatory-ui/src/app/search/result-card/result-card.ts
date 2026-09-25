@@ -4,7 +4,8 @@ import { RouterLink } from '@angular/router';
 import { AiMlRecord } from '../../core/record.model';
 import { citationCountNote } from '../../core/citation-count';
 import { articleSources } from '../../core/outbound-links';
-import { richTitle, truncatePlain } from '../../core/rich-text';
+import { plainText, richTitle } from '../../core/rich-text';
+import { escapeHtml, markTerms, snippetAround } from '../../core/highlight';
 import { publicationVenue } from '../../core/venue';
 import { StatusBadge } from '../../shared/status-badge/status-badge';
 
@@ -18,18 +19,27 @@ const SNIPPET_LENGTH = 240;
 })
 export class ResultCard {
   readonly record = input.required<AiMlRecord>();
+  /** The search terms to highlight, from the parent page (core/search-terms.ts). */
+  readonly terms = input<string[]>([]);
 
   /** Titles carry inline emphasis ("non-<i>ab initio</i>", "CO<sub>2</sub>"), which interpolation
    *  rendered as literal tag text. Bound with [innerHTML] so Angular sanitises the normalised
-   *  string -- see core/rich-text.ts. */
-  readonly titleHtml = computed(() => richTitle(this.record().publication_metadata.title));
+   *  string -- see core/rich-text.ts. Search terms are marked in the text only, never in a tag. */
+  readonly titleHtml = computed(() =>
+    markTerms(richTitle(this.record().publication_metadata.title), this.terms()),
+  );
   readonly hasTitle = computed(() => Boolean(this.record().publication_metadata.title));
 
-  /** The card wants plain text: truncating the marked-up abstract would cut mid-tag. Truncation
-   *  therefore happens on the stripped form. The record page renders the structured version. */
-  readonly snippet = computed(() =>
-    truncatePlain(this.record().publication_metadata.abstract, SNIPPET_LENGTH),
-  );
+  /** The part of the abstract that answers "why is this here": a window around the first search
+   *  term hit, or the opening when the terms are already in view (or absent). Plain text --
+   *  cutting the marked-up abstract would cut mid-tag -- escaped, then the terms marked, then
+   *  bound with [innerHTML] so the sanitiser still runs. The record page renders the structured
+   *  version. */
+  readonly snippetHtml = computed(() => {
+    const plain = plainText(this.record().publication_metadata.abstract);
+    if (!plain) return '';
+    return markTerms(escapeHtml(snippetAround(plain, this.terms(), SNIPPET_LENGTH)), this.terms());
+  });
 
   // Labelled rows (Authors: / Journal: / Year:) rather than one "authors · journal · year" line
   // -- each is its own fact and reads faster labelled than run together, and it's what makes

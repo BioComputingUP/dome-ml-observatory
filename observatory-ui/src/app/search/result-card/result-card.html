@@ -36,8 +36,8 @@
     }
   </dl>
 
-  @if (snippet()) {
-    <p class="card-snippet">{{ snippet() }}</p>
+  @if (snippetHtml()) {
+    <p class="card-snippet" [innerHTML]="snippetHtml()"></p>
   }
 
   <app-status-badge [record]="record()" context="card" />

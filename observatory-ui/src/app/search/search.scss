@@ -156,6 +156,27 @@
   margin-top: var(--space-1);
 }
 
+.match-note {
+  font-size: var(--font-size-xs);
+  color: var(--status-neutral);
+  margin: calc(-1 * var(--space-2)) 0 var(--space-3);
+}
+
+// A query offered inline ("dome*"): a link in a sentence, not a button.
+.link-button {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--observatory-accent);
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--observatory-accent-dark);
+  }
+}
+
 .window-cap-note {
   font-size: var(--font-size-xs);
   color: var(--status-neutral);

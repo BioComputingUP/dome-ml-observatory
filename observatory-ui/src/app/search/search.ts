@@ -4,7 +4,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged, filter, switchMap, catchError, of, map, tap } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { RecordsService, SearchFilters, SearchQuery, SearchResult, SortOrder } from '../core/records.service';
+import { RecordsService, SearchFilters, SearchInfo, SearchQuery, SearchResult, SortOrder } from '../core/records.service';
+import { searchHighlightTerms } from '../core/search-terms';
 import { SearchStateService } from '../core/search-state.service';
 import {
   paramsToQuery,
@@ -69,10 +70,10 @@ export class Search {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
-  /** True while a free-text search against the real corpus is in flight -- q searches are the
-   *  slow path (measured against the MongoDB server: ~1-4s depending on term rarity), unlike filter-only
-   *  searches which stay fast. */
-  readonly searchingFullText = computed(() => this.loading() && this.freeText().length > 0);
+  /** True while a word-beginning (`*`) search is in flight: the one kind of free-text search that
+   *  still takes the scan path, several seconds against the live corpus. Every other free-text
+   *  search is served from the index in about a second. */
+  readonly searchingByPrefix = computed(() => this.loading() && this.freeText().includes('*'));
 
   private readonly results = toSignal(
     this.route.queryParams.pipe(
@@ -103,6 +104,52 @@ export class Search {
    *  search was too slow" result, not the outage state (error()/searchErrorMessage below, which
    *  only ever fires on an actual HTTP error such as a 503). See records.service.ts (ws). */
   readonly timedOut = computed(() => this.results().timedOut === true);
+
+  /** How the free text was matched, from the API; null with no free text. */
+  readonly searchInfo = computed<SearchInfo | null>(() => this.results().search ?? null);
+
+  /** What to mark in each result: the typed terms plus whatever the API also searched. */
+  readonly highlightTerms = computed(() =>
+    searchHighlightTerms(this.freeText(), this.searchInfo()?.expansions ?? []),
+  );
+
+  /**
+   * One line under the count saying how the text was matched, so nobody has to guess why
+   * "dome" no longer finds "domestic" -- and how to get that back (`dome*`). `suggest` is a
+   * query the person can run with one click.
+   */
+  readonly matchNote = computed<{ text: string; suggest?: string } | null>(() => {
+    const info = this.searchInfo();
+    const q = this.freeText();
+    if (!info || !q || this.loading() || this.error()) return null;
+
+    const spellings = info.expansions
+      .map((e) => `${e.term} also searched as ${listWords(e.alternatives)}`)
+      .join('; ');
+    const expanded = spellings ? ` ${spellings}.` : '';
+
+    switch (info.matched) {
+      case 'identifier':
+        return { text: 'Matched by identifier.' };
+      case 'author':
+        return { text: `Matched as an author name.${expanded}` };
+      case 'prefix':
+        return q.includes('*')
+          ? { text: `Matching word beginnings for ${q}.${expanded}` }
+          : { text: `No whole-word matches for ${q}; showing words that begin with it.${expanded}` };
+      default: {
+        const single = !/\s/.test(q) && !q.includes('"');
+        const few = this.total() > 0 && this.total() <= 100;
+        const lead =
+          single && few
+            ? `${this.totalLabel()} whole-word matches for ${q}.`
+            : `Whole-word matches for ${q}.`;
+        return single
+          ? { text: `${lead}${expanded} For words beginning with it, search`, suggest: `${q}*` }
+          : { text: `${lead}${expanded} Add * to a word to match its beginnings.` };
+      }
+    }
+  });
 
   /** 'gte' always means exactly MAX_RESULT_WINDOW (10,000) -- an uncertain lower bound, not an
    *  exact count. Render "10,000+", never a bare number -- see records.service.ts. */
@@ -277,10 +324,15 @@ export class Search {
     this.applyFilters(chip.clear);
   }
 
+  /** Drops every filter but keeps the search text -- what a timed-out or empty search needs. */
+  clearFilters(): void {
+    this.navigate({ ...this.query(), filters: { classification: DEFAULT_CLASSIFICATION }, page: 1 });
+  }
+
   clearAll(): void {
     // classification: DEFAULT_CLASSIFICATION, not []. [] means "explicitly cleared" on the wire
     // (see search-params.ts's resolveClassification) and would silently widen the search from the
-    // 355,558 positives to all 827,061 screened records -- the opposite of what "clear all
+    // 367,348 positives to all 876,324 screened records -- the opposite of what "clear all
     // filters" should do now that the classification filter isn't a user-removable chip any more.
     this.navigate({ ...this.query(), q: undefined, filters: { classification: DEFAULT_CLASSIFICATION }, page: 1 });
     // Supersede any keystrokes still waiting on the debounce, or they would re-run the search
@@ -304,6 +356,12 @@ export class Search {
       replaceUrl,
     });
   }
+}
+
+/** "a, b and c" */
+function listWords(words: string[]): string {
+  if (words.length <= 1) return words.join('');
+  return `${words.slice(0, -1).join(', ')} and ${words[words.length - 1]}`;
 }
 
 /** message is a plain string for hand-thrown Nest exceptions but string[] for ValidationPipe
