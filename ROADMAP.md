@@ -15,9 +15,6 @@ item below says which side does the work; the triage repository keeps no separat
 | # | Item | Side | Blocked on |
 |---|---|---|---|
 | 1 | [The Zenodo release in the release metadata](#1-the-zenodo-release-in-the-release-metadata) | triage | Nothing |
-| 2 | [Finalise and optimise search](#2-finalise-and-optimise-search) | both | Nothing |
-| 3 | [Cross links](#3-cross-links) | triage | Nothing |
-| 4 | [Repair the entity-encoded titles already stored](#4-repair-the-entity-encoded-titles-already-stored) | triage | Nothing |
 
 ---
 
@@ -29,64 +26,3 @@ repository's `refresh-cycle` step 8, `scripts/zenodo_archive.py`), under the con
 `build_release_metadata.py` should add the month's Zenodo version to `metadata/releases/<YYYY-MM>/`
 as a DCAT distribution with its DOI, so `/api/catalog` names it. Until then `metadata/README.md`
 says the catalogue carries no DOI.
-
-## 2. Finalise and optimise search
-
-Shipped 2026-09-25 (this repository, `AGENTS.md` records the rules): every free-text search is
-served from the index as whole words, ranked with title hits first; `*` for word beginnings;
-vocabulary synonyms and acronyms; DOI/PMID lookup; the search box no longer eats spaces. Left:
-
-- Contextual facet counts (counts under the current query) — this repository; needs a per-query
-  `$facet` aggregation and a decision on caching it.
-- Widening `positives_text` to `content_filters.keywords_author`, `mesh_headings` and
-  `model_type` — triage owns `ensure_indexes.py` and `offline-database/seed.sh` here mirrors it.
-  Measured 2026-09-25: author keywords add 655 of 46,655 for `random forest` (1.4%) against a
-  ~1 GB rebuild; revisit once enrichment covers more than a few thousand records.
-- A word-beginning search (`neuro*`) still scans the corpus (3-10 s). A token index would need a
-  write-side field in the sister repository.
-- Whether `citation_count` gets an index (`class_citations_id`, measured before it is added) —
-  triage.
-
-## 3. Cross links
-
-`identifiers.dome_registry` and the `identifiers` write mode are built with v1.5.0. Left: derive
-`identifiers.zenodo` and `bioai_repo` from `data_links`, and build the fetch process for Hugging
-Face and Kaggle per [`cross_links/README.md`](https://github.com/BioComputingUP/dome-ml-observatory-triage/blob/main/cross_links/README.md).
-That fills the reserved Zenodo, source-repository, Hugging Face and Kaggle cards on record pages,
-which are empty today; data links already reach 13 Hugging Face and 40 Kaggle positives, and the
-integrations page lists both as planned until this lands.
-
-## 4. Repair the entity-encoded titles already stored
-
-14,450 titles (1.6% of the corpus, all PubMed records, measured 2026-09-25) are stored with their
-emphasis entity-encoded: `&lt;i&gt;Drosophila&lt;/i&gt;`. `_decode_entities` in the sister
-repository's `mongo_landscape_export/scripts/schema.py` has fixed this at build time since schema
-v1.2.0, but it runs only in `build_document()`, and these documents were migrated by version stamp
-and never rebuilt. The display is already handled: `observatory-ui`'s `core/rich-text.ts` and
-`observatory-ws`'s `metadata/plain-text.ts` revive a bare encoded tag with a known name, so cards,
-record pages, citations, JSON-LD and OAI-PMH are correct either way. What is left, in the sister
-repository:
-
-- A one-off write mode that applies `_decode_entities` to `publication_metadata.title` and
-  `.abstract` on the documents already loaded, then the usual `observatory-ws` restart. Until then,
-  the `positives_text` index carries `lt` and `gt` as words for these titles, and `/api/records` and
-  `/api/export` hand the encoded form to anyone reading the JSON.
-- In the next schema release, correct the `title` description, which says "plain text": about 3.4%
-  of titles carry inline markup, raw or encoded.
-
----
-
-Short list, unranked, to judge later:
-
-1. Self-hosted logos for the data-link resources (PDBe, UniProt, ENA, GEO, BioStudies, Dryad,
-   figshare, ...); the cards use icon-font glyphs until then.
-2. FAIR registrations and scoring: register the Observatory in re3data, score a record page and
-   `/api/catalog` with F-UJI and FAIR-Checker, check a record page in the Schema.org validator and
-   Google's Rich Results Test, run the openarchives.org validator against `/api/oai`, and submit
-   `/sitemap.xml` to the search consoles.
-3. Settle the refresh cadence (monthly or bimonthly) as stated policy, and make the sister
-   repository's skills, the "Monthly to bimonthly" update cadence on `/download/bulk` and the "6-12
-   times a year" in `core/facet-stats.model.ts` agree.
-4. LaTeX shows raw in 36 titles and about 2,000 abstracts (`$$ {\mathrm{T}}_2^{\ast } $$`). Rendering
-   it needs a self-hosted KaTeX bundle and a check against the CSP and Angular's sanitizer, and
-   `$10` must not read as math.
