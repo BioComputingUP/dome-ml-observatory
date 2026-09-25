@@ -161,26 +161,6 @@ const INTEGRATIONS: Integration[] = [
   },
   // ---- Planned ----
   {
-    name: 'Hugging Face',
-    status: 'planned',
-    direction: 'out',
-    protocol: 'Web link',
-    what: 'Hosted models and datasets.',
-    how: "Where a paper's Europe PMC data links name a Hugging Face model or dataset, its record page already links to it. A dedicated fetch that finds them for every paper, filling a reserved identifier field, is planned.",
-    benefit: 'Go from a paper directly to a runnable model.',
-    logo: 'assets/img/hf-logo.svg',
-  },
-  {
-    name: 'Kaggle',
-    status: 'planned',
-    direction: 'out',
-    protocol: 'Web link',
-    what: 'Datasets and notebooks.',
-    how: "Where a paper's Europe PMC data links name a Kaggle dataset or notebook, its record page already links to it. A dedicated fetch that finds them for every paper, filling a reserved identifier field, is planned.",
-    benefit: 'Reach the data a paper actually used.',
-    logo: 'assets/img/Kaggle_logo.png',
-  },
-  {
     name: 'MCP',
     status: 'planned',
     direction: 'both',
