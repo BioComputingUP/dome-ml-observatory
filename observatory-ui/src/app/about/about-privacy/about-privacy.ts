@@ -9,7 +9,7 @@ import { MATOMO_ENABLED } from '../../core/analytics.config';
   styleUrl: './about-privacy.scss',
 })
 export class AboutPrivacy {
-  readonly lastUpdated = '2026-09-07';
+  readonly lastUpdated = '2026-09-25';
 
   /**
    * Read from the same constant the tracker itself reads, so this page cannot claim analytics are

@@ -90,14 +90,12 @@
     <p>
       <strong>It sets no cookies.</strong> Cookies are switched off explicitly in the tracker's
       configuration, so nothing is stored in your browser, nothing follows you between sites, and
-      there is no cookie banner to dismiss — because there is nothing to consent to. IP addresses
-      are anonymised, and we do not attempt to identify individual visitors.
+      there is no cookie banner to dismiss — because there is nothing to consent to. We do not
+      attempt to identify individual visitors.
     </p>
     <p>What is recorded for a page view: the page URL, the referring page if you followed a link,
-      an anonymised IP address, your browser's user-agent string, and the time. The same
-      information is recorded for requests to our
-      <a routerLink="/download/api">public API</a>, so we can see which parts of the service are
-      actually used.
+      an IP address, your browser's user-agent string, and the time. Requests to the
+      <a routerLink="/download/api">public API</a> are not tracked.
     </p>
     @if (!analyticsActive) {
       <p>
@@ -147,9 +145,10 @@
     <h2><i class="icon icon-common icon-history section-icon" aria-hidden="true"></i>Retention</h2>
     <p>
       Server access logs are retained only as long as needed for security and operational
-      troubleshooting, and are not kept indefinitely. Analytics data is kept in aggregate for
-      trend reporting; because it is cookieless and IP-anonymised, it cannot be traced back to an
-      individual visitor.
+      troubleshooting, and are not kept indefinitely. Analytics data is kept long-term, so that
+      usage of the service can be documented over time (for example for ELIXIR resource
+      reporting). It is cookieless, only ever reported in aggregate, and not used to identify
+      individual visitors.
     </p>
   </div>
 </div>

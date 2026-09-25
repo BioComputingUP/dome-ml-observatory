@@ -30,7 +30,7 @@ export function pageTitle(url: string): string {
 }
 
 /**
- * Cookieless, IP-anonymised page-view tracking against the lab's self-hosted Matomo.
+ * Cookieless page-view tracking against the lab's self-hosted Matomo.
  *
  * No-ops entirely unless a site ID is configured (analytics.config.ts), so the shipped default
  * loads no third-party script and contacts no other host -- which is what keeps the privacy
