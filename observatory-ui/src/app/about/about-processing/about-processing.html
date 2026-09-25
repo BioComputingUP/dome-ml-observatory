@@ -259,8 +259,9 @@
     <div class="band-inner">
       <h2><i class="icon icon-common icon-redo" aria-hidden="true"></i>Corrections</h2>
       <p class="round-intro">
-        Documents removed from the corpus after a round, and why. Each round above records what that
-        round processed; what the corpus holds now is those totals less these.
+        Changes made after a round, and why: documents removed from the corpus, and values corrected
+        in place. Each round above records what that round processed; what the corpus holds now is
+        those totals less the removals.
       </p>
 
       @for (correction of corrections; track correction.number) {
@@ -271,7 +272,7 @@
               <h3>{{ correction.title }}</h3>
               <span class="round-meta">{{ correction.date | date: 'd MMM y' }}</span>
             </span>
-            <span class="badge-chip tone-neutral">{{ correction.documents | number }} removed</span>
+            <span class="badge-chip tone-neutral">{{ correction.documents | number }} {{ correction.kind }}</span>
           </summary>
 
           <div class="round-body">
@@ -281,7 +282,7 @@
                 <dd>{{ correction.date | date: 'd MMM y' }}</dd>
               </div>
               <div>
-                <dt><i class="icon icon-common icon-database" aria-hidden="true"></i>Documents removed</dt>
+                <dt><i class="icon icon-common icon-database" aria-hidden="true"></i>Documents {{ correction.kind }}</dt>
                 <dd>{{ correction.documents | number }}</dd>
               </div>
               <div>

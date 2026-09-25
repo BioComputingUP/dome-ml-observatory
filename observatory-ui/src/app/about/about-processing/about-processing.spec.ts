@@ -130,12 +130,16 @@ describe('processing rounds log', () => {
     ENRICHMENT_ROUNDS.forEach((round) => expect(round.records).toBeGreaterThan(0));
   });
 
-  it('dates every correction and says how many documents it removed', () => {
+  it('dates every correction and says how many documents it removed or corrected', () => {
     CORRECTIONS.forEach((correction, i) => {
       expect(correction.number).toBe(i + 1);
+      expect(['removed', 'corrected']).toContain(correction.kind);
       expect(correction.date).toMatch(iso);
       expect(correction.documents).toBeGreaterThan(0);
       expect(correction.why.trim().length).toBeGreaterThan(0);
+      if (i > 0) {
+        expect(correction.date >= CORRECTIONS[i - 1].date).toBe(true);
+      }
     });
   });
 });

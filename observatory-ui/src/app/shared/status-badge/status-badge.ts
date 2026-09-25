@@ -17,8 +17,11 @@ export type BadgeTone = 'positive' | 'neutral' | 'undeterminable';
  *    PMC full-text availability almost exactly, and two near-identical badges read as redundant
  *    UI rather than two different facts. The one exception is an open-access paper whose flag
  *    is false: that says "Open access" rather than "No full text", which would be wrong for it.
- *    On 2026-09-25, 593 positives were open access with the flag false (AlphaFold 2 among them),
- *    mostly records merged in from the curated sets, which never had the flag derived.
+ *    On 2026-09-25, 593 positives were open access with the flag false (AlphaFold 2 among them):
+ *    the curated merge never derived the flag, and PMC embargoes had lifted since the fetch. The
+ *    flag was refreshed from Europe PMC that day (processing history, correction 2), leaving 85,
+ *    mostly preprints whose full text Europe PMC does not hold -- genuinely open access, genuinely
+ *    no full text there, which is what this case is for.
  *    Enrichment stays in both -- see the honest "not yet enriched" coverage story elsewhere on
  *    the page.
  *

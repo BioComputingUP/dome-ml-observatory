@@ -130,13 +130,16 @@ export const ENRICHMENT_ROUNDS: readonly EnrichmentRound[] = [
   },
 ];
 
-/** Documents removed from the corpus after a round: the rounds above say what each round
- *  processed, and what the corpus holds now is those totals less these. */
+/** A change to documents already in the corpus, after the round that added them. `removed` takes
+ *  documents out: the rounds above say what each round processed, and what the corpus holds now is
+ *  those totals less every removal. `corrected` fixes a value in place and removes nothing, so it
+ *  never enters that sum. */
 export interface Correction {
   number: number;
+  kind: 'removed' | 'corrected';
   title: string;
   date: string;
-  /** Documents removed. */
+  /** Documents removed, or documents whose value changed. */
   documents: number;
   why: string;
 }
@@ -144,6 +147,7 @@ export interface Correction {
 export const CORRECTIONS: readonly Correction[] = [
   {
     number: 1,
+    kind: 'removed',
     title: 'Duplicate records removed',
     date: '2026-09-16',
     documents: 10_568,
@@ -151,6 +155,19 @@ export const CORRECTIONS: readonly Correction[] = [
       'The same publication had been added twice, once with and once without its PubMed Central ' +
       'identifier, almost all of them in round 2. The copy with the fuller identifiers was kept, ' +
       'together with any licence or citation count held only by the other copy.',
+  },
+  {
+    number: 2,
+    kind: 'corrected',
+    title: 'Full-text availability refreshed',
+    date: '2026-09-25',
+    documents: 11_433,
+    why:
+      'Records marked as having no full text were checked against Europe PMC again, by the rule ' +
+      'every record was first marked by: full text held by Europe PMC or PubMed Central. The ' +
+      'hand-annotated benchmark records merged on 3 September had never been checked, and papers ' +
+      'under a PubMed Central embargo when first fetched have since been released. 11,433 records ' +
+      'now show full text, AlphaFold 2 among them. No record was removed.',
   },
 ];
 
