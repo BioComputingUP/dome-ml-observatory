@@ -217,17 +217,40 @@ host are not.
   domain terms we ship. `class` is the sole exception and still comma-splits — fixed literals, a
   documented API contract, and the `class=` cleared-signal that `canUseTextIndex` depends on.
 - `observatory-ws/src/records/records.service.ts` — free-text search, and the one place the Mongo
-  indexes matter. Two indexes exist on the collection (built 2026-09-03): `positives_text` (a
-  `$text` index on title/abstract/authors, scoped by `partialFilterExpression` to
-  `classification: 'positive'`) and `class_year_id`. Three rules:
+  indexes matter. Three indexes exist on the collection: `positives_text` (a `$text` index on
+  title/abstract/authors, scoped by `partialFilterExpression` to `classification: 'positive'`,
+  built 2026-09-03), `class_year_id`, and `record_modified_positive` (v1.6.0, for the OAI-PMH and
+  sitemap keyset). Six rules:
   - **The `$text` path is gated on `classification` resolving to exactly `['positive']`**
     (`canUseTextIndex`). This is not an optimisation — MongoDB **rejects** a `$text` query that
     omits a partial index's filter predicate rather than degrading to a scan, so getting the guard
     wrong turns every cleared-classification search into a 500. `?q=…&class=` returning 200, not
     500, is the single most important regression check on this feature.
-  - **A single bare search word deliberately stays on the regex path.** With one term there's no
-    second clause to rescue what `$text` misses, and stemming can't match a non-stem fragment
-    (`neuro` found 1,701 via the index vs 28,622 via regex). Recall is not traded for speed here.
+  - **Every free-text search is served from the index when it can be, a lone word included,**
+    matched as a whole word with its inflections — PubMed's rule. `neuro*` is the explicit
+    word-beginning form and takes the scan path; the scan is also the automatic retry when the
+    index knows none of the words as typed (`shouldFallBackFromText`, zero only). The earlier rule
+    (a lone word stays on the regex path for recall) was reversed on 2026-09-25: `dome` took 3.3 s
+    to return "domestic feline" first, where the index answers 64 whole-word hits with "DOME
+    Copilot" on top, and `cat` was 32,931 prefix hits against 657. Combining forms (`neuro`,
+    `bioinform`) are reachable through `*` and the zero fallback, never by default. The response's
+    `search.matched` says which path answered, and the UI shows it.
+  - **`$search` carries the rarest word of the cheapest term, never all the words.** `$text` OR's
+    its words, so its candidate set is the union of their postings and the regex clauses run over
+    all of it: `support vector machine` was 10.0 s with three words and 1.3 s with `vector` alone,
+    for the identical 29,918 results. `TermFrequencyService` measures each word on the index once a
+    day; the resolved `$search` is part of the count cache key. Every author reading the filter
+    keeps must have its surname in `$search` too, because no given name is stored anywhere —
+    `Gavin Farrell` selected by `gavin` alone found none of Farrell G's papers and fell to a 16 s
+    scan. A `given` reading whose surname is a very common word (`machine`, `prediction`; the cap is
+    100k, real surnames sit at 25-56k) is left to the scan path (`indexPathReadings`).
+  - **The index path re-ranks its best 200 rows in process** (`rankTextCandidates`): a title that
+    opens with the term, then one carrying it in capitals, then every term in the title, then the
+    rest, with textScore plus log10(citations) inside a tier. Pages past 200 stay in textScore
+    order; the head is cached per query (`rankedHeads`), so page 2 costs one `_id` fetch. Synonyms
+    come from the release vocabulary through `search-synonyms.ts` — with an exclusion list for
+    acronyms that mean something else in biomedicine (GBM, MDS, LOF) — and an acronym spelling is
+    matched whole and case-sensitively, because `\bann` is "annual" and `\bsom` "somatic".
   - **An author query has three spellings and three routes.** People type a name as `Farrell G`,
     `G Farrell` or `Gavin Farrell`, in any case, and all three must return the same papers
     (verified live: 2 records each, where the last used to return 0 in 10s). `authorInterpretations`

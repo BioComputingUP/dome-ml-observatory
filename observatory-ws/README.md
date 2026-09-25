@@ -48,6 +48,12 @@ to ration access — pulling the entire corpus through this API is supported.
   rather than silently truncating. A *browsing* limit specific to that endpoint, forced by
   MongoDB 4.2's sort ceiling, and the reason `/api/export` exists. Export has no window.
 - **Query budget** 5 s for filter-only queries, 20 s for free-text (`q=`), 30 s per export chunk.
+- **Free text (`q=`)** matches whole words and their inflections from the text index (`cell` finds
+  cells and cellular, not excellent); words are AND-ed, `"quotes"` keep a phrase together, a
+  trailing `*` matches word beginnings (`neuro*`, on the slower scan path), a method name or
+  acronym in the published vocabulary is also searched under its other spellings (`svm`, support
+  vector machine), and a DOI, PMID or PMCID is looked up directly. The response's `search.matched`
+  says which of these answered, and `search.expansions` which spellings were added.
 - **503, not 500,** when the database is unreachable. Safe to retry with backoff.
 
 ### Walking the corpus
@@ -98,10 +104,10 @@ added in front, or a client can spoof `X-Forwarded-For` and evade the rate limit
 A single read-only collection, on MongoDB 4.2. The service never writes, never changes schema, and
 never touches any other database on the host.
 
-Two indexes carry most of the search load. The backend checks for the text index at boot and falls
-back to a slower regex path if it is absent, so their absence degrades performance rather than
-breaking anything — but **if the collection is ever dropped and reloaded, both indexes go with it
-and need recreating**:
+Three indexes carry the search, browse and harvest load. The backend checks for the text index at
+boot and falls back to a slower regex path if it is absent, so their absence degrades performance
+rather than breaking anything — but **if the collection is ever dropped and reloaded, all three go
+with it and need recreating**:
 
 ```js
 db.Content.createIndex(

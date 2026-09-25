@@ -33,6 +33,10 @@ export function setupSwagger(app: INestApplication): void {
         'MongoDB cannot sort past it at this corpus size -- and is why /api/export exists.\n' +
         '- Query budget: 5 seconds for filter-only queries, 20 seconds for free-text queries ' +
         '(q=), 30 seconds for one /api/export chunk.\n' +
+        '- Free text (q=): whole words and their inflections, AND-ed; "quotes" for a phrase; a ' +
+        'trailing * for word beginnings; vocabulary synonyms for method names and acronyms; a ' +
+        "DOI, PMID or PMCID looked up directly. The response's search.matched says how the " +
+        'text was matched.\n' +
         '- Database outage: if the corpus database is unreachable, data endpoints return HTTP ' +
         '503 rather than a generic server error. Safe to retry with exponential backoff.',
     )

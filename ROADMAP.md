@@ -15,7 +15,7 @@ item below says which side does the work; the triage repository keeps no separat
 | # | Item | Side | Blocked on |
 |---|---|---|---|
 | 1 | [The Zenodo release in the release metadata](#1-the-zenodo-release-in-the-release-metadata) | triage | Nothing |
-| 2 | [Finalise and optimise search](#2-finalise-and-optimise-search) | this repository | A plan, to be written |
+| 2 | [Finalise and optimise search](#2-finalise-and-optimise-search) | both | Nothing |
 | 3 | [Cross links](#3-cross-links) | triage | Nothing |
 | 4 | [Repair the entity-encoded titles already stored](#4-repair-the-entity-encoded-titles-already-stored) | triage | Nothing |
 
@@ -32,11 +32,20 @@ says the catalogue carries no DOI.
 
 ## 2. Finalise and optimise search
 
-Search works and is fast enough, but the behaviour was assembled incrementally and has known rough
-edges: `sort=relevance` actually sorts by `_id`, the text index is bypassed for a single bare word
-and for any query that clears the classification filter, and facet counts are corpus-wide rather
-than contextual. A plan for this is still to be written, and it depends on decisions in the sister
-repository — whether `citation_count` gets an index, and how open vocabularies become facets.
+Shipped 2026-09-25 (this repository, `AGENTS.md` records the rules): every free-text search is
+served from the index as whole words, ranked with title hits first; `*` for word beginnings;
+vocabulary synonyms and acronyms; DOI/PMID lookup; the search box no longer eats spaces. Left:
+
+- Contextual facet counts (counts under the current query) — this repository; needs a per-query
+  `$facet` aggregation and a decision on caching it.
+- Widening `positives_text` to `content_filters.keywords_author`, `mesh_headings` and
+  `model_type` — triage owns `ensure_indexes.py` and `offline-database/seed.sh` here mirrors it.
+  Measured 2026-09-25: author keywords add 655 of 46,655 for `random forest` (1.4%) against a
+  ~1 GB rebuild; revisit once enrichment covers more than a few thousand records.
+- A word-beginning search (`neuro*`) still scans the corpus (3-10 s). A token index would need a
+  write-side field in the sister repository.
+- Whether `citation_count` gets an index (`class_citations_id`, measured before it is added) —
+  triage.
 
 ## 3. Cross links
 

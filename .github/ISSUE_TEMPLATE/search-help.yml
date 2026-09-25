@@ -6,9 +6,10 @@ body:
   - type: markdown
     attributes:
       value: |
-        Search here behaves in a few ways that catch people out — authors are stored as surname
-        plus initials (`Tosatto SCE`), searching starts from the AI/ML positives rather than the
-        whole screened corpus, and a single uncommon word takes a deliberately slower path.
+        Search here behaves in a few ways that catch people out — words match whole (`dome`
+        does not find "domestic"; add a star, `dome*`, for word beginnings), authors are stored
+        as surname plus initials (`Tosatto SCE`), and searching starts from the AI/ML positives
+        rather than the whole screened corpus.
 
         The [FAQ](https://observatory.dome-ml.org/about/support#faq) covers all of these. If it
         doesn't explain what you're seeing, that's worth knowing about — tell us below.
