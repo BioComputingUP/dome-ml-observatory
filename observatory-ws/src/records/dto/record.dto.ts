@@ -17,7 +17,7 @@ class RecordIdentifiersDto {
     nullable: true,
     description:
       'Europe PMC\'s own accession, e.g. "PPR18364". A Europe PMC article URL is ' +
-      '/article/{epmc_source}/{epmc_id}. Null until the preprint capture pass runs.',
+      '/article/{epmc_source}/{epmc_id}. Filled by the preprint capture pass.',
   })
   epmc_id!: string | null;
   @ApiProperty({
@@ -50,8 +50,8 @@ class PublicationMetadataDto {
     type: String,
     nullable: true,
     description:
-      'Preprint server name as Europe PMC records it, e.g. "bioRxiv". Null on journal articles, ' +
-      'and null on preprints until the capture pass runs.',
+      'Preprint server name as Europe PMC records it, e.g. "bioRxiv". Null on journal articles; ' +
+      'filled on preprints by the capture pass.',
   })
   preprint_server!: string | null;
   @ApiProperty({

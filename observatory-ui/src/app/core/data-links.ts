@@ -77,7 +77,7 @@ const RESOURCE_STYLES: Record<string, ResourceStyle> = {
   alphafold: { icon: 'icon-microchip' },
   biostudies: { group: 'Supplementary', icon: 'icon-archive' },
   rrid: { icon: 'icon-tag' },
-  // The -cropped variant, as on the home and integrations pages: the full SVG is mostly empty canvas.
+  // The -cropped variant, as on the integrations page: the full SVG is mostly empty canvas.
   dome_registry: { logo: 'assets/img/DOME_Registry_Rounded-cropped.svg' },
 };
 

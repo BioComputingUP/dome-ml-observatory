@@ -7,13 +7,13 @@
  * preprint showed no venue whatsoever. This module is what lets both say `Preprint: bioRxiv`
  * instead, from one rule rather than two copies of it.
  *
- * **The server name is data, not an inference -- eventually.** Schema v1.3.0 defines
+ * **The server name is data, not an inference.** Schema v1.3.0 defines
  * `publication_metadata.preprint_server`, carrying Europe PMC's own
- * `bookOrReportDetails.publisher` verbatim, and this module prefers it whenever it is populated.
- * Nothing populates it yet (see `preprint.md` at the repo root for the capture and backfill spec),
- * so until then the server is derived from the DOI prefix by the table below. The order matters:
- * when the backfill lands, recorded data silently takes over and a disagreement with the table is
- * the table's bug, not the record's.
+ * `bookOrReportDetails.publisher` verbatim, and the capture pass has populated it, so this module
+ * prefers it. The DOI-prefix table below is the fallback for any preprint it did not reach, and a
+ * disagreement between the two is the table's bug, not the record's. The one rewrite of recorded
+ * data is display-only: Europe PMC stores NLM abbreviations for the F1000-platform gateways
+ * ("F1000Res", "Wellcome Open Res"), which SERVER_DISPLAY_NAMES spells out.
  */
 
 import { AiMlRecord } from './record.model';
@@ -49,10 +49,24 @@ interface PreprintServerRule {
 const MEDRXIV_ARTICLE_NUMBER = /^(?:\d{4}\.\d{2}\.\d{2}\.)?\d{8}(?:v\d+)?$/i;
 
 /**
+ * Europe PMC's `bookOrReportDetails.publisher` for the F1000-platform gateways is the NLM journal
+ * abbreviation, which reads as a typo on a card ("Preprint: F1000Res"). Every value of the live
+ * `preprint_server` facet on 2026-09-25 that is abbreviated, mapped to the name the gateway uses.
+ */
+const SERVER_DISPLAY_NAMES: Record<string, string> = {
+  F1000Res: 'F1000Research',
+  'Gates Open Res': 'Gates Open Research',
+  'Open Res Africa': 'Open Research Africa',
+  'Open Res Europe': 'Open Research Europe',
+  'Wellcome Open Res': 'Wellcome Open Research',
+};
+
+/**
  * DOI registrant -> preprint server, first match wins.
  *
- * Every name is Europe PMC's own `bookOrReportDetails.publisher`, verified per registrant on
- * 2026-09-07; counts are that day's corpus. These 27 registrants cover **100%** of corpus
+ * Every name is the server's display name -- Europe PMC's own `bookOrReportDetails.publisher`,
+ * verified per registrant on 2026-09-07, except the F1000-platform gateways, where that is an
+ * abbreviation (SERVER_DISPLAY_NAMES) -- and counts are that day's corpus. These 27 registrants cover **100%** of corpus
  * preprints -- a sweep for any prefix outside this table returned nothing -- and every corpus
  * preprint has a DOI, so the unknown branch guards against a server that appears later rather
  * than a gap today.
@@ -125,8 +139,8 @@ function lowerPubTypes(record: AiMlRecord): string[] {
 }
 
 /** Whether this record is a preprint at all. Prefers `source.epmc_source`, which is Europe PMC's
- *  authoritative record-source marker, and falls back to the pub_types proxy that is all the
- *  corpus carries until the capture pass runs. */
+ *  authoritative record-source marker, and falls back to the pub_types proxy for a record the
+ *  capture pass did not reach (and for the dev fixture, which predates it). */
 export function isPreprint(record: AiMlRecord): boolean {
   const epmcSource = record.source?.epmc_source;
   if (epmcSource) return epmcSource.toUpperCase() === 'PPR';
@@ -139,7 +153,7 @@ export function isPreprint(record: AiMlRecord): boolean {
  */
 export function preprintServer(record: AiMlRecord): string | null {
   const recorded = record.publication_metadata.preprint_server?.trim();
-  if (recorded) return recorded;
+  if (recorded) return SERVER_DISPLAY_NAMES[recorded] ?? recorded;
 
   const doi = record.identifiers.doi?.trim();
   if (!doi) return null;

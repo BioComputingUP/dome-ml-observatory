@@ -1,5 +1,5 @@
 /**
- * Mirrors schema/releases/v1.5.0/ai-ml-landscape.schema.json exactly -- that file (not this one)
+ * Mirrors schema/releases/v1.6.0/ai-ml-landscape.schema.json exactly -- that file (not this one)
  * is the source of truth. If the schema-version skill cuts a new release, update this to match
  * and note it in that release's CHANGELOG entry.
  */
@@ -11,9 +11,8 @@ export interface RecordIdentifiers {
   pmcid: string | null;
   doi: string | null;
   /** Europe PMC's own accession, e.g. "PPR18364". A Europe PMC article URL is
-   *  /article/{epmc_source}/{epmc_id}. Optional because nothing populates it yet -- see
-   *  preprint.md -- so every record in the corpus and the dev fixture is missing the key
-   *  entirely, not merely null. */
+   *  /article/{epmc_source}/{epmc_id}. Populated by the preprint capture pass; optional because
+   *  the 200-record dev fixture predates it and lacks the key entirely. */
   epmc_id?: string | null;
   /** Reserved for a future linking pass -- always null until then. */
   dome_registry: string | null;
@@ -33,9 +32,9 @@ export interface PublicationMetadata {
   /** Null on 56,863 preprints, which have no journal by definition rather than by omission --
    *  read `preprint_server` for those. See core/venue.ts, which resolves the one venue row. */
   journal: string | null;
-  /** Preprint server name as Europe PMC records it, e.g. "bioRxiv". Optional for the same reason
-   *  as `epmc_id`: schema v1.3.0 defines it, nothing populates it yet, so core/venue.ts falls
-   *  back to deriving it from the DOI prefix until the backfill runs. */
+  /** Preprint server name as Europe PMC records it, e.g. "bioRxiv". Populated by the capture pass
+   *  (schema v1.3.0); optional for the same reason as `epmc_id`. core/venue.ts falls back to the
+   *  DOI prefix for any preprint without it. */
   preprint_server?: string | null;
   /** Europe PMC citation count, real since the 2026-09-03 load (~98% of the corpus). `null` means
    *  "not available" -- no Europe PMC record answered for this paper's identifiers -- never zero,

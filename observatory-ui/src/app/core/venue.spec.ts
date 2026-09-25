@@ -128,6 +128,15 @@ describe('preprintServer', () => {
     expect(preprintServer(rec)).toBe('medRxiv');
   });
 
+  it('spells out the NLM abbreviations Europe PMC records for the F1000 gateways', () => {
+    const shown = (server: string) => preprintServer(record({ doi: null, preprint_server: server, pub_types: ['Preprint'] }));
+    expect(shown('F1000Res')).toBe('F1000Research');
+    expect(shown('Wellcome Open Res')).toBe('Wellcome Open Research');
+    expect(shown('Open Res Europe')).toBe('Open Research Europe');
+    // ...and agrees with what the DOI table would have said for the same paper.
+    expect(shown('F1000Res')).toBe(preprintServer(preprintWithDoi('10.12688/f1000research.12345.1')));
+  });
+
   it('returns null when nothing resolves a server', () => {
     expect(preprintServer(preprintWithDoi('10.9999/unknown.1'))).toBeNull();
     expect(preprintServer(record({ doi: null, pub_types: ['Preprint'] }))).toBeNull();
