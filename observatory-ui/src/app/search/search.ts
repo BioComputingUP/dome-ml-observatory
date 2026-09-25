@@ -1,8 +1,8 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, ElementRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Subject, debounceTime, distinctUntilChanged, switchMap, catchError, of, map, tap } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged, filter, switchMap, catchError, of, map, tap } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RecordsService, SearchFilters, SearchQuery, SearchResult, SortOrder } from '../core/records.service';
 import { SearchStateService } from '../core/search-state.service';
@@ -201,13 +201,27 @@ export class Search {
 
   private readonly textInput$ = new Subject<string>();
 
+  /** The search box. Deliberately NOT bound with `[value]="freeText()"` -- see syncBox. */
+  private readonly queryInput = viewChild<ElementRef<HTMLInputElement>>('queryInput');
+
+  /** The trimmed text this component last navigated to from its own box, consumed the moment the
+   *  router hands it back. Anything the person typed in between must survive -- see syncBox. */
+  private lastTypedQuery: string | undefined;
+
   constructor() {
-    // Typing shouldn't push a history entry per keystroke -- debounce, then replace. 500ms (not
-    // 300ms): free-text now hits the real corpus (~4-10s for a full search, see
-    // searchingFullText above), so there's no benefit to firing sooner.
-    this.textInput$.pipe(debounceTime(500), distinctUntilChanged()).subscribe((value) => {
-      this.navigate({ ...this.query(), q: value || undefined, page: 1 }, true);
-    });
+    // Typing shouldn't push a history entry per keystroke -- debounce, then replace. Compared
+    // against the URL's current `q` rather than the stream's previous value, so a query typed,
+    // cleared and typed again still searches, and a pause after a trailing space (which trims to
+    // what the URL already holds) navigates nowhere at all.
+    this.textInput$
+      .pipe(
+        debounceTime(500),
+        map((value) => value.trim()),
+        filter((value) => value !== this.freeText()),
+      )
+      .subscribe((value) => this.navigateTyped(value));
+
+    effect(() => this.syncBox());
   }
 
   onTextInput(value: string): void {
@@ -218,7 +232,36 @@ export class Search {
    *  current value right away -- an accelerator for anyone who'd rather not wait it out, not a
    *  replacement for live search (typing alone still searches on its own). */
   searchNow(value: string): void {
+    this.navigateTyped(value.trim());
+  }
+
+  private navigateTyped(value: string): void {
+    this.lastTypedQuery = value;
     this.navigate({ ...this.query(), q: value || undefined, page: 1 }, true);
+  }
+
+  /**
+   * Keeps the box in step with the URL without ever fighting the person typing in it.
+   *
+   * The box used to be bound `[value]="freeText()"`, the URL's TRIMMED `q`. Pause for the
+   * debounce after typing "random " and the URL became `q=random`, the binding rewrote the box to
+   * "random", and the next word ran on as "randomforest"; any letters typed while that navigation
+   * was still in flight were wiped the same way. So the box is written to by hand, and only when
+   * the URL changed behind its back (first load, back/forward, "Clear all"):
+   *  - a `q` this component itself just navigated to is consumed, not written -- the box already
+   *    holds it, plus whatever was typed since;
+   *  - a difference that is only surrounding whitespace is left alone.
+   */
+  private syncBox(): void {
+    const q = this.freeText();
+    const input = this.queryInput()?.nativeElement;
+    if (!input) return;
+    if (q === this.lastTypedQuery) {
+      this.lastTypedQuery = undefined;
+      return;
+    }
+    if (input.value.trim() === q) return;
+    input.value = q;
   }
 
   applyFilters(patch: Partial<SearchFilters>): void {
@@ -240,6 +283,9 @@ export class Search {
     // 355,558 positives to all 827,061 screened records -- the opposite of what "clear all
     // filters" should do now that the classification filter isn't a user-removable chip any more.
     this.navigate({ ...this.query(), q: undefined, filters: { classification: DEFAULT_CLASSIFICATION }, page: 1 });
+    // Supersede any keystrokes still waiting on the debounce, or they would re-run the search
+    // that was just cleared half a second later.
+    this.textInput$.next('');
   }
 
   setSort(sort: string): void {
