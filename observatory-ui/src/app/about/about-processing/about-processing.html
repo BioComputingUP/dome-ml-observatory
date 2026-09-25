@@ -42,7 +42,12 @@
 <div class="band band-tint">
   <div class="band-inner">
     <h2><i class="icon icon-common icon-flag-checkered" aria-hidden="true"></i>Classification rounds</h2>
-    <p class="round-intro">Newest first. Open a round for its search space, model and full outcome.</p>
+    <p class="round-intro">
+      Newest first. Open a round for its search space, model and full outcome. Every round screens
+      against the published
+      <a [href]="criteriaUrl" target="_blank" rel="noopener">curation criteria</a>, and each round's
+      prompt version links to the prompt it ran.
+    </p>
 
     @for (round of classificationRounds; track round.number; let first = $first) {
       <details class="round-card info-panel" [open]="first">
@@ -81,7 +86,10 @@
             </div>
             <div>
               <dt><i class="icon icon-common icon-microchip" aria-hidden="true"></i>Model</dt>
-              <dd>{{ round.model }}, prompt version {{ round.promptVersion }}.</dd>
+              <dd>
+                {{ round.model }}, prompt version
+                <a [href]="promptUrl('classification', round.promptVersion)" target="_blank" rel="noopener">{{ round.promptVersion }}</a>.
+              </dd>
             </div>
             <div>
               <dt><i class="icon icon-common icon-calendar" aria-hidden="true"></i>Run date</dt>
@@ -177,7 +185,9 @@
               </div>
               <div>
                 <dt><i class="icon icon-common icon-code-branch" aria-hidden="true"></i>Prompt version</dt>
-                <dd>{{ round.promptVersion }}</dd>
+                <dd>
+                  <a [href]="promptUrl('enrichment', round.promptVersion)" target="_blank" rel="noopener">{{ round.promptVersion }}</a>
+                </dd>
               </div>
               <div>
                 <dt><i class="icon icon-common icon-database" aria-hidden="true"></i>Batch size</dt>

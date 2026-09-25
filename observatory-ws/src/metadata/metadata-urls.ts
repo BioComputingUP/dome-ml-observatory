@@ -11,6 +11,25 @@ export const REPOSITORY = 'https://github.com/BioComputingUP/dome-ml-observatory
 export const TRIAGE_REPOSITORY = 'https://github.com/BioComputingUP/dome-ml-observatory-triage';
 
 export const CC_BY_4 = 'https://creativecommons.org/licenses/by/4.0/';
+
+/**
+ * criteria_sha256 -> a triage commit where curation_criteria/CRITERIA.md has exactly that hash, so
+ * a record's provenance names the criteria it was judged by, not whatever main holds today. The
+ * UI keeps the same pins (observatory-ui/src/app/core/curation-criteria.ts); change the two
+ * together, whenever the pipeline's prompts/PROMPT_HASHES.json gains a new criteria_sha256.
+ */
+const CRITERIA_PINS: Record<string, string> = {
+  bd9d66dd892e6c0a231ac59ba102543ea6caa89db67fc1b914795501f4f60449:
+    '8bd471bada901a6eb2d23ebc033ce3b0462dd062',
+};
+
+/** The criteria a record was screened against: pinned when its hash is known, else current. */
+export function curationCriteriaUrl(sha256?: string | null): string {
+  const ref = (sha256 && CRITERIA_PINS[sha256]) || 'main';
+  return `${TRIAGE_REPOSITORY}/blob/${ref}/curation_criteria/CRITERIA.md`;
+}
+
+/** The criteria document as a term set -- one stable IRI for the classification labels. */
 export const CURATION_CRITERIA_URL = `${TRIAGE_REPOSITORY}/blob/main/curation_criteria/CRITERIA.md`;
 export const EUROPE_PMC_TERMS_URL = 'https://europepmc.org/Copyright';
 export const DOME_REGISTRY_URL = 'https://registry.dome-ml.org';

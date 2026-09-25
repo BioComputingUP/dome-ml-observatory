@@ -21,8 +21,18 @@ import { publicationVenue } from '../core/venue';
 import { SearchStateService } from '../core/search-state.service';
 import { toBibtex, toRis } from '../core/citation';
 import { citationCountDate, citationCountNote } from '../core/citation-count';
+import { criteriaUrl, promptUrl } from '../core/curation-criteria';
 import { StatusBadge } from '../shared/status-badge/status-badge';
 import { CopyButton } from '../shared/copy-button/copy-button';
+
+/** One labelled provenance row; `href` links the value to the file it names, once it has one. */
+interface ProvenanceFact {
+  label: string;
+  value: string | null;
+  icon: string;
+  mono?: boolean;
+  href?: string;
+}
 
 /** Groups render in this order when present -- assets a reader is most likely to want first. */
 const ASSET_GROUP_ORDER: DataLinkGroup[] = ['Code', 'Data', 'Models', 'Supplementary', 'Annotation'];
@@ -210,22 +220,39 @@ export class RecordPage {
 
   /** Provenance rows for the screening pass. Rendered inline rather than behind an expander --
    *  "which model decided this, on what criteria, when" is the substance of a machine-made
-   *  judgement, not an appendix to it. */
-  readonly screeningFacts = computed(() => {
+   *  judgement, not an appendix to it. The prompt version and criteria hash link to the exact
+   *  prompt and criteria file the verdict was made with (core/curation-criteria.ts). */
+  readonly screeningFacts = computed<ProvenanceFact[]>(() => {
     const c = this.rec().llm_classification;
     return [
       { label: 'Model', value: c.model_id, icon: 'icon-microchip' },
-      { label: 'Prompt version', value: c.prompt_version, icon: 'icon-documentation' },
+      {
+        label: 'Prompt version',
+        value: c.prompt_version,
+        icon: 'icon-documentation',
+        href: promptUrl('classification', c.prompt_version),
+      },
       { label: 'Run at', value: c.timestamp, icon: 'icon-calendar-check' },
-      { label: 'Criteria hash', value: c.ruleset_sha256, icon: 'icon-hashtag', mono: true },
+      {
+        label: 'Criteria hash',
+        value: c.ruleset_sha256,
+        icon: 'icon-hashtag',
+        mono: true,
+        href: criteriaUrl(c.ruleset_sha256),
+      },
     ];
   });
 
-  readonly enrichmentFacts = computed(() => {
+  readonly enrichmentFacts = computed<ProvenanceFact[]>(() => {
     const e = this.rec().llm_enrichment;
     return [
       { label: 'Model', value: e.model_id, icon: 'icon-microchip' },
-      { label: 'Prompt version', value: e.prompt_version, icon: 'icon-documentation' },
+      {
+        label: 'Prompt version',
+        value: e.prompt_version,
+        icon: 'icon-documentation',
+        href: promptUrl('enrichment', e.prompt_version),
+      },
       { label: 'Run at', value: e.timestamp, icon: 'icon-calendar-check' },
     ];
   });

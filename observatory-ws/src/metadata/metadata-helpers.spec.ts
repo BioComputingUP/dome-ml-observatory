@@ -5,7 +5,7 @@ import { currentReleaseDir } from '../common/schema-version';
 import { findMetadataCurrent, readCatalog } from './catalog.service';
 import { compact } from './json-node';
 import { articleLicence } from './licence';
-import { doiUrl, europePmcArticleUrl } from './metadata-urls';
+import { curationCriteriaUrl, doiUrl, europePmcArticleUrl } from './metadata-urls';
 import { plainText } from './plain-text';
 import { splitAuthors } from './record-view';
 import { VocabIndex } from './vocab-index';
@@ -112,5 +112,21 @@ describe('readCatalog', () => {
   it('is undefined when nothing is published, and throws on a broken file', () => {
     expect(readCatalog(undefined)).toBeUndefined();
     expect(() => readCatalog(join(release('{not json'), 'metadata', 'CURRENT'))).toThrow();
+  });
+});
+
+describe('curationCriteriaUrl', () => {
+  const triage = 'https://github.com/BioComputingUP/dome-ml-observatory-triage';
+
+  it('pins a known criteria hash to a commit holding exactly that CRITERIA.md', () => {
+    expect(
+      curationCriteriaUrl('bd9d66dd892e6c0a231ac59ba102543ea6caa89db67fc1b914795501f4f60449'),
+    ).toBe(`${triage}/blob/8bd471bada901a6eb2d23ebc033ce3b0462dd062/curation_criteria/CRITERIA.md`);
+  });
+
+  it('falls back to the current criteria for an unknown or missing hash', () => {
+    const current = `${triage}/blob/main/curation_criteria/CRITERIA.md`;
+    expect(curationCriteriaUrl('f'.repeat(64))).toBe(current);
+    expect(curationCriteriaUrl(undefined)).toBe(current);
   });
 });

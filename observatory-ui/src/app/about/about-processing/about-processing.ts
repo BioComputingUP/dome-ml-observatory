@@ -5,6 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { RecordsService } from '../../core/records.service';
 import { FALLBACK_SCHEMA_VERSION, schemaReleaseUrl } from '../../core/schema-links';
+import { CURRENT_CRITERIA_SHA256, criteriaUrl, promptUrl } from '../../core/curation-criteria';
 import { CLASSIFICATION_ROUNDS, CORRECTIONS, ENRICHMENT_ROUNDS, roundTotal } from './processing-rounds';
 
 /**
@@ -35,6 +36,9 @@ export class AboutProcessing {
   readonly enrichmentRounds = [...ENRICHMENT_ROUNDS].reverse();
   readonly corrections = [...CORRECTIONS].reverse();
   readonly roundTotal = roundTotal;
+  /** Each round links the prompt version it ran to that prompt file, pinned (core/curation-criteria.ts). */
+  readonly promptUrl = promptUrl;
+  readonly criteriaUrl = criteriaUrl(CURRENT_CRITERIA_SHA256);
 
   readonly corpus = computed(() => this.stats()?.corpus ?? this.records.getStats());
   readonly lastClassifiedAt = computed(() => this.stats()?.last_classification?.timestamp ?? null);

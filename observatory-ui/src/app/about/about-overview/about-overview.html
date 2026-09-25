@@ -11,9 +11,10 @@
       <p>
         Records are drawn from
         <a href="https://europepmc.org/" target="_blank" rel="noopener">Europe PMC</a>, classified
-        by LLM screening against published criteria, and tagged with controlled vocabularies. The
-        classification method itself was validated against a hand-annotated expert benchmark before
-        being run across the corpus.
+        by LLM screening against
+        <a [href]="criteriaUrl" target="_blank" rel="noopener">published criteria</a>, and tagged
+        with controlled vocabularies. The classification method itself was validated against a
+        hand-annotated expert benchmark before being run across the corpus.
       </p>
 
       <p>
@@ -119,8 +120,11 @@
         </div>
         <p>
           Every publication is classified by an LLM as <em>positive</em>, <em>negative</em> or
-          <em>undeterminable</em>, with a written rationale kept beside the verdict. Each record
-          page carries the model, prompt version and rationale behind its own decision; the
+          <em>undeterminable</em>, with a written rationale kept beside the verdict, against the
+          <a [href]="criteriaUrl" target="_blank" rel="noopener">curation criteria</a> through
+          <a [href]="promptUrl" target="_blank" rel="noopener">the classification prompt</a>. Each
+          record page carries the model, prompt version and rationale behind its own decision,
+          linked to the exact criteria it was judged by; the
           <a routerLink="/about/processing">processing history</a> shows when each batch ran.
         </p>
       </li>

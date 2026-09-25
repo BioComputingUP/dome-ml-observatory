@@ -6,6 +6,7 @@ import {
   CC_BY_4,
   corpusSeriesId,
   CURATION_CRITERIA_URL,
+  curationCriteriaUrl,
   DOME_REGISTRY_URL,
   domeRegistryReviewUrl,
   recordUrl,
@@ -170,7 +171,7 @@ function activities(r: RecordView, ctx: MetadataContext): JsonValue[] {
         'prov:used': compact({
           '@type': 'CreativeWork',
           name: 'DOME Observatory curation criteria',
-          url: CURATION_CRITERIA_URL,
+          url: curationCriteriaUrl(ruleset),
           version: nonEmpty(c?.prompt_version),
           identifier: ruleset ? `sha256:${ruleset}` : undefined,
         }),
