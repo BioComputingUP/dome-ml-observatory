@@ -4,7 +4,7 @@
  * `MATOMO_SITE_ID` is the ID of the "DOME Observatory" site in the lab's Matomo (the API is tracked
  * separately, under its own site, by observatory-ws). Setting it to null switches tracking off:
  * nothing is loaded, no request leaves the browser, and the privacy page says so -- see
- * MATOMO_ENABLED below. See ROADMAP.md §1 for the full runbook.
+ * MATOMO_ENABLED below. The root README's Analytics section has the full runbook.
  *
  * Deliberately a source constant rather than an environment variable or a build-time define. The
  * SPA has no runtime configuration of any kind (see the root README's Architecture section) and

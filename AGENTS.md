@@ -4,9 +4,10 @@ Guidance for any AI coding agent (Claude, Copilot, Cursor, etc.) working in this
 Read this fully before making changes. If something here conflicts with what you observe in
 the code, trust the code and update this file.
 
-`ROADMAP.md` is the companion: what is still open, and the runbooks for the recurring jobs (data
-refresh, Zenodo archive). It covers what is *planned*, not what has shipped — the record of what
-has been built and why lives in this file and in the code comments.
+`ROADMAP.md` is the companion: what is still open, across both repositories. It covers what is
+*planned*, not what has shipped — the record of what has been built and why lives in this file and
+in the code comments. The recurring jobs (the corpus refresh and the Zenodo archive of each
+release) run from the sister repository's `refresh-cycle` skill, not from a runbook here.
 
 ## What this is
 
@@ -244,10 +245,11 @@ host are not.
 - `observatory-ws/src/journals/journals.service.ts` — per-journal figures and year-by-year
   trends. Runs **one aggregation over the whole collection at boot** (~24s, measured) and serves
   every request from the resulting in-memory table with a 24h TTL, exactly like `StatsService`.
-  Needs no index and writes nothing. Don't move this to a per-request aggregation: grouping 827k
-  documents by journal-and-year on a page view is precisely what the cache exists to avoid on a
-  shared database host. Its totals cover the 770,752 records carrying a journal name, not all
-  827,061 — anything displaying them has to say so. `toListRow` is an explicit whitelist, not a
+  Needs no index and writes nothing. Don't move this to a per-request aggregation: grouping the
+  whole collection (876k documents in 2026-09) by journal-and-year on a page view is precisely what
+  the cache exists to avoid on a shared database host. Its totals cover only the records carrying a
+  journal name (819,129 of 876,324 on 2026-09-25; preprints have none) — anything displaying them
+  has to say so. `toListRow` is an explicit whitelist, not a
   spread: a field added to `JournalRow` and not copied there reaches the detail view and silently
   never reaches the table.
 - `observatory-ws/src/database/content-model.module.ts` — the **only** place the `'Content'`
@@ -298,7 +300,7 @@ host are not.
   about analytics into that page -- the coupling is what stops the notice going stale, which is a
   compliance problem and not just an accuracy one. Cookies are disabled in code
   (`_paq.push(['disableCookies'])`); removing that call would require a consent banner, versioned
-  consent state and a withdrawal path. See ROADMAP.md §1.
+  consent state and a withdrawal path. The root README's Analytics section has the switches.
 - **Angular's critical-CSS inlining is disabled on purpose** (`optimization.styles.inlineCritical:
   false` in `angular.json`). It rewrites the stylesheet link to `media="print"
   onload="this.media='all'"`, and that inline handler is blocked by the CSP -- leaving the page

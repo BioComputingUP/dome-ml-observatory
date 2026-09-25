@@ -128,10 +128,33 @@ and schema validation on every pull request and every push to `main`. It reports
 does not block a push. The same gates run locally in seconds — see
 [`CONTRIBUTING.md`](CONTRIBUTING.md#gates).
 
+## Analytics
+
+Page views are counted by the lab's self-hosted Matomo (`matomo.biocomputingup.it`): cookieless,
+IP-anonymised and hosted in the EU, so there is no consent banner and no Google Analytics. Browser
+tracking is on. Its one switch is `MATOMO_SITE_ID` in
+[`observatory-ui/src/app/core/analytics.config.ts`](observatory-ui/src/app/core/analytics.config.ts),
+and the privacy page reads the same constant, so what it says cannot drift from what the site does.
+The `disableCookies` call must stay: without it the site would need a consent banner, versioned
+consent state and a withdrawal path.
+
+API usage tracking (`observatory-ws/src/analytics/matomo.interceptor.ts`) is built and switched
+off. To turn it on, generate a Matomo auth token with tracking scope, set `MATOMO_SITE_ID` and
+`MATOMO_TOKEN` in `observatory-ws`'s deployment environment (never a tracked file), restart, then
+`curl` an endpoint and confirm the hit reaches Matomo's real-time log with the caller's IP. The
+token is not optional: without it Matomo attributes every call to the server's own IP. Switch
+either half off by unsetting `MATOMO_TOKEN` and restarting, or setting `MATOMO_SITE_ID` to `null`
+and redeploying. The privacy page's wording follows the browser switch only, so turning the API
+half on means revising that page in the same change.
+
 ## Support
 
 **[contact@dome-ml.org](mailto:contact@dome-ml.org)** reaches the team, for anything at all —
 questions about the data, collaborations, or a request to correct or remove a record.
+
+**[dome-support@googlegroups.com](https://groups.google.com/g/dome-support)** is the Google Group,
+for release announcements and discussion between people using the corpus. Join from the group's
+page, or by email to dome-support+subscribe@googlegroups.com without a Google account.
 
 For anything worth a public trail, open an issue. There is a short form for each kind of report, so
 you are not guessing what we need:
@@ -158,8 +181,9 @@ search term takes a slower, higher-recall path.
   and database expectations.
 - [`schema/README.md`](schema/README.md) — the record schema and controlled vocabularies, and how
   releases are versioned.
-- [`ROADMAP.md`](ROADMAP.md) — what is still to build, and the runbooks for the recurring jobs:
-  refreshing the corpus, and the monthly Zenodo archive.
+- [`ROADMAP.md`](ROADMAP.md) — what is still open, across both repositories. The recurring jobs
+  themselves — refreshing the corpus and archiving each release to Zenodo — run from the sister
+  repository's `refresh-cycle` skill.
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) — how to propose a change, and the npm dev workflow, local
   gates and code conventions. · [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)
 - [`AGENTS.md`](AGENTS.md) — working conventions, and a record of the things that have gone wrong

@@ -11,7 +11,7 @@ export interface CountResult {
   totalRelation: 'eq' | 'gte';
 }
 
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // corpus is refreshed 6-12x/year -- see ROADMAP.md
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // the corpus changes only at a load, which ends with a restart
 const BOUNDED_COUNT_LIMIT = 10_000;
 
 /**

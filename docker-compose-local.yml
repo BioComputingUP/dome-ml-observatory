@@ -30,7 +30,7 @@ services:
     # mongo-seed isn't part of the run. It has to be here rather than optional, because the
     # backend warms its count/stats caches once at boot and holds them for 24h -- start it before
     # the seed finishes and it caches "0 records" and serves that all day. The same reason a real
-    # data refresh needs a backend restart (see ROADMAP.md).
+    # data refresh needs a backend restart (the sister repository's refresh-cycle skill does one after every load).
     depends_on:
       mongo-seed:
         condition: service_completed_successfully
