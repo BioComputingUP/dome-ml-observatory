@@ -76,6 +76,24 @@ const INTEGRATIONS: Integration[] = [
     logo: 'assets/img/DOME_Registry_Rounded-cropped.svg',
   },
   {
+    name: 'EBI Search',
+    status: 'live',
+    direction: 'out',
+    protocol: 'REST API (cross-references + domain dumps)',
+    what: "EMBL-EBI's search engine across its data resources, which records the literature that each archive, registry and database entry names.",
+    how: 'For every AI/ML paper, the pipeline asks EBI Search which deposits, bio.tools entries and DOME Registry reviews name it by PMID, PMCID or DOI, and adds each one to the record’s data links. Only assets from the paper count: databases that cite a paper as evidence for a curated fact are left out.',
+    benefit: 'Finds the data and software a paper released even when its text never mentions them, because the repository recorded the paper instead.',
+  },
+  {
+    name: 'bio.tools',
+    status: 'live',
+    direction: 'out',
+    protocol: 'Cross-reference (EBI Search)',
+    what: 'The ELIXIR registry of bioinformatics software and services, each described with EDAM terms.',
+    how: 'The pipeline finds the bio.tools entries that name an AI/ML paper by PMID, PMCID or DOI through EBI Search, and the record page links to each entry as the paper’s software record, with a bio.tools option in the Linked data filter on search.',
+    benefit: 'From a method paper straight to the registered tool that implements it, with its documentation, download and function annotations.',
+  },
+  {
     name: 'OAI-PMH',
     status: 'live',
     direction: 'both',
@@ -193,8 +211,9 @@ export class AboutIntegrations {
 
   /** First letter(s) for the lettermark fallback tile, shown when an integration has no logo
    *  asset yet. "DOME Registry" -> "DR" (first letter of each word, capped at 2) so multi-word
-   *  names stay legible rather than colliding on one letter. schema.org / Bioschemas, W3C DCAT and
-   *  FAIR Signposting use it today; Europe PMC sat here too until its logo was sourced. */
+   *  names stay legible rather than colliding on one letter. bio.tools, Dublin Core, EBI Search,
+   *  schema.org / Bioschemas, W3C DCAT and FAIR Signposting use it today; Europe PMC sat here too
+   *  until its logo was sourced. */
   initials(name: string): string {
     return name
       .replace(/\(.*?\)/g, '')
