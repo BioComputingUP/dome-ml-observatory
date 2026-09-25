@@ -43,6 +43,94 @@ h2 {
 // kind of thing (a dated processing round), even though one is complete and one is pending.
 .round-card {
   line-height: 1.6;
+  margin-bottom: var(--space-3);
+}
+
+// A logged round is a <details>: the summary line carries what a reader scans for -- when, how
+// many, how many positive -- and the body the full record. Newest first with only the latest open
+// (about-processing.ts), because the log grows every round and a page of fully open cards is what
+// made it unreadable. The panel's padding moves onto the summary and body so the whole summary row
+// is the click target, not just its text.
+details.round-card {
+  padding: 0;
+}
+
+// Same custom triangle as the support page's FAQ, so every disclosure on the site looks alike.
+.round-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  list-style: none;
+  cursor: pointer;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &::before {
+    content: '';
+    flex: none;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 4px 0 4px 6px;
+    border-color: transparent transparent transparent var(--observatory-accent);
+    transition: transform 0.15s ease;
+  }
+
+  &:hover h3 {
+    color: var(--observatory-accent-dark);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--observatory-accent);
+    outline-offset: -2px;
+    border-radius: var(--radius-md);
+  }
+
+  h3 {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--observatory-primary);
+    transition: color 0.15s ease;
+  }
+
+  .badge-chip {
+    flex: none;
+  }
+}
+
+.round-card[open] > .round-summary::before {
+  transform: rotate(90deg);
+}
+
+.round-heading {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.round-meta {
+  font-size: var(--font-size-sm);
+  color: var(--status-neutral);
+}
+
+.round-body {
+  padding: 0 var(--space-5) var(--space-2);
+}
+
+@media (max-width: 575px) {
+  .round-summary {
+    flex-wrap: wrap;
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .round-body {
+    padding: 0 var(--space-4) var(--space-2);
+  }
 }
 
 .round-header {
@@ -192,6 +280,14 @@ dd {
 .coverage {
   padding-top: var(--space-4);
   border-top: 1px solid var(--border-default);
+}
+
+// Above the batch log rather than inside a card: where enrichment stands now reads first, then the
+// history of how it got there.
+.coverage-lead {
+  padding-top: 0;
+  border-top: 0;
+  margin-bottom: var(--space-5);
 }
 
 .coverage-header {

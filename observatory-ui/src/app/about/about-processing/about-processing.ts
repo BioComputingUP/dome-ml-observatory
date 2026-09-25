@@ -29,9 +29,11 @@ export class AboutProcessing {
     initialValue: null,
   });
 
-  readonly classificationRounds = CLASSIFICATION_ROUNDS;
-  readonly enrichmentRounds = ENRICHMENT_ROUNDS;
-  readonly corrections = CORRECTIONS;
+  // Newest first: the log is kept oldest-first (processing-rounds.ts appends), but a reader wants
+  // the latest round, which is also the only one the template opens by default.
+  readonly classificationRounds = [...CLASSIFICATION_ROUNDS].reverse();
+  readonly enrichmentRounds = [...ENRICHMENT_ROUNDS].reverse();
+  readonly corrections = [...CORRECTIONS].reverse();
   readonly roundTotal = roundTotal;
 
   readonly corpus = computed(() => this.stats()?.corpus ?? this.records.getStats());

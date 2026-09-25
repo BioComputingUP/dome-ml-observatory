@@ -42,65 +42,77 @@
 <div class="band band-tint">
   <div class="band-inner">
     <h2><i class="icon icon-common icon-flag-checkered" aria-hidden="true"></i>Classification rounds</h2>
+    <p class="round-intro">Newest first. Open a round for its search space, model and full outcome.</p>
 
-    @for (round of classificationRounds; track round.number) {
-      <div class="round-card info-panel">
-        <div class="round-header">
+    @for (round of classificationRounds; track round.number; let first = $first) {
+      <details class="round-card info-panel" [open]="first">
+        <summary class="round-summary">
           <span class="round-badge">{{ round.number }}</span>
-          <h3>{{ round.title }}</h3>
-          <span class="badge-chip tone-positive">Complete</span>
-        </div>
-
-        <dl class="round-facts">
-          <div>
-            <dt><i class="icon icon-common icon-link" aria-hidden="true"></i>Source</dt>
-            <dd><a href="https://europepmc.org/" target="_blank" rel="noopener">Europe PMC</a></dd>
-          </div>
-          <div>
-            <dt><i class="icon icon-common icon-search" aria-hidden="true"></i>Search space</dt>
-            <dd>{{ round.searchSpace }}</dd>
-          </div>
-          <div>
-            <dt><i class="icon icon-common icon-filter" aria-hidden="true"></i>Publications</dt>
-            <dd>{{ round.window }}</dd>
-          </div>
-          <div>
-            <dt><i class="icon icon-common icon-database" aria-hidden="true"></i>Processed</dt>
-            <dd>{{ round.processed }}</dd>
-          </div>
-          <div>
-            <dt><i class="icon icon-common icon-microchip" aria-hidden="true"></i>Model</dt>
-            <dd>{{ round.model }}, prompt version {{ round.promptVersion }}.</dd>
-          </div>
-          <div>
-            <dt><i class="icon icon-common icon-calendar" aria-hidden="true"></i>Run date</dt>
-            <dd>
+          <span class="round-heading">
+            <h3>{{ round.title }}</h3>
+            <span class="round-meta">
               {{ round.started | date: 'd MMM y' }}@if (round.finished !== round.started) {
                 – {{ round.finished | date: 'd MMM y' }}
               }
-            </dd>
-          </div>
-        </dl>
+              · {{ roundTotal(round.outcome) | number }} screened ·
+              {{ round.outcome.positive | number }} positive
+            </span>
+          </span>
+          <span class="badge-chip tone-positive">Complete</span>
+        </summary>
 
-        <div class="outcome-grid">
-          <div class="outcome-tile tone-positive">
-            <span class="outcome-value">{{ round.outcome.positive | number }}</span>
-            <span class="outcome-label">Positive</span>
-          </div>
-          <div class="outcome-tile tone-neutral">
-            <span class="outcome-value">{{ round.outcome.negative | number }}</span>
-            <span class="outcome-label">Negative</span>
-          </div>
-          <div class="outcome-tile tone-undeterminable">
-            <span class="outcome-value">{{ round.outcome.undeterminable | number }}</span>
-            <span class="outcome-label">Undeterminable</span>
-          </div>
-          <div class="outcome-tile tone-primary">
-            <span class="outcome-value">{{ roundTotal(round.outcome) | number }}</span>
-            <span class="outcome-label">Total screened</span>
+        <div class="round-body">
+          <dl class="round-facts">
+            <div>
+              <dt><i class="icon icon-common icon-link" aria-hidden="true"></i>Source</dt>
+              <dd><a href="https://europepmc.org/" target="_blank" rel="noopener">Europe PMC</a></dd>
+            </div>
+            <div>
+              <dt><i class="icon icon-common icon-search" aria-hidden="true"></i>Search space</dt>
+              <dd>{{ round.searchSpace }}</dd>
+            </div>
+            <div>
+              <dt><i class="icon icon-common icon-filter" aria-hidden="true"></i>Publications</dt>
+              <dd>{{ round.window }}</dd>
+            </div>
+            <div>
+              <dt><i class="icon icon-common icon-database" aria-hidden="true"></i>Processed</dt>
+              <dd>{{ round.processed }}</dd>
+            </div>
+            <div>
+              <dt><i class="icon icon-common icon-microchip" aria-hidden="true"></i>Model</dt>
+              <dd>{{ round.model }}, prompt version {{ round.promptVersion }}.</dd>
+            </div>
+            <div>
+              <dt><i class="icon icon-common icon-calendar" aria-hidden="true"></i>Run date</dt>
+              <dd>
+                {{ round.started | date: 'd MMM y' }}@if (round.finished !== round.started) {
+                  – {{ round.finished | date: 'd MMM y' }}
+                }
+              </dd>
+            </div>
+          </dl>
+
+          <div class="outcome-grid">
+            <div class="outcome-tile tone-positive">
+              <span class="outcome-value">{{ round.outcome.positive | number }}</span>
+              <span class="outcome-label">Positive</span>
+            </div>
+            <div class="outcome-tile tone-neutral">
+              <span class="outcome-value">{{ round.outcome.negative | number }}</span>
+              <span class="outcome-label">Negative</span>
+            </div>
+            <div class="outcome-tile tone-undeterminable">
+              <span class="outcome-value">{{ round.outcome.undeterminable | number }}</span>
+              <span class="outcome-label">Undeterminable</span>
+            </div>
+            <div class="outcome-tile tone-primary">
+              <span class="outcome-value">{{ roundTotal(round.outcome) | number }}</span>
+              <span class="outcome-label">Total screened</span>
+            </div>
           </div>
         </div>
-      </div>
+      </details>
     }
 
     <p class="round-note">
@@ -123,47 +135,11 @@
         A separate pass tags positively-classified records with EDAM domain, learning paradigm,
         model family and model type — the fields and their permitted terms are defined in
         <a [href]="schemaUrl()" target="_blank" rel="noopener">the current schema release</a>. It
-        runs in batches, one cohort of records at a time, and each batch is logged below.
+        runs in batches, one cohort of records at a time, and each batch is logged below, newest
+        first.
       </p>
 
-      @for (round of enrichmentRounds; track round.number) {
-        <div class="round-card info-panel">
-          <div class="round-header">
-            <span class="round-badge">{{ round.number }}</span>
-            <h3>{{ round.title }}</h3>
-            <span class="badge-chip tone-positive">Complete</span>
-          </div>
-
-          <dl class="round-facts">
-            <div>
-              <dt><i class="icon icon-common icon-filter" aria-hidden="true"></i>Cohort</dt>
-              <dd>{{ round.cohort }}</dd>
-            </div>
-            <div>
-              <dt><i class="icon icon-common icon-microchip" aria-hidden="true"></i>Model</dt>
-              <dd>{{ round.model }}</dd>
-            </div>
-            <div>
-              <dt><i class="icon icon-common icon-code-branch" aria-hidden="true"></i>Prompt version</dt>
-              <dd>{{ round.promptVersion }}</dd>
-            </div>
-            <div>
-              <dt><i class="icon icon-common icon-database" aria-hidden="true"></i>Batch size</dt>
-              <dd>{{ round.records | number }} records</dd>
-            </div>
-            <div>
-              <dt><i class="icon icon-common icon-calendar" aria-hidden="true"></i>Run date</dt>
-              <dd>
-                {{ round.started | date: 'd MMM y' }}@if (round.finished !== round.started) {
-                  – {{ round.finished | date: 'd MMM y' }}
-                }
-              </dd>
-            </div>
-          </dl>
-        </div>
-      }
-
-      <div class="coverage">
+      <div class="coverage coverage-lead">
         <div class="coverage-header">
           <span class="coverage-label">Enrichment coverage</span>
           <span class="coverage-value">{{ corpus().enriched | number }} of {{ corpus().positive | number }} positive records ({{ enrichedPercent() }}%)</span>
@@ -172,6 +148,53 @@
           <div class="coverage-bar-fill" [style.width.%]="enrichedPercent()"></div>
         </div>
       </div>
+
+      @for (round of enrichmentRounds; track round.number; let first = $first) {
+        <details class="round-card info-panel" [open]="first">
+          <summary class="round-summary">
+            <span class="round-badge">{{ round.number }}</span>
+            <span class="round-heading">
+              <h3>{{ round.title }}</h3>
+              <span class="round-meta">
+                {{ round.started | date: 'd MMM y' }}@if (round.finished !== round.started) {
+                  – {{ round.finished | date: 'd MMM y' }}
+                }
+                · {{ round.records | number }} records
+              </span>
+            </span>
+            <span class="badge-chip tone-positive">Complete</span>
+          </summary>
+
+          <div class="round-body">
+            <dl class="round-facts">
+              <div>
+                <dt><i class="icon icon-common icon-filter" aria-hidden="true"></i>Cohort</dt>
+                <dd>{{ round.cohort }}</dd>
+              </div>
+              <div>
+                <dt><i class="icon icon-common icon-microchip" aria-hidden="true"></i>Model</dt>
+                <dd>{{ round.model }}</dd>
+              </div>
+              <div>
+                <dt><i class="icon icon-common icon-code-branch" aria-hidden="true"></i>Prompt version</dt>
+                <dd>{{ round.promptVersion }}</dd>
+              </div>
+              <div>
+                <dt><i class="icon icon-common icon-database" aria-hidden="true"></i>Batch size</dt>
+                <dd>{{ round.records | number }} records</dd>
+              </div>
+              <div>
+                <dt><i class="icon icon-common icon-calendar" aria-hidden="true"></i>Run date</dt>
+                <dd>
+                  {{ round.started | date: 'd MMM y' }}@if (round.finished !== round.started) {
+                    – {{ round.finished | date: 'd MMM y' }}
+                  }
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </details>
+      }
     } @else {
       <div class="round-card info-panel">
         <div class="round-header">
@@ -231,28 +254,33 @@
       </p>
 
       @for (correction of corrections; track correction.number) {
-        <div class="round-card info-panel">
-          <div class="round-header">
+        <details class="round-card info-panel">
+          <summary class="round-summary">
             <span class="round-badge">{{ correction.number }}</span>
-            <h3>{{ correction.title }}</h3>
+            <span class="round-heading">
+              <h3>{{ correction.title }}</h3>
+              <span class="round-meta">{{ correction.date | date: 'd MMM y' }}</span>
+            </span>
             <span class="badge-chip tone-neutral">{{ correction.documents | number }} removed</span>
-          </div>
+          </summary>
 
-          <dl class="round-facts">
-            <div>
-              <dt><i class="icon icon-common icon-calendar" aria-hidden="true"></i>Date</dt>
-              <dd>{{ correction.date | date: 'd MMM y' }}</dd>
-            </div>
-            <div>
-              <dt><i class="icon icon-common icon-database" aria-hidden="true"></i>Documents removed</dt>
-              <dd>{{ correction.documents | number }}</dd>
-            </div>
-            <div>
-              <dt><i class="icon icon-common icon-flag-checkered" aria-hidden="true"></i>Why</dt>
-              <dd>{{ correction.why }}</dd>
-            </div>
-          </dl>
-        </div>
+          <div class="round-body">
+            <dl class="round-facts">
+              <div>
+                <dt><i class="icon icon-common icon-calendar" aria-hidden="true"></i>Date</dt>
+                <dd>{{ correction.date | date: 'd MMM y' }}</dd>
+              </div>
+              <div>
+                <dt><i class="icon icon-common icon-database" aria-hidden="true"></i>Documents removed</dt>
+                <dd>{{ correction.documents | number }}</dd>
+              </div>
+              <div>
+                <dt><i class="icon icon-common icon-flag-checkered" aria-hidden="true"></i>Why</dt>
+                <dd>{{ correction.why }}</dd>
+              </div>
+            </dl>
+          </div>
+        </details>
       }
     </div>
   </div>
@@ -262,7 +290,7 @@
   <div class="band-inner">
     <h2><i class="icon icon-common icon-rocket" aria-hidden="true"></i>Future rounds</h2>
     <p class="future-intro">
-      Later processing rounds will each get their own dated card above, recording the same facts:
+      Later processing rounds will each get their own dated entry above, recording the same facts:
       source, search space, volume processed, and result. This page is updated by hand alongside
       each round; it is not automatically generated.
     </p>

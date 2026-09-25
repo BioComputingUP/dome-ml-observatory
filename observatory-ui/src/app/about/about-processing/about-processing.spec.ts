@@ -51,15 +51,31 @@ describe('AboutProcessing', () => {
     root = fixture.nativeElement as HTMLElement;
   });
 
-  it('renders one card per classification round, each with its own total', () => {
+  it('renders one card per classification round, newest first, each with its own total', () => {
     const cards = root.querySelectorAll('.band-tint .round-card');
     expect(cards.length).toBe(CLASSIFICATION_ROUNDS.length);
-    CLASSIFICATION_ROUNDS.forEach((round, i) => {
+    [...CLASSIFICATION_ROUNDS].reverse().forEach((round, i) => {
       const text = cards[i].textContent ?? '';
       expect(text).toContain(round.title);
       expect(text).toContain(roundTotal(round.outcome).toLocaleString('en-US'));
       expect(text).not.toContain(LIVE.total.toLocaleString('en-US'));
     });
+  });
+
+  it('opens only the latest round of each log, so the page stays short as the log grows', () => {
+    const open = (selector: string) =>
+      [...root.querySelectorAll<HTMLDetailsElement>(selector)].map((d) => d.open);
+    const classification = open('.band-tint details.round-card');
+    expect(classification[0]).toBe(true);
+    expect(classification.slice(1).every((o) => !o)).toBe(true);
+
+    const enrichment = [...root.querySelectorAll('.band')].find(
+      (b) => b.querySelector('h2')?.textContent?.includes('Enrichment'),
+    );
+    const enrichmentOpen = [...(enrichment?.querySelectorAll<HTMLDetailsElement>('details.round-card') ?? [])].map(
+      (d) => d.open,
+    );
+    expect(enrichmentOpen.filter(Boolean).length).toBe(ENRICHMENT_ROUNDS.length > 0 ? 1 : 0);
   });
 
   it('shows the live enrichment coverage whether or not a batch is logged', () => {
