@@ -17,6 +17,7 @@ item below says which side does the work; the triage repository keeps no separat
 | 1 | [The Zenodo release in the release metadata](#1-the-zenodo-release-in-the-release-metadata) | triage | Nothing |
 | 2 | [Finalise and optimise search](#2-finalise-and-optimise-search) | this repository | A plan, to be written |
 | 3 | [Cross links](#3-cross-links) | triage | Nothing |
+| 4 | [Repair the entity-encoded titles already stored](#4-repair-the-entity-encoded-titles-already-stored) | triage | Nothing |
 
 ---
 
@@ -46,6 +47,24 @@ That fills the reserved Zenodo, source-repository, Hugging Face and Kaggle cards
 which are empty today; data links already reach 13 Hugging Face and 40 Kaggle positives, and the
 integrations page lists both as planned until this lands.
 
+## 4. Repair the entity-encoded titles already stored
+
+14,450 titles (1.6% of the corpus, all PubMed records, measured 2026-09-25) are stored with their
+emphasis entity-encoded: `&lt;i&gt;Drosophila&lt;/i&gt;`. `_decode_entities` in the sister
+repository's `mongo_landscape_export/scripts/schema.py` has fixed this at build time since schema
+v1.2.0, but it runs only in `build_document()`, and these documents were migrated by version stamp
+and never rebuilt. The display is already handled: `observatory-ui`'s `core/rich-text.ts` and
+`observatory-ws`'s `metadata/plain-text.ts` revive a bare encoded tag with a known name, so cards,
+record pages, citations, JSON-LD and OAI-PMH are correct either way. What is left, in the sister
+repository:
+
+- A one-off write mode that applies `_decode_entities` to `publication_metadata.title` and
+  `.abstract` on the documents already loaded, then the usual `observatory-ws` restart. Until then,
+  the `positives_text` index carries `lt` and `gt` as words for these titles, and `/api/records` and
+  `/api/export` hand the encoded form to anyone reading the JSON.
+- In the next schema release, correct the `title` description, which says "plain text": about 3.4%
+  of titles carry inline markup, raw or encoded.
+
 ---
 
 Short list, unranked, to judge later:
@@ -59,3 +78,6 @@ Short list, unranked, to judge later:
 3. Settle the refresh cadence (monthly or bimonthly) as stated policy, and make the sister
    repository's skills, the "Monthly to bimonthly" update cadence on `/download/bulk` and the "6-12
    times a year" in `core/facet-stats.model.ts` agree.
+4. LaTeX shows raw in 36 titles and about 2,000 abstracts (`$$ {\mathrm{T}}_2^{\ast } $$`). Rendering
+   it needs a self-hosted KaTeX bundle and a check against the CSP and Angular's sanitizer, and
+   `$10` must not read as math.
