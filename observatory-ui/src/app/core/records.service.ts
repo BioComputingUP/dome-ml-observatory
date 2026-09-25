@@ -64,36 +64,30 @@ export interface SearchResult {
  * Fallback corpus-wide numbers, painted instantly so the home/about/download metric rows never
  * show a zero flash while GET /api/stats is in flight, and shown as-is if that call fails
  * outright. RecordsService.getFacetStats() is the primary source now (Phase 7) -- these values
- * are a snapshot, not live, and will drift from the real corpus over time; update here only if
- * they drift enough to be misleading as a fallback.
+ * are a snapshot, not live, and drift from the real corpus with every load.
  *
- * Corrected 2026-09-01 (Phase 5) from a direct read-only aggregation against the MongoDB server
- * (dome_observatory.Content via GET /api/stats), replacing the prior dome-triage export tallies,
- * which were marginally higher (e.g. positive was recorded as 355,569; the live collection has
- * 355,558) -- a handful of records evidently didn't make it from that export into the loaded
- * collection. See schema/generate_facet_stats.py's CORPUS dict for the same correction.
+ * corpus-figures: GET /api/stats `corpus` on 2026-09-25, kept equal to the CORPUS dict in
+ * schema/generate_facet_stats.py. The sister repository's refresh-cycle skill refreshes every
+ * block marked `corpus-figures` after a load.
  */
 export const CORPUS_STATS: CorpusStats = {
-  total: 827_061,
-  positive: 355_558,
-  negative: 464_581,
-  undeterminable: 6_922,
-  openAccess: 548_412,
-  fulltextAvailable: 615_151,
-  /** No enrichment run had landed as of the snapshot above -- getFacetStats() carries the live
-   *  figure; this fallback only matters while that call hasn't resolved yet. */
-  enriched: 0,
+  total: 876_324,
+  positive: 367_348,
+  negative: 502_002,
+  undeterminable: 6_974,
+  openAccess: 589_529,
+  fulltextAvailable: 657_676,
+  enriched: 3_532,
 };
 
-/** Positives-scoped fallback (classification: positive only) -- same role and provenance as
- *  CORPUS_STATS above: painted instantly so the home metric row never flashes zeros while
- *  GET /api/stats is in flight. Measured against dome_observatory.Content on the MongoDB server via
- *  GET /api/stats, 2026-09-02. */
+/** Positives-scoped fallback (classification: positive only) -- same role as CORPUS_STATS above:
+ *  painted instantly so the home metric row never flashes zeros while GET /api/stats is in flight.
+ *  corpus-figures: GET /api/stats `search_space` on 2026-09-25. */
 export const SEARCH_SPACE_STATS: SearchSpaceStats = {
-  total: 355_558,
-  fulltextAvailable: 229_325,
-  openAccess: 204_335,
-  enriched: 0,
+  total: 367_348,
+  fulltextAvailable: 237_377,
+  openAccess: 212_302,
+  enriched: 3_532,
   yearRange: { min: 1963, max: 2027 },
 };
 

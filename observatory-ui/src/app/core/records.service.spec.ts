@@ -35,7 +35,11 @@ describe('RecordsService', () => {
 
   it('returns the fallback corpus-wide stats synchronously, before any request resolves', () => {
     expect(service.getStats()).toEqual(CORPUS_STATS);
-    expect(service.getStats().positive).toBe(355_558);
+  });
+
+  it('keeps the fallback snapshot self-consistent, so a refresh typo fails here', () => {
+    const { total, positive, negative, undeterminable } = CORPUS_STATS;
+    expect(positive + negative + undeterminable).toBe(total);
   });
 
   describe('search()', () => {

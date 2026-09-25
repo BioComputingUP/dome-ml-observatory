@@ -44,26 +44,21 @@ OUT_PATH = SCHEMA_DIR / "stats" / "facet-stats.json"
 # Real full-corpus figures. Used only by the fixture-file mode below -- --from-api mode gets its
 # own live corpus block straight from the MongoDB server and ignores this dict entirely.
 #
-# Corrected 2026-09-01 (Phase 5) from a live read-only aggregation against the MongoDB server
-# (dome_observatory.Content, measured via GET /api/stats): these are marginally lower than the
-# dome-triage/mongo_landscape_export tallies this dict previously carried (e.g. positive was
-# recorded as 355,569; the live collection has 355,558) -- a handful of records evidently didn't
-# make it from that export into the loaded collection. Immaterial to anything displayed, but
-# worth keeping the real, current source noted rather than a stale export tally.
+# corpus-figures: a snapshot of GET /api/stats `corpus`, kept equal to CORPUS_STATS in
+# observatory-ui/src/app/core/records.service.ts. The sister repository's refresh-cycle skill
+# refreshes every block marked `corpus-figures` after a load.
 CORPUS = {
-    "total": 827_061,
-    "positive": 355_558,
-    "negative": 464_581,
-    "undeterminable": 6_922,
-    "openAccess": 548_412,
-    "fulltextAvailable": 615_151,
-    # No enrichment run has landed yet. Once Gavin's batch is in Mongo this becomes a real number
-    # and every coverage banner in the UI goes live on its own.
-    "enriched": 0,
+    "total": 876_324,
+    "positive": 367_348,
+    "negative": 502_002,
+    "undeterminable": 6_974,
+    "openAccess": 589_529,
+    "fulltextAvailable": 657_676,
+    "enriched": 3_532,
 }
 CORPUS_PROVENANCE = (
     "corpus figures measured directly against dome_observatory.Content on the MongoDB server via a read-only "
-    "aggregation (GET /api/stats), 2026-09-01 -- see observatory-ws/src/stats/stats.service.ts"
+    "aggregation (GET /api/stats), 2026-09-25 -- see observatory-ws/src/stats/stats.service.ts"
 )
 
 

@@ -10,9 +10,10 @@ export class PaginatedRecordsDto {
   @ApiProperty({ type: [RecordDto] })
   items!: RecordDto[];
 
+  // corpus-figures: the positives total on 2026-09-25, refreshed after each load.
   @ApiProperty({
     description: 'Result count for this filter combination.',
-    example: 355_558,
+    example: 367_348,
   })
   total!: number;
 

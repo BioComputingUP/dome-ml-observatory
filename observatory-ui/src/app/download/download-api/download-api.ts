@@ -49,7 +49,8 @@ export class DownloadApi {
       path: '/api/health/ready',
       summary: 'Readiness check — confirms the database connection is live and reports the collection it is reading.',
       example:
-        '{\n  "status": "ok",\n  "mongo": { "db": "dome_observatory", "collection": "Content", "estimatedCount": 827412 },\n  "schemaVersion": "1.1.0"\n}',
+        // corpus-figures: the example responses here are real ones, refreshed after each load.
+        '{\n  "status": "ok",\n  "mongo": { "db": "dome_observatory", "collection": "Content", "estimatedCount": 876324 },\n  "schemaVersion": "v1.6.0"\n}',
     },
     {
       method: 'GET',
@@ -75,7 +76,7 @@ export class DownloadApi {
         { name: 'page, pageSize', type: 'integer', note: 'Pagination — pageSize capped at 100.' },
       ],
       example:
-        '{\n  "page": 1,\n  "pageSize": 25,\n  "total": 355558,\n  "totalRelation": "eq",\n  "items": [ { "_id": "8b720ad0-...", "publication_metadata": { "title": "..." }, "...": "..." } ]\n}',
+        '{\n  "page": 1,\n  "pageSize": 25,\n  "total": 367348,\n  "totalRelation": "eq",\n  "items": [ { "_id": "8b720ad0-...", "publication_metadata": { "title": "..." }, "...": "..." } ]\n}',
     },
     {
       method: 'GET',
@@ -145,7 +146,7 @@ export class DownloadApi {
       path: '/api/stats',
       summary: 'Corpus-wide headline figures and facet counts — the same numbers the Search page reads for its metric row and facet panel. Cached server-side; refreshes at most once a day.',
       example:
-        '{\n  "generated": "2026-08-15T02:00:00.000Z",\n  "schema_version": "1.1.0",\n  "corpus": { "total": 827412, "positive": 355558, "negative": 461210, "undeterminable": 10644, "enriched": 128340 },\n  "...": "..."\n}',
+        '{\n  "generated": "2026-09-25T17:38:26.003Z",\n  "schema_version": "v1.6.0",\n  "corpus": { "total": 876324, "positive": 367348, "negative": 502002, "undeterminable": 6974, "enriched": 3532 },\n  "...": "..."\n}',
     },
   ];
 
