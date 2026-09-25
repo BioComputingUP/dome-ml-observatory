@@ -19,6 +19,10 @@
   --observatory-primary-dark: #0b2735; // darker blue -- hover/accent states
   --observatory-accent: #f66729; // orange -- CTAs, active states
   --observatory-accent-dark: #d94e13; // orange hover
+  // Toned-down orange for large fills behind white text: same hue as the accent at lower
+  // saturation, and 4.9:1 against white where the accent manages 3:1. For blocks of colour
+  // (tab bars, card strips) where the full-strength accent reads as garish.
+  --observatory-accent-muted: #b8531f;
 
   // Status colours -- deliberately neutral for "negative" (not an AI/ML paper is a valid,
   // unremarkable outcome of screening, not an error state) and amber rather than red for
@@ -322,9 +326,9 @@ app-side-nav {
 // Used by About and Download so their pages pick up the home page's card language (rounded
 // icon badges, restrained accent, hover lift instead of underlines) from one place, rather
 // than each page hand-rolling its own near-identical .page/.section CSS the way both already
-// did before this. Deliberately kept separate from home.scss's own .route-card/.family-card
-// (which look the same) rather than merging the two -- home just shipped and shouldn't have to
-// take on risk from a shared-class refactor to get pages that come after it caught up.
+// did before this. Deliberately kept separate from home.scss's own .route-card (which looks the
+// same) rather than merging the two -- home just shipped and shouldn't have to take on risk
+// from a shared-class refactor to get pages that come after it caught up.
 .card {
   display: block;
   background-color: var(--surface-card);
