@@ -1,0 +1,20 @@
+name: dome-ml-observatory
+services:
+  observatory-ws:
+    container_name: observatory-ws
+    image: registry.biocomputingup.it/dome-ml-observatory/dome-ml-observatory-ws:latest
+    env_file:
+      - .env
+    ports:
+      - "8094:3000"
+    init: true
+    restart: unless-stopped
+
+  observatory-ui:
+    container_name: observatory-ui
+    image: registry.biocomputingup.it/dome-ml-observatory/dome-ml-observatory-ui:latest
+    ports:
+      - "8095:80"
+    depends_on:
+      - observatory-ws
+    restart: unless-stopped

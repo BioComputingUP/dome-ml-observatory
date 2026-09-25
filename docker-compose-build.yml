@@ -1,0 +1,16 @@
+services:
+  observatory-ws:
+    build:
+      context: .
+      dockerfile: observatory-ws/Dockerfile
+      tags:
+        - registry.biocomputingup.it/dome-ml-observatory/dome-ml-observatory-ws:latest
+    image: registry.biocomputingup.it/dome-ml-observatory/dome-ml-observatory-ws:latest
+
+  observatory-ui:
+    build:
+      context: .
+      dockerfile: observatory-ui/Dockerfile
+      tags:
+        - registry.biocomputingup.it/dome-ml-observatory/dome-ml-observatory-ui:latest
+    image: registry.biocomputingup.it/dome-ml-observatory/dome-ml-observatory-ui:latest

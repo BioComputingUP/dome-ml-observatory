@@ -9,9 +9,10 @@
 # Both Dockerfiles build from THIS repo's root as their context (each needs schema/ -- see each
 # Dockerfile's own header), hence `context: .` + an explicit `dockerfile:` path below, rather
 # than `context: observatory-ui/` / `context: observatory-ws/`.
-
+name: dome-ml-observatory
 services:
   observatory-ws:
+    container_name: observatory-ws
     build:
       context: .
       dockerfile: observatory-ws/Dockerfile
@@ -52,6 +53,7 @@ services:
       - observatory
 
   observatory-ui:
+    container_name: observatory-ui
     build:
       context: .
       dockerfile: observatory-ui/Dockerfile
