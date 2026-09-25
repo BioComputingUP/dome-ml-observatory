@@ -53,21 +53,8 @@ const INTEGRATIONS: Integration[] = [
     logo: 'assets/img/doi-logo.svg',
   },
   {
-    name: 'Zenodo',
-    status: 'live',
-    direction: 'both',
-    protocol: 'Web link + OAI-PMH',
-    what: "Archival deposits — including Observatory's own bulk-download releases.",
-    how: 'Corpus-wide bulk releases (see Download) are deposited here with persistent DOIs. Per-record code/data deposits remain a reserved field.',
-    benefit: 'Archived artefacts with persistent identifiers, at both the paper and dataset level.',
-    logo: 'assets/img/zenodo-logo.svg',
-  },
-  // ---- Planned ----
-  {
-    // Built and tested in the pipeline (schema v1.4.0, data_links; EBI Search's links for positives
-    // from v1.5.0); flips to live once the corpus load has landed and the record pages show the cards.
     name: 'Europe PMC data links',
-    status: 'planned',
+    status: 'live',
     direction: 'out',
     protocol: 'REST API (annotations + Scholix data links)',
     what: 'The datasets, accessions and supplementary files Europe PMC links to each paper — PDB, UniProt, ENA, GEO, BioStudies, Zenodo, Dryad and more.',
@@ -77,48 +64,16 @@ const INTEGRATIONS: Integration[] = [
   },
   {
     name: 'DOME Registry',
-    status: 'planned',
+    status: 'live',
     direction: 'both',
     protocol: 'Cross-reference',
     what: 'The sibling registry of structured, community-reviewed DOME method annotations.',
-    // Schema v1.5.0 fills identifiers.dome_registry from the Registry's EBI Search entries; flips to
-    // live with the corpus load, as the data links above.
     how: 'The pipeline matches Registry entries to AI/ML papers by PMID or PMCID through EBI Search, stores the entry on the record (identifiers.dome_registry), and links the record page straight to its Registry review.',
     benefit: 'Move between "this paper exists" (Observatory) and "here is its full structured method annotation" (Registry).',
     // The -cropped variant, not the full one: DOME_Registry_Rounded.svg is a 375x375 canvas whose
     // wordmark occupies a 349x78 band, so ~80% of it is empty and object-fit shrank the mark to an
-    // illegible sliver. Same asset the home page already uses for the same reason.
+    // illegible sliver. Same asset the record page's Registry card uses, for the same reason.
     logo: 'assets/img/DOME_Registry_Rounded-cropped.svg',
-  },
-  {
-    name: 'Hugging Face',
-    status: 'planned',
-    direction: 'out',
-    protocol: 'Web link',
-    what: 'Hosted models and datasets.',
-    how: "A reserved identifier field will link to a paper's released model or dataset once populated.",
-    benefit: 'Go from a paper directly to a runnable model.',
-    logo: 'assets/img/hf-logo.svg',
-  },
-  {
-    name: 'Kaggle',
-    status: 'planned',
-    direction: 'out',
-    protocol: 'Web link',
-    what: 'Datasets and notebooks.',
-    how: 'A reserved identifier field will link associated datasets or notebooks once populated.',
-    benefit: 'Reach the data a paper actually used.',
-    logo: 'assets/img/Kaggle_logo.png',
-  },
-  {
-    name: 'FAIRsharing',
-    status: 'planned',
-    direction: 'out',
-    protocol: 'Web link',
-    what: 'A registry of data and metadata standards.',
-    how: 'Domain and method vocabulary terms would link to their FAIRsharing standard entries where one exists.',
-    benefit: "Ties Observatory's controlled vocabularies to the broader standards landscape.",
-    logo: 'assets/img/fairsharing-logo.svg',
   },
   {
     name: 'OAI-PMH',
@@ -129,6 +84,15 @@ const INTEGRATIONS: Integration[] = [
     how: 'The AI/ML methods papers are harvestable at /api/oai in Dublin Core (oai_dc), incrementally by the date each record last changed.',
     benefit: 'Any compliant harvester can index Observatory records into its own catalogue, with no per-aggregator integration work.',
     logo: 'assets/img/oai-pmh-logo.svg',
+  },
+  {
+    name: 'Dublin Core',
+    status: 'live',
+    direction: 'out',
+    protocol: 'DCMI Metadata Terms · oai_dc',
+    what: 'The DCMI metadata vocabulary — title, creator, date, subject, identifier, rights — that library and repository systems share.',
+    how: 'Every AI/ML methods paper is served as a Dublin Core record over OAI-PMH (oai_dc), and the DCAT catalogue at /api/catalog describes the corpus and its releases in DCMI Terms.',
+    benefit: 'Library catalogues, repositories and discovery services read the records in the most widely shared metadata standard.',
   },
   {
     name: 'schema.org / Bioschemas',
@@ -157,13 +121,56 @@ const INTEGRATIONS: Integration[] = [
     how: 'Record pages answer with cite-as, describedby, license and collection links, and serve JSON-LD to clients that ask for it.',
     benefit: 'FAIR assessment tools and harvesters find a record’s metadata without scraping the page.',
   },
+  // ---- Planned ----
+  {
+    // Planned until the first corpus deposit publishes: the archive job lives in the sister
+    // repository's refresh cycle (scripts/zenodo_archive.py there), and this flips to live with it.
+    name: 'Zenodo',
+    status: 'planned',
+    direction: 'both',
+    protocol: 'Web link + REST API deposit',
+    what: "Archival deposits — each paper's own, and Observatory's corpus releases.",
+    how: "Each corpus release will be archived as a new version of one Zenodo record — the records as gzipped JSON Lines, a checksum sidecar and the schema they follow — under a single concept DOI. A paper's own Zenodo deposits already appear among its record's data links.",
+    benefit: 'Archived artefacts with persistent identifiers, at both the paper and dataset level.',
+    logo: 'assets/img/zenodo-logo.svg',
+  },
+  {
+    name: 'Hugging Face',
+    status: 'planned',
+    direction: 'out',
+    protocol: 'Web link',
+    what: 'Hosted models and datasets.',
+    how: "Where a paper's Europe PMC data links name a Hugging Face model or dataset, its record page already links to it. A dedicated fetch that finds them for every paper, filling a reserved identifier field, is planned.",
+    benefit: 'Go from a paper directly to a runnable model.',
+    logo: 'assets/img/hf-logo.svg',
+  },
+  {
+    name: 'Kaggle',
+    status: 'planned',
+    direction: 'out',
+    protocol: 'Web link',
+    what: 'Datasets and notebooks.',
+    how: "Where a paper's Europe PMC data links name a Kaggle dataset or notebook, its record page already links to it. A dedicated fetch that finds them for every paper, filling a reserved identifier field, is planned.",
+    benefit: 'Reach the data a paper actually used.',
+    logo: 'assets/img/Kaggle_logo.png',
+  },
+  {
+    name: 'FAIRsharing',
+    status: 'planned',
+    direction: 'out',
+    protocol: 'Web link',
+    what: 'A registry of data and metadata standards.',
+    how: 'Domain and method vocabulary terms would link to their FAIRsharing standard entries where one exists.',
+    benefit: "Ties Observatory's controlled vocabularies to the broader standards landscape.",
+    logo: 'assets/img/fairsharing-logo.svg',
+  },
   {
     name: 'MCP',
     status: 'planned',
     direction: 'both',
     protocol: 'MCP',
     what: 'The Model Context Protocol, for exposing tools/data to AI agents directly.',
-    how: 'Once the API exists, an MCP server could expose search and record lookup as agent-callable tools.',
+    how: 'An MCP server over the public API could expose search and record lookup as agent-callable tools.',
     benefit: 'Lets AI assistants query the corpus directly rather than scraping the site.',
     logo: 'assets/img/mcp-logo.svg',
   },
@@ -188,9 +195,8 @@ export class AboutIntegrations {
 
   /** First letter(s) for the lettermark fallback tile, shown when an integration has no logo
    *  asset yet. "DOME Registry" -> "DR" (first letter of each word, capped at 2) so multi-word
-   *  names stay legible rather than colliding on one letter. Every entry currently has a logo, so
-   *  nothing reaches this today -- it stays as the fallback for the next integration added before
-   *  its asset is sourced, which is exactly how Europe PMC sat here until one was. */
+   *  names stay legible rather than colliding on one letter. schema.org / Bioschemas, W3C DCAT and
+   *  FAIR Signposting use it today; Europe PMC sat here too until its logo was sourced. */
   initials(name: string): string {
     return name
       .replace(/\(.*?\)/g, '')
