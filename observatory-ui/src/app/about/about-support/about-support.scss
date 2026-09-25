@@ -89,6 +89,14 @@ h2 {
   .cta-pill {
     align-self: flex-start;
   }
+
+  // A second route under the CTA (the Google Group's join-by-email), quieter than the pill.
+  // overflow-wrap because the subscribe address is one unbreakable 40-character token.
+  .support-note {
+    margin: var(--space-3) 0 0;
+    color: var(--status-neutral);
+    overflow-wrap: anywhere;
+  }
 }
 
 // Name above status rather than beside it: "Available now" is wide enough that at the 300px column
