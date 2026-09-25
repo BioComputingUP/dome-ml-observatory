@@ -1,10 +1,10 @@
 /**
  * The one place the Matomo configuration lives, and the one switch that turns tracking on.
  *
- * `MATOMO_SITE_ID` is null until the lab's Matomo administrator issues a site ID for
- * observatory.dome-ml.org. While it is null nothing is loaded, no request leaves the browser, and
- * the privacy page says so -- see MATOMO_ENABLED below. Setting it to the real ID is the entire
- * activation step on the frontend side; see ROADMAP.md §1 for the full runbook.
+ * `MATOMO_SITE_ID` is the ID of the "DOME Observatory" site in the lab's Matomo (the API is tracked
+ * separately, under its own site, by observatory-ws). Setting it to null switches tracking off:
+ * nothing is loaded, no request leaves the browser, and the privacy page says so -- see
+ * MATOMO_ENABLED below. See ROADMAP.md §1 for the full runbook.
  *
  * Deliberately a source constant rather than an environment variable or a build-time define. The
  * SPA has no runtime configuration of any kind (see the root README's Architecture section) and
@@ -15,7 +15,7 @@
 export const MATOMO_URL = 'https://matomo.biocomputingup.it/';
 
 /** Set to the site ID issued by the lab's Matomo, e.g. '7'. Null disables tracking entirely. */
-export const MATOMO_SITE_ID: string | null = null;
+export const MATOMO_SITE_ID: string | null = '30';
 
 /**
  * Single source of truth for whether analytics are running, read by BOTH the tracker and the
