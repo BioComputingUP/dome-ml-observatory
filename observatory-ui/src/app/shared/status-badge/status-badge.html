@@ -16,6 +16,8 @@
          access/full text collapse into one indicator -- see status-badge.ts's header comment. -->
     @if (fulltext()) {
       <li class="badge-chip tone-positive">Full text</li>
+    } @else if (openAccess()) {
+      <li class="badge-chip tone-positive">Open access</li>
     } @else {
       <li class="badge-chip tone-neutral">No full text</li>
     }

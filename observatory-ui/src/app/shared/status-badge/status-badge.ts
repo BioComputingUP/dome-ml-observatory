@@ -11,13 +11,16 @@ export type BadgeTone = 'positive' | 'neutral' | 'undeterminable';
  *    access/full text, enrichment. A single record is worth the detail.
  *  - 'card' (search result cards): classification and the open-access/full-text split are BOTH
  *    dropped. Classification is dropped because every search result is a positive now that the
- *    search page's whole space is the 355,558 AI/ML methods papers (see facet-panel.ts) -- an
- *    "AI/ML methods paper" chip on every single card is pure noise, not information. The
- *    open-access/full-text split collapses to one "Full text" indicator because, measured across
- *    the positives: `fulltext_available: true` is 229,325 records, of which 226,293 also carry a
- *    PMC id -- the flag genuinely *is* PMC full-text availability, and showing two near-identical
- *    badges for it read as confusing, redundant UI rather than two different facts. Enrichment
- *    stays in both -- see the honest "not yet enriched" coverage story elsewhere on the page.
+ *    search page's whole space is the AI/ML methods papers (see facet-panel.ts) -- an "AI/ML
+ *    methods paper" chip on every single card is pure noise, not information. The
+ *    open-access/full-text split collapses to one indicator because `fulltext_available` tracks
+ *    PMC full-text availability almost exactly, and two near-identical badges read as redundant
+ *    UI rather than two different facts. The one exception is an open-access paper whose flag
+ *    is false: that says "Open access" rather than "No full text", which would be wrong for it.
+ *    On 2026-09-25, 593 positives were open access with the flag false (AlphaFold 2 among them),
+ *    mostly records merged in from the curated sets, which never had the flag derived.
+ *    Enrichment stays in both -- see the honest "not yet enriched" coverage story elsewhere on
+ *    the page.
  *
  * Tone choices are deliberate: "negative" is neutral grey, not red -- a paper screened out as
  * not-AI/ML is a valid, unremarkable outcome, not an error -- and "undeterminable" is amber
