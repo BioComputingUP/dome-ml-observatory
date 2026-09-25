@@ -13,6 +13,14 @@ import MatomoTracker from 'matomo-tracker';
 import { AppConfig } from '../config/configuration';
 
 /**
+ * Requests that are not people using the API, so are never reported. The Docker HEALTHCHECK polls
+ * /api/health every 10s -- 8,640 hits a day per container, which would swamp real usage -- and the
+ * sitemaps (/api/sitemap, /api/sitemaps/..., which nginx maps /sitemap.xml and friends onto) are
+ * fetched by search-engine crawlers. Matched against the path alone; /api is main.ts's global prefix.
+ */
+const UNTRACKED_PATH = /^\/api\/(?:health|sitemaps?)(?:\/|$)/i;
+
+/**
  * Reports API requests to the lab's self-hosted Matomo, mirroring what the sibling MobiDB service
  * does in its own `onResponse` hook -- same tracker library, same instance, so API usage across
  * the lab's services is measured the same way.
@@ -58,6 +66,7 @@ export class MatomoInterceptor implements NestInterceptor, OnModuleDestroy {
     if (!this.tracker) return next.handle();
 
     const request = context.switchToHttp().getRequest<Request>();
+    if (UNTRACKED_PATH.test(request.originalUrl.split('?', 1)[0])) return next.handle();
 
     // Reported after the handler completes, so a request that 503s or 429s is not counted as a
     // served one. tap's next callback fires only on success.
@@ -76,9 +85,9 @@ export class MatomoInterceptor implements NestInterceptor, OnModuleDestroy {
         token_auth: this.token,
         // req.ip already resolves X-Forwarded-For, because main.ts sets `trust proxy` -- the same
         // reason the rate limiter can key on it. Falling back to the socket address would report
-        // nginx's own IP for every request.
+        // nginx's own IP for every request. Deliberately no `uid`: Matomo's IP anonymisation
+        // applies to cip but never to the User ID, so sending the IP there would store it in full.
         cip: request.ip,
-        uid: request.ip,
         ua: request.headers['user-agent'],
       });
     } catch (err) {

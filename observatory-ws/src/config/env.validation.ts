@@ -7,6 +7,7 @@ import {
   IsUrl,
   Max,
   Min,
+  ValidateIf,
   validateSync,
 } from 'class-validator';
 
@@ -101,8 +102,12 @@ class EnvironmentVariables {
   @IsUrl({ require_tld: false })
   MATOMO_URL?: string;
 
-  @IsOptional()
+  // Required once MATOMO_TOKEN is set: the tracker's constructor asserts on a site ID, so a token
+  // without one would otherwise pass here and crash the process later in boot, as an assertion
+  // failure from inside a dependency rather than this file's named error.
+  @ValidateIf((o: EnvironmentVariables) => !!o.MATOMO_TOKEN)
   @IsString()
+  @IsNotEmpty({ message: 'MATOMO_SITE_ID must be set when MATOMO_TOKEN is set' })
   MATOMO_SITE_ID?: string;
 
   @IsOptional()

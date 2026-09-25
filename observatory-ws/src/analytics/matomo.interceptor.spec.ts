@@ -68,6 +68,32 @@ describe('MatomoInterceptor', () => {
         ua: 'curl/8',
       }),
     );
+    // Matomo anonymises cip but never the User ID, so an IP sent as uid would be stored in full.
+    const [payload] = trackSpy.mock.calls[0] as [Record<string, unknown>];
+    expect(payload).not.toHaveProperty('uid');
+  });
+
+  it('does not count the Docker healthcheck, which polls /api/health every 10s', async () => {
+    const interceptor = new MatomoInterceptor(config('secret'));
+    await lastValueFrom(interceptor.intercept(context('/api/health'), handler()));
+    await lastValueFrom(interceptor.intercept(context('/api/health/ready'), handler()));
+    expect(trackSpy).not.toHaveBeenCalled();
+  });
+
+  it('does not count crawler fetches of the sitemaps', async () => {
+    const interceptor = new MatomoInterceptor(config('secret'));
+    await lastValueFrom(interceptor.intercept(context('/api/sitemap'), handler()));
+    await lastValueFrom(interceptor.intercept(context('/api/sitemaps/pages'), handler()));
+    await lastValueFrom(interceptor.intercept(context('/api/sitemaps/records/3'), handler()));
+    expect(trackSpy).not.toHaveBeenCalled();
+  });
+
+  it('still counts a normal API route, including ones merely starting with those words', async () => {
+    const interceptor = new MatomoInterceptor(config('secret'));
+    await lastValueFrom(interceptor.intercept(context('/api/stats'), handler()));
+    await lastValueFrom(interceptor.intercept(context('/api/records?q=health'), handler()));
+    await lastValueFrom(interceptor.intercept(context('/api/healthcheck'), handler()));
+    expect(trackSpy).toHaveBeenCalledTimes(3);
   });
 
   it('does not count a request that failed', async () => {
