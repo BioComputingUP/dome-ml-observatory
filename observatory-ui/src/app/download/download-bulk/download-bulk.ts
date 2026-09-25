@@ -1,5 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
@@ -21,9 +21,14 @@ import {
  *  and don't change per app deploy, so there is nothing to fetch this from. */
 const ZENODO_DOI = '10.5281/zenodo.22259905';
 
+/** The day the first release's files open on Zenodo. Until then its record and DOI are public and
+ *  the page says the files are embargoed; from that day the note disappears by itself. Change it
+ *  only if the embargo on Zenodo is changed. */
+const ZENODO_EMBARGO_UNTIL = '2026-10-25';
+
 @Component({
   selector: 'app-download-bulk',
-  imports: [RouterLink, DecimalPipe, CopyButton],
+  imports: [RouterLink, DecimalPipe, DatePipe, CopyButton],
   templateUrl: './download-bulk.html',
   styleUrl: './download-bulk.scss',
 })
@@ -51,9 +56,15 @@ export class DownloadBulk {
 
   readonly zenodoDoi = ZENODO_DOI;
   readonly zenodoUrl = `https://doi.org/${ZENODO_DOI}`;
+  readonly embargoUntil = ZENODO_EMBARGO_UNTIL;
+  /** ISO dates compare correctly as strings; UTC, like Zenodo's embargo. (The template formats the
+   *  date without a timezone: DatePipe reads a bare date as local midnight, and formatting that in
+   *  UTC would show the day before.) */
+  readonly embargoed = new Date().toISOString().slice(0, 10) < ZENODO_EMBARGO_UNTIL;
 
   constructor() {
-    // The corpus catalogue never names ZENODO_DOI: that DOI is not registered (ROADMAP.md).
+    // The corpus catalogue does not name ZENODO_DOI yet: the sister repository's
+    // build_release_metadata.py adds the Zenodo version as a distribution in a later release.
     embedCorpusCatalog();
   }
 }

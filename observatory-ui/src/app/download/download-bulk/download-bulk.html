@@ -35,12 +35,26 @@
         </a>
       </div>
 
+      @if (embargoed) {
+        <p class="embargo-note">
+          <i class="icon icon-common icon-calendar" aria-hidden="true"></i>
+          <span>
+            The first release's files open on {{ embargoUntil | date: 'd MMMM y' }}. Its record and
+            DOI are public now, and the same records are available today through the
+            <a routerLink="/download/api">API's export</a>.
+          </span>
+        </p>
+      }
+
       <dl class="spec">
         <div class="spec-row">
           <dt><i class="icon icon-common icon-file-signature" aria-hidden="true"></i>Format</dt>
           <dd>
-            JSONL — one complete record per line, UTF-8. Streamable, and importable directly with
-            <code>mongoimport</code> without loading the whole file into memory.
+            JSON Lines, gzipped — one complete record per line, UTF-8, the same records the API's
+            export serves. Streamable: <code>gunzip -c</code> into <code>mongoimport</code> loads it
+            without holding the whole file in memory. Beside it on Zenodo,
+            <code>archive-metadata.json</code> gives the counts and the sha256 of every file, and
+            the schema file the records follow.
           </dd>
         </div>
         <div class="spec-row">

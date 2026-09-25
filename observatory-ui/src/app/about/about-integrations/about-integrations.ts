@@ -121,19 +121,17 @@ const INTEGRATIONS: Integration[] = [
     how: 'Record pages answer with cite-as, describedby, license and collection links, and serve JSON-LD to clients that ask for it.',
     benefit: 'FAIR assessment tools and harvesters find a record’s metadata without scraping the page.',
   },
-  // ---- Planned ----
   {
-    // Planned until the first corpus deposit publishes: the archive job lives in the sister
-    // repository's refresh cycle (scripts/zenodo_archive.py there), and this flips to live with it.
     name: 'Zenodo',
-    status: 'planned',
+    status: 'live',
     direction: 'both',
     protocol: 'Web link + REST API deposit',
     what: "Archival deposits — each paper's own, and Observatory's corpus releases.",
-    how: "Each corpus release will be archived as a new version of one Zenodo record — the records as gzipped JSON Lines, a checksum sidecar and the schema they follow — under a single concept DOI. A paper's own Zenodo deposits already appear among its record's data links.",
+    how: "Each corpus release is archived as a new version of one Zenodo record — the records as gzipped JSON Lines, a checksum sidecar and the schema they follow — under one concept DOI that always resolves to the latest (see Download). A paper's own Zenodo deposits appear among its record's data links.",
     benefit: 'Archived artefacts with persistent identifiers, at both the paper and dataset level.',
     logo: 'assets/img/zenodo-logo.svg',
   },
+  // ---- Planned ----
   {
     name: 'Hugging Face',
     status: 'planned',

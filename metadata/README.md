@@ -20,5 +20,8 @@ file verbatim; the Dockerfile copies this folder next to `schema/` for that. The
 dataset series `https://observatory.dome-ml.org/download/bulk#corpus` as what it is part of, so that
 identifier is shared: `observatory-ws/src/metadata/metadata-urls.ts` and the builder must agree.
 
-No Zenodo distribution or DOI appears until the monthly archive job deposits a release. The DOI on
-`/download/bulk` is not registered (`ROADMAP.md`) and must not be copied in.
+Each load is also archived to Zenodo, as a new version of one record under the concept DOI
+10.5281/zenodo.22259905 that `/download/bulk` names (the sister repository's
+`scripts/zenodo_archive.py`, run by its `refresh-cycle` skill). The release metadata does not name
+that DOI yet: `build_release_metadata.py` adding the month's Zenodo version as a distribution is
+still to do (`ROADMAP.md`). A committed release is never edited to add it; the next one carries it.
