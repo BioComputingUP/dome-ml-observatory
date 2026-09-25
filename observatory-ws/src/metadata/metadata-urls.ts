@@ -66,7 +66,7 @@ export function corpusUrl(origin: string): string {
   return `${origin}/download/bulk`;
 }
 
-/** The dataset series every record is part of; each monthly release is one dataset in it. */
+/** The dataset series every record is part of; each release is one dataset in it. */
 export function corpusSeriesId(origin: string): string {
   return `${corpusUrl(origin)}#corpus`;
 }

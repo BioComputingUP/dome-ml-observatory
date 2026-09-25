@@ -52,7 +52,7 @@ must stay aligned, in both directions:
   restarts; `StatsService`, `CountService` and `JournalsService` are 24h TTL. Its post-load
   checklist ends with that restart and a `generate_facet_stats.py --from-api` reconciliation.
 - **The corpus description is built there and published here.** Its `build_release_metadata.py`
-  writes `metadata/releases/<YYYY-MM>/dataset.jsonld` and `metadata/CURRENT` at each monthly
+  writes `metadata/releases/<YYYY-MM>/dataset.jsonld` and `metadata/CURRENT` at each
   release; this repo serves the file at `/api/catalog` and never edits a committed release. The
   release procedure for the schema -- what bumps, who moves first, the order of publish, migrate,
   load, verify and deploy -- is in that repository's `schema/README.md`.
@@ -159,7 +159,7 @@ host are not.
   published `schema/releases/vX.Y.Z/` folder** — use the `schema-version` skill, which also
   re-syncs `observatory-ui/src/assets/vocab/` (generated, gitignored — don't hand-edit that
   either). See `schema/README.md`.
-- `metadata/` -- the corpus as DCAT / schema.org JSON-LD, one immutable folder per monthly release,
+- `metadata/` -- the corpus as DCAT / schema.org JSON-LD, one immutable folder per release,
   written by the sister repository and served at `/api/catalog`. See `metadata/README.md`.
 - `schema/generate_facet_stats.py` — writes `schema/stats/facet-stats.json`. **Not a UI input as
   of Phase 7**: `observatory-ui`'s search page now reads facet counts and corpus-wide metrics live

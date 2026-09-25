@@ -1,6 +1,6 @@
 # metadata/
 
-The corpus described in standard vocabularies: one immutable folder per monthly release, published
+The corpus described in standard vocabularies: one immutable folder per release, published
 the way `schema/` publishes the record schema.
 
 | Path | What it is |
@@ -12,7 +12,7 @@ the way `schema/` publishes the record schema.
 `moros_pipeline/scripts/build_release_metadata.py` writes both files from the release's verified
 counts, the authored schema version, the curation-criteria and vocabulary hashes and the pipeline
 commit (that repository's `docs/release_metadata.md`). A committed release folder is never edited;
-a new month is a new folder.
+a new release is a new folder.
 
 **Served here.** `observatory-ws` reads `CURRENT` on the first `/api/catalog` request and serves the
 file verbatim; the Dockerfile copies this folder next to `schema/` for that. The home page and

@@ -102,8 +102,8 @@ interface JournalTable {
 }
 
 const CACHE_KEY = 'journal-table';
-/** Same 24h as StatsService/CountService, and for the same reason: the corpus is rebuilt 6-12
- *  times a year, not continuously. */
+/** Same 24h as StatsService/CountService, and for the same reason: the corpus is rebuilt every
+ *  two months, not continuously. */
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 /** This aggregation reads the whole collection once. It runs at boot and at most once a day, so a
  *  generous ceiling is right -- far better than a half-built table. */

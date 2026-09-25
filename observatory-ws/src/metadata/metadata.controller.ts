@@ -86,7 +86,7 @@ export class MetadataController {
   @ApiOperation({
     summary: 'The corpus as a DCAT 3 / schema.org dataset: catalogue, series, release, API.',
     description:
-      'Built at each monthly corpus release and published with it. Counts, schema release, ' +
+      'Built at each corpus release and published with it. Counts, schema release, ' +
       'curation-criteria and vocabulary hashes, distributions and the data service.',
   })
   @ApiProduces('application/ld+json')
