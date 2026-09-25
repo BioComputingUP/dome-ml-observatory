@@ -15,9 +15,9 @@ const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // the corpus changes only at a load, 
 const BOUNDED_COUNT_LIMIT = 10_000;
 
 /**
- * Counting is the expensive part of a search on the MongoDB server's un-indexed Content collection -- measured
- * 2026-09-01: an unbounded countDocuments() on the default filter took 4.4s cold (192ms bounded to
- * 10k), vs. 724ms to fetch a page of results.
+ * Counting is the expensive part of a search on the scan path -- measured 2026-09-01, before the
+ * indexes: an unbounded countDocuments() on the default filter took 4.4s cold (192ms bounded to
+ * 10k), vs. 724ms to fetch a page of results. The index path counts in well under a second.
  *
  * Strategy: empty filter -> free estimatedDocumentCount(); cache hit -> return cached; miss ->
  * try an exact count under a time budget; timeout -> fall back to a cheap bounded count reported
@@ -44,7 +44,17 @@ export class CountService {
     private readonly config: ConfigService<AppConfig, true>,
   ) {}
 
-  async count(filter: FilterQuery<RecordDocument>, cacheKey: string): Promise<CountResult> {
+  /**
+   * `maxTimeMs` is the exact count's budget. A free-text search passes its own (20s): the index
+   * that serves its page serves its count, and a count that finishes in 0.6s ("svm", measured)
+   * used to be reported as "10,000+" because it was held to the filter-only 5s. The bounded
+   * fallback keeps the ordinary budget regardless, so a search never spends 40s counting.
+   */
+  async count(
+    filter: FilterQuery<RecordDocument>,
+    cacheKey: string,
+    maxTimeMs?: number,
+  ): Promise<CountResult> {
     if (Object.keys(filter).length === 0) {
       const total = await this.model.estimatedDocumentCount();
       return { total, totalRelation: 'eq' };
@@ -55,9 +65,12 @@ export class CountService {
       return { total: cached, totalRelation: 'eq' };
     }
 
-    const maxTimeMs = this.config.get('mongo.maxTimeMs', { infer: true });
+    const budget = this.config.get('mongo.maxTimeMs', { infer: true });
     try {
-      const total = await this.model.countDocuments(filter).maxTimeMS(maxTimeMs).exec();
+      const total = await this.model
+        .countDocuments(filter)
+        .maxTimeMS(maxTimeMs ?? budget)
+        .exec();
       this.cache.set(cacheKey, total);
       return { total, totalRelation: 'eq' };
     } catch (err) {
@@ -71,7 +84,7 @@ export class CountService {
         const total = await this.model
           .countDocuments(filter)
           .limit(BOUNDED_COUNT_LIMIT)
-          .maxTimeMS(maxTimeMs)
+          .maxTimeMS(budget)
           .exec();
         return {
           total,

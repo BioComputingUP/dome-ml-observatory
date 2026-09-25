@@ -2,6 +2,7 @@ import { FilterQuery } from 'mongoose';
 import { BadRequestException } from '@nestjs/common';
 import { escapeRegex } from '../common/escape-regex';
 import { RecordDocument } from './schemas/record.schema';
+import { synonymsFor } from './search-synonyms';
 
 export type Classification = 'positive' | 'negative' | 'undeterminable';
 export type SortOrder = 'relevance' | 'year_desc' | 'year_asc' | 'citations_desc' | 'citations_asc';
@@ -157,19 +158,99 @@ export function tokenizeQuery(q: string): string[] {
  *  "G" clause matched almost everything while doubling the query's cost. */
 const MIN_TERM_LENGTH = 2;
 
+/** Spellings per term: the one typed plus at most this many synonyms. Bounds the regex on the
+ *  scan path (8 terms x 4 spellings x 3 fields) as much as it bounds the noise. */
+const MAX_ALTERNATIVES = 4;
+
+const TRAILING_PUNCTUATION_RE = /[.,;:]+$/;
+const TRAILING_STAR_RE = /\*+$/;
+
+/** One spelling of a search term. */
+export interface QueryAlternative {
+  /** As typed, or as the vocabulary writes it: "svm", "support vector machine", "SVM". */
+  text: string;
+  /** The same as the words a regex must find in order. Hyphens split, so "single-cell" also finds
+   *  "single cell" -- the corpus writes both. */
+  words: string[];
+  /** `neuro*`: match word beginnings. Never served by the index, and never expanded. */
+  prefix: boolean;
+  source: 'typed' | 'synonym';
+}
+
+/** One search term with every spelling that satisfies it. Terms are AND-ed, spellings OR-ed. */
+export interface QueryGroup {
+  /** The term as typed, cleaned: trailing punctuation and the `*` gone. */
+  typed: string;
+  alternatives: QueryAlternative[];
+}
+
 /**
- * Terms actually worth putting in the filter.
- *
- * Trailing sentence punctuation is stripped first, and that is load-bearing rather than cosmetic:
+ * Trailing sentence punctuation is stripped, and that is load-bearing rather than cosmetic:
  * without it "Farrell G." tokenises to ["Farrell", "G."], the two-character "G." survives the
  * length floor, and the search becomes "surname AND a token ending in G." -- which matched 7
  * documents where "Farrell G" matched 94. Two spellings of the same author's name have to return
- * the same thing.
+ * the same thing. A trailing `*` is the word-beginning marker and comes off here, before anything
+ * could escape it into a literal.
  */
+function cleanTerm(raw: string): { term: string; prefix: boolean } {
+  const term = raw.replace(TRAILING_PUNCTUATION_RE, '');
+  const prefix = TRAILING_STAR_RE.test(term);
+  return {
+    term: term.replace(TRAILING_STAR_RE, '').replace(TRAILING_PUNCTUATION_RE, ''),
+    prefix,
+  };
+}
+
+function phraseWords(text: string): string[] {
+  return text.replace(/-/g, ' ').trim().split(/\s+/).filter(Boolean);
+}
+
+function alternative(
+  text: string,
+  prefix: boolean,
+  source: QueryAlternative['source'],
+): QueryAlternative {
+  return { text, words: phraseWords(text), prefix, source };
+}
+
+/**
+ * The terms a query asks for, each with its spellings.
+ *
+ * "random forest sepsis" is three terms of one spelling each. A bare word or a quoted phrase that
+ * names a method in the published vocabulary gains that method's other spellings -- `svm` is also
+ * searched as "support vector machine" -- so a paper is found however its authors chose to write
+ * it; search-synonyms.ts says what qualifies. A `*` term is never expanded: the star says "exactly
+ * this beginning".
+ */
+export function parseQueryGroups(q: string): QueryGroup[] {
+  const groups: QueryGroup[] = [];
+  for (const raw of tokenizeQuery(q)) {
+    const { term, prefix } = cleanTerm(raw);
+    if (term.length < MIN_TERM_LENGTH) continue;
+    const alternatives = [alternative(term, prefix, 'typed')];
+    if (!prefix) {
+      for (const synonym of synonymsFor(term).slice(0, MAX_ALTERNATIVES - 1)) {
+        alternatives.push(alternative(synonym, false, 'synonym'));
+      }
+    }
+    groups.push({ typed: term, alternatives });
+  }
+  return groups;
+}
+
+/** The typed terms actually worth matching: parseQueryGroups without the spellings. */
 export function searchTerms(q: string): string[] {
-  return tokenizeQuery(q)
-    .map((term) => term.replace(/[.,;:]+$/, ''))
-    .filter((term) => term.length >= MIN_TERM_LENGTH);
+  return parseQueryGroups(q).map((group) => group.typed);
+}
+
+/** Every synonym the query picked up, for the response to say so ("svm also searched as ..."). */
+export function queryExpansions(q: string): { term: string; alternatives: string[] }[] {
+  return parseQueryGroups(q)
+    .filter((group) => group.alternatives.length > 1)
+    .map((group) => ({
+      term: group.typed,
+      alternatives: group.alternatives.slice(1).map((alt) => alt.text),
+    }));
 }
 
 /**
@@ -347,7 +428,7 @@ export function authorInterpretations(q: string): AuthorInterpretation[] {
 /**
  * The "surname then initials" reading of a query, the one shape whose leading token is certainly a
  * surname -- so the only one that may become a `$text` phrase in the main query (see
- * buildTextSearch) and skip the single-bare-term guard.
+ * buildTextSearch).
  */
 export function parseAuthorName(q: string): AuthorName | undefined {
   return authorInterpretations(q).find((name) => name.shape === 'pubmed');
@@ -506,16 +587,35 @@ function classificationClauses(filters: ParsedFilters): FilterQuery<RecordDocume
   ];
 }
 
-/** One term, matched anywhere it could sensibly appear. */
-function termClause(term: string): FilterQuery<RecordDocument> {
-  const pattern = termPattern(term);
-  return {
-    $or: [
-      { [TITLE]: { $regex: pattern, $options: 'i' } },
-      { [ABSTRACT]: { $regex: pattern, $options: 'i' } },
-      { [AUTHORS]: { $regex: pattern, $options: 'i' } },
-    ],
-  };
+const SEARCH_FIELDS = [TITLE, ABSTRACT, AUTHORS];
+
+/** "SVM", "OLS", "PLS-DA": capitals only. */
+const ACRONYM_RE = /^[A-Z][A-Z0-9-]{1,5}$/;
+
+/**
+ * The regex for one spelling, and whether it may ignore case.
+ *
+ * A typed term is matched as today: word-start anchored, case-insensitive, so "cell" finds "cells"
+ * and "cellular". A synonym that is an acronym is matched whole and case-sensitively instead: the
+ * vocabulary's aliases include ANN, SOM and GAN, and as case-insensitive word beginnings those are
+ * "annual", "somatic" and "ganglion". A plural is allowed ("SVMs").
+ */
+function alternativePattern(alt: QueryAlternative): { pattern: string; caseSensitive: boolean } {
+  if (alt.source === 'synonym' && ACRONYM_RE.test(alt.text)) {
+    return { pattern: `\\b${escapeRegex(alt.text)}s?\\b`, caseSensitive: true };
+  }
+  return { pattern: termPattern(alt.words.join(' ')), caseSensitive: false };
+}
+
+function fieldClauses(alt: QueryAlternative): FilterQuery<RecordDocument>[] {
+  const { pattern, caseSensitive } = alternativePattern(alt);
+  const match = caseSensitive ? { $regex: pattern } : { $regex: pattern, $options: 'i' };
+  return SEARCH_FIELDS.map((field) => ({ [field]: match }));
+}
+
+/** One term, matched anywhere it could sensibly appear, in any of its spellings. */
+function groupClause(group: QueryGroup): FilterQuery<RecordDocument> {
+  return { $or: group.alternatives.flatMap(fieldClauses) };
 }
 
 /**
@@ -533,12 +633,17 @@ function termClause(term: string): FilterQuery<RecordDocument> {
  * unchanged; for an ordinary topical query it adds only the handful of papers written by someone
  * actually named that.
  */
-function freeTextClauses(filters: ParsedFilters): FilterQuery<RecordDocument>[] {
+function freeTextClauses(
+  filters: ParsedFilters,
+  keepReading: (name: AuthorInterpretation) => boolean = () => true,
+): FilterQuery<RecordDocument>[] {
   if (!filters.q) return [];
-  const terms = searchTerms(filters.q);
-  const clauses = terms.map(termClause);
+  const groups = parseQueryGroups(filters.q);
+  const clauses = groups.map(groupClause);
+  // The typed words only: a synonym is another spelling of a method, never of a person.
+  const typed = groups.map((group) => group.typed);
   const authors = authorInterpretations(filters.q)
-    .filter((name) => !impliedByTerms(name, terms))
+    .filter((name) => !impliedByTerms(name, typed) && keepReading(name))
     .map(authorClause);
 
   if (!authors.length) return clauses;
@@ -647,9 +752,16 @@ function structuredClauses(filters: ParsedFilters): FilterQuery<RecordDocument>[
  * exactly hasAnyOverlap().
  */
 export function buildMongoFilter(filters: ParsedFilters): FilterQuery<RecordDocument> {
+  return buildFilter(filters, () => true);
+}
+
+function buildFilter(
+  filters: ParsedFilters,
+  keepReading: (name: AuthorInterpretation) => boolean,
+): FilterQuery<RecordDocument> {
   const clauses = [
     ...classificationClauses(filters),
-    ...freeTextClauses(filters),
+    ...freeTextClauses(filters, keepReading),
     ...structuredClauses(filters),
   ];
   return clauses.length ? { $and: clauses } : {};
@@ -678,42 +790,170 @@ export function canUseTextIndex(filters: ParsedFilters): boolean {
     Boolean(filters.q) &&
     filters.classification.length === 1 &&
     filters.classification[0] === 'positive' &&
-    // A lone bare word is excluded on recall grounds, not correctness -- see isSingleBareTerm.
-    !isSingleBareTerm(filters.q as string)
+    // `neuro*` asks for word beginnings, which a stemmed index cannot give. With no other term to
+    // select candidates by, the scan is the only honest answer.
+    parseQueryGroups(filters.q as string).some((group) =>
+      group.alternatives.some((alt) => !alt.prefix),
+    )
   );
 }
 
+/** How common a word is among the positives, per TermFrequencyService; undefined when unknown. */
+export type DocumentFrequency = (word: string) => number | undefined;
+
+/** A word as `$text` may be given it: no leading minus (which `$text` reads as negation) or stray
+ *  quote. Undefined when it stems to nothing useful (a lone letter). Case is kept -- `$text` is
+ *  case-insensitive, and the frequency table keys on the lower-cased form. */
+function indexWord(word: string): string | undefined {
+  const cleaned = word.replace(/^[-"']+|["']+$/g, '');
+  return cleaned.replace(/[^\p{L}\p{N}]/gu, '').length >= 2 ? cleaned : undefined;
+}
+
+function candidateWords(alt: QueryAlternative): string[] {
+  if (alt.prefix) return [];
+  return alt.words.map(indexWord).filter((w): w is string => w !== undefined);
+}
+
+function unique(words: string[]): string[] {
+  return [...new Set(words)];
+}
+
+function surnameWords(name: AuthorName): string[] {
+  return phraseWords(name.surname)
+    .map(indexWord)
+    .filter((word): word is string => word !== undefined);
+}
+
+/** The rarest word of a surname: what `$text` must be given to select that author's papers. */
+function surnamePick(name: AuthorName, cost: (word: string) => number): string | undefined {
+  const words = surnameWords(name).filter((word) => cost(word) > 0);
+  return words.length ? words.reduce((a, b) => (cost(b) < cost(a) ? b : a)) : undefined;
+}
+
 /**
- * The `$search` string for a query.
- *
- * Terms are passed BARE, not individually quoted, which looks wrong until you measure it. Quoting a
- * term disables stemming for it: `"prediction"` matched 3,415 documents in the probe where bare
- * `prediction` matched 5,320 (it also finds "predict", "predicts", "predicting"). Bare terms are
- * OR'd rather than AND'd, but that does not widen the result -- buildTextSearchFilter keeps the
- * existing per-term regex clauses alongside, and those do the AND. `$text` is there to select
- * candidates from the index; the regex clauses decide what actually matches.
- *
- * An author-shaped query becomes a quoted phrase: measured `"Farrell G"` -> the 2 correct records
- * in 562ms against the live collection, versus ~3.4s for the equivalent author regex. That one is
- * safe to quote because an author name really is a literal string in the stored field.
- *
- * A user-quoted phrase is NOT quoted here, for the opposite reason. A `$text` phrase is a literal
- * adjacency test on the raw field, but termPattern's phrase regex is deliberately markup- and
- * hyphen-tolerant (PHRASE_GAP), because that is what the corpus's real text needs -- "in vitro" is
- * stored as "<i>In Vitro</i>", and "random forest" is often written "random-forest". Quoting the
- * phrase for `$text` re-imposed literal adjacency, and since buildTextSearchFilter ANDs the two
- * clauses together, every markup-broken or hyphenated match the regex found was then dropped by
- * `$text` -- silently, because shouldFallBackFromText only rescues a total of exactly zero. Passing
- * the words bare leaves the phrase constraint entirely to the regex, which is the division of
- * labour this whole path is built on: `$text` selects candidates, the regexes decide what matches.
+ * A `given` reading whose surname is a commoner word than this is a topic, not a person:
+ * "machine" is in 191k positives ("support vector machine"), "prediction" in 181k. Real surnames
+ * sit far below -- Wang 56k, Li 50k, Zhang 49k, Farrell 84 (measured 2026-09-25) -- and so do the
+ * topic words that share their range, which is why the cap is this high: a reading is dropped
+ * only where carrying it would visibly slow the search, never merely to speed it up.
  */
-export function buildTextSearch(q: string): string {
+const SURNAME_DF_CAP = 100_000;
+
+/** Whether the index path carries this reading. An unmeasured surname is kept: correctness first. */
+function readingFitsIndex(name: AuthorName, df: DocumentFrequency): boolean {
+  const known = surnameWords(name)
+    .map((word) => df(word.toLowerCase()))
+    .filter((cost): cost is number => cost !== undefined && Number.isFinite(cost));
+  return known.length === 0 || Math.min(...known) <= SURNAME_DF_CAP;
+}
+
+/**
+ * The author readings the index path carries, given how common their surnames are.
+ *
+ * The filter ORs a reading alongside the term AND -- "Gavin Farrell" is matched as the author
+ * "Farrell G" or as the two words -- so the words handed to `$text` have to select that reading's
+ * papers too, and only the surname can: no given name is stored anywhere. Measured live before
+ * this was so, "Gavin Farrell" selected by its rarest word, "gavin", found none of Farrell G's
+ * papers and fell to the 16s scan.
+ */
+export function indexPathReadings(q: string, df: DocumentFrequency): AuthorInterpretation[] {
+  const typed = searchTerms(q);
+  return authorInterpretations(q).filter(
+    (name) => !impliedByTerms(name, typed) && readingFitsIndex(name, df),
+  );
+}
+
+/** Every word buildTextSearch might hand to `$text` -- what the service measures first. */
+export function textSearchWords(q: string): string[] {
+  if (parseAuthorName(q)) return [];
+  const typed = searchTerms(q);
+  const words = [
+    ...parseQueryGroups(q).flatMap((g) => g.alternatives.flatMap(candidateWords)),
+    ...authorInterpretations(q)
+      .filter((name) => !impliedByTerms(name, typed))
+      .flatMap(surnameWords),
+  ];
+  return unique(words.map((word) => word.toLowerCase()));
+}
+
+/**
+ * The `$search` string for a query: the words that select candidates from the index.
+ *
+ * `$text` OR's its words and the regex clauses do the AND, so the candidate set is the UNION of
+ * the words' postings and the regexes run over all of it. That union is the whole cost. Measured
+ * live: "support vector machine" with all three words took 10.0s, because "machine" is in 191k
+ * positives; with "vector" alone, 1.3s for the identical 29,918 results. So only the rarest word
+ * goes in -- of the cheapest term, when there are several -- and the others stay with the regex.
+ * A term with several spellings needs one word per spelling ("vector svm"), because a paper may
+ * carry either. Words the index does not know (df 0: a stop word, a typo) select nothing and are
+ * skipped; when nothing can be measured at all, every word goes in as it always did, which at
+ * worst finds nothing and hands the query to the scan.
+ *
+ * Words are passed BARE, not quoted, which looks wrong until you measure it. Quoting a word turns
+ * stemming off: `"prediction"` matched 3,415 documents on the probe where bare `prediction`
+ * matched 5,320 (it also finds "predict", "predicts", "predicting"). A user-quoted phrase is
+ * likewise not quoted here: a `$text` phrase is a literal adjacency test on the raw field, but
+ * termPattern's phrase regex is deliberately markup- and hyphen-tolerant (PHRASE_GAP), because
+ * "in vitro" is stored as "<i>In Vitro</i>" and "random forest" is often "random-forest".
+ * Adjacency is the regex's job: `$text` selects candidates, the regexes decide what matches.
+ *
+ * An author-shaped query becomes a quoted phrase instead: measured `"Farrell G"` -> the 2 correct
+ * records in 562ms, versus ~3.4s for the equivalent author regex. That one is safe to quote
+ * because an author name really is a literal string in the stored field.
+ */
+export function buildTextSearch(q: string, df: DocumentFrequency = () => undefined): string {
   const author = parseAuthorName(q);
   if (author) return `"${author.surname} ${author.initials}"`;
-  // Every term goes in bare -- a quoted phrase included, see above. A lone letter is dropped: it
-  // stems to nothing useful and only widens the candidate set the regexes then have to filter.
-  const terms = tokenizeQuery(q).filter((term) => term.replace(/[^\p{L}\p{N}]/gu, '').length >= 2);
-  return (terms.length ? terms : tokenizeQuery(q)).join(' ');
+
+  const groups = parseQueryGroups(q);
+  const cost = (word: string): number => df(word.toLowerCase()) ?? Number.POSITIVE_INFINITY;
+
+  // Every author reading the filter keeps needs its surname in here (indexPathReadings). The
+  // term AND is then already covered when some term has one of those words in every spelling.
+  const required = unique(
+    indexPathReadings(q, df)
+      .map((name) => surnamePick(name, cost))
+      .filter((word): word is string => word !== undefined),
+  );
+  const requiredSet = new Set(required.map((word) => word.toLowerCase()));
+  const covered = groups.some((group) =>
+    group.alternatives.every(
+      (alt) =>
+        !alt.prefix && candidateWords(alt).some((word) => requiredSet.has(word.toLowerCase())),
+    ),
+  );
+
+  let best: { words: string[]; cost: number } | undefined = covered
+    ? { words: [], cost: 0 }
+    : undefined;
+  for (const group of covered ? [] : groups) {
+    const picks: string[] = [];
+    let total = 0;
+    for (const alt of group.alternatives) {
+      if (alt.prefix) continue;
+      const words = candidateWords(alt).filter((word) => cost(word) > 0);
+      if (!words.length) {
+        // A spelling the index cannot select at all: the OR would silently lose it.
+        picks.length = 0;
+        break;
+      }
+      const pick = words.reduce((a, b) => (cost(b) < cost(a) ? b : a));
+      picks.push(pick);
+      total += cost(pick);
+    }
+    if (picks.length && (!best || total < best.cost)) best = { words: picks, cost: total };
+  }
+  const measurable =
+    best !== undefined &&
+    Number.isFinite(best.cost) &&
+    required.every((word) => Number.isFinite(cost(word)));
+  if (best && measurable) return unique([...best.words, ...required]).join(' ');
+
+  const all = unique([
+    ...groups.flatMap((g) => g.alternatives.flatMap(candidateWords)),
+    ...required,
+  ]);
+  return (all.length ? all : tokenizeQuery(q)).join(' ');
 }
 
 /**
@@ -726,11 +966,18 @@ export function buildTextSearch(q: string): string {
  * the regexes only ever run on those. Recall is unchanged; there is no behaviour to explain to a
  * reader, only a speed difference.
  */
-export function buildTextSearchFilter(filters: ParsedFilters): FilterQuery<RecordDocument> | null {
+export function buildTextSearchFilter(
+  filters: ParsedFilters,
+  df: DocumentFrequency = () => undefined,
+): FilterQuery<RecordDocument> | null {
   if (!canUseTextIndex(filters)) return null;
-  const base = buildMongoFilter(filters) as { $and?: FilterQuery<RecordDocument>[] };
+  // The same readings buildTextSearch covers -- a reading the filter carried without its surname
+  // in `$search` would silently match nothing.
+  const base = buildFilter(filters, (name) => readingFitsIndex(name, df)) as {
+    $and?: FilterQuery<RecordDocument>[];
+  };
   if (!base.$and) return null;
-  return { $and: [...base.$and, { $text: { $search: buildTextSearch(filters.q as string) } }] };
+  return { $and: [...base.$and, { $text: { $search: buildTextSearch(filters.q as string, df) } }] };
 }
 
 /**
@@ -769,42 +1016,125 @@ export function buildAuthorProbeFilter(filters: ParsedFilters): FilterQuery<Reco
 }
 
 /**
- * A single unquoted word -- the one shape where the `$text` gate can lose recall, so it is kept off
- * the index path entirely.
- *
- * A multi-word query is safe because the regex clauses alongside `$text` do the actual narrowing:
- * measured against the live collection, the composite returns *identical* counts to the regex-only
- * filter (random forest 45,116, deep learning 70,661, single cell transformer 187, graph neural
- * network 5,749). A lone term has no such second clause to rescue it -- whatever `$text` fails to
- * select is simply gone.
- *
- * For real words that costs little, because stemming is good: `predict` finds 98% of what the regex
- * finds, `transform` 99.9%, `cell` 92%. But for a fragment that is not a stem it is severe --
- * `neuro` returned 1,701 against the live corpus where the regex finds roughly 26,500, and on the
- * probe `immuno` found 3% of the regex total, `geno` 0%, `onco` and `bioinform` nothing at all.
- * Those are ordinary biomedical combining forms people really do type.
- *
- * There is no cheap way to tell a fragment from a real word before running the query, and an
- * absolute "too few results" threshold does not survive the jump from a 25k probe to 355k records
- * (5% recall is still over a thousand rows). So the rule is simply: never trade recall for speed on
- * a lone word. Those searches keep exactly the behaviour they have today.
- *
- * Author-shaped queries are exempt -- they are a phrase, not a fragment, and `"Farrell G"` on the
- * index is both more precise and 6x faster.
- */
-export function isSingleBareTerm(q: string): boolean {
-  return !q.includes('"') && searchTerms(q).length === 1 && parseAuthorName(q) === undefined;
-}
-
-/**
  * Whether to discard the `$text` result and re-run the query the old way.
  *
- * Only zero remains: every other recall risk is handled by keeping the query off the index path in
- * the first place (canUseTextIndex). A zero here means the index genuinely knows nothing about
- * these terms, and the broader matcher is worth the one wasted round trip.
+ * Only zero: the index matches whole words and their inflections, so a zero means no word of the
+ * query is in it as typed -- a combining form like "bioinform" or "onco" -- and the word-beginning
+ * scan is worth the one wasted round trip. The response says which happened (SearchInfo.matched).
  */
 export function shouldFallBackFromText(_filters: ParsedFilters, total: number): boolean {
   return total === 0;
+}
+
+const DOI_RE = /^(?:https?:\/\/(?:dx\.)?doi\.org\/|doi:\s*)?(10\.\d{4,9}\/\S+?)[.,;]*$/i;
+const PMID_RE = /^(?:pmid:?\s*)?(\d{6,9})$/i;
+const PMCID_RE = /^(?:pmcid:?\s*)?(PMC\d{4,9})$/i;
+
+/**
+ * A pasted DOI, PMID or PMCID as an exact lookup on `identifiers.*`, or null when the query is not
+ * one. Free text would find nothing for these (no title or abstract contains its own DOI), and a
+ * person pasting one wants that record. The other filters and the classification clause still
+ * apply, so `class=` and `total` agree with every other route. DOIs are case-insensitive by
+ * definition, hence the anchored regex rather than equality. Unindexed, ~1s measured on the
+ * positives -- fine for a lookup that used to return zero.
+ */
+export function identifierQuery(filters: ParsedFilters): FilterQuery<RecordDocument> | null {
+  const q = filters.q?.trim();
+  if (!q) return null;
+
+  let clause: FilterQuery<RecordDocument> | undefined;
+  const doi = DOI_RE.exec(q);
+  const pmid = doi ? null : PMID_RE.exec(q);
+  const pmcid = doi || pmid ? null : PMCID_RE.exec(q);
+  if (doi) clause = { 'identifiers.doi': { $regex: `^${escapeRegex(doi[1])}$`, $options: 'i' } };
+  else if (pmid) clause = { 'identifiers.pmid': pmid[1] };
+  else if (pmcid) clause = { 'identifiers.pmcid': pmcid[1].toUpperCase() };
+  if (!clause) return null;
+
+  return { $and: [...classificationClauses(filters), clause, ...structuredClauses(filters)] };
+}
+
+/** How many of the index's best-scoring rows are re-ordered in process -- eight pages of 25. Past
+ *  this depth results stay in textScore order. Measured: the 200-row projection sorts in 0.1-0.9s
+ *  for every lone word tried, the same as a 25-row page. */
+export const RERANK_DEPTH = 200;
+
+/** One row of the ranked projection, as RecordsService fetches it. */
+export interface TextCandidate {
+  _id: string;
+  score?: number;
+  publication_metadata?: { title?: string | null; citation_count?: number | null };
+}
+
+/** A typed term short enough to be an acronym ("DOME", "GNN", "svm"): 3-5 letters or digits. */
+const ACRONYM_CANDIDATE_RE = /^[A-Za-z][A-Za-z0-9]{2,4}$/;
+
+/**
+ * Orders the index's top rows the way a person would expect, given what they typed.
+ *
+ * textScore alone is not that: it is a term-frequency figure with the index's field weights
+ * behind it, so among titles that all contain the word, a short title outranks a long one and a
+ * paper on gold-nanoparticle domes outranks "DOME Copilot". Three things come first:
+ *
+ *   tier 0  the typed words appear in the title as a phrase (for one word: the word is in the title)
+ *   tier 1  every term appears in the title, in some spelling
+ *   tier 2  everything else -- abstract or author matches
+ *
+ * Within a tier, a title that opens with the first term ("DOME Copilot: ...", "Random Forest.")
+ * comes first, then a title carrying a term in capitals ("GNN-DRL") -- an acronym hit, which also
+ * moves to tier 0 when the person typed it in capitals. After those the order is
+ * textScore plus log10 of the citation count -- a cited paper on the topic ahead of an uncited one
+ * with a shorter title -- then the arrival order, which is textScore then _id and therefore stable
+ * across pages. Pure and in-process over at most RERANK_DEPTH rows.
+ */
+export function rankTextCandidates(rows: TextCandidate[], q: string): string[] {
+  const groups = parseQueryGroups(q);
+  const typedWords = groups.flatMap((group) => group.alternatives[0].words);
+  const phrase = typedWords.length > 1 ? new RegExp(termPattern(typedWords.join(' ')), 'i') : null;
+  const spellings = groups.map((group) =>
+    group.alternatives.map((alt) => {
+      const { pattern, caseSensitive } = alternativePattern(alt);
+      return new RegExp(pattern, caseSensitive ? '' : 'i');
+    }),
+  );
+  const acronyms = groups
+    .map((group) => group.typed)
+    .filter((typed) => ACRONYM_CANDIDATE_RE.test(typed))
+    .map((typed) => ({ typed, re: new RegExp(`\\b${escapeRegex(typed.toUpperCase())}s?\\b`) }));
+  // "DOME Copilot: ...", "Random Forest." -- a title that opens with the first term is about it.
+  const lead = groups.length
+    ? new RegExp(
+        `^\\W*(?:(?:the|a|an)\\s+)?${termPattern(groups[0].alternatives[0].words.join(' '))}`,
+        'i',
+      )
+    : null;
+
+  const ranked = rows.map((row, index) => {
+    const title = row.publication_metadata?.title ?? '';
+    const allInTitle =
+      groups.length > 0 && spellings.every((res) => res.some((re) => re.test(title)));
+    let tier = allInTitle ? (phrase && !phrase.test(title) ? 1 : 0) : 2;
+    const leads = lead && allInTitle && lead.test(title) ? 1 : 0;
+    let acronymHit = 0;
+    for (const { typed, re } of acronyms) {
+      if (!re.test(title)) continue;
+      acronymHit = 1;
+      if (typed === typed.toUpperCase()) tier = 0;
+    }
+    const citations = row.publication_metadata?.citation_count;
+    const score =
+      (row.score ?? 0) + Math.log10((typeof citations === 'number' ? citations : 0) + 1);
+    return { id: row._id, index, tier, leads, acronymHit, score };
+  });
+  ranked.sort(
+    (a, b) =>
+      a.tier - b.tier ||
+      b.leads - a.leads ||
+      b.acronymHit - a.acronymHit ||
+      b.score - a.score ||
+      a.index - b.index,
+  );
+  return ranked.map((r) => r.id);
 }
 
 /**

@@ -1,6 +1,34 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { RecordDto } from './record.dto';
 
+export class QueryExpansionDto {
+  @ApiProperty({ example: 'svm', description: 'The term as typed.' })
+  term!: string;
+
+  @ApiProperty({
+    type: [String],
+    example: ['support vector machine', 'SVC', 'SVR'],
+    description: 'The other spellings it was also searched as, from the published vocabulary.',
+  })
+  alternatives!: string[];
+}
+
+export class SearchInfoDto {
+  @ApiProperty({
+    enum: ['word', 'prefix', 'author', 'identifier'],
+    description:
+      "How the free text was matched. 'word': whole words and their inflections, from the " +
+      "index (the ordinary case). 'prefix': word beginnings, on the scan path -- a `*` term, a " +
+      'cleared class filter, or the automatic retry after the index found nothing for the words ' +
+      "as typed. 'author': the initials-first name probe answered. 'identifier': a DOI, PMID or " +
+      'PMCID looked up directly.',
+  })
+  matched!: 'word' | 'prefix' | 'author' | 'identifier';
+
+  @ApiProperty({ type: [QueryExpansionDto] })
+  expansions!: QueryExpansionDto[];
+}
+
 /**
  * Response shape for GET /api/records. Extends observatory-ui's SearchResult
  * (records.service.ts) additively -- `totalRelation` is a new field the existing
@@ -39,4 +67,11 @@ export class PaginatedRecordsDto {
       'free-text (q=) search. See RecordsService.fetchPage.',
   })
   timedOut?: boolean;
+
+  @ApiProperty({
+    required: false,
+    type: SearchInfoDto,
+    description: 'How `q` was matched. Absent when there was no free text.',
+  })
+  search?: SearchInfoDto;
 }

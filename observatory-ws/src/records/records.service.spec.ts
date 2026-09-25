@@ -2,6 +2,7 @@ import { mongo } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
 import { RecordsService } from './records.service';
 import { CountService } from './count.service';
+import { TermFrequencyService } from './term-frequency.service';
 import { AppConfig } from '../config/configuration';
 import { RecordDocument } from './schemas/record.schema';
 
@@ -55,6 +56,13 @@ function fakeCountService(
   return { count: jest.fn().mockResolvedValue(result) } as unknown as CountService;
 }
 
+/** Word frequencies as TermFrequencyService would answer them; only the index paths consult it. */
+function fakeTermFrequency(table: Record<string, number> = { dome: 66, cell: 44_261 }) {
+  return {
+    lookup: jest.fn().mockResolvedValue(new Map(Object.entries(table))),
+  } as unknown as TermFrequencyService;
+}
+
 const SOME_DOCS = [{ _id: 'a' }, { _id: 'b' }] as unknown as RecordDocument[];
 
 describe('RecordsService.search / fetchPage', () => {
@@ -65,6 +73,7 @@ describe('RecordsService.search / fetchPage', () => {
       model as never,
       fakeCountService({ total: 2, totalRelation: 'eq' }),
       fakeConfig(),
+      fakeTermFrequency(),
     );
 
     const result = await service.search({});
@@ -77,7 +86,12 @@ describe('RecordsService.search / fetchPage', () => {
   it('uses the larger searchMaxTimeMs budget when q is present, not the filter-only maxTimeMs', async () => {
     const findExec = jest.fn<Promise<unknown>, []>().mockResolvedValue([]);
     const model = fakeModel({ findExec });
-    const service = new RecordsService(model as never, fakeCountService(), fakeConfig());
+    const service = new RecordsService(
+      model as never,
+      fakeCountService(),
+      fakeConfig(),
+      fakeTermFrequency(),
+    );
 
     await service.search({ q: 'random forest sepsis' });
 
@@ -90,7 +104,12 @@ describe('RecordsService.search / fetchPage', () => {
   it('uses the ordinary maxTimeMs budget when q is absent', async () => {
     const findExec = jest.fn<Promise<unknown>, []>().mockResolvedValue([]);
     const model = fakeModel({ findExec });
-    const service = new RecordsService(model as never, fakeCountService(), fakeConfig());
+    const service = new RecordsService(
+      model as never,
+      fakeCountService(),
+      fakeConfig(),
+      fakeTermFrequency(),
+    );
 
     await service.search({});
 
@@ -116,6 +135,7 @@ describe('RecordsService.search / fetchPage', () => {
       model as never,
       fakeCountService({ total: 10_000, totalRelation: 'gte' }),
       fakeConfig(),
+      fakeTermFrequency(),
     );
 
     const result = await service.search({ q: 'random forest sepsis' });
@@ -134,7 +154,12 @@ describe('RecordsService.search / fetchPage', () => {
     const outageErr = new Error('MongooseError: buffering timed out after 10000ms');
     const findExec = jest.fn<Promise<unknown>, []>().mockRejectedValue(outageErr);
     const model = fakeModel({ findExec });
-    const service = new RecordsService(model as never, fakeCountService(), fakeConfig());
+    const service = new RecordsService(
+      model as never,
+      fakeCountService(),
+      fakeConfig(),
+      fakeTermFrequency(),
+    );
 
     await expect(service.search({ q: 'anything' })).rejects.toBe(outageErr);
   });
@@ -147,7 +172,12 @@ describe('RecordsService.search / fetchPage', () => {
     });
     const findExec = jest.fn<Promise<unknown>, []>().mockRejectedValue(otherErr);
     const model = fakeModel({ findExec });
-    const service = new RecordsService(model as never, fakeCountService(), fakeConfig());
+    const service = new RecordsService(
+      model as never,
+      fakeCountService(),
+      fakeConfig(),
+      fakeTermFrequency(),
+    );
 
     await expect(service.search({ q: 'anything' })).rejects.toBe(otherErr);
   });
@@ -159,7 +189,7 @@ describe('RecordsService.search / fetchPage', () => {
  */
 describe('RecordsService.search / author probe', () => {
   const withTextIndex = async (model: ReturnType<typeof fakeModel>, count: CountService) => {
-    const service = new RecordsService(model as never, count, fakeConfig());
+    const service = new RecordsService(model as never, count, fakeConfig(), fakeTermFrequency());
     await service.onModuleInit();
     return service;
   };
@@ -185,14 +215,20 @@ describe('RecordsService.search / author probe', () => {
     expect(probe).toContain('publication_metadata.authors');
   });
 
-  it('falls straight through to the ordinary path when nobody is called that', async () => {
+  it('falls straight through to the ordinary index path when nobody is called that', async () => {
     // "T cell" is the shape that makes this a probe rather than a phrase in the main query. Nobody
-    // is called "cell T", so the probe returns zero and the search proceeds exactly as before --
-    // one wasted indexed round trip, and an unchanged answer.
+    // is called "cell T", so the probe returns zero and the search proceeds as for any word --
+    // one wasted indexed round trip, then "cell" from the index.
     const findExec = jest.fn<Promise<unknown>, []>().mockResolvedValue(SOME_DOCS);
     const model = fakeModel({
       findExec,
-      aggregateExec: jest.fn<Promise<unknown>, []>().mockResolvedValue([]),
+      aggregateExec: jest
+        .fn<Promise<unknown>, []>()
+        .mockResolvedValueOnce([])
+        .mockResolvedValue([
+          { _id: 'a', score: 1 },
+          { _id: 'b', score: 0.5 },
+        ]),
       indexes: [{ name: 'positives_text' }],
     });
     const count = {
@@ -205,10 +241,11 @@ describe('RecordsService.search / author probe', () => {
 
     const result = await service.search({ q: 'T cell' });
 
-    // The probe's zero is discarded, not returned: the answer is the ordinary path's, fetched
-    // through find() rather than the index.
+    // The probe's zero is discarded, not returned: the answer is the composite's.
     expect(result.total).toBe(46_141);
-    expect(model.aggregate).toHaveBeenCalledTimes(1);
+    expect(result.search?.matched).toBe('word');
+    expect(model.aggregate).toHaveBeenCalledTimes(2);
+    expect(JSON.stringify(model.aggregate.mock.calls[1][0])).toContain('"$search":"cell"');
     expect(findExec).toHaveBeenCalled();
   });
 
@@ -222,5 +259,123 @@ describe('RecordsService.search / author probe', () => {
     await service.search({ q: 'G Farrell', class: '' });
 
     expect(model.aggregate).not.toHaveBeenCalled();
+  });
+});
+
+describe('RecordsService.search / routing', () => {
+  const withTextIndex = async (model: ReturnType<typeof fakeModel>, count: CountService) => {
+    const service = new RecordsService(model as never, count, fakeConfig(), fakeTermFrequency());
+    await service.onModuleInit();
+    return service;
+  };
+
+  it('serves a lone word from the index, ranked, and says so', async () => {
+    const findExec = jest.fn<Promise<unknown>, []>().mockResolvedValue(SOME_DOCS);
+    const model = fakeModel({
+      findExec,
+      aggregateExec: jest.fn<Promise<unknown>, []>().mockResolvedValue([
+        { _id: 'b', score: 7, publication_metadata: { title: 'A dome of gold' } },
+        { _id: 'a', score: 6, publication_metadata: { title: 'DOME Copilot' } },
+      ]),
+      indexes: [{ name: 'positives_text' }],
+    });
+    const service = await withTextIndex(
+      model,
+      fakeCountService({ total: 64, totalRelation: 'eq' }),
+    );
+
+    const result = await service.search({ q: 'dome' });
+
+    expect(result.total).toBe(64);
+    expect(result.search).toEqual({ matched: 'word', expansions: [] });
+    expect(model.aggregate).toHaveBeenCalledTimes(1);
+    const pipeline = JSON.stringify(model.aggregate.mock.calls[0][0]);
+    expect(pipeline).toContain('"$search":"dome"');
+    expect(pipeline).toContain('"$limit":200');
+    // Ranked in process: the acronym title leads, so its id is fetched first.
+    const fetch = JSON.stringify(model.find.mock.calls[model.find.mock.calls.length - 1][0]);
+    expect(fetch).toContain('"$in":["a","b"]');
+  });
+
+  it('keeps a word-beginning search (dome*) on the scan path and says so', async () => {
+    const findExec = jest.fn<Promise<unknown>, []>().mockResolvedValue(SOME_DOCS);
+    const model = fakeModel({ findExec, indexes: [{ name: 'positives_text' }] });
+    const service = await withTextIndex(
+      model,
+      fakeCountService({ total: 1028, totalRelation: 'eq' }),
+    );
+
+    const result = await service.search({ q: 'dome*' });
+
+    expect(model.aggregate).not.toHaveBeenCalled();
+    expect(result.total).toBe(1028);
+    expect(result.search?.matched).toBe('prefix');
+  });
+
+  it('retries on the scan path when the index knows none of the words, and says so', async () => {
+    const findExec = jest.fn<Promise<unknown>, []>().mockResolvedValue(SOME_DOCS);
+    const model = fakeModel({
+      findExec,
+      aggregateExec: jest.fn<Promise<unknown>, []>().mockResolvedValue([]),
+      indexes: [{ name: 'positives_text' }],
+    });
+    const count = {
+      count: jest
+        .fn()
+        .mockResolvedValueOnce({ total: 0, totalRelation: 'eq' })
+        .mockResolvedValue({ total: 3_000, totalRelation: 'eq' }),
+    } as unknown as CountService;
+    const service = await withTextIndex(model, count);
+
+    const result = await service.search({ q: 'bioinform' });
+
+    expect(result.total).toBe(3_000);
+    expect(result.search?.matched).toBe('prefix');
+  });
+
+  it('gives a free-text count the free-text budget, and a filter-only count none', async () => {
+    const findExec = jest.fn<Promise<unknown>, []>().mockResolvedValue([]);
+    const model = fakeModel({ findExec });
+    const count = fakeCountService();
+    const service = new RecordsService(model as never, count, fakeConfig(), fakeTermFrequency());
+
+    await service.search({ q: 'random forest' });
+    await service.search({ oa: 'true' });
+
+    const calls = (count.count as jest.Mock).mock.calls as unknown[][];
+    expect(calls[0][2]).toBe(20_000);
+    expect(calls[1][2]).toBeUndefined();
+  });
+
+  it('looks a pasted DOI up directly, before any search', async () => {
+    const findExec = jest.fn<Promise<unknown>, []>().mockResolvedValue(SOME_DOCS);
+    const model = fakeModel({ findExec, indexes: [{ name: 'positives_text' }] });
+    const count = { count: jest.fn() };
+    const service = await withTextIndex(model, count as unknown as CountService);
+
+    const result = await service.search({ q: 'https://doi.org/10.1016/j.synbio.2026.06.002' });
+
+    expect(result.search?.matched).toBe('identifier');
+    expect(result.total).toBe(2);
+    expect(result.items).toEqual(SOME_DOCS);
+    expect(JSON.stringify(model.find.mock.calls[0][0])).toContain('identifiers.doi');
+    expect(count.count).not.toHaveBeenCalled();
+    expect(model.aggregate).not.toHaveBeenCalled();
+  });
+
+  it('searches normally when an identifier-shaped query matches no record', async () => {
+    const findExec = jest.fn<Promise<unknown>, []>().mockResolvedValue([]);
+    const model = fakeModel({ findExec });
+    const service = new RecordsService(
+      model as never,
+      fakeCountService({ total: 0, totalRelation: 'eq' }),
+      fakeConfig(),
+      fakeTermFrequency(),
+    );
+
+    const result = await service.search({ q: '123456789' });
+
+    expect(result.search?.matched).toBe('prefix');
+    expect(model.find.mock.calls.length).toBeGreaterThan(1);
   });
 });

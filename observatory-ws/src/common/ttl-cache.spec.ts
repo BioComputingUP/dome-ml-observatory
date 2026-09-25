@@ -48,4 +48,26 @@ describe('TtlCache', () => {
     cache.set('b', 2);
     expect(cache.size).toBe(2);
   });
+
+  it('drops the oldest entry once the entry cap is reached', () => {
+    const cache = new TtlCache<number>(60_000, 2);
+    cache.set('a', 1);
+    cache.set('b', 2);
+    cache.set('c', 3);
+
+    expect(cache.size).toBe(2);
+    expect(cache.get('a')).toBeUndefined();
+    expect(cache.get('b')).toBe(2);
+    expect(cache.get('c')).toBe(3);
+  });
+
+  it('does not evict when overwriting an existing key at the cap', () => {
+    const cache = new TtlCache<number>(60_000, 2);
+    cache.set('a', 1);
+    cache.set('b', 2);
+    cache.set('a', 3);
+
+    expect(cache.get('a')).toBe(3);
+    expect(cache.get('b')).toBe(2);
+  });
 });

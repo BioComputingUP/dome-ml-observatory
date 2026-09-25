@@ -2,13 +2,14 @@ import { Logger, Module, OnModuleInit } from '@nestjs/common';
 import { RecordsController } from './records.controller';
 import { RecordsService } from './records.service';
 import { CountService } from './count.service';
+import { TermFrequencyService } from './term-frequency.service';
 import { ContentModelModule } from '../database/content-model.module';
 import { buildMongoFilter, canonicalCacheKey, parseSearchParams } from './records.query';
 
 @Module({
   imports: [ContentModelModule],
   controllers: [RecordsController],
-  providers: [RecordsService, CountService],
+  providers: [RecordsService, CountService, TermFrequencyService],
   exports: [RecordsService],
 })
 export class RecordsModule implements OnModuleInit {

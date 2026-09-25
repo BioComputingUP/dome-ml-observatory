@@ -9,6 +9,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, mongo } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
 import { CountService } from './count.service';
+import { TermFrequencyService } from './term-frequency.service';
+import { TtlCache } from '../common/ttl-cache';
 import { RecordDocument } from './schemas/record.schema';
 import { AppConfig } from '../config/configuration';
 import {
@@ -17,17 +19,40 @@ import {
   buildPagination,
   buildPromotedFilter,
   buildSortSpec,
+  buildTextSearch,
   buildTextSearchFilter,
   canonicalCacheKey,
   canUseTextIndex,
-  shouldFallBackFromText,
-  TEXT_INDEX_NAME,
+  DocumentFrequency,
+  identifierQuery,
   parseSearchParams,
   PromotedRow,
+  queryExpansions,
   rankPromoted,
+  rankTextCandidates,
   RawSearchParams,
+  RERANK_DEPTH,
+  shouldFallBackFromText,
   SortOrder,
+  TEXT_INDEX_NAME,
+  TextCandidate,
+  textSearchWords,
 } from './records.query';
+
+/** How the free text was matched, so the page can say so. Absent when there was no free text. */
+export interface SearchInfo {
+  /**
+   *  'word'       whole words and their inflections, served by the index -- the ordinary case.
+   *  'prefix'     word beginnings on the scan path: a `*` term, a cleared classification filter,
+   *               or the automatic retry after the index found nothing for the words as typed.
+   *  'author'     the initials-first name probe answered ("G Farrell").
+   *  'identifier' a DOI, PMID or PMCID looked up directly.
+   */
+  matched: 'word' | 'prefix' | 'author' | 'identifier';
+  /** Synonyms the query picked up from the published vocabulary: "svm" also searched as "support
+   *  vector machine". Empty when none applied. */
+  expansions: { term: string; alternatives: string[] }[];
+}
 
 export interface SearchResult {
   items: RecordDocument[];
@@ -36,12 +61,12 @@ export interface SearchResult {
   page: number;
   pageSize: number;
   /** True when fetching this page itself hit its time budget and gave up (items is [] in that
-   *  case) -- distinct from a genuine the MongoDB server outage, which throws through untouched to
+   *  case) -- distinct from a genuine MongoDB outage, which throws through untouched to
    *  MongoUnavailableFilter's 503 instead (see isSearchTimeout below). Only reachable for a
-   *  free-text (q=) search: filter-only searches stay within the ordinary 5s budget. Since
-   *  records.query.ts's AND-of-terms rewrite this should be rare -- it used to be the routine
-   *  outcome for any multi-word query that didn't appear as one literal phrase. */
+   *  free-text (q=) search on the scan path: filter-only searches stay within the ordinary 5s
+   *  budget, and the index path retries on the scan path rather than reporting this. */
   timedOut?: boolean;
+  search?: SearchInfo;
 }
 
 /** The promotion tier for one search: the narrower filter whose matches go first, plus the query
@@ -57,18 +82,29 @@ interface Promoted {
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
- * How many results the promotion tier may reorder -- four pages' worth.
+ * How many results the promotion tier may reorder on the scan path -- four pages' worth.
  *
- * The bound is what keeps this affordable on an un-indexed collection. Measured against the MongoDB server with
+ * The bound is what keeps this affordable without an index. Measured against the MongoDB server with
  * an `_id`-only projection: 118-520ms typical for the title tier (`deep learning` 196ms,
  * `graph neural network` 289ms, `random forest` 312ms), rising to ~3.4s only when the tier matches
  * almost nothing and Mongo has to scan the positives to prove it -- the same cost shape a rare term
- * already has today, and well inside the 20s free-text budget.
+ * already has on that path, and well inside the 20s free-text budget.
  *
  * Past this depth results fall back to plain `_id` order. That is a deliberate trade: the point is
  * to put the obviously-right answers on page 1, not to rank 355k documents without an index.
  */
 const PROMOTE_CAP = 100;
+
+/** How many records one identifier may resolve to. A DOI names one paper; a correction or an
+ *  erratum can share a PMID's neighbourhood, never more than a handful. */
+const IDENTIFIER_LIMIT = 20;
+
+/** The ranked heads (RERANK_DEPTH rows of id, score, title and citations -- ~40KB each) kept per
+ *  query, so page 2 of the same search, or the same search again, costs one `_id` fetch rather
+ *  than the candidate scan. The corpus changes only at a load, which ends with a restart, hence
+ *  the day; the entry cap bounds memory at a few tens of MB however varied the traffic. */
+const HEAD_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+const HEAD_CACHE_ENTRIES = 1_000;
 
 /**
  * True only for a server-side query time-limit expiry (maxTimeMS exceeded on a live, connected
@@ -96,11 +132,27 @@ export class RecordsService implements OnModuleInit {
    *  every search takes the regex path it always took. */
   private textIndexAvailable = false;
 
+  private readonly rankedHeads = new TtlCache<TextCandidate[]>(
+    HEAD_CACHE_TTL_MS,
+    HEAD_CACHE_ENTRIES,
+  );
+
   constructor(
     @InjectModel('Content') private readonly model: Model<RecordDocument>,
     private readonly countService: CountService,
     private readonly config: ConfigService<AppConfig, true>,
+    private readonly termFrequency: TermFrequencyService,
   ) {}
+
+  /** The free-text budget (20s): a `q=` search, on either path -- see configuration.ts. */
+  private get searchBudgetMs(): number {
+    return this.config.get('mongo.searchMaxTimeMs', { infer: true });
+  }
+
+  /** The filter-only budget (5s). */
+  private get filterBudgetMs(): number {
+    return this.config.get('mongo.maxTimeMs', { infer: true });
+  }
 
   /** Non-fatal by design: a failure here means "no index", which is just the slower path. The app
    *  must still boot and serve /api/health when the MongoDB server is unreachable. */
@@ -129,6 +181,21 @@ export class RecordsService implements OnModuleInit {
     const filter = buildMongoFilter(filters);
     const cacheKey = canonicalCacheKey(filters);
     const hasFreeText = Boolean(filters.q);
+    const info = (matched: SearchInfo['matched']): SearchInfo => ({
+      matched,
+      expansions: hasFreeText ? queryExpansions(filters.q as string) : [],
+    });
+
+    // A pasted DOI, PMID or PMCID is a lookup, not a search: no title or abstract contains its own
+    // DOI, so free text would answer zero. One equality first; a miss falls through, since a
+    // nine-digit number could still be a search term.
+    const identifier = identifierQuery(filters);
+    if (identifier) {
+      const found = await this.findByIdentifier(identifier, skip, pageSize);
+      if (found) {
+        return { ...found, page, pageSize, search: { matched: 'identifier', expansions: [] } };
+      }
+    }
 
     // The promoted tier only ever reorders; `filter` alone still decides what matches, so the
     // count below is unaffected by it.
@@ -152,20 +219,24 @@ export class RecordsService implements OnModuleInit {
           pageSize,
           `${cacheKey}|author`,
         );
-        if (probed) return { ...probed, page, pageSize };
+        if (probed) return { ...probed, page, pageSize, search: info('author') };
       }
     }
 
-    // Fast path: let the text index select candidates. Falls through to the regex path below when
-    // it isn't usable, isn't there, or didn't find enough -- see shouldFallBackFromText.
+    // The index path: `$text` selects candidates, the regex clauses decide, the best rows are
+    // ranked in process. Every free-text search takes it when it can -- a lone word included,
+    // matched as a whole word with its inflections the way PubMed does. It falls through to the
+    // scan below when the index is absent, the classification filter is cleared (the partial
+    // index cannot serve that), every term is a `*` word-beginning search, or the words as typed
+    // are simply not in the index -- see shouldFallBackFromText.
     if (this.textIndexAvailable && canUseTextIndex(filters)) {
       const textResult = await this.tryTextSearch(filters, sort, skip, pageSize, cacheKey);
-      if (textResult) return { ...textResult, page, pageSize };
+      if (textResult) return { ...textResult, page, pageSize, search: info('word') };
     }
 
     const [pageResult, countResult] = await Promise.all([
       this.fetchPage(filter, sort, skip, pageSize, hasFreeText, promoted),
-      this.countService.count(filter, cacheKey),
+      this.countService.count(filter, cacheKey, hasFreeText ? this.searchBudgetMs : undefined),
     ]);
 
     return {
@@ -175,17 +246,19 @@ export class RecordsService implements OnModuleInit {
       page,
       pageSize,
       timedOut: pageResult.timedOut,
+      search: hasFreeText ? info('prefix') : undefined,
     };
   }
 
   /**
-   * The `$text` path. Returns null to mean "use the regex path instead" -- either because the
-   * composite found nothing, or because it is the single-bare-term case where stemming loses too
-   * much recall (see shouldFallBackFromText).
+   * The `$text` path. Returns null to mean "use the regex path instead", because the composite
+   * found nothing for the words as typed (see shouldFallBackFromText).
    *
-   * The page fetch and the count run in parallel exactly as the regex path does, so a fallback
-   * wastes one round trip rather than serialising two. That trade is deliberate: falling back is
-   * rare, and making the common case serial to avoid it would be slower overall.
+   * Which word selects the candidates depends on how common each is, measured on the index and
+   * cached for the day (TermFrequencyService); see buildTextSearch for why one word beats them
+   * all. The page fetch and the count run in parallel exactly as the regex path does, so a
+   * fallback wastes one round trip rather than serialising two. That trade is deliberate: falling
+   * back is rare, and making the common case serial to avoid it would be slower overall.
    */
   private async tryTextSearch(
     filters: ReturnType<typeof parseSearchParams>['filters'],
@@ -194,19 +267,24 @@ export class RecordsService implements OnModuleInit {
     limit: number,
     cacheKey: string,
   ): Promise<Omit<SearchResult, 'page' | 'pageSize'> | null> {
-    const textFilter = buildTextSearchFilter(filters);
+    const q = filters.q as string;
+    const frequencies = await this.termFrequency.lookup(textSearchWords(q));
+    const df: DocumentFrequency = (word) => frequencies.get(word);
+    const textFilter = buildTextSearchFilter(filters, df);
     if (!textFilter) return null;
-    // A separate cache entry from the regex path's: for a single-bare-term fragment the two
-    // genuinely disagree ("neuro" is 43 by text, 806 by regex), and caching them under one key
-    // would let the discarded number leak into the path that fell back.
-    return this.runTextPath(textFilter, filters, sort, skip, limit, `${cacheKey}|text`);
+    // The count, the page order and the ranked head all follow from the word chosen, so it is part
+    // of the key: a cached total has to describe the candidate set the page was served from. The
+    // regex path keeps its own key -- for a `*` search the two genuinely disagree.
+    const key = `${cacheKey}|text|${buildTextSearch(q, df)}`;
+    return this.runTextPath(textFilter, filters, sort, skip, limit, key, q);
   }
 
   /**
    * Runs one `$text` query -- the composite above or the author probe -- and returns null to mean
    * "this found nothing, use the path behind it". Both callers want the same page/count pairing,
    * the same time budget and the same timeout handling, so they share this rather than each
-   * growing its own copy.
+   * growing its own copy. `rankFor` is the query text to rank the best rows by; the probe leaves
+   * it unset, its phrase match needing no help.
    */
   private async runTextPath(
     textFilter: FilterQuery<RecordDocument>,
@@ -215,13 +293,14 @@ export class RecordsService implements OnModuleInit {
     skip: number,
     limit: number,
     cacheKey: string,
+    rankFor?: string,
   ): Promise<Omit<SearchResult, 'page' | 'pageSize'> | null> {
-    const maxTimeMs = this.config.get('mongo.searchMaxTimeMs', { infer: true });
+    const maxTimeMs = this.searchBudgetMs;
 
     try {
       const [items, countResult] = await Promise.all([
-        this.runTextFetch(textFilter, sort, skip, limit, maxTimeMs),
-        this.countService.count(textFilter, cacheKey),
+        this.runTextFetch(textFilter, sort, skip, limit, maxTimeMs, rankFor, cacheKey),
+        this.countService.count(textFilter, cacheKey, maxTimeMs),
       ]);
 
       if (shouldFallBackFromText(filters, countResult.total)) {
@@ -246,7 +325,7 @@ export class RecordsService implements OnModuleInit {
   }
 
   /**
-   * Fetches one page from the text index, ranked.
+   * Fetches one page from the text index.
    *
    * Uses the same project -> sort -> skip/limit -> re-fetch-by-_id shape runFetch already uses for
    * year and citation sorts, for the same two reasons: it carries `allowDiskUse` (MongoDB 4.2's
@@ -254,6 +333,10 @@ export class RecordsService implements OnModuleInit {
    * thousands of full documents would hit), and it sorts a few dozen bytes per document instead of
    * ~3.5KB. Measured on the probe, the aggregation also just is faster than find().sort() at every
    * depth tried: 284ms vs 399ms at skip 0, 200ms vs 886ms at skip 2,000.
+   *
+   * 'relevance' is textScore -- the index's own field weights (title 10, authors 5, abstract 1) --
+   * with the best RERANK_DEPTH rows re-ordered in process when there is a query to rank them by
+   * (runRankedFetch). The _id tiebreak keeps paging stable across equal scores.
    */
   private async runTextFetch(
     filter: ReturnType<typeof buildMongoFilter>,
@@ -261,9 +344,13 @@ export class RecordsService implements OnModuleInit {
     skip: number,
     limit: number,
     maxTimeMs: number,
+    rankFor?: string,
+    cacheKey?: string,
   ): Promise<RecordDocument[]> {
-    // 'relevance' now genuinely is one -- textScore, with the index's own field weights (title 10,
-    // authors 5, abstract 1) behind it. The _id tiebreak keeps paging stable across equal scores.
+    if (sort === 'relevance' && rankFor !== undefined && skip < RERANK_DEPTH) {
+      return this.runRankedFetch(filter, rankFor, skip, limit, maxTimeMs, cacheKey);
+    }
+
     const sortSpec: Record<string, 1 | -1> =
       sort === 'relevance' ? { score: -1, _id: 1 } : { ...buildSortSpec(sort) };
 
@@ -291,12 +378,99 @@ export class RecordsService implements OnModuleInit {
     );
   }
 
+  /**
+   * A page from the first RERANK_DEPTH rows by textScore, re-ordered by rankTextCandidates: title
+   * hits first, then the rest. The projection carries the title and the citation count the ranking
+   * reads -- ~40KB for 200 rows, and the sort costs the same as for 25.
+   *
+   * Let R be those rows in ranked order. A page inside R is a slice of it; a page that straddles
+   * its end takes the remainder from the raw textScore order, past the depth. Because R is a
+   * permutation of the raw top rows and the raw order is fixed for a fixed `$search`, every page is
+   * a slice of one fixed sequence: nothing repeats, nothing is skipped.
+   */
+  private async runRankedFetch(
+    filter: ReturnType<typeof buildMongoFilter>,
+    q: string,
+    skip: number,
+    limit: number,
+    maxTimeMs: number,
+    cacheKey?: string,
+  ): Promise<RecordDocument[]> {
+    let head = cacheKey !== undefined ? this.rankedHeads.get(cacheKey) : undefined;
+    if (!head) {
+      head = await this.model
+        .aggregate<TextCandidate>([
+          { $match: filter },
+          {
+            $project: {
+              _id: 1,
+              score: { $meta: 'textScore' },
+              'publication_metadata.title': 1,
+              'publication_metadata.citation_count': 1,
+            },
+          },
+          { $sort: { score: -1, _id: 1 } },
+          { $limit: RERANK_DEPTH },
+        ])
+        .option({ maxTimeMS: maxTimeMs, allowDiskUse: true })
+        .exec();
+      if (cacheKey !== undefined) this.rankedHeads.set(cacheKey, head);
+    }
+
+    const ids = rankTextCandidates(head, q).slice(skip, skip + limit);
+
+    if (ids.length < limit && head.length === RERANK_DEPTH) {
+      const tail = await this.model
+        .aggregate<{ _id: string }>([
+          { $match: filter },
+          { $project: { _id: 1, score: { $meta: 'textScore' } } },
+          { $sort: { score: -1, _id: 1 } },
+          { $skip: RERANK_DEPTH },
+          { $limit: limit - ids.length },
+        ])
+        .option({ maxTimeMS: maxTimeMs, allowDiskUse: true })
+        .exec();
+      ids.push(...tail.map((row) => row._id));
+    }
+
+    return this.fetchByIds(ids, maxTimeMs);
+  }
+
+  /** The records an identifier resolves to, fetched whole and sliced for the page, or null for
+   *  none. A timeout is logged and treated as a miss: the search behind it still runs. */
+  private async findByIdentifier(
+    filter: FilterQuery<RecordDocument>,
+    skip: number,
+    limit: number,
+  ): Promise<Omit<SearchResult, 'page' | 'pageSize' | 'search'> | null> {
+    try {
+      // No sort on the query: ordering by _id made the planner walk the whole collection on the
+      // _id index (4.2s measured) instead of the positives on class_year_id (~1s). Ordered here.
+      const docs = await this.model
+        .find(filter)
+        .limit(IDENTIFIER_LIMIT)
+        .lean<RecordDocument[]>()
+        .maxTimeMS(this.filterBudgetMs)
+        .exec();
+      if (!docs.length) return null;
+      docs.sort((a, b) => (a._id < b._id ? -1 : a._id > b._id ? 1 : 0));
+      return { items: docs.slice(skip, skip + limit), total: docs.length, totalRelation: 'eq' };
+    } catch (err) {
+      if (!isSearchTimeout(err)) throw err;
+      this.logger.warn(`Identifier lookup exceeded its budget; searching instead: ${String(err)}`);
+      return null;
+    }
+  }
+
   async findByPid(pid: string): Promise<RecordDocument> {
     if (!UUID_PATTERN.test(pid)) {
       throw new BadRequestException('Invalid record id: expected a UUID');
     }
-    const maxTimeMs = this.config.get('mongo.maxTimeMs', { infer: true });
-    const doc = await this.model.findById(pid).lean<RecordDocument>().maxTimeMS(maxTimeMs).exec();
+    const doc = await this.model
+      .findById(pid)
+      .lean<RecordDocument>()
+      .maxTimeMS(this.filterBudgetMs)
+      .exec();
     if (!doc) throw new NotFoundException(`No record with id ${pid}`);
     return doc;
   }
@@ -310,11 +484,9 @@ export class RecordsService implements OnModuleInit {
     promoted?: Promoted,
   ): Promise<{ items: RecordDocument[]; timedOut?: boolean }> {
     // A free-text search gets a larger budget than a filter-only one -- measured live against
-    // the MongoDB server: a rare author surname ("Tosatto") is a genuine ~10s query on this unindexed
-    // collection, well past the 5s filter-only budget. See configuration.ts's searchMaxTimeMs.
-    const maxTimeMs = hasFreeText
-      ? this.config.get('mongo.searchMaxTimeMs', { infer: true })
-      : this.config.get('mongo.maxTimeMs', { infer: true });
+    // the MongoDB server: a rare author surname ("Tosatto") is a genuine ~10s query on this
+    // path, well past the 5s filter-only budget. See configuration.ts's searchMaxTimeMs.
+    const maxTimeMs = hasFreeText ? this.searchBudgetMs : this.filterBudgetMs;
 
     try {
       return { items: await this.runFetch(filter, sort, skip, limit, maxTimeMs, promoted) };
@@ -335,9 +507,9 @@ export class RecordsService implements OnModuleInit {
     maxTimeMs: number,
     promoted?: Promoted,
   ): Promise<RecordDocument[]> {
-    // 'relevance' sorts by _id, the only indexed field on the MongoDB server's Content collection -- a plain
-    // find().sort() is cheap and safe at any depth within MAX_RESULT_WINDOW (measured: skip
-    // 300,000 took 2.85s with no sort-buffer error, vs. year-sorted skip 9,000+ failing outright).
+    // 'relevance' on this path sorts by _id -- a plain find().sort() is cheap and safe at any depth
+    // within MAX_RESULT_WINDOW (measured: skip 300,000 took 2.85s with no sort-buffer error, vs.
+    // year-sorted skip 9,000+ failing outright).
     if (sort === 'relevance') {
       if (promoted?.filter) {
         return this.runPromotedFetch(filter, promoted, skip, limit, maxTimeMs);
@@ -451,7 +623,7 @@ export class RecordsService implements OnModuleInit {
   }
 
   /** Fetches full documents for an ordered id list and restores that order -- `$in` does not
-   *  preserve it. `_id` is the collection's only index, so this lookup is always cheap. */
+   *  preserve it. An `_id` lookup is always cheap. */
   private async fetchByIds(ids: string[], maxTimeMs: number): Promise<RecordDocument[]> {
     if (ids.length === 0) return [];
     const docs = await this.model

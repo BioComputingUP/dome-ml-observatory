@@ -51,7 +51,13 @@ function RepeatableParam(description: string) {
 
 export class SearchRecordsDto {
   @ApiPropertyOptional({
-    description: `Free text over title, abstract and authors. Maximum ${MAX_PARAM_LENGTH} characters.`,
+    description:
+      'Free text over title, abstract and authors. Words are AND-ed and matched as whole words ' +
+      'with their inflections (cell finds cells); quote a phrase to keep its words together; a ' +
+      'trailing * matches word beginnings (neuro* finds neuroimaging). A method name or acronym ' +
+      'in the published vocabulary is also searched under its other spellings (svm, support ' +
+      'vector machine), and a DOI, PMID or PMCID is looked up directly. Authors as Farrell G, ' +
+      `G Farrell or Gavin Farrell. Maximum ${MAX_PARAM_LENGTH} characters.`,
   })
   @IsOptional()
   @IsString()

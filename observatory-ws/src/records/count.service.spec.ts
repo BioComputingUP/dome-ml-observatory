@@ -138,3 +138,33 @@ describe('CountService', () => {
     await expect(service.warm({ x: 1 }, 'key-e')).resolves.toBeUndefined();
   });
 });
+
+describe('CountService budgets', () => {
+  it("uses the caller's budget for the exact count and the ordinary one for the bounded fallback", async () => {
+    const exec = jest
+      .fn<Promise<number>, []>()
+      .mockRejectedValueOnce(new Error('timeout'))
+      .mockResolvedValueOnce(10_000);
+    const model = fakeModel({ exec });
+    const service = new CountService(model as never, fakeConfig);
+
+    await service.count({ x: 1 }, 'key-h', 20_000);
+
+    const exact = model.countDocuments.mock.results[0].value as { maxTimeMS: jest.Mock };
+    expect(exact.maxTimeMS).toHaveBeenCalledWith(20_000);
+    const bounded = model.countDocuments.mock.results[1].value as { limit: jest.Mock };
+    const limited = bounded.limit.mock.results[0].value as { maxTimeMS: jest.Mock };
+    expect(limited.maxTimeMS).toHaveBeenCalledWith(5000);
+  });
+
+  it('uses the configured budget when the caller gives none', async () => {
+    const exec = jest.fn<Promise<number>, []>().mockResolvedValue(1);
+    const model = fakeModel({ exec });
+    const service = new CountService(model as never, fakeConfig);
+
+    await service.count({ x: 1 }, 'key-i');
+
+    const exact = model.countDocuments.mock.results[0].value as { maxTimeMS: jest.Mock };
+    expect(exact.maxTimeMS).toHaveBeenCalledWith(5000);
+  });
+});

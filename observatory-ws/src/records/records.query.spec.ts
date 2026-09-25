@@ -22,7 +22,10 @@ import {
   canUseTextIndex,
   buildTextSearch,
   buildTextSearchFilter,
-  isSingleBareTerm,
+  parseQueryGroups,
+  queryExpansions,
+  identifierQuery,
+  textSearchWords,
   shouldFallBackFromText,
 } from './records.query';
 
@@ -812,9 +815,15 @@ describe('canUseTextIndex', () => {
     expect(canUseTextIndex(filters({ oa: 'true' }))).toBe(false);
   });
 
-  it('is false for a lone bare word -- recall, not correctness', () => {
-    expect(canUseTextIndex(filters({ q: 'neuro' }))).toBe(false);
-    expect(canUseTextIndex(filters({ q: 'transformer' }))).toBe(false);
+  it('is true for a lone bare word: a whole word with its inflections, from the index', () => {
+    // "dome" used to take the scan path and match "domestic"; the index answers the word itself.
+    expect(canUseTextIndex(filters({ q: 'neuro' }))).toBe(true);
+    expect(canUseTextIndex(filters({ q: 'transformer' }))).toBe(true);
+  });
+
+  it('is false when every term asks for word beginnings, which a stemmed index cannot give', () => {
+    expect(canUseTextIndex(filters({ q: 'neuro*' }))).toBe(false);
+    expect(canUseTextIndex(filters({ q: 'neuro* imaging' }))).toBe(true);
   });
 
   it('is true for an author-shaped query, which is a phrase rather than a fragment', () => {
@@ -823,40 +832,12 @@ describe('canUseTextIndex', () => {
     expect(canUseTextIndex(filters({ q: 'Gavin Farrell' }))).toBe(true);
   });
 
-  it('is false for an initials-first query, which the probe answers instead', () => {
-    expect(canUseTextIndex(filters({ q: 'G Farrell' }))).toBe(false);
+  it('is true for an initials-first query too: the probe runs first, and a miss searches the surname', () => {
+    expect(canUseTextIndex(filters({ q: 'G Farrell' }))).toBe(true);
   });
 
   it('is true for a single QUOTED phrase', () => {
     expect(canUseTextIndex(filters({ q: '"random forest"' }))).toBe(true);
-  });
-});
-
-describe('isSingleBareTerm', () => {
-  it('recognises the shape that must stay off the index', () => {
-    expect(isSingleBareTerm('neuro')).toBe(true);
-    expect(isSingleBareTerm('cancer')).toBe(true);
-  });
-
-  it('does not claim multi-word, quoted or author-shaped queries', () => {
-    expect(isSingleBareTerm('random forest')).toBe(false);
-    expect(isSingleBareTerm('"random forest"')).toBe(false);
-    expect(isSingleBareTerm('Farrell G')).toBe(false);
-    expect(isSingleBareTerm('farrell g')).toBe(false);
-    expect(isSingleBareTerm('Tosatto S C E')).toBe(false);
-  });
-
-  it('still claims an initials-first query -- its phrase belongs on the probe, not here', () => {
-    // "G Farrell" and "T cell" both reduce to one real term. Exempting them here would put a bare
-    // stemmed $text query in front of a single fragment, which is the recall loss this guard exists
-    // to prevent. The probe handles the author reading separately, before any of this.
-    expect(isSingleBareTerm('G Farrell')).toBe(true);
-    expect(isSingleBareTerm('T cell')).toBe(true);
-  });
-
-  it('ignores a dropped single-character token', () => {
-    // searchTerms drops "a", leaving one real term.
-    expect(isSingleBareTerm('a cancer')).toBe(true);
   });
 });
 
@@ -900,7 +881,7 @@ describe('buildTextSearchFilter', () => {
 
   it('returns null when the text index is not usable', () => {
     expect(buildTextSearchFilter(filters({ q: 'random forest', class: '' }))).toBeNull();
-    expect(buildTextSearchFilter(filters({ q: 'neuro' }))).toBeNull();
+    expect(buildTextSearchFilter(filters({ q: 'neuro*' }))).toBeNull();
     expect(buildTextSearchFilter(filters({}))).toBeNull();
   });
 
@@ -969,5 +950,220 @@ describe('canonicalCacheKey and the data resources filter', () => {
     expect(canonicalCacheKey({ ...emptyFilters, dataResources: ['pdb', 'geo'] })).toBe(
       canonicalCacheKey({ ...emptyFilters, dataResources: ['geo', 'pdb'] }),
     );
+  });
+});
+
+describe('parseQueryGroups', () => {
+  it('reads a trailing * as the word-beginning marker and strips it before anything can escape it', () => {
+    const [group] = parseQueryGroups('neuro*');
+    expect(group.typed).toBe('neuro');
+    expect(group.alternatives).toEqual([
+      { text: 'neuro', words: ['neuro'], prefix: true, source: 'typed' },
+    ]);
+    const built = JSON.stringify(buildMongoFilter({ ...emptyFilters, q: 'neuro*' }));
+    expect(built).toContain('\\\\bneuro"');
+    expect(built).not.toContain('\\\\*');
+  });
+
+  it('drops a lone star and a term shorter than two characters', () => {
+    expect(parseQueryGroups('* a cell')).toEqual([expect.objectContaining({ typed: 'cell' })]);
+  });
+
+  it('splits a hyphenated term into words, so "single-cell" also finds "single cell"', () => {
+    const [group] = parseQueryGroups('single-cell');
+    expect(group.alternatives[0].words).toEqual(['single', 'cell']);
+    const re = new RegExp(termPattern(group.alternatives[0].words.join(' ')), 'i');
+    expect(re.test('single cell RNA')).toBe(true);
+    expect(re.test('single-cell RNA')).toBe(true);
+  });
+
+  it('adds the vocabulary spellings of a method name or acronym', () => {
+    const [group] = parseQueryGroups('svm');
+    expect(group.alternatives[0]).toEqual({
+      text: 'svm',
+      words: ['svm'],
+      prefix: false,
+      source: 'typed',
+    });
+    expect(group.alternatives.map((alt) => alt.text)).toContain('support vector machine');
+    expect(group.alternatives.length).toBeLessThanOrEqual(4);
+  });
+
+  it('expands a quoted phrase as one term, never its words separately', () => {
+    const quoted = parseQueryGroups('"support vector machine"');
+    expect(quoted).toHaveLength(1);
+    expect(quoted[0].alternatives.map((alt) => alt.text)).toContain('SVM');
+    const bare = parseQueryGroups('support vector machine');
+    expect(bare).toHaveLength(3);
+    expect(bare.every((group) => group.alternatives.length === 1)).toBe(true);
+  });
+
+  it('never expands a word-beginning term', () => {
+    expect(parseQueryGroups('svm*')[0].alternatives).toHaveLength(1);
+  });
+});
+
+describe('buildMongoFilter with synonyms', () => {
+  type Clause = { $or: Record<string, { $regex: string; $options?: string }>[] };
+
+  it('ORs every spelling inside the term clause, and matches an acronym whole and case-sensitively', () => {
+    // "svm" carries no author reading (one token), so the group clause is the filter's first
+    // element: the typed word, then the vocabulary's "support vector machine", SVC and SVR.
+    const filter = buildMongoFilter({ ...emptyFilters, q: 'svm' });
+    const clause = (filter.$and as Clause[])[0];
+    const titles = clause.$or.map((c) => c['publication_metadata.title']).filter(Boolean);
+    expect(titles.length).toBeGreaterThanOrEqual(3);
+    expect(titles[1]).toEqual({ $regex: termPattern('support vector machine'), $options: 'i' });
+    // \bann would be "annual" and \bsom "somatic": an acronym is never a word beginning.
+    const acronym = titles.find((p) => p.$regex === '\\bSVCs?\\b');
+    expect(acronym).toBeDefined();
+    expect(acronym?.$options).toBeUndefined();
+  });
+
+  it('keeps the typed word case-insensitive and word-start anchored, as before', () => {
+    const filter = buildMongoFilter({ ...emptyFilters, q: 'svm' });
+    expect((filter.$and as Clause[])[0].$or[0]).toEqual({
+      'publication_metadata.title': { $regex: '\\bsvm', $options: 'i' },
+    });
+  });
+});
+
+describe('queryExpansions', () => {
+  it('lists what each term was also searched as, and nothing for plain words', () => {
+    expect(queryExpansions('random forest')).toEqual([]);
+    const [svm] = queryExpansions('svm sepsis');
+    expect(svm.term).toBe('svm');
+    expect(svm.alternatives).toContain('support vector machine');
+  });
+});
+
+describe('textSearchWords and buildTextSearch with frequencies', () => {
+  const df = (table: Record<string, number>) => (word: string) => table[word];
+
+  it('lists every word the index might be asked for, lower-cased, spellings included', () => {
+    expect(textSearchWords('Random Forest')).toEqual(['random', 'forest']);
+    expect(textSearchWords('svm')).toEqual(
+      expect.arrayContaining(['svm', 'support', 'vector', 'machine']),
+    );
+    expect(textSearchWords('neuro* imaging')).toEqual(['imaging']);
+    expect(textSearchWords('Farrell G')).toEqual([]);
+  });
+
+  it('hands $text the rarest word only -- "machine" is in 191k positives, "vector" in 41k', () => {
+    // Measured live: all three words 10.0s, "vector" alone 1.3s, the same 29,918 results.
+    const table = { support: 76_848, vector: 41_213, machine: 191_139 };
+    expect(buildTextSearch('support vector machine', df(table))).toBe('vector');
+  });
+
+  it('picks the cheapest term, one word per spelling', () => {
+    const table = {
+      svm: 21_510,
+      support: 76_848,
+      vector: 41_213,
+      machine: 191_139,
+      svc: 900,
+      svr: 1_200,
+      sepsis: 5_000,
+    };
+    // "sepsis" alone selects the term AND; "svm" comes along for the reading "svm S" -- see below.
+    expect(buildTextSearch('svm sepsis', df(table))).toBe('sepsis svm');
+    expect(buildTextSearch('svm', df(table))).toBe('svm vector SVC SVR');
+  });
+
+  it('skips a word the index does not know (a stop word, a typo) when another can select', () => {
+    expect(buildTextSearch('the dome', df({ the: 0, dome: 66 }))).toBe('dome');
+  });
+
+  it('sends every word when nothing could be measured, as it always did', () => {
+    expect(buildTextSearch('random forest sepsis')).toBe('random forest sepsis');
+    expect(buildTextSearch('the of', df({ the: 0, of: 0 }))).toBe('the of');
+  });
+
+  it('never hands $text a word-beginning term', () => {
+    expect(buildTextSearch('neuro* imaging', df({ imaging: 60_000, neuro: 1_740 }))).toBe(
+      'imaging',
+    );
+  });
+
+  it('always carries the surname of an author reading the filter keeps', () => {
+    // "Gavin Farrell" is matched as the author "Farrell G" OR as the two words. Selecting by the
+    // rarest word alone ("gavin", 25 positives) found none of Farrell G's papers, and the query
+    // fell to the 16s scan -- measured live. The surname is what selects them.
+    const table = { gavin: 25, farrell: 84 };
+    expect(buildTextSearch('Gavin Farrell', df(table))).toBe('Farrell Gavin');
+    expect(buildTextSearch('Wei Wang', df({ wei: 6_770, wang: 55_700 }))).toBe('Wang Wei');
+  });
+
+  it('leaves a reading whose surname is a very common word to the scan path', () => {
+    // "support vector machine" reads as the authors "machine S" and "vector machine S". Carrying
+    // "machine" (191k positives) would cost the 10s union this exists to avoid; "vector" is kept.
+    const table = { support: 76_848, vector: 41_213, machine: 191_139 };
+    const filters = parseSearchParams({ q: 'support vector machine' }).filters;
+    const built = JSON.stringify(buildTextSearchFilter(filters, df(table)));
+    expect(built).toContain('"$search":"vector"');
+    // authorClause anchors a surname on a comma or the string start: `(^\s*|,\s*)machine\s+S`.
+    expect(built).not.toContain('\\\\s*)machine\\\\s+S');
+    expect(built).toContain('\\\\s*)vector\\\\s+machine\\\\s+S');
+    // The scan path keeps every reading.
+    expect(JSON.stringify(buildMongoFilter(filters))).toContain('\\\\s*)machine\\\\s+S');
+  });
+
+  it('covers the term AND with a surname word when one is already required', () => {
+    const table = { protein: 30_265, structure: 60_651, prediction: 181_471 };
+    expect(buildTextSearch('protein structure prediction', df(table))).toBe('structure');
+  });
+
+  it('puts the chosen word into the filter', () => {
+    const built = JSON.stringify(
+      buildTextSearchFilter(
+        parseSearchParams({ q: 'support vector machine' }).filters,
+        df({ support: 76_848, vector: 41_213, machine: 191_139 }),
+      ),
+    );
+    expect(built).toContain('"$search":"vector"');
+  });
+});
+
+describe('identifierQuery', () => {
+  const f = (q: string) => parseSearchParams({ q }).filters;
+
+  it('looks a DOI up case-insensitively, with or without a prefix, and drops a trailing full stop', () => {
+    for (const q of [
+      '10.1016/j.synbio.2026.06.002',
+      'https://doi.org/10.1016/j.synbio.2026.06.002',
+      'doi:10.1016/J.SYNBIO.2026.06.002',
+      '10.1016/j.synbio.2026.06.002.',
+    ]) {
+      const built = JSON.stringify(identifierQuery(f(q)));
+      expect(built).toContain('identifiers.doi');
+      expect(built.toLowerCase()).toContain('j\\\\.synbio\\\\.2026\\\\.06\\\\.002$');
+      expect(built).toContain('"$options":"i"');
+    }
+  });
+
+  it('looks a PMID or PMCID up exactly', () => {
+    expect(identifierQuery(f('42433271'))).toEqual({
+      $and: [
+        { 'llm_classification.classification': { $eq: 'positive' } },
+        { 'identifiers.pmid': '42433271' },
+      ],
+    });
+    expect(JSON.stringify(identifierQuery(f('pmc13351394')))).toContain(
+      '"identifiers.pmcid":"PMC13351394"',
+    );
+  });
+
+  it('carries the classification and the other filters, so total agrees with every other route', () => {
+    const built = JSON.stringify(
+      identifierQuery(parseSearchParams({ q: '42433271', class: '', oa: 'true' }).filters),
+    );
+    expect(built).not.toContain('llm_classification');
+    expect(built).toContain('source.access.open_access');
+  });
+
+  it('is null for anything that is not an identifier', () => {
+    for (const q of ['random forest', '2024', 'dome', '10.5 mg', 'Farrell G']) {
+      expect(identifierQuery(f(q))).toBeNull();
+    }
   });
 });
