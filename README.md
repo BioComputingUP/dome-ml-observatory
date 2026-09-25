@@ -181,9 +181,9 @@ search term takes a slower, higher-recall path.
   and database expectations.
 - [`schema/README.md`](schema/README.md) — the record schema and controlled vocabularies, and how
   releases are versioned.
-- [`ROADMAP.md`](ROADMAP.md) — what is still open, across both repositories. The recurring jobs
-  themselves — refreshing the corpus and archiving each release to Zenodo — run from the sister
-  repository's `refresh-cycle` skill.
+- [Issues](https://github.com/BioComputingUP/dome-ml-observatory/issues) — what is still open,
+  across both repositories. The recurring jobs themselves — refreshing the corpus and archiving
+  each release to Zenodo — run from the sister repository's `refresh-cycle` skill.
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) — how to propose a change, and the npm dev workflow, local
   gates and code conventions. · [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)
 - [`AGENTS.md`](AGENTS.md) — working conventions, and a record of the things that have gone wrong

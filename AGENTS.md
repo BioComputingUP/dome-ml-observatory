@@ -4,10 +4,10 @@ Guidance for any AI coding agent (Claude, Copilot, Cursor, etc.) working in this
 Read this fully before making changes. If something here conflicts with what you observe in
 the code, trust the code and update this file.
 
-`ROADMAP.md` is the companion: what is still open, across both repositories. It covers what is
-*planned*, not what has shipped — the record of what has been built and why lives in this file and
-in the code comments. The recurring jobs (the corpus refresh and the Zenodo archive of each
-release) run from the sister repository's `refresh-cycle` skill, not from a runbook here.
+Open work, across both repositories, is tracked as GitHub issues on this repository. They cover
+what is *planned*, not what has shipped — the record of what has been built and why lives in this
+file and in the code comments. The recurring jobs (the corpus refresh and the Zenodo archive of
+each release) run from the sister repository's `refresh-cycle` skill, not from a runbook here.
 
 ## What this is
 
@@ -59,7 +59,7 @@ must stay aligned, in both directions:
 
 Its `README.md` explains each process and its `COST_DASHBOARD.md` what a refresh or an
 enrichment costs. When a change here needs a change there (or the reverse), make both, or
-record the pending half in `ROADMAP.md` here, which is the one roadmap for both repositories.
+record the pending half as an issue on this repository, which tracks open work for both.
 
 ## Environment
 

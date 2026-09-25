@@ -8,7 +8,7 @@
  * the write side's build-time entity decode (schema v1.2.0) was never applied to the documents
  * already loaded. Only a bare encoded tag with a known name is revived, so a comparison such as
  * `P&lt;0.05` is decoded as text and never read as a tag. Once the stored data is repaired
- * (ROADMAP.md) that step matches nothing.
+ * (issue #4) that step matches nothing.
  *
  * A port of observatory-ui's `plainText` (src/app/core/rich-text.ts). Duplicated rather than
  * shared, as every type and helper between the two apps is (AGENTS.md); keep the two in step.

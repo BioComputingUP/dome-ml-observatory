@@ -24,4 +24,5 @@ Each load is also archived to Zenodo, as a new version of one record under the c
 10.5281/zenodo.22259905 that `/download/bulk` names (the sister repository's
 `scripts/zenodo_archive.py`, run by its `refresh-cycle` skill). The release metadata does not name
 that DOI yet: `build_release_metadata.py` adding the month's Zenodo version as a distribution is
-still to do (`ROADMAP.md`). A committed release is never edited to add it; the next one carries it.
+still to do ([issue #5](https://github.com/BioComputingUP/dome-ml-observatory/issues/5)). A
+committed release is never edited to add it; the next one carries it.

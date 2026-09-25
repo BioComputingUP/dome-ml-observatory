@@ -18,7 +18,7 @@
  * 2026-09-25, every one a PubMed record) store their emphasis as `&lt;i&gt;Drosophila&lt;/i&gt;`,
  * which `[innerHTML]` shows as the literal text `<i>Drosophila</i>`. dome-ml-observatory-triage has
  * decoded entities at build time since schema v1.2.0, but the documents already loaded were only
- * re-stamped by later migrations, never rebuilt, so they still carry the encoded form (ROADMAP.md
+ * re-stamped by later migrations, never rebuilt, so they still carry the encoded form (issue #4
  * tracks the data repair). A blanket entity decode here would be wrong: it would turn `P&lt;0.05` or
  * `&lt;74 years` into something the allowlist has to guess about. `decodeEncodedTags` is narrow
  * instead: it revives only a bare `&lt;name&gt;` whose name is one this file already knows, which
