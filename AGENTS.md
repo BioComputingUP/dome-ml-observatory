@@ -127,7 +127,11 @@ host are not.
 
 ## Skills
 
-- **`.claude/skills/schema-version/SKILL.md`** — the only skill in this repo. Use it for anything
+- **`.claude/skills/deploy/SKILL.md`** — the usual production deploy: images are built and pushed
+  by CI on every green push to `main`, and one manual `docker compose up --pull always` against the
+  production host's Docker context deploys them. Also the restart after a corpus load, and rollback
+  by image tag. Use it whenever the user asks to deploy, redeploy or restart production.
+- **`.claude/skills/schema-version/SKILL.md`** — use it for anything
   that touches `schema/`: pulling vocab/schema updates from `dome-ml-observatory-triage`, deciding the semver
   bump, cutting a new immutable release, writing the changelog entry, and re-syncing
   `observatory-ui/src/assets/vocab/`. Don't hand-roll a release; the skill exists because the
