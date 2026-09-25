@@ -172,8 +172,8 @@ shapes.
 
 The [Support page](https://observatory.dome-ml.org/about/support) carries the same routes plus an
 FAQ covering the behaviours that surprise people most: authors are indexed as surname plus initials,
-search starts from the AI/ML positives rather than the whole screened corpus, and a single uncommon
-search term takes a slower, higher-recall path.
+search starts from the AI/ML positives rather than the whole screened corpus, words match whole
+(with their forms), and a word-beginning search (`neuro*`) takes a slower path through the corpus.
 
 ## Key links and further information
 
