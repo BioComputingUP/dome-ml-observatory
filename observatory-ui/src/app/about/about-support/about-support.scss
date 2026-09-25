@@ -199,6 +199,8 @@ h2 {
   font-weight: 700;
   color: var(--observatory-primary);
   margin: var(--space-6) 0 var(--space-3);
+  // A deep-link target (#faq-searching, from the search page's tips): stop short of the edge.
+  scroll-margin-top: var(--space-4);
 
   &:first-of-type {
     margin-top: 0;

@@ -39,11 +39,112 @@
   min-width: 0;
 }
 
-.search-author-hint {
-  margin: 0;
+// "Search tips": a closed disclosure under the box, on the dark header band. The summary sits
+// centred and sized to its text, so the band itself is not a click target; the triangle is the
+// same custom marker the FAQ and facet panel draw, since the native one differs per browser.
+.search-tips {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
   font-size: var(--font-size-xs);
   color: rgba(255, 255, 255, 0.75);
-  text-align: center;
+
+  summary {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    list-style: none;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    outline-offset: 3px;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::before {
+      content: '';
+      flex: none;
+      transform: translateY(-1px);
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 4px 0 4px 6px;
+      border-color: transparent transparent transparent currentColor;
+      transition: transform 0.15s ease;
+    }
+
+    &:hover,
+    &:focus-visible {
+      color: white;
+      text-decoration: underline;
+    }
+  }
+
+  &[open] summary::before {
+    transform: rotate(90deg);
+  }
+}
+
+.search-tips-panel {
+  margin-top: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-md);
+}
+
+.search-tips-list {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--space-1) var(--space-4);
+  margin: 0;
+
+  // Each row is a <div> so dt/dd pair up; `contents` lets both join the parent grid's columns.
+  > div {
+    display: contents;
+  }
+
+  dt {
+    font-weight: 600;
+    color: white;
+  }
+
+  dd {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  code {
+    color: white;
+    font-size: inherit;
+  }
+
+  @media (max-width: 575px) {
+    grid-template-columns: 1fr;
+    row-gap: 0;
+
+    dd {
+      margin-bottom: var(--space-2);
+    }
+  }
+}
+
+.search-tips-more {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  margin: var(--space-3) 0 0;
+
+  a {
+    color: white;
+    text-decoration: underline;
+
+    &:hover {
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
 }
 
 .search-body {

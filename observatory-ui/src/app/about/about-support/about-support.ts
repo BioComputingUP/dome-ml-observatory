@@ -15,9 +15,10 @@ const ISSUES = 'https://github.com/BioComputingUP/dome-ml-observatory/issues';
  *
  * Two halves, deliberately: the support channels themselves, and an FAQ covering the behaviours
  * that surprise people. The FAQ is not decoration -- search here is genuinely non-obvious (the
- * default search space is the positives rather than the whole corpus, a lone word deliberately
- * skips the index) and nothing else on the site explains it, so a reader who does not find this page
- * concludes the search is broken rather than that it works differently than they assumed.
+ * default search space is the positives rather than the whole corpus, a word-beginning search like
+ * `neuro*` takes the slower scan path) and nothing else on the site explains it in full -- the
+ * search page's "Search tips" only give examples and link here. A reader who does not find this
+ * page concludes the search is broken rather than that it works differently than they assumed.
  *
  * Corpus figures come from GET /api/stats, never hardcoded -- the same split about-overview.ts and
  * about-processing.ts use, so the numbers quoted in an answer cannot drift from the database.
@@ -63,16 +64,17 @@ export class AboutSupport {
   }
 
   /**
-   * Opens the one question a #faq-* deep link names, and scrolls to it.
+   * Scrolls to what a #faq-* deep link names, opening it when it is a question.
    *
    * The questions ship closed, so landing on `#faq-curation` would otherwise scroll a reader to a
    * heading with the answer they were sent for still folded away. Browsers increasingly expand a
-   * targeted `<details>` on their own, but not uniformly, and this page cannot rely on it.
+   * targeted `<details>` on their own, but not uniformly, and this page cannot rely on it. A group
+   * heading (`#faq-searching`, linked from the search page's tips) is scrolled to and left as is.
    */
   private openQuestion(id: string): void {
     const item = document.getElementById(id);
-    if (!(item instanceof HTMLDetailsElement)) return;
-    item.open = true;
+    if (!item) return;
+    if (item instanceof HTMLDetailsElement) item.open = true;
     item.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -96,6 +98,6 @@ export class AboutSupport {
   readonly questionIssueUrl = `${ISSUES}/new?template=question.yml`;
 
   /** Reviewed by hand whenever an answer below changes -- there is nothing to derive it from. */
-  readonly lastUpdated = '2026-09-03';
+  readonly lastUpdated = '2026-09-26';
   readonly maintainer = 'BioComputing UP, University of Padua';
 }

@@ -107,3 +107,29 @@ describe('Search box', () => {
     expect(urlQ()).toBe('dome');
   });
 });
+
+describe('Search tips', () => {
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [Search],
+      providers: [provideRouter([{ path: '', component: Search }]), provideHttpClient(), provideHttpClientTesting()],
+    }).compileComponents();
+  });
+
+  function tips(): HTMLDetailsElement {
+    const fixture = TestBed.createComponent(Search);
+    fixture.detectChanges();
+    return (fixture.nativeElement as HTMLElement).querySelector('details.search-tips') as HTMLDetailsElement;
+  }
+
+  it('starts closed, so the rules do not take over the header on every visit', () => {
+    const details = tips();
+    expect(details).not.toBeNull();
+    expect(details.open).toBe(false);
+  });
+
+  it('links to the searching group of the Support FAQ', () => {
+    const link = Array.from(tips().querySelectorAll('a')).find((a) => a.textContent?.includes('FAQ'));
+    expect(link?.getAttribute('href')).toBe('/about/support#faq-searching');
+  });
+});

@@ -20,14 +20,27 @@
         </div>
         <button type="submit" class="search-field-button">Search</button>
       </form>
-      <p class="search-author-hint">
-        Words match whole, with their forms (<strong>cell</strong> finds cells and cellular);
-        add <strong>*</strong> for word beginnings (<strong>neuro*</strong>). Use "quotation marks"
-        to keep words together. A method name or acronym also finds its other spellings
-        (<strong>svm</strong>, support vector machine), and a DOI or PMID finds that record. Search
-        an author as <strong>Farrell G</strong>, <strong>G Farrell</strong> or
-        <strong>Gavin Farrell</strong> — case, dots and commas make no difference.
-      </p>
+      <!-- Closed by default: the rules are one click away rather than a paragraph on every visit.
+           The full explanation lives in the Support FAQ, and the line under the result count
+           (matchNote) says after each search how it matched, so this only needs the examples. -->
+      <details class="search-tips">
+        <summary>Search tips</summary>
+        <div class="search-tips-panel">
+          <dl class="search-tips-list">
+            <div><dt><code>deep protein</code></dt><dd>Every word must appear, in any order</dd></div>
+            <div><dt><code>cell</code></dt><dd>Whole words and their forms: cells, cellular</dd></div>
+            <div><dt><code>neuro*</code></dt><dd>Words beginning with neuro (a few seconds slower)</dd></div>
+            <div><dt><code>"random forest"</code></dt><dd>Words kept together as a phrase</dd></div>
+            <div><dt><code>svm</code></dt><dd>Also its other spellings: support vector machine</dd></div>
+            <div><dt><code>Farrell G</code></dt><dd>An author, written any way: G Farrell, Gavin Farrell</dd></div>
+            <div><dt>DOI or PMID</dt><dd>Goes straight to that record</dd></div>
+          </dl>
+          <p class="search-tips-more">
+            <a routerLink="/about/support" fragment="faq-searching">All search rules in the FAQ</a>
+            <a routerLink="/download/api">Searching through the API</a>
+          </p>
+        </div>
+      </details>
     </div>
   </section>
 
