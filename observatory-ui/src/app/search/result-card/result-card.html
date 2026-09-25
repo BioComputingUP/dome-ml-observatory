@@ -29,7 +29,9 @@
     @if (citationCount() !== null) {
       <div class="card-fact">
         <dt>Citations:</dt>
-        <dd>{{ citationCount() | number }}</dd>
+        <dd>
+          <span class="has-note" [title]="citationNote()">{{ citationCount() | number }}</span>
+        </dd>
       </div>
     }
   </dl>

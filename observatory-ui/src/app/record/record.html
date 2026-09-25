@@ -56,7 +56,16 @@
             @if (citationCount() !== null) {
               <div class="record-fact">
                 <dt><i class="icon icon-common icon-quote-right" aria-hidden="true"></i> Citations</dt>
-                <dd>{{ citationCount() | number }}</dd>
+                <dd [title]="citationNote()">
+                  {{ citationCount() | number }}
+                  <span class="fact-note">
+                    @if (citationDate(); as date) {
+                      Europe PMC, as of {{ date }} · refreshed periodically, not live
+                    } @else {
+                      Europe PMC · refreshed periodically, not live
+                    }
+                  </span>
+                </dd>
               </div>
             }
             <div class="record-fact">

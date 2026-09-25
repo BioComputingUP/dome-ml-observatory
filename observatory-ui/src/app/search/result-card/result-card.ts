@@ -2,6 +2,7 @@ import { Component, computed, input } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AiMlRecord } from '../../core/record.model';
+import { citationCountNote } from '../../core/citation-count';
 import { articleSources } from '../../core/outbound-links';
 import { richTitle, truncatePlain } from '../../core/rich-text';
 import { publicationVenue } from '../../core/venue';
@@ -51,6 +52,8 @@ export class ResultCard {
     const count = this.record().publication_metadata.citation_count;
     return typeof count === 'number' ? count : null;
   });
+  /** Hover text saying when the count was fetched: it is a snapshot, not a live figure. */
+  readonly citationNote = computed(() => citationCountNote(this.record()));
 
   /** Where the article itself can be read. Rendered as plain named pills: the external-link
    *  glyph that used to follow each one added no information (they are obviously outbound) and

@@ -60,6 +60,14 @@
   }
 }
 
+// A value with hover text behind it (the citation count's freshness): the dotted underline is
+// the conventional cue that there is something to hover, as on <abbr>.
+.has-note {
+  cursor: help;
+  text-decoration: underline dotted var(--border-strong);
+  text-underline-offset: 3px;
+}
+
 .card-snippet {
   font-size: var(--font-size-sm);
   color: #444;

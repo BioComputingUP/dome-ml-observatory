@@ -41,6 +41,12 @@ export interface PublicationMetadata {
    *  "not available" -- no Europe PMC record answered for this paper's identifiers -- never zero,
    *  so anything displaying it has to distinguish the two. */
   citation_count: number | null;
+  /** When `citation_count` was fetched (ISO 8601). The count is a snapshot, refreshed with each
+   *  processing round, so anything displaying it says how old it is -- see core/citation-count.ts.
+   *  Optional because the 200-record dev fixture predates schema v1.2.0. */
+  citation_count_updated?: string | null;
+  /** Where the count came from; 'europepmc' for every populated count so far. */
+  citation_source?: string | null;
 }
 
 export interface SourceAccess {

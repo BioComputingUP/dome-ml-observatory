@@ -20,6 +20,7 @@ import { StructuredData } from '../core/structured-data';
 import { publicationVenue } from '../core/venue';
 import { SearchStateService } from '../core/search-state.service';
 import { toBibtex, toRis } from '../core/citation';
+import { citationCountDate, citationCountNote } from '../core/citation-count';
 import { StatusBadge } from '../shared/status-badge/status-badge';
 import { CopyButton } from '../shared/copy-button/copy-button';
 
@@ -131,6 +132,9 @@ export class RecordPage {
     const count = this.rec().publication_metadata.citation_count;
     return typeof count === 'number' ? count : null;
   });
+  /** The count is a periodically refreshed snapshot, not live -- said beside it, with its date. */
+  readonly citationDate = computed(() => citationCountDate(this.rec()));
+  readonly citationNote = computed(() => citationCountNote(this.rec()));
   /** The Observatory's own persistent identifier for this record -- its `_id`. Belongs at the top
    *  with the rest of the record's identity, not buried in a list of external identifiers. */
   readonly pid = computed(() => this.rec()._id);

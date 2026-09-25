@@ -69,6 +69,14 @@
     line-height: 1.5;
   }
 
+  // A qualifier on the value beside it -- e.g. how fresh a citation count is -- quieter than the
+  // value so the number still reads first.
+  .fact-note {
+    margin-left: var(--space-2);
+    font-size: var(--font-size-xs);
+    opacity: 0.7;
+  }
+
   @media (max-width: 575px) {
     grid-template-columns: 1fr;
     gap: var(--space-1);
