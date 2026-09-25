@@ -127,7 +127,7 @@ const INTEGRATIONS: Integration[] = [
     direction: 'out',
     protocol: 'DCAT 3 · JSON-LD',
     what: 'The W3C Data Catalog Vocabulary, which research and public-sector data catalogues use to describe datasets.',
-    how: 'The corpus, each monthly release and the API are described as a DCAT catalogue at /api/catalog, embedded on the home and bulk-download pages.',
+    how: 'The corpus, each release and the API are described as a DCAT catalogue at /api/catalog, embedded on the home and bulk-download pages.',
     benefit: 'Data catalogues and dataset search engines can list the corpus with its size, licence and provenance.',
   },
   {

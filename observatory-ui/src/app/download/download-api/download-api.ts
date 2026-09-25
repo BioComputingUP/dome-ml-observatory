@@ -112,7 +112,7 @@ export class DownloadApi {
       method: 'GET',
       path: '/api/catalog',
       summary:
-        'The corpus as a DCAT 3 and schema.org dataset: the catalogue, the corpus as a dataset series, the current monthly release with its counts and provenance, and this API as a data service.',
+        'The corpus as a DCAT 3 and schema.org dataset: the catalogue, the corpus as a dataset series, the current release with its counts and provenance, and this API as a data service.',
       example:
         '{\n  "@graph": [\n    { "@id": "https://observatory.dome-ml.org/#catalog", "@type": ["dcat:Catalog", "DataCatalog"] },\n    { "@id": "https://observatory.dome-ml.org/download/bulk#corpus", "@type": ["dcat:DatasetSeries", "Dataset"] },\n    "..."\n  ]\n}',
     },

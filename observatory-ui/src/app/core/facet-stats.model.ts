@@ -6,7 +6,7 @@
  * that script's module docstring.
  *
  * The counts are precomputed server-side once per data update rather than aggregated per query
- * (24h cache, see StatsService): the corpus is refreshed 6-12 times a year in triage batches, so
+ * (24h cache, see StatsService): the corpus is refreshed every two months in triage batches, so
  * live aggregation over 827k documents on every search would be the most expensive thing on the
  * page for data that barely moves.
  */
