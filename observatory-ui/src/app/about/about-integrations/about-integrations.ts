@@ -131,15 +131,13 @@ const INTEGRATIONS: Integration[] = [
     benefit: 'Archived artefacts with persistent identifiers, at both the paper and dataset level.',
     logo: 'assets/img/zenodo-logo.svg',
   },
-  // Listed as live on submission: the record exists at FAIRsharing but is not public until its
-  // curators approve it. Link the record here, and drop "awaiting curation", once it is published.
   {
     name: 'FAIRsharing',
     status: 'live',
     direction: 'out',
     protocol: 'Registry record',
     what: 'A curated registry of data and metadata standards, databases and data policies.',
-    how: 'Observatory has been submitted to FAIRsharing as a database record, which is awaiting curation and becomes public once FAIRsharing approves it.',
+    how: 'Observatory is registered in FAIRsharing as a database record.',
     benefit: 'Makes Observatory findable where researchers, journals and funders look for databases and the standards behind them.',
     logo: 'assets/img/fairsharing-logo.svg',
   },
