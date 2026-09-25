@@ -208,7 +208,7 @@
 }
 
 // ============ Metrics ============
-// All four tiles the same size and vertically centred (grid rows stretch to equal height by
+// All three tiles the same size and vertically centred (grid rows stretch to equal height by
 // default; each tile centres its own content within that height) -- previously the headline tile
 // was visually larger than the rest and centring wasn't guaranteed.
 
@@ -220,15 +220,10 @@
 
 .metric-row {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   list-style: none;
   padding: 0;
   margin: 0;
-
-  @media (max-width: 991px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    row-gap: var(--space-5);
-  }
 
   @media (max-width: 575px) {
     grid-template-columns: 1fr;
@@ -249,21 +244,14 @@
     border-left: 0;
   }
 
-  @media (max-width: 991px) {
+  @media (max-width: 575px) {
     border-left: 0;
     border-top: 1px solid rgba(255, 255, 255, 0.14);
     padding-top: var(--space-5);
 
-    &:nth-child(-n + 2) {
+    &:first-child {
       border-top: 0;
       padding-top: 0;
-    }
-  }
-
-  @media (max-width: 575px) {
-    &:nth-child(2) {
-      border-top: 1px solid rgba(255, 255, 255, 0.14);
-      padding-top: var(--space-5);
     }
   }
 }

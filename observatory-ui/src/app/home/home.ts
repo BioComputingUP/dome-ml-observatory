@@ -177,7 +177,8 @@ export class Home {
   readonly corpus = computed(() => this.stats()?.corpus ?? this.records.getStats());
 
   /** Positives-scoped figures (classification: positive) -- used for metrics that should describe
-   *  the actual AI/ML methods set rather than the whole screened corpus, e.g. "with full text". */
+   *  the actual AI/ML methods set rather than the whole screened corpus, e.g. "enriched with AI/ML
+   *  detail". */
   readonly searchSpace = computed(() => this.stats()?.search_space ?? this.records.getSearchSpaceStats());
 
   readonly query = signal('');
