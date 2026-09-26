@@ -6,14 +6,13 @@ GET /api/stats (the same aggregation this script's --from-api mode fetches from)
 RecordsService.getFacetStats(). This script now
 exists for two things: (1) regenerating a fixture-mode snapshot against the dev fixture for anyone
 working on schema/generate_facet_stats.py or the fixture itself offline, with no ws running, and
-(2) as the one place that originally measured the CORPUS dict below, kept as a record even though
-nothing reads it live anymore.
+(2) its --from-api mode, a manual reconciliation against a running backend after a load.
 
 Two modes:
-- Default (no flags, or --records): derives per-facet counts from a local records.json file (the
-  200-record dev fixture at observatory-ui/fixtures/sample-records.json by default) and marks them
-  `"source": "fixture"`. The `corpus` block is still the REAL full-corpus figures either way -- see
-  the CORPUS dict below.
+- Default (no flags, or --records): derives every count -- the `corpus` block included -- from a
+  local records.json file (the 200-record dev fixture at observatory-ui/fixtures/sample-records.json
+  by default) and marks them `"source": "fixture"`. It describes that file and nothing else: there
+  is no remembered copy of the real corpus figures here to drift from them.
 - --from-api <base-url>: fetches the already-computed aggregation straight from observatory-ws's
   GET /api/stats (stdlib urllib only -- no dependency added to this folder) and writes it verbatim,
   marked `"source": "full-corpus"`. The aggregation logic lives exactly once, in
@@ -41,25 +40,30 @@ REPO_ROOT = SCHEMA_DIR.parent
 DEFAULT_RECORDS = REPO_ROOT / "observatory-ui" / "fixtures" / "sample-records.json"
 OUT_PATH = SCHEMA_DIR / "stats" / "facet-stats.json"
 
-# Real full-corpus figures. Used only by the fixture-file mode below -- --from-api mode gets its
-# own live corpus block straight from the MongoDB server and ignores this dict entirely.
-#
-# corpus-figures: a snapshot of GET /api/stats `corpus`, kept equal to CORPUS_STATS in
-# observatory-ui/src/app/core/records.service.ts. The sister repository's refresh-cycle skill
-# refreshes every block marked `corpus-figures` after a load.
-CORPUS = {
-    "total": 876_324,
-    "positive": 367_348,
-    "negative": 502_002,
-    "undeterminable": 6_974,
-    "openAccess": 589_529,
-    "fulltextAvailable": 669_109,
-    "enriched": 3_532,
-}
-CORPUS_PROVENANCE = (
-    "corpus figures measured directly against dome_observatory.Content on the MongoDB server via a read-only "
-    "aggregation (GET /api/stats), 2026-09-25 -- see observatory-ws/src/stats/stats.service.ts"
-)
+def count_corpus(records: list[dict]) -> dict:
+    """The `corpus` block, counted from the records given -- the same fields and tests as
+    observatory-ws's StatsService corpus pipeline, so a fixture-mode file has the live file's shape."""
+    def get(rec: dict, *path: str):
+        node = rec
+        for key in path:
+            node = (node or {}).get(key)
+        return node
+
+    def count(test) -> int:
+        return sum(1 for rec in records if test(rec))
+
+    return {
+        "total": len(records),
+        "positive": count(lambda r: get(r, "llm_classification", "classification") == "positive"),
+        "negative": count(lambda r: get(r, "llm_classification", "classification") == "negative"),
+        "undeterminable": count(
+            lambda r: get(r, "llm_classification", "classification") == "undeterminable"
+        ),
+        "openAccess": count(lambda r: get(r, "source", "access", "open_access") is True),
+        "fulltextAvailable": count(lambda r: get(r, "source", "access", "fulltext_available") is True),
+        "enriched": count(lambda r: get(r, "llm_enrichment", "provider") is not None),
+        "abstractEuropePmc": count(lambda r: get(r, "source", "abstract_source") == "europepmc"),
+    }
 
 
 def count_values(records: list[dict], path: list[str]) -> Counter:
@@ -150,8 +154,11 @@ def main() -> int:
         "schema_version": schema_version,
         "source": args.source,
         "records_counted": len(records),
-        "corpus": CORPUS,
-        "corpus_provenance": CORPUS_PROVENANCE,
+        "corpus": count_corpus(records),
+        "corpus_provenance": (
+            f"counted from the {len(records)} records in {args.records.name}, not the live corpus -- "
+            "use --from-api for the real figures"
+        ),
         "facets": {
             "classification": as_facet(count_values(records, ["llm_classification", "classification"])),
             "license": as_facet(count_values(records, ["source", "access", "license"])),

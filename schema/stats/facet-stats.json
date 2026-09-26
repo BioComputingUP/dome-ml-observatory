@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-17T13:48:28.115Z",
+  "generated": "2026-09-26T01:14:31.965Z",
   "schema_version": "v1.6.0",
   "source": "full-corpus",
   "records_counted": 876324,
@@ -9,8 +9,9 @@
     "negative": 502002,
     "undeterminable": 6974,
     "openAccess": 589529,
-    "fulltextAvailable": 657676,
-    "enriched": 3532
+    "fulltextAvailable": 669109,
+    "enriched": 3532,
+    "abstractEuropePmc": 822975
   },
   "corpus_provenance": "Computed live from dome_observatory.Content on the MongoDB server via GET /api/stats.",
   "last_classification": {
@@ -19,7 +20,7 @@
   },
   "search_space": {
     "total": 367348,
-    "fulltextAvailable": 237377,
+    "fulltextAvailable": 243678,
     "openAccess": 212302,
     "enriched": 3532,
     "yearRange": {
@@ -322,11 +323,11 @@
         "count": 14
       },
       {
-        "value": "Clinical Trial, Phase IV",
+        "value": "news",
         "count": 13
       },
       {
-        "value": "news",
+        "value": "Clinical Trial, Phase IV",
         "count": 13
       },
       {
@@ -346,7 +347,7 @@
         "count": 6
       },
       {
-        "value": "case-study",
+        "value": "Network Meta-Analysis",
         "count": 5
       },
       {
@@ -354,20 +355,12 @@
         "count": 5
       },
       {
-        "value": "Network Meta-Analysis",
+        "value": "case-study",
         "count": 5
       },
       {
         "value": "Practice Guideline",
         "count": 4
-      },
-      {
-        "value": "Observational Study, Veterinary",
-        "count": 3
-      },
-      {
-        "value": "Clinical Trial, Veterinary",
-        "count": 3
       },
       {
         "value": "reply",
@@ -378,15 +371,15 @@
         "count": 3
       },
       {
+        "value": "Clinical Trial, Veterinary",
+        "count": 3
+      },
+      {
+        "value": "Observational Study, Veterinary",
+        "count": 3
+      },
+      {
         "value": "Biography",
-        "count": 2
-      },
-      {
-        "value": "Conference Proceedings",
-        "count": 2
-      },
-      {
-        "value": "Technical Report",
         "count": 2
       },
       {
@@ -394,15 +387,27 @@
         "count": 2
       },
       {
-        "value": "Introduction",
+        "value": "Technical Report",
+        "count": 2
+      },
+      {
+        "value": "Conference Proceedings",
+        "count": 2
+      },
+      {
+        "value": "in-brief",
         "count": 1
       },
       {
-        "value": "Festschrift",
+        "value": "Evidence Synthesis",
         "count": 1
       },
       {
-        "value": "Lecture",
+        "value": "Interview",
+        "count": 1
+      },
+      {
+        "value": "addendum",
         "count": 1
       },
       {
@@ -414,19 +419,15 @@
         "count": 1
       },
       {
-        "value": "addendum",
+        "value": "Introduction",
         "count": 1
       },
       {
-        "value": "Interview",
+        "value": "Festschrift",
         "count": 1
       },
       {
-        "value": "in-brief",
-        "count": 1
-      },
-      {
-        "value": "Evidence Synthesis",
+        "value": "Lecture",
         "count": 1
       }
     ],
@@ -472,11 +473,11 @@
         "count": 2
       },
       {
-        "value": "Literature and language",
+        "value": "Experimental design and studies",
         "count": 1
       },
       {
-        "value": "Experimental design and studies",
+        "value": "Literature and language",
         "count": 1
       }
     ],
@@ -782,15 +783,15 @@
         "count": 19
       },
       {
+        "value": "alphafold",
+        "count": 18
+      },
+      {
         "value": "proteomexchange",
         "count": 18
       },
       {
         "value": "pangaea",
-        "count": 18
-      },
-      {
-        "value": "alphafold",
         "count": 18
       },
       {
@@ -858,11 +859,11 @@
         "count": 1
       },
       {
-        "value": "morphosource",
+        "value": "intact",
         "count": 1
       },
       {
-        "value": "intact",
+        "value": "morphosource",
         "count": 1
       }
     ],
