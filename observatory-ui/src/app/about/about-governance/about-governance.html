@@ -26,7 +26,7 @@
     <div class="member-grid">
       @for (m of advisory; track m.name) {
         <article class="member-card info-panel">
-          <img [src]="m.photo" [alt]="m.name" class="member-photo" />
+          <img [src]="m.photo" [alt]="m.name" class="member-photo" width="140" height="140" decoding="async" />
           <h3>{{ m.name }}</h3>
           <p class="member-role">{{ m.focus }}</p>
           <p class="member-affiliation">{{ m.affiliation }}</p>
