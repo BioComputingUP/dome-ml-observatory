@@ -39,13 +39,14 @@
   min-width: 0;
 }
 
-// "Search tips": a closed disclosure under the box, on the dark header band. The summary sits
-// centred and sized to its text, so the band itself is not a click target; the triangle is the
-// same custom marker the FAQ and facet panel draw, since the native one differs per browser.
+// "Search tips": a closed disclosure under the box, on the dark header band. The summary sits on
+// the left edge its open panel shares with the search box, and is sized to its text, so the band
+// itself is not a click target; the triangle is the same custom marker the FAQ and facet panel
+// draw, since the native one differs per browser.
 .search-tips {
   max-width: 720px;
   margin: 0 auto;
-  text-align: center;
+  text-align: left;
   font-size: var(--font-size-xs);
   color: rgba(255, 255, 255, 0.75);
 
@@ -89,7 +90,6 @@
 .search-tips-panel {
   margin-top: var(--space-2);
   padding: var(--space-3) var(--space-4);
-  text-align: left;
   background-color: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-md);
