@@ -9,6 +9,7 @@ import {
   MAX_PAGE_SIZE,
   ParsedFilters,
   parseSearchParams,
+  isYearSort,
   tokenizeQuery,
   searchTerms,
   termPattern,
@@ -123,6 +124,19 @@ describe('parseSearchParams', () => {
   it('accepts both citation sort values', () => {
     expect(parseSearchParams({ sort: 'citations_desc' }).sort).toBe('citations_desc');
     expect(parseSearchParams({ sort: 'citations_asc' }).sort).toBe('citations_asc');
+  });
+
+  // A record with no year sorted first under year_asc (BSON puts null below every number): page 1
+  // of "Oldest first" opened with 22 year-less conference abstracts on 2026-09-26. The year sorts
+  // therefore carry a filter as well as an order, in both directions so they list the same set.
+  it('marks both year sorts as wanting only records with a year, and no other sort', () => {
+    expect(parseSearchParams({ sort: 'year_asc' }).filters.hasYear).toBe(true);
+    expect(parseSearchParams({ sort: 'year_desc' }).filters.hasYear).toBe(true);
+    for (const sort of ['relevance', 'citations_desc', 'citations_asc', 'bogus', undefined]) {
+      expect(parseSearchParams({ sort }).filters.hasYear).toBeUndefined();
+    }
+    expect(isYearSort('year_asc')).toBe(true);
+    expect(isYearSort('citations_asc')).toBe(false);
   });
 
   it('parses every remaining list filter (d1-mt, jrnl, lic, kw, ptype)', () => {
@@ -326,6 +340,28 @@ describe('buildMongoFilter', () => {
     });
   });
 
+  it('keeps only numeric-year records for a year sort, unless a year range already does', () => {
+    // $type, not $ne null: one interval on class_year_id's year key rather than two, and it says
+    // what a year sort needs -- a number to order by.
+    expect(buildMongoFilter({ ...emptyFilters, hasYear: true })).toEqual({
+      $and: [{ 'publication_metadata.year': { $type: 'number' } }],
+    });
+    // A bound is a number comparison, which already excludes null and missing years.
+    expect(buildMongoFilter({ ...emptyFilters, hasYear: true, yearMin: 2020 })).toEqual({
+      $and: [{ 'publication_metadata.year': { $gte: 2020 } }],
+    });
+    // Through the parser, alongside the default classification.
+    expect(buildMongoFilter(parseSearchParams({ sort: 'year_asc' }).filters)).toEqual({
+      $and: [
+        { 'llm_classification.classification': { $eq: 'positive' } },
+        { 'publication_metadata.year': { $type: 'number' } },
+      ],
+    });
+    expect(buildMongoFilter(parseSearchParams({ sort: 'relevance' }).filters)).toEqual({
+      $and: [{ 'llm_classification.classification': { $eq: 'positive' } }],
+    });
+  });
+
   it('expands an empty-string licence request to match both "" and null (measured on the MongoDB server: 208,649 "" docs, 71,025 null docs)', () => {
     const filter = buildMongoFilter({ ...emptyFilters, license: [''] });
     expect(filter).toEqual({
@@ -425,6 +461,12 @@ describe('buildSortSpec', () => {
 });
 
 describe('canonicalCacheKey', () => {
+  it('keys a year-sorted count apart from the unsorted one -- they count different sets', () => {
+    expect(canonicalCacheKey({ ...emptyFilters, hasYear: true })).not.toBe(
+      canonicalCacheKey(emptyFilters),
+    );
+  });
+
   it('produces the same key regardless of array value order', () => {
     const a = canonicalCacheKey({ ...emptyFilters, meshHeadings: ['b', 'a'] });
     const b = canonicalCacheKey({ ...emptyFilters, meshHeadings: ['a', 'b'] });

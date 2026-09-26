@@ -149,9 +149,11 @@ export class SearchRecordsDto {
 
   @ApiPropertyOptional({
     description:
-      'citations_desc/citations_asc sort on publication_metadata.citation_count, which is null ' +
-      'for every record in the current corpus (a forward-compatible schema placeholder) -- wired ' +
-      'now so the option works unchanged once that field is populated.',
+      'year_desc/year_asc list only records with a publication year: a record without one has no ' +
+      'place in a list ordered by it, so the total under a year sort can be slightly lower than ' +
+      'under the others. citations_desc/citations_asc sort on publication_metadata.citation_count; ' +
+      'a record with no count (null, "not available") sorts after every counted one on ' +
+      'citations_desc and before them on citations_asc.',
     enum: ['relevance', 'year_desc', 'year_asc', 'citations_desc', 'citations_asc'],
     default: 'relevance',
   })

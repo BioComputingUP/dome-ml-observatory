@@ -64,6 +64,9 @@ export class Search {
 
   readonly filters = computed(() => this.query().filters);
   readonly sort = computed(() => this.query().sort);
+  /** The year sorts list only records with a publication year (observatory-ws leaves the rest
+   *  out rather than sorting a missing year first), so their total is a subset and says so. */
+  readonly yearSorted = computed(() => this.sort() === 'year_asc' || this.sort() === 'year_desc');
   readonly page = computed(() => this.query().page);
   readonly freeText = computed(() => this.query().q ?? '');
 

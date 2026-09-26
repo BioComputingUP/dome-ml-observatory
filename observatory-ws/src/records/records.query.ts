@@ -63,6 +63,15 @@ export interface ParsedFilters {
   /** Resource slugs from data_links.resources[].resource (schema v1.4.0): pdb, geo, zenodo, ... */
   dataResources?: string[];
   enrichedOnly?: boolean;
+  /**
+   * Only records with a numeric `publication_metadata.year`. Not a URL parameter: parseSearchParams
+   * sets it for the two year sorts, because a record with no year has no place in a list ordered
+   * by one. BSON sorts null below every number, so before this every year_asc page 1 opened with
+   * the year-less records (22 positives, 259 in the whole corpus, 2026-09-26, corpus-figures --
+   * nearly all conference abstracts from one journal, to be repaired in the sister repository).
+   * Applied to year_desc as well so the two directions list the same set and the same total.
+   */
+  hasYear?: boolean;
 }
 
 export interface ParsedQuery {
@@ -526,8 +535,15 @@ export function parseSearchParams(
     dataResources: readList(raw.dl),
     enrichedOnly: parseBool(raw.enriched),
   };
+  const sort = parseSort(raw.sort);
+  if (isYearSort(sort)) filters.hasYear = true;
 
-  return { filters, sort: parseSort(raw.sort) };
+  return { filters, sort };
+}
+
+/** The sorts that order by `publication_metadata.year`, and so list only records that have one. */
+export function isYearSort(sort: SortOrder): boolean {
+  return sort === 'year_desc' || sort === 'year_asc';
 }
 
 /**
@@ -695,6 +711,12 @@ function structuredClauses(filters: ParsedFilters): FilterQuery<RecordDocument>[
     if (filters.yearMin !== undefined) yearClause.$gte = filters.yearMin;
     if (filters.yearMax !== undefined) yearClause.$lte = filters.yearMax;
     clauses.push({ 'publication_metadata.year': yearClause });
+  } else if (filters.hasYear) {
+    // A year sort with no range: keep only records that have a year to sort by. `$type` rather
+    // than `$ne: null` because it is one index interval on class_year_id's year key where `$ne`
+    // is two (verified with explain, 2026-09-26), and because it also states the contract: the
+    // field is a number, not merely present.
+    clauses.push({ 'publication_metadata.year': { $type: 'number' } });
   }
   if (filters.license?.length)
     clauses.push({
@@ -1222,6 +1244,10 @@ function promotedRank(title: string, terms: string[]): number {
  * a stable, deep-pagination-safe default ordering; year and citation sorts add `_id` as a tiebreak
  * so page 2 never repeats or skips a row that shares a sort value with the page boundary.
  *
+ * The year sorts are paired with a filter, not only an order: parseSearchParams sets
+ * `filters.hasYear` for them, so a record with no year is left out rather than sorted first
+ * (year_asc) or last (year_desc) -- see ParsedFilters.hasYear.
+ *
  * `citations_desc`/`citations_asc` sort on `publication_metadata.citation_count`, a real Europe PMC
  * figure on ~98% of the corpus since the 2026-09-03 load. The remainder is `null`, meaning "not
  * available" rather than zero; BSON orders null below every number, so those records sort to the
@@ -1266,6 +1292,7 @@ export function canonicalCacheKey(filters: ParsedFilters): string {
     modelType: sortedArray(filters.modelType),
     dataResources: sortedArray(filters.dataResources),
     enrichedOnly: filters.enrichedOnly ?? null,
+    hasYear: filters.hasYear ?? null,
   };
 
   // Object.keys order above is fixed by literal declaration order, which is stable in JS --

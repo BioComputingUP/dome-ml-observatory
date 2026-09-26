@@ -96,6 +96,9 @@
               No results
             } @else {
               {{ rangeStart() | number }}–{{ rangeEnd() | number }} of {{ totalLabel() }}
+              @if (yearSorted()) {
+                with a publication year
+              }
             }
           </p>
 

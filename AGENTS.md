@@ -216,6 +216,11 @@ host are not.
   (2,663 records) matched nothing, and so did most multi-part MeSH headings and several EDAM
   domain terms we ship. `class` is the sole exception and still comma-splits — fixed literals, a
   documented API contract, and the `class=` cleared-signal that `canUseTextIndex` depends on.
+  **The two year sorts also filter**: `parseSearchParams` sets `filters.hasYear` for them and the
+  filter keeps only records with a numeric `publication_metadata.year`, because BSON sorts null
+  first and "Oldest first" opened with the year-less records (22 positives on 2026-09-26,
+  `corpus-figures`). The UI labels that total "with a publication year". Fix the data in the
+  sister repository; don't drop the filter here when you do, it is what makes the sort honest.
 - `observatory-ws/src/records/records.service.ts` — free-text search, and the one place the Mongo
   indexes matter. Three indexes exist on the collection: `positives_text` (a `$text` index on
   title/abstract/authors, scoped by `partialFilterExpression` to `classification: 'positive'`,

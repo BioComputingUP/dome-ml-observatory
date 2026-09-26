@@ -89,7 +89,7 @@ export class DownloadApi {
           { name: 'mt', type: 'string(s)', note: 'Model type.' },
           { name: 'dl', type: 'string(s)', note: 'Linked data resource slugs (pdb, geo, zenodo, …); a record matches when any of its resources is listed.' },
           { name: 'enriched', type: 'boolean', note: 'Only records the enrichment pass has touched.' },
-          { name: 'sort', type: 'relevance | year_desc | year_asc | citations_desc | citations_asc', note: 'Defaults to relevance.' },
+          { name: 'sort', type: 'relevance | year_desc | year_asc | citations_desc | citations_asc', note: 'Defaults to relevance. The year sorts list only records with a publication year.' },
           { name: 'page, pageSize', type: 'integer', note: 'Pagination — pageSize capped at 100.' },
         ],
         example:
