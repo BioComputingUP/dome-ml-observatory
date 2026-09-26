@@ -1,11 +1,18 @@
-import { SERIES_START, buildJournalPipeline, shapeJournalTable } from './journals.service';
+import { Model } from 'mongoose';
+import { RecordDocument } from '../records/schemas/record.schema';
+import {
+  JournalsService,
+  SERIES_START,
+  buildJournalPipeline,
+  shapeJournalTable,
+} from './journals.service';
 
 /** Builds the aggregation's own output shape, so the tests exercise the real contract. */
 function group(
-  journal: string,
+  journal: string | null,
   buckets: [number | null, string | null, number, number?, number?][],
 ): {
-  _id: string;
+  _id: string | null;
   buckets: { y: number | null; c: string | null; n: number; oa: number; enr: number }[];
 } {
   return {
@@ -114,6 +121,57 @@ describe('shapeJournalTable', () => {
   it('skips a blank journal name rather than creating an unnameable row', () => {
     expect(shapeJournalTable([group('   ', [[2020, 'positive', 3]])]).rows).toEqual([]);
   });
+
+  it('counts records with no journal into withoutJournal, never into a row or a rank', () => {
+    // Preprints carry no journal name. They are not a journal, but they are AI/ML methods papers,
+    // and the page has to be able to say how much of the corpus the journal figures leave out.
+    const table = shapeJournalTable([
+      group('Nature', [
+        [2020, 'positive', 20],
+        [2020, 'negative', 30],
+      ]),
+      group(null, [
+        [2021, 'positive', 7],
+        [null, 'positive', 1],
+        [2021, 'negative', 4],
+        [2021, 'undeterminable', 2],
+      ]),
+      group('  ', [[2022, 'positive', 2]]),
+    ]);
+    expect(table.rows.map((r) => r.journal)).toEqual(['Nature']);
+    expect(table.rankedNames).toEqual(['Nature']);
+    expect(table.corpus).toEqual({
+      journals: 1,
+      journalsScreened: 1,
+      screened: 50,
+      positive: 20,
+      withoutJournal: { screened: 16, positive: 10 },
+    });
+  });
+});
+
+describe('JournalsService.detail', () => {
+  function serviceOver(raw: ReturnType<typeof group>[]): JournalsService {
+    const exec = jest.fn().mockResolvedValue(raw);
+    const model = {
+      aggregate: jest.fn().mockReturnValue({ option: jest.fn().mockReturnValue({ exec }) }),
+    } as unknown as Model<RecordDocument>;
+    return new JournalsService(model);
+  }
+
+  it("measures a journal's share against every AI/ML methods paper, preprints included", async () => {
+    // The page says "N% of every AI/ML methods paper Observatory holds". Dividing by the
+    // journal-named positives alone overstated every journal's share by the preprints' weight.
+    const service = serviceOver([
+      group('Nature', [[2020, 'positive', 30]]),
+      group('Cell', [[2020, 'positive', 10]]),
+      group(null, [[2020, 'positive', 10]]),
+    ]);
+    const detail = await service.detail('Nature');
+    expect(detail.shareOfCorpusPositive).toBeCloseTo(30 / 50);
+    expect(detail.rank).toBe(1);
+    expect(detail.rankOf).toBe(2);
+  });
 });
 
 describe('buildJournalPipeline', () => {
@@ -121,14 +179,31 @@ describe('buildJournalPipeline', () => {
    *  `any` gymnastics over Mongo's deeply-nested stage types. */
   const stages = (): unknown[] => JSON.parse(JSON.stringify(buildJournalPipeline())) as unknown[];
 
-  it('excludes documents with no usable journal name', () => {
-    expect(stages()[0]).toEqual({
-      $match: { 'publication_metadata.journal': { $type: 'string', $ne: '' } },
+  it('keeps documents with no usable journal name, grouped under a single null journal', () => {
+    // No $match: those records feed corpus.withoutJournal. Every unusable value -- null, missing,
+    // empty, or not a string -- has to land on the same null key, not one group per oddity.
+    expect(stages()[0]).toMatchObject({
+      $group: {
+        _id: {
+          j: {
+            $cond: [
+              {
+                $and: [
+                  { $eq: [{ $type: '$publication_metadata.journal' }, 'string'] },
+                  { $ne: ['$publication_metadata.journal', ''] },
+                ],
+              },
+              '$publication_metadata.journal',
+              null,
+            ],
+          },
+        },
+      },
     });
   });
 
   it('collapses pre-2000 years into a single null bucket', () => {
-    expect(stages()[1]).toMatchObject({
+    expect(stages()[0]).toMatchObject({
       $group: {
         _id: {
           y: {
@@ -145,19 +220,19 @@ describe('buildJournalPipeline', () => {
 
   it('regroups by journal so the driver receives one document per journal, not per year', () => {
     const pipeline = stages();
-    expect(pipeline).toHaveLength(3);
-    expect(pipeline[2]).toMatchObject({ $group: { _id: '$_id.j' } });
+    expect(pipeline).toHaveLength(2);
+    expect(pipeline[1]).toMatchObject({ $group: { _id: '$_id.j' } });
   });
 
   it('counts enriched documents on the same test the rest of the service uses', () => {
     // Not `{ $ne: [..., undefined] }` and not a truthiness check: llm_enrichment.provider is
     // present-and-null on every unenriched document, so only an explicit null comparison is right.
-    expect(stages()[1]).toMatchObject({
+    expect(stages()[0]).toMatchObject({
       $group: {
         enr: { $sum: { $cond: [{ $ne: ['$llm_enrichment.provider', null] }, 1, 0] } },
       },
     });
-    expect(stages()[2]).toMatchObject({
+    expect(stages()[1]).toMatchObject({
       $group: { buckets: { $push: { enr: '$enr' } } },
     });
   });

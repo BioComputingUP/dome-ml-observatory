@@ -66,8 +66,15 @@ export interface JournalCorpusTotals {
   journals: number;
   /** Journals seen at all, including those whose every paper was screened out. */
   journalsScreened: number;
+  /** Screened records that carry a journal name -- journal-scoped, not the whole corpus. */
   screened: number;
+  /** AI/ML methods papers that carry a journal name -- journal-scoped, not the whole corpus. */
   positive: number;
+  /** Records with no journal name, almost all of them preprints (Europe PMC returns no journal for
+   *  a SRC:PPR record). Added to `screened`/`positive` it gives the corpus-wide totals, from the
+   *  same aggregation, so a page can say how much of the corpus the journal figures cover without
+   *  a second request to /api/stats. */
+  withoutJournal: { screened: number; positive: number };
 }
 
 export interface JournalListResult {
@@ -87,7 +94,8 @@ export interface JournalDetailResult {
   /** 1-based rank by AI/ML paper count among journals with at least one. */
   rank: number;
   rankOf: number;
-  /** Share of ALL Observatory AI/ML methods papers this journal accounts for, 0-1. */
+  /** Share of ALL Observatory AI/ML methods papers this journal accounts for, 0-1 -- measured
+   *  against the corpus-wide positives, preprints included, not just those with a journal. */
   shareOfCorpusPositive: number;
 }
 
@@ -111,9 +119,10 @@ const AGGREGATION_MAX_TIME_MS = 180_000;
 
 const MAX_LIMIT = 200;
 
-/** Raw shape of the two-stage aggregation's output, one document per journal. */
+/** Raw shape of the two-stage aggregation's output, one document per journal, plus one with a
+ *  null `_id` for every record that has no journal name. */
 interface RawJournalGroup {
-  _id: string;
+  _id: string | null;
   buckets: { y: number | null; c: string | null; n: number; oa: number; enr: number }[];
 }
 
@@ -121,20 +130,23 @@ interface RawJournalGroup {
  * Per-journal corpus figures and year-by-year trends.
  *
  * Nothing here queries Mongo per request. One aggregation over the whole collection builds a
- * compact in-memory table (~25k journals, a few MB) at boot, and every endpoint is then a pure
- * read from it. That is deliberate: the MongoDB server is a shared host carrying several other production
- * databases, and grouping 827k documents by journal-and-year is not something to do on a page
- * view. It also needs no new index -- the cost is one sequential pass per restart, bounded by the
- * 24h TTL, with no writes and nothing outside dome_observatory.Content touched.
+ * compact in-memory table (one row per journal, a few MB) at boot, and every endpoint is then a
+ * pure read from it. That is deliberate: the MongoDB server is a shared host carrying several other
+ * production databases, and grouping the whole collection by journal-and-year is not something to
+ * do on a page view. It also needs no new index -- the cost is one sequential pass per restart,
+ * bounded by the 24h TTL, with no writes and nothing outside dome_observatory.Content touched.
  *
  * Warm-up is fire-and-forget and non-fatal, matching StatsService: a cold cache costs the first
  * caller one aggregation, it is never wrong.
  *
- * Measured against the MongoDB server, 2026-09-03: the aggregation takes ~24s and yields 12,752 journals, of
- * which 8,119 carry at least one AI/ML methods paper. Requests off the warm cache are 12-16ms.
- * Note the table covers the 770,752 screened records that carry a journal name, not all 827,061 --
- * 56,309 have none, so these totals are deliberately journal-scoped and must be labelled as such
- * rather than presented as corpus-wide.
+ * Measured against the MongoDB server, 2026-09-03: the aggregation takes ~24s. Requests off the
+ * warm cache are 12-16ms.
+ *
+ * The rows, ranks and `corpus.screened`/`corpus.positive` cover only the records that carry a
+ * journal name -- 819,129 of 876,324 on 2026-09-25; preprints have none -- so they are
+ * journal-scoped and must be labelled as such rather than presented as corpus-wide. The records
+ * without one are still counted, into `corpus.withoutJournal`, which is what lets a journal's share
+ * be measured against every AI/ML methods paper and lets a page state the gap.
  */
 @Injectable()
 export class JournalsService implements OnModuleInit {
@@ -215,13 +227,14 @@ export class JournalsService implements OnModuleInit {
       );
     }
     const rank = table.rankIndex.get(journal);
+    const allPositive = table.corpus.positive + table.corpus.withoutJournal.positive;
     return {
       generated: table.generated,
       corpus: table.corpus,
       journal: row,
       rank: rank === undefined ? 0 : rank + 1,
       rankOf: table.rankedNames.length,
-      shareOfCorpusPositive: table.corpus.positive ? row.positive / table.corpus.positive : 0,
+      shareOfCorpusPositive: allPositive ? row.positive / allPositive : 0,
     };
   }
 
@@ -247,19 +260,34 @@ export class JournalsService implements OnModuleInit {
 }
 
 /**
- * Grouped twice on purpose. The first $group reduces 827k documents to one row per
+ * Grouped twice on purpose. The first $group reduces the whole collection to one row per
  * journal/year/classification; the second collapses those into one document per journal, so what
- * crosses the wire is ~25k small documents rather than several hundred thousand. Pre-SERIES_START
- * years collapse into a single null bucket in the first stage, which cuts the intermediate
- * cardinality substantially and costs nothing the page would have shown.
+ * crosses the wire is one small document per journal rather than several hundred thousand.
+ * Pre-SERIES_START years collapse into a single null bucket in the first stage, which cuts the
+ * intermediate cardinality substantially and costs nothing the page would have shown.
+ *
+ * There is no $match: a record with no usable journal name (null, missing, empty, or not a string)
+ * is grouped under a null journal instead of dropped, so the table can report the corpus-wide totals
+ * alongside the journal-scoped ones. The collection has no journal index, so a $match saved nothing
+ * -- the pass is a full scan either way.
  */
 export function buildJournalPipeline() {
   return [
-    { $match: { 'publication_metadata.journal': { $type: 'string', $ne: '' } } },
     {
       $group: {
         _id: {
-          j: '$publication_metadata.journal',
+          j: {
+            $cond: [
+              {
+                $and: [
+                  { $eq: [{ $type: '$publication_metadata.journal' }, 'string'] },
+                  { $ne: ['$publication_metadata.journal', ''] },
+                ],
+              },
+              '$publication_metadata.journal',
+              null,
+            ],
+          },
           y: {
             $cond: [
               { $gte: ['$publication_metadata.year', SERIES_START] },
@@ -312,10 +340,19 @@ function toListRow(row: JournalRow): JournalListRow {
  */
 export function shapeJournalTable(raw: RawJournalGroup[]): JournalTable {
   const rows: JournalRow[] = [];
+  const withoutJournal = { screened: 0, positive: 0 };
 
   for (const group of raw) {
     const journal = group._id;
-    if (typeof journal !== 'string' || journal.trim() === '') continue;
+    if (typeof journal !== 'string' || journal.trim() === '') {
+      // No journal to make a row of, but still papers in the corpus: counted, never ranked.
+      for (const bucket of group.buckets) {
+        const n = bucket.n ?? 0;
+        withoutJournal.screened += n;
+        if (bucket.c === 'positive') withoutJournal.positive += n;
+      }
+      continue;
+    }
 
     let screened = 0;
     let positive = 0;
@@ -409,6 +446,7 @@ export function shapeJournalTable(raw: RawJournalGroup[]): JournalTable {
       journalsScreened: rows.length,
       screened: rows.reduce((sum, r) => sum + r.screened, 0),
       positive: rows.reduce((sum, r) => sum + r.positive, 0),
+      withoutJournal,
     },
   };
 }

@@ -49,7 +49,12 @@ export class JournalsController {
       'Journals ranked by AI/ML methods paper count, or by the share of their screened output ' +
       'that is AI/ML. Served from an in-memory table refreshed at most once a day.',
   })
-  @ApiOkResponse({ description: 'JournalListResult -- rows omit the per-year series.' })
+  @ApiOkResponse({
+    description:
+      'JournalListResult -- rows omit the per-year series. `corpus.screened` and ' +
+      '`corpus.positive` count only records that carry a journal name; `corpus.withoutJournal` ' +
+      'holds the rest (almost all preprints), and the two add up to the whole corpus.',
+  })
   list(@Query() query: JournalListDto): Promise<JournalListResult> {
     return this.journals.list(
       query.q,
@@ -65,7 +70,11 @@ export class JournalsController {
       'Everything held about one journal: classification totals, its year-by-year trend since ' +
       '2000, and where it ranks in the corpus.',
   })
-  @ApiOkResponse({ description: 'JournalDetailResult.' })
+  @ApiOkResponse({
+    description:
+      'JournalDetailResult. `shareOfCorpusPositive` is measured against every AI/ML methods ' +
+      'paper in the corpus, preprints included.',
+  })
   @ApiBadRequestResponse({ description: 'The `journal` parameter is required.' })
   @ApiNotFoundResponse({ description: 'No journal by that exact name appears in the corpus.' })
   detail(@Query() query: JournalDetailDto): Promise<JournalDetailResult> {

@@ -15,9 +15,9 @@ export interface FacetCount {
 /** Everything about "what the search page can actually search" -- scoped to
  *  classification: positive, the whole search space now that the UI's search page no longer
  *  offers a classification filter (see observatory-ui's facet-panel.ts and Part 2 of the search
- *  repair). Distinct from `corpus` below, which stays corpus-wide (all 827,061 screened
- *  publications) so the home/about/download pages can keep telling the honest "we screen and
- *  track the negatives too" story. */
+ *  repair). Distinct from `corpus` below, which stays corpus-wide (every screened publication)
+ *  so the home/about/download pages can keep telling the honest "we screen and track the
+ *  negatives too" story. */
 export interface SearchSpaceStats {
   total: number;
   fulltextAvailable: number;
@@ -48,6 +48,10 @@ export interface FacetStats {
     openAccess: number;
     fulltextAvailable: number;
     enriched: number;
+    /** Records whose abstract came from Europe PMC (source.abstract_source), the rest coming from
+     *  Crossref, PubMed or nowhere. The licensing page states the share, because Europe PMC should
+     *  be cited alongside the corpus. */
+    abstractEuropePmc: number;
   };
   corpus_provenance: string;
   last_classification: LastClassification;
@@ -71,7 +75,7 @@ export interface FacetStats {
 }
 
 const CACHE_KEY = 'facet-stats';
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // same reasoning as CountService: corpus refreshes 6-12x/year
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // same reasoning as CountService: corpus refreshes every two months
 /** $facet has a 16MB-per-sub-pipeline output cap. The high-cardinality fields (journal 12,753,
  *  mesh 23,222, keywords_author 694,411 -- measured against the MongoDB server 2026-09-01) are deliberately
  *  left out of this aggregation for that reason and because a UI stat block has no use for them;
@@ -148,6 +152,7 @@ interface RawCorpusResult {
   openAccess: number;
   fulltextAvailable: number;
   enriched: number;
+  abstractEuropePmc: number;
   lastClassifiedAt: string | null;
   lastEnrichedAt: string | null;
 }
@@ -214,6 +219,11 @@ function buildCorpusPipeline() {
             $cond: [{ $ne: ['$llm_enrichment.provider', null] }, 1, 0],
           },
         },
+        abstractEuropePmc: {
+          $sum: {
+            $cond: [{ $eq: ['$source.abstract_source', 'europepmc'] }, 1, 0],
+          },
+        },
         // ISO-8601 strings (e.g. "2026-08-27T22:44:56.416265+00:00") sort correctly under $max as
         // plain string comparison -- no date parsing needed. null on every document until that
         // record's pass has actually run, so $max naturally ignores untouched records and yields
@@ -226,8 +236,8 @@ function buildCorpusPipeline() {
 }
 
 /** Everything a search-page user can actually filter by, scoped to classification: positive via
- *  the $match up front -- every sub-pipeline below then only ever sees that ~355,558-document
- *  subset, matching what buildMongoFilter (records.query.ts) defaults every search to. */
+ *  the $match up front -- every sub-pipeline below then only ever sees the positives,
+ *  matching what buildMongoFilter (records.query.ts) defaults every search to. */
 function buildSearchSpacePipeline() {
   const countBy = (field: string) => [{ $group: { _id: `$${field}`, count: { $sum: 1 } } }];
   const countByArrayElement = (field: string) => [
@@ -306,6 +316,7 @@ function shapeFacetStats(
     openAccess: rawCorpus?.openAccess ?? 0,
     fulltextAvailable: rawCorpus?.fulltextAvailable ?? 0,
     enriched: rawCorpus?.enriched ?? 0,
+    abstractEuropePmc: rawCorpus?.abstractEuropePmc ?? 0,
   };
 
   const totals = rawSearchSpace?.totals[0];
