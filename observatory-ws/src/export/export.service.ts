@@ -28,7 +28,7 @@ export class ExportService {
    *
    * Why this exists at all: /api/records rejects `page * pageSize > 10,000` and that cap is not
    * tunable -- MongoDB 4.2's find().sort() has no allowDiskUse and a deep skip blows its 32MB
-   * in-memory sort buffer. Paging cannot reach the end of an 846k-document corpus, so whole-corpus
+   * in-memory sort buffer. Paging cannot reach the end of a corpus this size, so whole-corpus
    * retrieval needs a different shape entirely rather than a bigger number.
    *
    * Keyset pagination has no skip: each chunk asks for the next N documents *after* a known _id.

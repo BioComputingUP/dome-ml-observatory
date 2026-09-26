@@ -35,7 +35,7 @@ export const ALLOWED_FACET_FIELDS = Object.keys(FIELD_PATHS);
 /** Scopes every typeahead to the positives -- the search page's whole search space (see Part 2 of
  *  the search repair; observatory-ui's facet-panel.ts no longer offers a classification filter).
  *  Without this, e.g. the journal typeahead could suggest a journal that exists only among the
- *  464,581 screened-out records and matches nothing a search here can ever return. */
+ *  screened-out records and matches nothing a search here can ever return. */
 const POSITIVE_FILTER = { 'llm_classification.classification': 'positive' };
 
 const DEFAULT_LIMIT = 20;
@@ -95,7 +95,7 @@ export function rankFacetMatches(values: string[], needle: string, limit: number
  * Builds an in-memory value cache per allowed field at boot, scoped to the positives, and serves
  * every /api/facets/:field request from it -- no Mongo round trip per keystroke. Cardinalities are
  * small enough (a few thousand journals, a few dozen publication types, single-digit licences)
- * that holding all of them in process memory is cheap, and the corpus only changes 6-12x/year so
+ * that holding all of them in process memory is cheap, and the corpus only changes every two months so
  * staleness between deploys is a non-issue.
  */
 @Injectable()

@@ -91,7 +91,7 @@ const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{
  * already has on that path, and well inside the 20s free-text budget.
  *
  * Past this depth results fall back to plain `_id` order. That is a deliberate trade: the point is
- * to put the obviously-right answers on page 1, not to rank 355k documents without an index.
+ * to put the obviously-right answers on page 1, not to rank every positive without an index.
  */
 const PROMOTE_CAP = 100;
 

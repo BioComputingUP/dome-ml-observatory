@@ -332,8 +332,8 @@ export class Search {
   clearAll(): void {
     // classification: DEFAULT_CLASSIFICATION, not []. [] means "explicitly cleared" on the wire
     // (see search-params.ts's resolveClassification) and would silently widen the search from the
-    // 367,348 positives to all 876,324 screened records -- the opposite of what "clear all
-    // filters" should do now that the classification filter isn't a user-removable chip any more.
+    // positives to every screened record -- the opposite of what "clear all filters" should do
+    // now that the classification filter isn't a user-removable chip any more.
     this.navigate({ ...this.query(), q: undefined, filters: { classification: DEFAULT_CLASSIFICATION }, page: 1 });
     // Supersede any keystrokes still waiting on the debounce, or they would re-run the search
     // that was just cleared half a second later.

@@ -40,8 +40,9 @@ to ration access — pulling the entire corpus through this API is supported.
   across all endpoints, not one per endpoint. Health checks are exempt.
 - **`/api/export` has its own 60/minute budget**, because one request there returns up to 1000
   records. A separate bucket, so an export cannot starve ordinary search traffic. In practice the
-  client's bandwidth binds first: the full corpus is **roughly 3 GB** and a whole-corpus walk is
-  measured in hours, not minutes. Filter it down if you do not need all of it.
+  client's bandwidth binds first: the full corpus is **roughly 4 GB** (2026-09-25) and a
+  whole-corpus walk is measured in hours, not minutes. Filter it down if you do not need all of it.
+  <!-- corpus-figures: export size and harvest time, refreshed after each load. -->
 - **`/api/oai` has its own 120/minute budget**, for the same reason: a harvest is a long run of
   sequential requests. At 200 records a page, the positives take about a quarter of an hour.
 - **Result window capped at 10,000 on `/api/records`** — `page × pageSize > 10000` returns 400

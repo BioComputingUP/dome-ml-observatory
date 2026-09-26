@@ -21,7 +21,8 @@ export const DEFAULT_SORT: SortOrder = 'relevance';
 export const MAX_RESULT_WINDOW = 10_000;
 
 /**
- * The corpus is 355,558 AI/ML methods papers plus 464,581 records screened out as not-AI/ML.
+ * The corpus holds the AI/ML methods papers plus a larger number of records screened out as
+ * not-AI/ML.
  * Defaulting to positives means an unfiltered visit shows the resource's actual content.
  *
  * The search page no longer offers any way to widen this -- see the comment in search.ts on why

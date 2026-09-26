@@ -23,7 +23,8 @@ export function setupSwagger(app: INestApplication): void {
         'requests per minute, because one of those returns up to 1000 records, and /api/oai ' +
         'one of 120 requests per minute for OAI-PMH harvesters. Health checks are not ' +
         'rate-limited.\n' +
-        '- Export size: records average ~3.7 KB, so the whole corpus is roughly 3 GB and takes ' +
+        // corpus-figures: measured on the 2026-09-25 export (3.9 GB over 876,324 records).
+        '- Export size: records average ~4.5 KB, so the whole corpus is roughly 4 GB and takes ' +
         'hours to pull, bounded by your bandwidth rather than by the rate limit. Apply filters ' +
         'if you do not need all of it.\n' +
         '- Whole-corpus retrieval: use /api/export, which pages on a cursor and has no result ' +

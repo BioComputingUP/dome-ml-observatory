@@ -148,9 +148,9 @@ function assetUrl(raw: string, template: (id: string) => string): string {
  * the five permanently-greyed "Not yet linked" boxes an earlier version showed at the same visual
  * weight as the real links above them, which is what a placeholder wall looks like rather than a
  * roadmap. Hiding the section outright was the previous fix and overcorrected: with 0 of 827,061
- * records carrying a cross-link, "absent" was every reader's experience of it, and two tinted bands
- * then abutted and read as one section. The real cards replace the note the moment a record carries
- * a cross-link or a data link.
+ * records carrying a cross-link at the time (2026-09-02), "absent" was every reader's experience
+ * of it, and two tinted bands then abutted and read as one section. The real cards replace the
+ * note the moment a record carries a cross-link or a data link.
  */
 export function crossLinkedAssets(record: AiMlRecord): CrossLinkedAsset[] {
   const ids = record.identifiers;

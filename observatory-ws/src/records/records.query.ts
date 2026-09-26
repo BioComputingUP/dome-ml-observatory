@@ -77,7 +77,7 @@ export const DEFAULT_PAGE_SIZE = 25;
 export const MAX_PAGE_SIZE = 100;
 export const DEFAULT_SORT: SortOrder = 'relevance';
 /** Same reasoning as observatory-ui/src/app/core/search-params.ts: an unfiltered visit should show
- *  the resource's actual content (AI/ML methods papers), not the 464k+ screened-out majority. */
+ *  the resource's actual content (AI/ML methods papers), not the screened-out majority. */
 export const DEFAULT_CLASSIFICATION: Classification[] = ['positive'];
 /** page * pageSize beyond this is rejected (400), not silently clamped -- see buildPagination.
  *  Deep pages exist to browse, not to reconstruct the corpus; that's what /api/export is for
@@ -571,8 +571,8 @@ const AUTHORS = 'publication_metadata.authors';
  * Classification goes FIRST, before the expensive free-text regex -- measured directly against
  * The MongoDB server: the identical filter with this clause first vs. last is 2,566ms vs. 5,809ms (more than
  * 2x) on a zero-match query, because Mongo's un-indexed collection scan can then short-circuit the
- * regex entirely for the majority of documents (the 464,581 non-positive ones on the default
- * filter) via this cheap equality check first. Don't reorder this without re-measuring -- it looks
+ * regex entirely for the majority of documents (the non-positive ones, on the default filter) via
+ * this cheap equality check first. Don't reorder this without re-measuring -- it looks
  * like a no-op change and isn't.
  */
 function classificationClauses(filters: ParsedFilters): FilterQuery<RecordDocument>[] {
@@ -621,7 +621,7 @@ function groupClause(group: QueryGroup): FilterQuery<RecordDocument> {
 /**
  * AND-of-terms, not one literal phrase: a user typing "random forest sepsis" means all three words,
  * in any order, not that exact substring -- which appears in zero documents and used to force a
- * full 827k-document scan to prove it (measured: 5.1s, then a false-positive 503 for what was
+ * full-collection scan to prove it (measured: 5.1s, then a false-positive 503 for what was
  * actually a healthy, just-slow query). Matches across title, abstract AND author.
  *
  * When the query could also be somebody's name, the author readings are OR'd alongside that AND

@@ -30,10 +30,12 @@ and does not own. **CC BY 4.0 does not extend to it, and nothing here relicenses
 ### Source and attribution
 
 The majority of data is retrieved from **[Europe PMC](https://europepmc.org/)** through
-their public APIs — roughly 93.5% of abstracts in the corpus are sourced from Europe PMC, with the
+their public APIs — roughly 94% of abstracts in the corpus are sourced from Europe PMC, with the
 remainder from Crossref and PubMed, and a small fraction of records carrying no abstract at all.
 The open-access flag and the per-paper licence string on each record come from the Europe PMC
 licensing lookup.
+<!-- corpus-figures: 822,975 of 876,324 (93.9%) on 2026-09-26, from GET /api/stats
+corpus.abstractEuropePmc; the licensing page states it live. -->
 
 Europe PMC should be credited alongside DOME Observatory in any work that reuses this corpus:
 
@@ -70,6 +72,7 @@ roughly two thirds of the source corpus is flagged open access, and each record'
 (for example `cc by`) is shown on its record page. Some papers are open access under CC BY or a
 similar licence; others remain under a publisher's standard copyright; for some, no licence
 information was available at all and the field is empty — which means *unknown*, not *unrestricted*.
+<!-- corpus-figures: open access 589,529 of 876,324 (67.3%) on 2026-09-26. -->
 
 **Before reusing a paper's abstract, text or figures, check that specific paper's own terms at the
 source.** A CC BY 4.0 licence on Observatory's classification of a paper says nothing about what

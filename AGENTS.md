@@ -270,15 +270,18 @@ host are not.
     the regex path silently when the text index is absent, so a dropped-and-reloaded collection
     gets slow rather than broken; recreating both indexes is part of that reload runbook.
 - `observatory-ws/src/journals/journals.service.ts` — per-journal figures and year-by-year
-  trends. Runs **one aggregation over the whole collection at boot** (~24s, measured) and serves
+  trends. Runs **one aggregation over the whole collection at boot** (~27s, measured 2026-09-26) and serves
   every request from the resulting in-memory table with a 24h TTL, exactly like `StatsService`.
   Needs no index and writes nothing. Don't move this to a per-request aggregation: grouping the
   whole collection (876k documents in 2026-09) by journal-and-year on a page view is precisely what
-  the cache exists to avoid on a shared database host. Its totals cover only the records carrying a
-  journal name (819,129 of 876,324 on 2026-09-25; preprints have none) — anything displaying them
-  has to say so. `toListRow` is an explicit whitelist, not a
-  spread: a field added to `JournalRow` and not copied there reaches the detail view and silently
-  never reaches the table.
+  the cache exists to avoid on a shared database host. Its rows, ranks and `corpus.screened` /
+  `corpus.positive` cover only the records carrying a journal name (819,129 of 876,324 on
+  2026-09-25; preprints have none) — anything displaying them has to say so. The rest are counted
+  into `corpus.withoutJournal` by the same pass, so the two sum to `/api/stats`' corpus totals and a
+  journal's `shareOfCorpusPositive` is measured against every AI/ML methods paper. Dividing by the
+  journal-scoped total instead overstated every journal's share by about 12% until 2026-09-26.
+  `toListRow` is an explicit whitelist, not a spread: a field added to `JournalRow` and not copied
+  there reaches the detail view and silently never reaches the table.
 - `observatory-ws/src/database/content-model.module.ts` — the **only** place the `'Content'`
   Mongoose model is registered (`records`, `facets`, `stats` and `journals` modules all import
   this rather than each calling `MongooseModule.forFeatureAsync` themselves). Registering the same
@@ -286,14 +289,25 @@ host are not.
   second registration to "fix" a missing-model error in a new feature module; import this instead.
 - **Boot-time warm-up is a contract, not an implementation detail.** `FacetsService`,
   `StatsService` and `JournalsService` each `await` real Mongo work in `onModuleInit` *before*
-  Nest calls `app.listen()` — ~36k distinct facet values, one `$facet` aggregation, and the ~24s
-  journals aggregation respectively. That's why the service takes ~40-50s to answer its first
+  Nest calls `app.listen()` — the distinct facet values (~36k when measured on 2026-09-01), one
+  `$facet` aggregation, and the ~27s journals aggregation respectively (boot measured at 40s on
+  2026-09-26). That's why the service takes ~40-50s to answer its first
   request on a cold start, and why `observatory-ws/Dockerfile`'s `HEALTHCHECK --start-period` has
   to stay comfortably above it. **If you add another serial warm-up step, re-measure boot time and
   raise `--start-period` to match** — the Dockerfile's own comment says the same thing.
 
 ## Things that have gone wrong before — don't reintroduce these
 
+- **A figure a user reads comes from the API, never from a copy in the code.** The home page said
+  367,348 AI/ML methods papers while the Journals page said 328,368 under the same label (the
+  second counted only papers with a journal name), and snapshot fallbacks, example responses and
+  prose each held their own stale copy of the corpus. So: pages read `GET /api/stats` (or the
+  endpoint that owns the figure) and show '—' until it answers; there is no `CORPUS_STATS`-style
+  fallback in `observatory-ui`; a figure scoped to a subset says so in its label, not only in a
+  footnote. What cannot be live -- a dated measurement in a comment, the Swagger `example`, the
+  rounded figures in `README.md` and `LICENSE.md` -- is dated and marked `corpus-figures`, which
+  the sister repository's refresh-cycle greps for after every load. Committed releases
+  (`metadata/releases/`, `schema/releases/`) are snapshots by design and stay as they are.
 - **`dist/` (in any app) is gitignored and must stay that way** — it's a build artifact, not
   committed. If `git status` ever shows files under a `dist/` folder as trackable, something is
   wrong (e.g. a stray `git add -A`); undo it, don't commit it.

@@ -79,7 +79,8 @@ EXPOSE 3000
 #
 # start-period=60s: measured live (bare process, pre-container) at 15-40s before /api/health
 # becomes reachable -- FacetsService and StatsService's OnModuleInit hooks do real Mongo work
-# (loading ~36k facet values across 4 fields, one $facet aggregation over 827k docs) serially
+# (loading every distinct facet value across 4 fields -- ~36k on 2026-09-01 -- and aggregating
+# the whole collection for the stats and journal tables) serially
 # before Nest calls app.listen(). Measured worst case (the MongoDB server unreachable, every warm-up step
 # timing out in sequence) is ~40s containerised, so 60s leaves real margin. RE-MEASURE if any
 # more sequential boot-time warm-up is ever added, and raise it if boot approaches it.

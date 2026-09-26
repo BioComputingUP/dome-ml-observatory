@@ -10,6 +10,9 @@ more than 360,000 classified as AI/ML methods papers, cross-linked to
 [Europe PMC](https://europepmc.org/). Most classifications come from LLM processing, using a method
 validated against a hand-annotated expert benchmark before being scaled; over 6,000 records are
 human-curated or DOME Registry-confirmed, and the rest are not individually curator-reviewed.
+<!-- corpus-figures: rounded down so they stay true between loads; on 2026-09-26 the corpus held
+876,324 screened, 367,348 AI/ML methods papers and 6,179 human or Registry decisions. The site
+itself states the live figures. -->
 
 ## Architecture
 

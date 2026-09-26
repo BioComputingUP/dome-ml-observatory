@@ -23,13 +23,13 @@ const BOUNDED_COUNT_LIMIT = 10_000;
  * try an exact count under a time budget; timeout -> fall back to a cheap bounded count reported
  * as `totalRelation: 'gte'` so callers can render "10,000+" rather than a wrong exact number.
  *
- * That bounded fallback is NOT reliably cheap, though -- confirmed live against the MongoDB server: a
- * `.limit(10000)` count can only stop early once it finds 10,000 matches, so for a *rare* free-
- * text term (e.g. "transformer", ~10,939 hits out of 827,061 -- barely over the bound) it still
- * has to scan nearly the entire un-indexed collection to confirm that, and can time out too. If
- * even the fallback fails, count() does NOT throw: it degrades to reporting the bound itself
- * (`total: BOUNDED_COUNT_LIMIT, totalRelation: 'gte'`) rather than failing the whole search --
- * RecordsService.search() fetches the actual page and counts in parallel, and a slow/uncertain
+ * That bounded fallback is NOT reliably cheap, though -- confirmed live against the MongoDB server:
+ * a `.limit(10000)` count can only stop early once it finds 10,000 matches, so for a *rare* free-
+ * text term (e.g. "transformer", ~10,939 hits when measured on the 827k corpus -- barely over the
+ * bound) it still has to scan nearly the entire un-indexed collection to confirm that, and can time
+ * out too. If even the fallback fails, count() does NOT throw: it degrades to reporting the bound
+ * itself (`total: BOUNDED_COUNT_LIMIT, totalRelation: 'gte'`) rather than failing the whole search
+ * -- RecordsService.search() fetches the actual page and counts in parallel, and a slow/uncertain
  * count must never discard a page of results that was fetched successfully (fetching is fast
  * regardless of match density -- the same "transformer" query returns a page in well under a
  * second; only *counting* it is what's expensive here).

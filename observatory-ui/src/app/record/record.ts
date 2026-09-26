@@ -285,8 +285,8 @@ export class RecordPage {
   });
 
   /** The placeholder rows an un-enriched record shows, so the section keeps its shape instead of
-   *  collapsing to a paragraph. This is the state of the entire corpus today (0 of 827,061 records
-   *  are enriched), so it has to look deliberate rather than broken. */
+   *  collapsing to a paragraph. Enrichment reaches only a small share of the positives so far, so
+   *  this is what most records show and it has to look deliberate rather than broken. */
   readonly enrichmentPlaceholders = [
     'Domain (tier 1)',
     'Domain (tier 2)',

@@ -357,8 +357,8 @@
 // version of this section rendered five permanently-empty "Not yet linked" cards at the same
 // visual weight as the real links above them, which reads as a broken page rather than a roadmap
 // (see outbound-links.ts). The section itself is always present, though: a section that vanishes
-// entirely is indistinguishable from one that doesn't exist, and 0 of 827,061 records carry a
-// cross-link today, so "absent" would be every record's experience of it.
+// entirely is indistinguishable from one that doesn't exist, and many records carry no
+// cross-link at all, so "absent" is a common experience of it.
 .crosslink-empty {
   margin: 0;
   padding: var(--space-4);
