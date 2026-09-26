@@ -23,8 +23,9 @@ interface Size {
 }
 
 const CLICKS_TO_TRIGGER = 5;
-/** CSS pixels per sprite cell: 4 puts the crocodile at 112x104 against a 220px card. */
-const SPRITE_SCALE = 4;
+/** CSS pixels per sprite cell, per sprite: the crocodile is a 41x49 grid, so 3 puts it at 123x147
+ *  against a 220px card; the robot is a coarser 20x34 grid and draws at 4. */
+const SPRITE_SCALE: Record<Surprise, number> = { croc: 3, mecha: 4 };
 /** How long the sprite simply sits on the card when motion is reduced or unavailable. */
 const STATIC_SHOW_MS = 2500;
 
@@ -98,7 +99,7 @@ export class AboutTeam {
     const surprise = this.activeSurprise();
     return surprise === 'croc' ? FIRE_CROC : surprise === 'mecha' ? MECHA : null;
   });
-  readonly spriteScale = SPRITE_SCALE;
+  readonly spriteScale = computed(() => SPRITE_SCALE[this.activeSurprise() ?? 'croc']);
 
   private clickedCard: HTMLElement | null = null;
   private clicks = 0;
@@ -271,7 +272,8 @@ export class AboutTeam {
 
   private spriteSize(): Size {
     const rows = this.art()?.frames[0] ?? [];
-    return { width: (rows[0]?.length ?? 0) * SPRITE_SCALE, height: rows.length * SPRITE_SCALE };
+    const scale = this.spriteScale();
+    return { width: (rows[0]?.length ?? 0) * scale, height: rows.length * scale };
   }
 
   private prefersReducedMotion(): boolean {

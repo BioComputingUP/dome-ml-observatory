@@ -36,7 +36,7 @@
            it is moved with the Web Animations API and never takes part in layout. -->
       <div #spriteHost class="sprite-host" [hidden]="!activeSurprise()" [class.sprite-front]="inFront()" aria-hidden="true">
         @if (art(); as a) {
-          <app-pixel-sprite [art]="a" [frame]="frame()" [scale]="spriteScale" />
+          <app-pixel-sprite [art]="a" [frame]="frame()" [scale]="spriteScale()" />
         }
       </div>
     </div>
