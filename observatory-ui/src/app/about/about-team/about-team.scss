@@ -26,3 +26,35 @@ h2 {
   line-height: 1.6;
   margin: 0 0 var(--space-3);
 }
+
+// ---- pixel-art surprises (see AboutTeam) ---------------------------------------------------
+// The sprite host and the cards share the root stacking context: cards at z-index 1, the host at
+// 0, so a sprite parked behind a card is genuinely covered by the card's opaque .info-panel
+// surface, and lifting the host to .sprite-front (2) brings it out over the cards. Fixed rather
+// than absolute: every waypoint comes from getBoundingClientRect(), which is viewport space, and
+// a fixed box that leaves the viewport adds no scrollbar where an absolute one would. Scoped to
+// this component, so the same .member-card on the Governance page is untouched. The motion is
+// driven from the component with the Web Animations API, so the prefers-reduced-motion check
+// lives there too (it degrades to showing the sprite still for a moment).
+.member-card {
+  position: relative;
+  z-index: 1;
+}
+
+.sprite-host {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+  will-change: transform;
+
+  &.sprite-front {
+    z-index: 2;
+  }
+
+  &[hidden] {
+    display: none;
+  }
+}
