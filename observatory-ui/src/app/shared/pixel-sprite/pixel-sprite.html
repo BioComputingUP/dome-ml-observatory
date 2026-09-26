@@ -2,11 +2,11 @@
   [attr.viewBox]="'0 0 ' + width() + ' ' + height()"
   [attr.width]="pxWidth()"
   [attr.height]="pxHeight()"
-  shape-rendering="crispEdges"
+  [attr.shape-rendering]="rendering()"
   aria-hidden="true"
   focusable="false"
 >
-  @for (r of rects(); track $index) {
-    <rect [attr.x]="r.x" [attr.y]="r.y" [attr.width]="r.width" height="1" [attr.fill]="r.fill" />
+  @for (p of paths(); track p.fill) {
+    <path [attr.d]="p.d" [attr.fill]="p.fill" />
   }
 </svg>

@@ -1,10 +1,12 @@
 import { Component, DestroyRef, ElementRef, computed, inject, signal, viewChild, viewChildren } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PixelSprite } from '../../shared/pixel-sprite/pixel-sprite';
-import { Point, arcPoints, bobPoints, keyframes, splitAtApex, translate } from '../../shared/pixel-sprite/sprite-motion';
+import { Point, arcPoints, bobPoints, keyframes, translate } from '../../shared/pixel-sprite/sprite-motion';
 import { CROC_FRAME, FIRE_CROC, MECHA, MECHA_FRAME } from './team-sprites';
 
-type Surprise = 'croc' | 'mecha';
+type Sprite = 'croc' | 'mecha';
+/** A pixel-art character, or `holo`: a skin the card itself wears for a moment. */
+type Surprise = Sprite | 'holo';
 
 interface Member {
   name: string;
@@ -13,7 +15,7 @@ interface Member {
   photo: string;
   orcid?: string;
   github?: string;
-  /** Which pixel-art surprise five consecutive clicks on this card set off, if any. */
+  /** Which surprise five consecutive clicks on this card set off, if any. */
   surprise?: Surprise;
 }
 
@@ -23,21 +25,27 @@ interface Size {
 }
 
 const CLICKS_TO_TRIGGER = 5;
-/** CSS pixels per sprite cell, per sprite. The crocodile is a 41x49 grid and the robot 28x48, so 2
- *  puts them at 82x98 and 56x96 against a 220px card. Whole cells only: a fractional scale would
- *  give uneven pixels. Kept per sprite so a coarser grid could still draw larger. */
-const SPRITE_SCALE: Record<Surprise, number> = { croc: 2, mecha: 2 };
+/** CSS pixels per sprite cell. 0.6 puts the 41x49 crocodile at about 25x29 and the 28x48 robot at
+ *  about 17x29: small enough to perch on a card's corner, and roughly a third of the 2 they were
+ *  drawn at before. Deliberately fractional -- PixelSprite anti-aliases a fractional scale rather
+ *  than snapping it, so the cost is crisp pixels, not missing rows. */
+const SPRITE_SCALE = 0.6;
 /** How long the sprite simply sits on the card when motion is reduced or unavailable. */
 const STATIC_SHOW_MS = 2500;
+/** How long the hologram skin holds. The stylesheet fades it in and out over half a second each
+ *  way, so it is on screen about as long as the robot's scene. */
+const SKIN_SHOW_MS = 2500;
 
-/** Where a sprite parks so the card hides it completely (the host paints under the cards). */
+/** Tucked behind the card's bottom-right corner, where the card hides it completely (the host
+ *  paints under the cards). 10px in from both edges clears the card's 8px corner radius. */
 function hiddenBehind(card: DOMRect, size: Size): Point {
-  return { x: card.left + (card.width - size.width) / 2, y: card.top + 10 };
+  return { x: card.right - size.width - 10, y: card.bottom - size.height - 10 };
 }
 
-/** Standing on the card's top edge, feet just overlapping it. */
-function onTop(card: DOMRect, size: Size): Point {
-  return { x: card.left + (card.width - size.width) / 2, y: card.top - size.height + 8 };
+/** Perched just inside the card's bottom-right corner, over it. The links row is centred, so at
+ *  these sizes the corner is empty. */
+function onCorner(card: DOMRect, size: Size): Point {
+  return { x: card.right - size.width - 6, y: card.bottom - size.height - 6 };
 }
 
 @Component({
@@ -71,6 +79,7 @@ export class AboutTeam {
       photo: 'assets/img/ivan.webp',
       orcid: '0000-0003-1691-8425',
       github: 'ivanmicetic',
+      surprise: 'holo',
     },
     {
       name: 'Silvio Tosatto',
@@ -83,16 +92,20 @@ export class AboutTeam {
   ];
 
   // ---- the surprises ------------------------------------------------------------------------
-  // Five consecutive clicks on a card that has one play a short pixel-art scene: something pops
-  // up from behind that card and leaves the page. Purely decorative -- the host is aria-hidden,
-  // takes no pointer events and nothing on the page depends on it. Motion is the Web Animations
-  // API (element.animate) rather than CSS keyframes because every waypoint is a card's measured
-  // position; the reduced-motion preference is honoured here for the same reason.
+  // Five consecutive clicks on a card that has one play a short scene: a pixel-art character
+  // peeks out from behind that card's bottom-right corner and leaves the page, or the card itself
+  // wears a skin for a moment. Purely decorative -- the sprite host is aria-hidden and takes no
+  // pointer events, the skin is one class the stylesheet fades, and nothing on the page depends on
+  // either. Motion is the Web Animations API (element.animate) rather than CSS keyframes because
+  // every waypoint is a card's measured position; the reduced-motion preference is honoured here
+  // for the same reason (the skin's own animations are gated in the stylesheet).
 
   private readonly cards = viewChildren<ElementRef<HTMLElement>>('memberCard');
   private readonly spriteHost = viewChild.required<ElementRef<HTMLElement>>('spriteHost');
 
   readonly activeSurprise = signal<Surprise | null>(null);
+  /** Index of the card wearing the hologram skin, while one does. */
+  readonly skinnedCard = signal<number | null>(null);
   /** Whether the sprite host paints over the cards (true) or under them (false). */
   readonly inFront = signal(false);
   readonly frame = signal(0);
@@ -100,7 +113,7 @@ export class AboutTeam {
     const surprise = this.activeSurprise();
     return surprise === 'croc' ? FIRE_CROC : surprise === 'mecha' ? MECHA : null;
   });
-  readonly spriteScale = computed(() => SPRITE_SCALE[this.activeSurprise() ?? 'croc']);
+  readonly spriteScale = SPRITE_SCALE;
 
   private clickedCard: HTMLElement | null = null;
   private clicks = 0;
@@ -149,7 +162,10 @@ export class AboutTeam {
     this.inFront.set(false);
     this.activeSurprise.set(surprise);
     try {
-      if (this.prefersReducedMotion() || typeof host.animate !== 'function') {
+      if (surprise === 'holo') {
+        this.skinnedCard.set(index);
+        await this.wait(SKIN_SHOW_MS);
+      } else if (this.prefersReducedMotion() || typeof host.animate !== 'function') {
         await this.showStatic(host, cards[index]);
       } else if (surprise === 'croc') {
         await this.playCroc(host, cards, index);
@@ -165,6 +181,8 @@ export class AboutTeam {
     } finally {
       this.current = null;
       this.activeSurprise.set(null);
+      // The class comes off here; the stylesheet's transition fades the skin out.
+      this.skinnedCard.set(null);
       this.inFront.set(false);
       this.frame.set(0);
       host.style.transform = '';
@@ -172,16 +190,19 @@ export class AboutTeam {
     }
   }
 
-  /** The crocodile: peeks out from behind its card, hops onto it, hops along every card after it,
-   *  then leaps off the top-right corner of the screen. */
+  /** The crocodile: peeks head-first out from behind its card's bottom-right corner, steps clear,
+   *  hops onto the corner, hops corner to corner along every card after it, then leaps off the
+   *  right of the screen. */
   private async playCroc(host: HTMLElement, cards: DOMRect[], index: number): Promise<void> {
     const size = this.spriteSize();
     const start = cards[index];
     const behind = hiddenBehind(start, size);
-    const peek: Point = { x: behind.x, y: start.top - size.height * 0.55 };
+    // The grid has its head on the right, so sliding right shows the head first.
+    const peek: Point = { x: start.right - size.width * 0.45, y: behind.y };
+    const out: Point = { x: start.right + 2, y: behind.y };
     host.style.transform = translate(behind);
 
-    // 1. Head up, a blink, a beat.
+    // 1. Head out, a blink, a beat.
     await this.run(host, keyframes([behind, peek]), { duration: 400, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' });
     await this.pause(host, 350);
     this.frame.set(CROC_FRAME.blink);
@@ -189,65 +210,71 @@ export class AboutTeam {
     this.frame.set(CROC_FRAME.idle);
     await this.pause(host, 300);
 
-    // 2. Onto its own card, then along the rest. The first hop is the one moment the sprite is
-    //    clear of every card, so that is where it moves from painting under them to over them.
-    let at = peek;
+    // 2. Clear of its own card while still painting under the cards, then over them: this is the
+    //    one moment nothing of it is hidden, so the switch of layer shows nothing popping.
+    await this.run(host, keyframes([peek, out]), { duration: 150, easing: 'ease-out' });
+    this.inFront.set(true);
+
+    // 3. Onto its own corner, then along the rest.
+    let at = out;
     for (let i = index; i < cards.length; i++) {
       const first = i === index;
-      const target = onTop(cards[i], size);
+      const target = onCorner(cards[i], size);
       this.frame.set(CROC_FRAME.jump);
-      await this.hop(host, at, target, first ? 70 : 90, first ? 480 : 600, first ? () => this.inFront.set(true) : undefined);
+      await this.hop(host, at, target, first ? 24 : 36, first ? 420 : 600);
       this.frame.set(CROC_FRAME.idle);
       at = target;
       await this.pause(host, first ? 400 : 350);
     }
 
-    // 3. The big one.
+    // 4. The big one.
     this.frame.set(CROC_FRAME.jump);
-    const exit: Point = { x: window.innerWidth + size.width + 40, y: -size.height - 60 };
-    await this.run(host, keyframes(arcPoints(at, exit, 120)), { duration: 750, easing: 'linear' });
+    const exit: Point = { x: window.innerWidth + size.width + 40, y: at.y - 60 };
+    await this.run(host, keyframes(arcPoints(at, exit, 60)), { duration: 750, easing: 'linear' });
   }
 
-  /** The robot: rises from behind its card, hovers, lights its thrusters and flies off to the right. */
+  /** The robot: slides out from behind its card's bottom-right corner, lights its thrusters,
+   *  hovers over the corner and flies off to the right. */
   private async playMecha(host: HTMLElement, card: DOMRect): Promise<void> {
     const size = this.spriteSize();
     const behind = hiddenBehind(card, size);
-    const emerged: Point = { x: behind.x, y: card.top - size.height };
-    const hover: Point = { x: behind.x, y: emerged.y - 28 };
+    const out: Point = { x: card.right + 4, y: behind.y };
+    const hover: Point = { x: card.right - size.width * 0.5, y: card.bottom - size.height - 12 };
     host.style.transform = translate(behind);
 
-    await this.run(host, keyframes([behind, emerged]), { duration: 700, easing: 'ease-out' });
+    await this.run(host, keyframes([behind, out]), { duration: 700, easing: 'ease-out' });
     this.inFront.set(true);
     this.frame.set(MECHA_FRAME.lit);
-    await this.run(host, keyframes([emerged, hover]), { duration: 300, easing: 'ease-out' });
-    await this.run(host, keyframes(bobPoints(hover, 6, 2)), { duration: 1400, easing: 'linear' });
+    await this.run(host, keyframes([out, hover]), { duration: 300, easing: 'ease-out' });
+    await this.run(host, keyframes(bobPoints(hover, 3, 2)), { duration: 1400, easing: 'linear' });
 
     this.frame.set(MECHA_FRAME.flight);
     const shake = [-2, 2, -2, 2, -1, 1, 0].map((dx) => ({ x: hover.x + dx, y: hover.y }));
     await this.run(host, keyframes(shake), { duration: 300, easing: 'linear' });
-    const exit: Point = { x: window.innerWidth + size.width + 40, y: hover.y - 140 };
+    const exit: Point = { x: window.innerWidth + size.width + 40, y: hover.y - 90 };
     await this.run(host, [{ transform: translate(hover, 0) }, { transform: translate(exit, -14) }], {
       duration: 800,
       easing: 'cubic-bezier(0.5, 0, 1, 0.6)',
     });
   }
 
-  /** Reduced motion, or no Web Animations API: the sprite just sits on the card for a moment. */
+  /** Reduced motion, or no Web Animations API: the sprite just sits on the corner for a moment. */
   private showStatic(host: HTMLElement, card: DOMRect): Promise<void> {
-    host.style.transform = translate(onTop(card, this.spriteSize()));
+    host.style.transform = translate(onCorner(card, this.spriteSize()));
     this.inFront.set(true);
+    return this.wait(STATIC_SHOW_MS);
+  }
+
+  /** A plain timed hold, on the one timer that destroying the component clears. */
+  private wait(ms: number): Promise<void> {
     return new Promise((resolve) => {
-      this.staticTimer = setTimeout(resolve, STATIC_SHOW_MS);
+      this.staticTimer = setTimeout(resolve, ms);
     });
   }
 
-  /** An arc in two halves, with a hook at the apex. */
-  private async hop(host: HTMLElement, from: Point, to: Point, lift: number, ms: number, atApex?: () => void): Promise<void> {
-    const [rise, fall] = splitAtApex(arcPoints(from, to, lift));
-    const riseShare = (rise.length - 1) / (rise.length + fall.length - 2);
-    await this.run(host, keyframes(rise), { duration: ms * riseShare, easing: 'linear' });
-    atApex?.();
-    await this.run(host, keyframes(fall), { duration: ms * (1 - riseShare), easing: 'linear' });
+  /** One arc, take-off to landing. */
+  private hop(host: HTMLElement, from: Point, to: Point, lift: number, ms: number): Promise<void> {
+    return this.run(host, keyframes(arcPoints(from, to, lift)), { duration: ms, easing: 'linear' });
   }
 
   /** Run one phase and leave the sprite where it ended, so the next phase starts from there.
@@ -273,8 +300,7 @@ export class AboutTeam {
 
   private spriteSize(): Size {
     const rows = this.art()?.frames[0] ?? [];
-    const scale = this.spriteScale();
-    return { width: (rows[0]?.length ?? 0) * scale, height: rows.length * scale };
+    return { width: (rows[0]?.length ?? 0) * this.spriteScale, height: rows.length * this.spriteScale };
   }
 
   private prefersReducedMotion(): boolean {

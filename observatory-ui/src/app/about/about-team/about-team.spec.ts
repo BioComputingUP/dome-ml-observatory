@@ -3,9 +3,10 @@ import { provideRouter } from '@angular/router';
 import { vi } from 'vitest';
 import { AboutTeam } from './about-team';
 
-/** jsdom has no Web Animations API, so every scene here runs the static fallback: the sprite is
- *  shown for a moment and hidden again. That is enough to pin down the trigger rules, which are
- *  the part a visitor can get wrong; the motion itself is checked in a real browser. */
+/** jsdom has no Web Animations API, so every sprite scene here runs the static fallback: the sprite
+ *  is shown for a moment and hidden again (the hologram skin is a timed hold either way). That is
+ *  enough to pin down the trigger rules, which are the part a visitor can get wrong; the motion
+ *  and the look are checked in a real browser. */
 describe('AboutTeam', () => {
   let fixture: ComponentFixture<AboutTeam>;
   let component: AboutTeam;
@@ -55,7 +56,7 @@ describe('AboutTeam', () => {
     expect(component.activeSurprise()).toBe('croc');
     fixture.detectChanges();
     expect(root.querySelector<HTMLElement>('.sprite-host')?.hidden).toBe(false);
-    expect(root.querySelector('app-pixel-sprite svg rect')).not.toBeNull();
+    expect(root.querySelector('app-pixel-sprite svg path')).not.toBeNull();
   });
 
   it('gives the third card a different surprise', () => {
@@ -63,9 +64,24 @@ describe('AboutTeam', () => {
     expect(component.activeSurprise()).toBe('mecha');
   });
 
-  it('does nothing for a card without one', () => {
+  it('gives the second card a hologram skin rather than a sprite', async () => {
     click(cards()[1], 5);
+    expect(component.activeSurprise()).toBe('holo');
+    expect(component.skinnedCard()).toBe(1);
+    fixture.detectChanges();
+    expect(cards()[1].classList.contains('holo')).toBe(true);
+    expect(cards()[0].classList.contains('holo')).toBe(false);
+    expect(root.querySelector<HTMLElement>('.sprite-host')?.hidden).toBe(true);
+    expect(root.querySelector('app-pixel-sprite')).toBeNull();
+
+    click(cards()[0], 5);
+    expect(component.activeSurprise()).toBe('holo');
+
+    await vi.advanceTimersByTimeAsync(2600);
     expect(component.activeSurprise()).toBeNull();
+    expect(component.skinnedCard()).toBeNull();
+    fixture.detectChanges();
+    expect(cards()[1].classList.contains('holo')).toBe(false);
   });
 
   it('only counts clicks on the card itself, not on its links', () => {

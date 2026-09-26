@@ -58,3 +58,210 @@ h2 {
     display: none;
   }
 }
+
+// ---- the hologram skin (see AboutTeam) ------------------------------------------------------
+// `.holo` is set on one card for a moment. Everything it adds is a pseudo-element or a colour:
+// the two pseudo-elements sit at z-index -1 inside the card's own stacking context (the z-index: 1
+// above creates it), which paints them over the card's white surface but under its photo and
+// text, and `inset: 0` keeps them inside the 1px border. The transitions live on the base rules,
+// not the modifier, so the skin fades out the same way it fades in. Colours are the site's own
+// tokens through color-mix, as result-card.scss already does. The beam, the pulse and the cursor
+// animate only when the visitor has not asked for reduced motion (home.scss gates its
+// constellation the same way); the fades stay, as they are not motion.
+$holo-fade: 0.5s;
+$holo-line: var(--viz-series-2);
+$holo-grid: color-mix(in srgb, var(--viz-series-2) 16%, transparent);
+
+.member-card {
+  transition:
+    border-color $holo-fade ease,
+    box-shadow $holo-fade ease;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity $holo-fade ease;
+  }
+
+  // A HUD bracket in each corner (two bars each), a glow in two corners, and the grid.
+  &::before {
+    background-image:
+      linear-gradient($holo-line, $holo-line),
+      linear-gradient($holo-line, $holo-line),
+      linear-gradient($holo-line, $holo-line),
+      linear-gradient($holo-line, $holo-line),
+      linear-gradient($holo-line, $holo-line),
+      linear-gradient($holo-line, $holo-line),
+      linear-gradient($holo-line, $holo-line),
+      linear-gradient($holo-line, $holo-line),
+      radial-gradient(circle at 0 0, color-mix(in srgb, var(--viz-series-2) 22%, transparent), transparent 55%),
+      radial-gradient(circle at 100% 100%, color-mix(in srgb, var(--observatory-accent) 14%, transparent), transparent 50%),
+      linear-gradient($holo-grid 1px, transparent 1px),
+      linear-gradient(90deg, $holo-grid 1px, transparent 1px);
+    background-size:
+      14px 2px,
+      2px 14px,
+      14px 2px,
+      2px 14px,
+      14px 2px,
+      2px 14px,
+      14px 2px,
+      2px 14px,
+      100% 100%,
+      100% 100%,
+      18px 18px,
+      18px 18px;
+    background-position:
+      left 6px top 6px,
+      left 6px top 6px,
+      right 6px top 6px,
+      right 6px top 6px,
+      left 6px bottom 6px,
+      left 6px bottom 6px,
+      right 6px bottom 6px,
+      right 6px bottom 6px,
+      0 0,
+      0 0,
+      0 0,
+      0 0;
+    background-repeat:
+      no-repeat,
+      no-repeat,
+      no-repeat,
+      no-repeat,
+      no-repeat,
+      no-repeat,
+      no-repeat,
+      no-repeat,
+      no-repeat,
+      no-repeat,
+      repeat,
+      repeat;
+  }
+
+  // The scan beam: a band about a fifth of the card tall, parked above it until the skin is on.
+  // The band is 22% of the card, so -30% and 130% are the positions where it is fully outside.
+  &::after {
+    background-image: linear-gradient(
+      to bottom,
+      transparent,
+      color-mix(in srgb, var(--observatory-accent) 28%, transparent) 55%,
+      color-mix(in srgb, var(--observatory-accent) 45%, transparent) 60%,
+      transparent
+    );
+    background-size: 100% 22%;
+    background-repeat: no-repeat;
+    background-position: 0 -30%;
+  }
+
+  &.holo {
+    border-color: color-mix(in srgb, var(--viz-series-2) 60%, var(--border-default));
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--viz-series-2) 30%, transparent),
+      0 0 18px color-mix(in srgb, var(--viz-series-2) 28%, transparent),
+      var(--shadow-sm);
+
+    &::before,
+    &::after {
+      opacity: 1;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      &::after {
+        animation: holo-scan 1.6s linear infinite;
+      }
+    }
+  }
+}
+
+.member-photo {
+  transition:
+    border-color $holo-fade ease,
+    box-shadow $holo-fade ease;
+}
+
+.member-role {
+  transition: color $holo-fade ease;
+
+  // A terminal cursor after the role. A block with no text, so nothing is read out; the negative
+  // right margin cancels its width, so the centred line never shifts when it appears.
+  &::after {
+    content: '';
+    display: inline-block;
+    width: 0.5em;
+    height: 1em;
+    margin: 0 -0.75em 0 0.25em;
+    vertical-align: -0.15em;
+    background-color: currentColor;
+    opacity: 0;
+    transition: opacity $holo-fade ease;
+  }
+}
+
+.holo {
+  .member-photo {
+    border-color: var(--viz-series-2);
+    box-shadow:
+      0 0 0 3px color-mix(in srgb, var(--observatory-accent) 35%, transparent),
+      0 0 14px color-mix(in srgb, var(--viz-series-2) 45%, transparent);
+
+    @media (prefers-reduced-motion: no-preference) {
+      animation: holo-pulse 1.4s ease-in-out infinite;
+    }
+  }
+
+  .member-role {
+    color: var(--viz-series-2);
+
+    &::after {
+      opacity: 1;
+
+      @media (prefers-reduced-motion: no-preference) {
+        animation: holo-blink 1s step-end infinite;
+      }
+    }
+  }
+}
+
+@keyframes holo-scan {
+  from {
+    background-position: 0 -30%;
+  }
+
+  to {
+    background-position: 0 130%;
+  }
+}
+
+@keyframes holo-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 3px color-mix(in srgb, var(--observatory-accent) 35%, transparent),
+      0 0 14px color-mix(in srgb, var(--viz-series-2) 45%, transparent);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 5px color-mix(in srgb, var(--observatory-accent) 18%, transparent),
+      0 0 22px color-mix(in srgb, var(--viz-series-2) 65%, transparent);
+  }
+}
+
+@keyframes holo-blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+
+  50%,
+  100% {
+    opacity: 0;
+  }
+}

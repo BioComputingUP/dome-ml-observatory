@@ -13,7 +13,7 @@
     </div>
     <div class="member-grid">
       @for (m of core; track m.name) {
-        <article #memberCard class="member-card info-panel">
+        <article #memberCard class="member-card info-panel" [class.holo]="skinnedCard() === $index">
           <img [src]="m.photo" [alt]="m.name" class="member-photo" width="120" height="120" decoding="async" />
           <h3>{{ m.name }}</h3>
           <p class="member-role">{{ m.role }}</p>
@@ -34,9 +34,9 @@
       }
       <!-- Host for the page's pixel-art surprises (see AboutTeam). Fixed-positioned and decorative:
            it is moved with the Web Animations API and never takes part in layout. -->
-      <div #spriteHost class="sprite-host" [hidden]="!activeSurprise()" [class.sprite-front]="inFront()" aria-hidden="true">
+      <div #spriteHost class="sprite-host" [hidden]="!art()" [class.sprite-front]="inFront()" aria-hidden="true">
         @if (art(); as a) {
-          <app-pixel-sprite [art]="a" [frame]="frame()" [scale]="spriteScale()" />
+          <app-pixel-sprite [art]="a" [frame]="frame()" [scale]="spriteScale" />
         }
       </div>
     </div>
