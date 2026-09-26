@@ -20,7 +20,7 @@ export class AboutOverview {
     initialValue: null,
   });
 
-  readonly corpus = computed(() => this.stats()?.corpus ?? this.records.getStats());
+  readonly corpus = computed(() => this.stats()?.corpus ?? null);
 
   readonly schemaUrl = computed(() =>
     schemaReleaseUrl(this.stats()?.schema_version ?? FALLBACK_SCHEMA_VERSION),

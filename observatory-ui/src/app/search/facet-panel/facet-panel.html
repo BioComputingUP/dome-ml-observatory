@@ -159,7 +159,9 @@
     <p class="coverage-banner">
       <strong>Enrichment in progress.</strong>
       <span class="coverage-count">
-        {{ enrichedCount() | number }} of {{ positiveCount() | number }} AI/ML papers enriched so far.
+        @if (enrichedCount() !== null && positiveCount() !== null) {
+          {{ enrichedCount() | number }} of {{ positiveCount() | number }} AI/ML papers enriched so far.
+        }
         These filters only match enriched records.
       </span>
     </p>

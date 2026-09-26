@@ -21,7 +21,7 @@ export class DownloadOverview {
     initialValue: null,
   });
 
-  readonly corpus = computed(() => this.stats()?.corpus ?? this.records.getStats());
+  readonly corpus = computed(() => this.stats()?.corpus ?? null);
   // versionNumber, not the raw value: /api/stats reports the version WITH a `v` (it reads
   // schema/CURRENT verbatim), and templates here add their own, which rendered `vv1.1.0`.
   readonly schemaVersion = computed(() =>

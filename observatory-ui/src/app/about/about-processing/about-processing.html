@@ -150,7 +150,13 @@
       <div class="coverage coverage-lead">
         <div class="coverage-header">
           <span class="coverage-label">Enrichment coverage</span>
-          <span class="coverage-value">{{ corpus().enriched | number }} of {{ corpus().positive | number }} positive records ({{ enrichedPercent() }}%)</span>
+          <span class="coverage-value">
+            @if (corpus(); as c) {
+              {{ c.enriched | number }} of {{ c.positive | number }} positive records ({{ enrichedPercent() }}%)
+            } @else {
+              —
+            }
+          </span>
         </div>
         <div class="coverage-bar">
           <div class="coverage-bar-fill" [style.width.%]="enrichedPercent()"></div>
@@ -243,7 +249,13 @@
         <div class="coverage">
           <div class="coverage-header">
             <span class="coverage-label">Enrichment coverage</span>
-            <span class="coverage-value">{{ corpus().enriched | number }} of {{ corpus().positive | number }} positive records ({{ enrichedPercent() }}%)</span>
+            <span class="coverage-value">
+            @if (corpus(); as c) {
+              {{ c.enriched | number }} of {{ c.positive | number }} positive records ({{ enrichedPercent() }}%)
+            } @else {
+              —
+            }
+          </span>
           </div>
           <div class="coverage-bar">
             <div class="coverage-bar-fill" [style.width.%]="enrichedPercent()"></div>

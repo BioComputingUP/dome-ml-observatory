@@ -59,17 +59,17 @@
       <ul class="metric-row">
         <li class="metric">
           <span class="metric-icon"><i class="icon icon-common icon-filter" aria-hidden="true"></i></span>
-          <span class="metric-value">{{ corpus().total | number }}</span>
+          <span class="metric-value">{{ (corpus()?.total | number) ?? '—' }}</span>
           <span class="metric-label">publications screened</span>
         </li>
         <li class="metric headline">
           <span class="metric-icon"><i class="icon icon-common icon-classification" aria-hidden="true"></i></span>
-          <span class="metric-value">{{ corpus().positive | number }}</span>
+          <span class="metric-value">{{ (corpus()?.positive | number) ?? '—' }}</span>
           <span class="metric-label">AI/ML methods papers</span>
         </li>
         <li class="metric">
           <span class="metric-icon"><i class="icon icon-common icon-tags" aria-hidden="true"></i></span>
-          <span class="metric-value">{{ searchSpace().enriched | number }}</span>
+          <span class="metric-value">{{ (searchSpace()?.enriched | number) ?? '—' }}</span>
           <span class="metric-label">enriched with AI/ML detail</span>
         </li>
       </ul>

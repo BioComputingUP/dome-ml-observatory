@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, forkJoin, of, shareReplay, throwError } from 'rxjs';
 import { AiMlRecord, Classification } from './record.model';
 import { DomainVocab, ModellingBranchVocab, ModelTypeSeedVocab, Vocabularies } from './vocab.model';
-import { CorpusStats, FacetStats, SearchSpaceStats } from './facet-stats.model';
+import { FacetStats } from './facet-stats.model';
 import { queryToHttpParams } from './search-params';
 
 export interface SearchFilters {
@@ -75,40 +75,9 @@ export interface SearchResult {
   search?: SearchInfo;
 }
 
-/**
- * Fallback corpus-wide numbers, painted instantly so the home/about/download metric rows never
- * show a zero flash while GET /api/stats is in flight, and shown as-is if that call fails
- * outright. RecordsService.getFacetStats() is the primary source now (Phase 7) -- these values
- * are a snapshot, not live, and drift from the real corpus with every load.
- *
- * corpus-figures: GET /api/stats `corpus` on 2026-09-25 (full text as corrected that day), kept
- * equal to the CORPUS dict in schema/generate_facet_stats.py. The sister repository's
- * refresh-cycle skill refreshes every block marked `corpus-figures` after a load.
- */
-export const CORPUS_STATS: CorpusStats = {
-  total: 876_324,
-  positive: 367_348,
-  negative: 502_002,
-  undeterminable: 6_974,
-  openAccess: 589_529,
-  fulltextAvailable: 669_109,
-  enriched: 3_532,
-};
-
-/** Positives-scoped fallback (classification: positive only) -- same role as CORPUS_STATS above:
- *  painted instantly so the home metric row never flashes zeros while GET /api/stats is in flight.
- *  corpus-figures: GET /api/stats `search_space` on 2026-09-25. */
-export const SEARCH_SPACE_STATS: SearchSpaceStats = {
-  total: 367_348,
-  fulltextAvailable: 243_678,
-  openAccess: 212_302,
-  enriched: 3_532,
-  yearRange: { min: 1963, max: 2027 },
-};
-
 /** Facet fields observatory-ws serves a typeahead for -- keeps the string literal in one place
  *  rather than repeated at every call site. Deliberately excludes keywords_author: see
- *  observatory-ws/src/facets/facets.service.ts (694,411 distinct values on the live corpus). */
+ *  observatory-ws/src/facets/facets.service.ts (hundreds of thousands of distinct values). */
 export type TypeaheadFacetField = 'journal' | 'mesh_headings' | 'pub_types' | 'license';
 
 const FACET_TYPEAHEAD_LIMIT = 20;
@@ -134,26 +103,17 @@ export class RecordsService {
   /** Live corpus-wide figures + precomputed facet counts, computed by a single cached aggregation
    *  server-side (observatory-ws/src/stats/stats.service.ts, 24h TTL) -- never aggregated
    *  per-search here. Shared across the app session so repeat page visits don't refetch; a full
-   *  reload picks up any change within the server's own cache window. */
+   *  reload picks up any change within the server's own cache window.
+   *
+   *  The only source of corpus figures in the app. There is deliberately no snapshot to fall back
+   *  on: a page shows '—' until this answers, and '—' if it fails, rather than a remembered number
+   *  that drifts from the corpus with every load. */
   private readonly facetStats$: Observable<FacetStats> = this.http
     .get<FacetStats>('/api/stats')
     .pipe(shareReplay({ bufferSize: 1, refCount: false }));
 
   getFacetStats(): Observable<FacetStats> {
     return this.facetStats$;
-  }
-
-  /** Synchronous fallback for the corpus figures -- see CORPUS_STATS. Prefer getFacetStats()
-   *  where an Observable is workable; it carries the same numbers, live from Mongo. */
-  getStats(): CorpusStats {
-    return CORPUS_STATS;
-  }
-
-  /** Synchronous fallback for the positives-scoped figures -- see SEARCH_SPACE_STATS. Prefer
-   *  getFacetStats().search_space where an Observable is workable; it carries the same numbers,
-   *  live from Mongo. */
-  getSearchSpaceStats(): SearchSpaceStats {
-    return SEARCH_SPACE_STATS;
   }
 
   /** GET /api/records. Not cached -- unlike vocab/stats, results genuinely differ per query, and

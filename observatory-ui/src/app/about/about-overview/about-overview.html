@@ -41,9 +41,13 @@
         <desc id="pipeline-desc">
           A five-stage pipeline: the classification method is first validated against a
           hand-annotated expert benchmark, then publications sourced from Europe PMC are screened by
-          an LLM, enriched with controlled-vocabulary tags, and published as a searchable corpus of
-          {{ corpus().total | number }} screened publications, of which
-          {{ corpus().positive | number }} are classified as AI/ML methods papers.
+          an LLM, enriched with controlled-vocabulary tags, and published as a searchable corpus
+          @if (corpus(); as c) {
+            of {{ c.total | number }} screened publications, of which
+            {{ c.positive | number }} are classified as AI/ML methods papers.
+          } @else {
+            of screened publications and the AI/ML methods papers among them.
+          }
         </desc>
 
         <!-- Connector spine, drawn first so nodes sit over it. -->
@@ -85,8 +89,8 @@
           <circle class="node node-filled" cx="42" cy="354" r="13" />
           <path class="node-glyph" d="M37 354 h10 M42 349 v10" />
           <text class="stage-label" x="70" y="344">Searchable corpus</text>
-          <text class="stage-count" x="70" y="362">{{ corpus().total | number }} screened</text>
-          <text class="stage-count" x="70" y="378">{{ corpus().positive | number }} AI/ML methods papers</text>
+          <text class="stage-count" x="70" y="362">{{ (corpus()?.total | number) ?? '—' }} screened</text>
+          <text class="stage-count" x="70" y="378">{{ (corpus()?.positive | number) ?? '—' }} AI/ML methods papers</text>
         </g>
       </svg>
     </figure>

@@ -41,11 +41,15 @@ export interface JournalRow extends JournalListRow {
   pre: { screened: number; positive: number };
 }
 
+/** Mirrors observatory-ws's JournalCorpusTotals. `screened` and `positive` count only records that
+ *  carry a journal name; `withoutJournal` is everything else (almost all preprints), and the two
+ *  add up to the whole corpus -- from the same aggregation, so the sums are one snapshot. */
 export interface JournalCorpusTotals {
   journals: number;
   journalsScreened: number;
   screened: number;
   positive: number;
+  withoutJournal: { screened: number; positive: number };
 }
 
 export interface JournalListResult {

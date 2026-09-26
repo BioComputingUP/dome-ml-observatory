@@ -26,6 +26,7 @@ const LIVE: CorpusStats = {
   openAccess: 0,
   fulltextAvailable: 0,
   enriched: 4_000,
+  abstractEuropePmc: 0,
 };
 
 describe('AboutProcessing', () => {

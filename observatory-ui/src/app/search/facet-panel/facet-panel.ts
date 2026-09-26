@@ -79,9 +79,10 @@ export class FacetPanel {
     modelFamily: this.cap('modellingBranch', 'model_family'),
   }));
 
-  /** How many of the positive set have been enriched -- drives the honest coverage banner. */
-  readonly enrichedCount = computed(() => this.stats()?.corpus.enriched ?? 0);
-  readonly positiveCount = computed(() => this.stats()?.corpus.positive ?? 0);
+  /** How many of the positive set have been enriched -- drives the honest coverage banner. Null
+   *  until GET /api/stats answers: "0 of 0 enriched" would be a false statement, not a placeholder. */
+  readonly enrichedCount = computed(() => this.stats()?.corpus.enriched ?? null);
+  readonly positiveCount = computed(() => this.stats()?.corpus.positive ?? null);
 
   /** "2020–2024" / "From 2020" / "To 2024" / '' -- shown in the Year group's <summary> so its
    *  collapsed state (or just its header, since it's open by default) still says what's active. */

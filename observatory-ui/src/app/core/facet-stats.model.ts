@@ -7,7 +7,7 @@
  *
  * The counts are precomputed server-side once per data update rather than aggregated per query
  * (24h cache, see StatsService): the corpus is refreshed every two months in triage batches, so
- * live aggregation over 827k documents on every search would be the most expensive thing on the
+ * live aggregation over the whole collection on every search would be the most expensive thing on the
  * page for data that barely moves.
  */
 
@@ -23,8 +23,8 @@ export interface YearRange {
   max: number;
 }
 
-/** The real, full-corpus headline figures -- these are corpus-wide even while `facets` below are
- *  still fixture-derived. See `corpus_provenance` in the generated file. */
+/** The full-corpus headline figures, every classification included. The app holds no copy of
+ *  them: a page shows '—' until GET /api/stats answers, never a remembered number. */
 export interface CorpusStats {
   total: number;
   positive: number;
@@ -33,10 +33,12 @@ export interface CorpusStats {
   openAccess: number;
   fulltextAvailable: number;
   enriched: number;
+  /** Records whose abstract came from Europe PMC; the licensing page states the share. */
+  abstractEuropePmc: number;
 }
 
 /** Everything scoped to `classification: positive` -- the actual searchable set, as opposed to
- *  CorpusStats above which stays corpus-wide (all 827k screened publications) so pages can still
+ *  CorpusStats above which stays corpus-wide (every screened publication) so pages can still
  *  tell the honest "we screen and track the negatives too" story. Mirrors observatory-ws's
  *  SearchSpaceStats (src/stats/stats.service.ts); the API has always served this block, it just
  *  wasn't declared here until the home page needed positives-scoped figures. */

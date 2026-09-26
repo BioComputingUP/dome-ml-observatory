@@ -21,6 +21,7 @@ const STATS_WITH_YEAR_RANGE: FacetStats = {
     openAccess: 204_335,
     fulltextAvailable: 229_325,
     enriched: 0,
+    abstractEuropePmc: 0,
   },
   corpus_provenance: 'test fixture',
   last_classification: { timestamp: '2026-08-27T22:44:56.416265+00:00', enriched_timestamp: null },
@@ -184,6 +185,26 @@ describe('FacetPanel', () => {
       expect(component.countOf('journal')).toBe(0);
       fixture.componentRef.setInput('filters', { journal: ['Nature', 'Science'] } satisfies SearchFilters);
       expect(component.countOf('journal')).toBe(2);
+    });
+  });
+
+  describe('enrichment coverage banner', () => {
+    const bannerText = (fixture: ReturnType<typeof setup>['fixture']): string =>
+      (fixture.nativeElement as HTMLElement).querySelector('.coverage-count')?.textContent ?? '';
+
+    it('states the live enriched and positive counts once the stats arrive', () => {
+      const { fixture } = setup();
+      fixture.detectChanges();
+      expect(bannerText(fixture)).toContain('0 of 355,558 AI/ML papers enriched so far');
+    });
+
+    it('states no count at all before the stats arrive, rather than a false "0 of 0"', () => {
+      const fixture = TestBed.createComponent(FacetPanel);
+      fixture.componentRef.setInput('filters', EMPTY_FILTERS);
+      fixture.componentRef.setInput('stats', null);
+      fixture.detectChanges();
+      expect(bannerText(fixture)).not.toMatch(/\d+ of \d+/);
+      expect(bannerText(fixture)).toContain('These filters only match enriched records.');
     });
   });
 });

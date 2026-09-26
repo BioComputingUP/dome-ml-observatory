@@ -1,5 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { catchError, of } from 'rxjs';
+import { RecordsService } from '../../core/records.service';
+import { FALLBACK_SCHEMA_VERSION, versionNumber } from '../../core/schema-links';
 
 interface EndpointParam {
   name: string;
@@ -37,121 +41,147 @@ export class DownloadApi {
   readonly swaggerUrl = '/api/docs';
   readonly openApiSpecUrl = '/api/docs-json';
 
-  readonly endpoints: Endpoint[] = [
-    {
-      method: 'GET',
-      path: '/api/health',
-      summary: 'Liveness check. Never touches the database, so it stays reachable even if the corpus store is unreachable.',
-      example: '{ "status": "ok" }',
-    },
-    {
-      method: 'GET',
-      path: '/api/health/ready',
-      summary: 'Readiness check — confirms the database connection is live and reports the collection it is reading.',
-      example:
-        // corpus-figures: the example responses here are real ones, refreshed after each load.
-        '{\n  "status": "ok",\n  "mongo": { "db": "dome_observatory", "collection": "Content", "estimatedCount": 876324 },\n  "schemaVersion": "v1.6.0"\n}',
-    },
-    {
-      method: 'GET',
-      path: '/api/records',
-      summary: 'Paginated search over the corpus. Parameters mirror the Search page’s own filters exactly — a shared search results URL is a valid query string here with no translation.',
-      params: [
-        { name: 'q', type: 'string', note: 'Free text over title, abstract and authors: whole words and their forms, AND-ed; "quotes" for a phrase; a trailing * for word beginnings; a method name or acronym also under its other spellings; a DOI, PMID or PMCID looked up directly.' },
-        { name: 'class', type: 'positive,negative,undeterminable', note: 'Comma-separated. Absent defaults to positive.' },
-        { name: 'oa', type: 'boolean', note: 'Open access only.' },
-        { name: 'ft', type: 'boolean', note: 'Full text available.' },
-        { name: 'year', type: '2020-2026', note: 'Inclusive range, either bound optional.' },
-        { name: 'lic', type: 'string(s)', note: 'Licence values. Repeatable (lic=A&lic=B), each matched verbatim.' },
-        { name: 'jrnl', type: 'string(s)', note: 'Journal names. Repeatable, matched verbatim — a name may contain a comma.' },
-        { name: 'mesh', type: 'string(s)', note: 'MeSH headings. Repeatable, matched verbatim.' },
-        { name: 'kw', type: 'string(s)', note: 'Author keywords, exact match. Repeatable.' },
-        { name: 'ptype', type: 'string(s)', note: 'Publication types. Repeatable.' },
-        { name: 'd1, d2, d3', type: 'string(s)', note: 'EDAM domain tiers 1–3 — see the published vocabularies.' },
-        { name: 'para', type: 'string(s)', note: 'Learning paradigm.' },
-        { name: 'fam', type: 'string(s)', note: 'Model family.' },
-        { name: 'mt', type: 'string(s)', note: 'Model type.' },
-        { name: 'dl', type: 'string(s)', note: 'Linked data resource slugs (pdb, geo, zenodo, …); a record matches when any of its resources is listed.' },
-        { name: 'enriched', type: 'boolean', note: 'Only records the enrichment pass has touched.' },
-        { name: 'sort', type: 'relevance | year_desc | year_asc | citations_desc | citations_asc', note: 'Defaults to relevance.' },
-        { name: 'page, pageSize', type: 'integer', note: 'Pagination — pageSize capped at 100.' },
-      ],
-      example:
-        '{\n  "page": 1,\n  "pageSize": 25,\n  "total": 367348,\n  "totalRelation": "eq",\n  "items": [ { "_id": "8b720ad0-...", "publication_metadata": { "title": "..." }, "...": "..." } ]\n}',
-    },
-    {
-      method: 'GET',
-      path: '/api/records/:pid',
-      summary: 'A single record by its PID (the same identifier used in /record/:pid URLs).',
-      example: '{ "_id": "8b720ad0-8cf7-5304-a016-3b15feae2815", "schema_version": "1.1.0", "...": "..." }',
-    },
-    {
-      method: 'GET',
-      path: '/api/export',
-      summary:
-        'Whole-corpus retrieval as NDJSON, one chunk at a time. Every filter below works here too. Instead of page numbers it pages on a cursor, so there is no result window and no limit on how far you can walk — repeat with cursor set to the previous response’s X-Next-Cursor header until that header is absent. Records come back in ascending _id order; free-text q= is not supported.',
-      params: [
-        { name: 'cursor', type: 'string', note: 'The _id to resume after, from the previous response’s X-Next-Cursor header. Omit for the first chunk.' },
-        { name: 'limit', type: 'integer', note: 'Records per chunk, up to 1000. Defaults to 1000.' },
-        { name: '(all /api/records filters)', type: '—', note: 'class, year, jrnl, mesh, lic, ptype, d1–d3, para, fam, mt, oa, ft, enriched. Export a slice, not just the whole thing.' },
-      ],
-      example:
-        'curl -sD headers.txt \'/api/export?class=positive&limit=1000\' >> corpus.ndjson\n' +
-        '# then repeat with &cursor=<X-Next-Cursor from headers.txt> until that header is gone\n' +
-        '{"_id":"02203bf8-5451-59f8-aab6-678bff8754ca","publication_metadata":{...}}',
-    },
-    {
-      method: 'GET',
-      path: '/api/records/:pid/jsonld',
-      summary:
-        'A record as schema.org / Bioschemas JSON-LD, in two nodes of one graph: the Observatory’s record of the paper (screening verdict, vocabulary terms as EDAM and MeSH identifiers, provenance; CC BY 4.0) and the article it describes (Europe PMC metadata, under the article’s own licence). A record page answers Accept: application/ld+json with the same document, and its Link headers point here.',
-      example:
-        '{\n  "@context": { "@vocab": "https://schema.org/", "...": "..." },\n  "@graph": [\n    { "@id": "https://observatory.dome-ml.org/record/8b720ad0-...", "@type": "CreativeWork", "about": { "@id": "https://doi.org/10.3389/fimmu.2025.1608262" }, "license": "https://creativecommons.org/licenses/by/4.0/" },\n    { "@id": "https://doi.org/10.3389/fimmu.2025.1608262", "@type": "ScholarlyArticle", "name": "..." }\n  ]\n}',
-    },
-    {
-      method: 'GET',
-      path: '/api/catalog',
-      summary:
-        'The corpus as a DCAT 3 and schema.org dataset: the catalogue, the corpus as a dataset series, the current release with its counts and provenance, and this API as a data service.',
-      example:
-        '{\n  "@graph": [\n    { "@id": "https://observatory.dome-ml.org/#catalog", "@type": ["dcat:Catalog", "DataCatalog"] },\n    { "@id": "https://observatory.dome-ml.org/download/bulk#corpus", "@type": ["dcat:DatasetSeries", "Dataset"] },\n    "..."\n  ]\n}',
-    },
-    {
-      method: 'GET',
-      path: '/api/oai',
-      summary:
-        'OAI-PMH 2.0 harvesting of the AI/ML methods papers in Dublin Core (oai_dc), incrementally by the date each record last changed. POST works too. Identifiers are oai:observatory.dome-ml.org:<PID>; follow resumptionToken to the end of a list.',
-      params: [
-        { name: 'verb', type: 'Identify | ListMetadataFormats | ListIdentifiers | ListRecords | GetRecord | ListSets', note: 'Required. The repository has no sets.' },
-        { name: 'metadataPrefix', type: 'oai_dc', note: 'Required by ListIdentifiers, ListRecords and GetRecord.' },
-        { name: 'from, until', type: 'YYYY-MM-DD or YYYY-MM-DDThh:mm:ssZ', note: 'Inclusive datestamp range; both at the same granularity.' },
-        { name: 'identifier', type: 'string', note: 'For GetRecord and ListMetadataFormats.' },
-        { name: 'resumptionToken', type: 'string', note: 'From the previous response; excludes every other argument.' },
-      ],
-      example:
-        "curl '/api/oai?verb=ListRecords&metadataPrefix=oai_dc&from=2026-09-01'\n" +
-        '<OAI-PMH ...><ListRecords><record><header><identifier>oai:observatory.dome-ml.org:8b720ad0-...</identifier><datestamp>2026-09-15T18:30:00Z</datestamp></header> ...',
-    },
-    {
-      method: 'GET',
-      path: '/api/facets/:field',
-      summary: 'Typeahead suggestions for a facet field. Allowed fields: journal, preprint_server, mesh_headings, pub_types, license, data_resource. keywords_author is excluded — it carries 694,411 distinct values, too many to serve as suggestions.',
-      params: [
-        { name: 'q', type: 'string', note: 'Substring to filter suggestions by, case-insensitive.' },
-        { name: 'limit', type: 'integer', note: 'Max suggestions to return. Defaults to 20.' },
-      ],
-      example: '["Nature Methods", "Nature Machine Intelligence", "Nature Biotechnology"]',
-    },
-    {
-      method: 'GET',
-      path: '/api/stats',
-      summary: 'Corpus-wide headline figures and facet counts — the same numbers the Search page reads for its metric row and facet panel. Cached server-side; refreshes at most once a day.',
-      example:
-        '{\n  "generated": "2026-09-25T17:38:26.003Z",\n  "schema_version": "v1.6.0",\n  "corpus": { "total": 876324, "positive": 367348, "negative": 502002, "undeterminable": 6974, "enriched": 3532 },\n  "...": "..."\n}',
-    },
-  ];
+  private readonly stats = toSignal(
+    inject(RecordsService).getFacetStats().pipe(catchError(() => of(null))),
+    { initialValue: null },
+  );
 
-  readonly limits: Limit[] = [
+  /** The example responses carry the corpus's real figures, read from GET /api/stats as the page
+   *  renders rather than written in here: a reader comparing an example with the home page, or
+   *  with the call they just made, must not find two different corpora. '…' until it answers. */
+  readonly endpoints = computed<Endpoint[]>(() => {
+    const stats = this.stats();
+    const corpus = stats?.corpus;
+    const n = (value: number | undefined): string => (value === undefined ? '…' : String(value));
+    const schemaVersion = versionNumber(stats?.schema_version ?? FALLBACK_SCHEMA_VERSION);
+    return [
+      {
+        method: 'GET',
+        path: '/api/health',
+        summary: 'Liveness check. Never touches the database, so it stays reachable even if the corpus store is unreachable.',
+        example: '{ "status": "ok" }',
+      },
+      {
+        method: 'GET',
+        path: '/api/health/ready',
+        summary: 'Readiness check — confirms the database connection is live and reports the collection it is reading.',
+        example:
+          `{\n  "status": "ok",\n  "mongo": { "db": "dome_observatory", "collection": "Content", "estimatedCount": ${n(corpus?.total)} },\n  "schemaVersion": "v${schemaVersion}"\n}`,
+      },
+      {
+        method: 'GET',
+        path: '/api/records',
+        summary: 'Paginated search over the corpus. Parameters mirror the Search page’s own filters exactly — a shared search results URL is a valid query string here with no translation.',
+        params: [
+          { name: 'q', type: 'string', note: 'Free text over title, abstract and authors: whole words and their forms, AND-ed; "quotes" for a phrase; a trailing * for word beginnings; a method name or acronym also under its other spellings; a DOI, PMID or PMCID looked up directly.' },
+          { name: 'class', type: 'positive,negative,undeterminable', note: 'Comma-separated. Absent defaults to positive.' },
+          { name: 'oa', type: 'boolean', note: 'Open access only.' },
+          { name: 'ft', type: 'boolean', note: 'Full text available.' },
+          { name: 'year', type: '2020-2026', note: 'Inclusive range, either bound optional.' },
+          { name: 'lic', type: 'string(s)', note: 'Licence values. Repeatable (lic=A&lic=B), each matched verbatim.' },
+          { name: 'jrnl', type: 'string(s)', note: 'Journal names. Repeatable, matched verbatim — a name may contain a comma.' },
+          { name: 'mesh', type: 'string(s)', note: 'MeSH headings. Repeatable, matched verbatim.' },
+          { name: 'kw', type: 'string(s)', note: 'Author keywords, exact match. Repeatable.' },
+          { name: 'ptype', type: 'string(s)', note: 'Publication types. Repeatable.' },
+          { name: 'd1, d2, d3', type: 'string(s)', note: 'EDAM domain tiers 1–3 — see the published vocabularies.' },
+          { name: 'para', type: 'string(s)', note: 'Learning paradigm.' },
+          { name: 'fam', type: 'string(s)', note: 'Model family.' },
+          { name: 'mt', type: 'string(s)', note: 'Model type.' },
+          { name: 'dl', type: 'string(s)', note: 'Linked data resource slugs (pdb, geo, zenodo, …); a record matches when any of its resources is listed.' },
+          { name: 'enriched', type: 'boolean', note: 'Only records the enrichment pass has touched.' },
+          { name: 'sort', type: 'relevance | year_desc | year_asc | citations_desc | citations_asc', note: 'Defaults to relevance.' },
+          { name: 'page, pageSize', type: 'integer', note: 'Pagination — pageSize capped at 100.' },
+        ],
+        example:
+          `{\n  "page": 1,\n  "pageSize": 25,\n  "total": ${n(corpus?.positive)},\n  "totalRelation": "eq",\n  "items": [ { "_id": "8b720ad0-...", "publication_metadata": { "title": "..." }, "...": "..." } ]\n}`,
+      },
+      {
+        method: 'GET',
+        path: '/api/records/:pid',
+        summary: 'A single record by its PID (the same identifier used in /record/:pid URLs).',
+        example: `{ "_id": "8b720ad0-8cf7-5304-a016-3b15feae2815", "schema_version": "${schemaVersion}", "...": "..." }`,
+      },
+      {
+        method: 'GET',
+        path: '/api/export',
+        summary:
+          'Whole-corpus retrieval as NDJSON, one chunk at a time. Every filter below works here too. Instead of page numbers it pages on a cursor, so there is no result window and no limit on how far you can walk — repeat with cursor set to the previous response’s X-Next-Cursor header until that header is absent. Records come back in ascending _id order; free-text q= is not supported.',
+        params: [
+          { name: 'cursor', type: 'string', note: 'The _id to resume after, from the previous response’s X-Next-Cursor header. Omit for the first chunk.' },
+          { name: 'limit', type: 'integer', note: 'Records per chunk, up to 1000. Defaults to 1000.' },
+          { name: '(all /api/records filters)', type: '—', note: 'class, year, jrnl, mesh, lic, ptype, d1–d3, para, fam, mt, oa, ft, enriched. Export a slice, not just the whole thing.' },
+        ],
+        example:
+          'curl -sD headers.txt \'/api/export?class=positive&limit=1000\' >> corpus.ndjson\n' +
+          '# then repeat with &cursor=<X-Next-Cursor from headers.txt> until that header is gone\n' +
+          '{"_id":"02203bf8-5451-59f8-aab6-678bff8754ca","publication_metadata":{...}}',
+      },
+      {
+        method: 'GET',
+        path: '/api/records/:pid/jsonld',
+        summary:
+          'A record as schema.org / Bioschemas JSON-LD, in two nodes of one graph: the Observatory’s record of the paper (screening verdict, vocabulary terms as EDAM and MeSH identifiers, provenance; CC BY 4.0) and the article it describes (Europe PMC metadata, under the article’s own licence). A record page answers Accept: application/ld+json with the same document, and its Link headers point here.',
+        example:
+          '{\n  "@context": { "@vocab": "https://schema.org/", "...": "..." },\n  "@graph": [\n    { "@id": "https://observatory.dome-ml.org/record/8b720ad0-...", "@type": "CreativeWork", "about": { "@id": "https://doi.org/10.3389/fimmu.2025.1608262" }, "license": "https://creativecommons.org/licenses/by/4.0/" },\n    { "@id": "https://doi.org/10.3389/fimmu.2025.1608262", "@type": "ScholarlyArticle", "name": "..." }\n  ]\n}',
+      },
+      {
+        method: 'GET',
+        path: '/api/catalog',
+        summary:
+          'The corpus as a DCAT 3 and schema.org dataset: the catalogue, the corpus as a dataset series, the current release with its counts and provenance, and this API as a data service.',
+        example:
+          '{\n  "@graph": [\n    { "@id": "https://observatory.dome-ml.org/#catalog", "@type": ["dcat:Catalog", "DataCatalog"] },\n    { "@id": "https://observatory.dome-ml.org/download/bulk#corpus", "@type": ["dcat:DatasetSeries", "Dataset"] },\n    "..."\n  ]\n}',
+      },
+      {
+        method: 'GET',
+        path: '/api/oai',
+        summary:
+          'OAI-PMH 2.0 harvesting of the AI/ML methods papers in Dublin Core (oai_dc), incrementally by the date each record last changed. POST works too. Identifiers are oai:observatory.dome-ml.org:<PID>; follow resumptionToken to the end of a list.',
+        params: [
+          { name: 'verb', type: 'Identify | ListMetadataFormats | ListIdentifiers | ListRecords | GetRecord | ListSets', note: 'Required. The repository has no sets.' },
+          { name: 'metadataPrefix', type: 'oai_dc', note: 'Required by ListIdentifiers, ListRecords and GetRecord.' },
+          { name: 'from, until', type: 'YYYY-MM-DD or YYYY-MM-DDThh:mm:ssZ', note: 'Inclusive datestamp range; both at the same granularity.' },
+          { name: 'identifier', type: 'string', note: 'For GetRecord and ListMetadataFormats.' },
+          { name: 'resumptionToken', type: 'string', note: 'From the previous response; excludes every other argument.' },
+        ],
+        example:
+          "curl '/api/oai?verb=ListRecords&metadataPrefix=oai_dc&from=2026-09-01'\n" +
+          '<OAI-PMH ...><ListRecords><record><header><identifier>oai:observatory.dome-ml.org:8b720ad0-...</identifier><datestamp>2026-09-15T18:30:00Z</datestamp></header> ...',
+      },
+      {
+        method: 'GET',
+        path: '/api/facets/:field',
+        summary: 'Typeahead suggestions for a facet field. Allowed fields: journal, preprint_server, mesh_headings, pub_types, license, data_resource. keywords_author is excluded — it carries hundreds of thousands of distinct values, too many to serve as suggestions.',
+        params: [
+          { name: 'q', type: 'string', note: 'Substring to filter suggestions by, case-insensitive.' },
+          { name: 'limit', type: 'integer', note: 'Max suggestions to return. Defaults to 20.' },
+        ],
+        example: '["Nature Methods", "Nature Machine Intelligence", "Nature Biotechnology"]',
+      },
+      {
+        method: 'GET',
+        path: '/api/stats',
+        summary: 'Corpus-wide headline figures and facet counts — the same numbers the Search page reads for its metric row and facet panel. Cached server-side; refreshes at most once a day.',
+        example:
+          `{\n  "generated": "${stats?.generated ?? '…'}",\n  "schema_version": "v${schemaVersion}",\n  "corpus": { "total": ${n(corpus?.total)}, "positive": ${n(corpus?.positive)}, "negative": ${n(corpus?.negative)}, "undeterminable": ${n(corpus?.undeterminable)}, "enriched": ${n(corpus?.enriched)} },\n  "...": "..."\n}`,
+      },
+    ];
+  });
+
+  /** ListRecords page size and the OAI budget, as observatory-ws's oai.service.ts and
+   *  configuration.ts set them -- the harvest time below is worked out from the live positive count
+   *  rather than stated, so it follows the corpus as it grows. */
+  private static readonly OAI_PAGE = 200;
+  private static readonly OAI_PER_MINUTE = 120;
+
+  private readonly harvestTime = computed(() => {
+    const positive = this.stats()?.corpus.positive;
+    if (positive === undefined) return 'a matter of minutes';
+    const minutes = Math.ceil(positive / DownloadApi.OAI_PAGE / DownloadApi.OAI_PER_MINUTE);
+    return `about ${minutes} minutes`;
+  });
+
+  readonly limits = computed<Limit[]>(() => [
     {
       icon: 'icon-signal',
       title: 'Rate limit',
@@ -164,14 +194,14 @@ export class DownloadApi {
       title: 'Export budget',
       value: '60 requests / minute / IP',
       detail:
-        '/api/export has its own separate budget, because one request there returns up to 1,000 records. The limit allows 60,000 records a minute, but your own bandwidth is usually what binds: records average ~3.7 KB, so the whole corpus is roughly 3 GB and takes hours rather than minutes. Filter it down if you do not need all of it.',
+        '/api/export has its own separate budget, because one request there returns up to 1,000 records. The limit allows 60,000 records a minute, but your own bandwidth is usually what binds: records average ~4.5 KB, so the whole corpus is roughly 4 GB and takes hours rather than minutes. Filter it down if you do not need all of it.',
     },
     {
       icon: 'icon-sitemap',
       title: 'OAI-PMH budget',
       value: '120 requests / minute / IP',
       detail:
-        '/api/oai has its own separate budget too, because a harvest is a long run of sequential requests. ListRecords pages hold 200 records, so harvesting every AI/ML methods paper takes about a quarter of an hour.',
+        `/api/oai has its own separate budget too, because a harvest is a long run of sequential requests. ListRecords pages hold 200 records, so harvesting every AI/ML methods paper takes ${this.harvestTime()} at the full budget.`,
     },
     {
       icon: 'icon-ban',
@@ -194,5 +224,5 @@ export class DownloadApi {
       detail:
         'If the corpus database is unreachable, data endpoints return HTTP 503 rather than a generic server error. Safe to retry with exponential backoff.',
     },
-  ];
+  ]);
 }

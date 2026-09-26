@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 import { firstValueFrom } from 'rxjs';
-import { RecordsService, CORPUS_STATS, SearchResult } from './records.service';
+import { RecordsService, SearchResult } from './records.service';
 import { AiMlRecord } from './record.model';
 
 function makeRecord(overrides: Partial<AiMlRecord> = {}): AiMlRecord {
@@ -32,15 +32,6 @@ describe('RecordsService', () => {
   });
 
   afterEach(() => httpMock.verify());
-
-  it('returns the fallback corpus-wide stats synchronously, before any request resolves', () => {
-    expect(service.getStats()).toEqual(CORPUS_STATS);
-  });
-
-  it('keeps the fallback snapshot self-consistent, so a refresh typo fails here', () => {
-    const { total, positive, negative, undeterminable } = CORPUS_STATS;
-    expect(positive + negative + undeterminable).toBe(total);
-  });
 
   describe('search()', () => {
     it('requests GET /api/records with no q/class params for a fully-default query', async () => {

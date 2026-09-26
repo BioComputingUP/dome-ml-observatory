@@ -59,7 +59,15 @@
         </div>
         <div class="spec-row">
           <dt><i class="icon icon-common icon-database" aria-hidden="true"></i>Records</dt>
-          <dd>{{ corpus().total | number }} screened publications, of which {{ corpus().positive | number }} are classified AI/ML methods papers.</dd>
+          <dd>
+            Every screened publication, not only the AI/ML methods papers.
+            @if (corpus(); as c) {
+              The corpus holds {{ c.total | number }} today, {{ c.positive | number }} of them
+              classified AI/ML methods papers.
+            }
+            Each Zenodo version is a snapshot: its <code>archive-metadata.json</code> gives the
+            counts it was exported with, which a later load moves on from.
+          </dd>
         </div>
         <div class="spec-row">
           <dt><i class="icon icon-common icon-code-branch" aria-hidden="true"></i>Schema</dt>

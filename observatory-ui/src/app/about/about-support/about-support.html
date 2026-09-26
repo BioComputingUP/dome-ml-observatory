@@ -215,10 +215,15 @@
     </details>
 
     <details class="faq-item" id="faq-fewer-results">
-      <summary>Why do I get fewer results than the {{ corpus().total | number }} papers you screened?</summary>
+      <summary>
+        Why do I get fewer results than
+        @if (corpus(); as c) { the {{ c.total | number }} papers } @else { all the papers }
+        you screened?
+      </summary>
       <p>
-        Search covers the {{ corpus().positive | number }} papers classified as AI/ML methods
-        papers. The rest were screened and judged not to be AI/ML methods papers, and the search
+        Search covers the
+        @if (corpus(); as c) { {{ c.positive | number }} }
+        papers classified as AI/ML methods papers. The rest were screened and judged not to be AI/ML methods papers, and the search
         page does not reach them. They are kept, and reachable two ways: as one file from
         <a routerLink="/download/bulk">bulk download</a>, or through the
         <a routerLink="/download/api">API</a>’s <code>/api/export</code>, which will hand you the
@@ -243,11 +248,11 @@
     </details>
 
     <details class="faq-item" id="faq-page-400">
-      <summary>Why does browsing stop at page 400?</summary>
+      <summary>Why does browsing stop at page {{ lastPage | number }}?</summary>
       <p>
-        Paging deeper than 10,000 results means asking the database to sort and skip past a large
-        part of the corpus on every request, which it cannot do reliably at this scale. At 25
-        results a page, that is 400 pages.
+        Paging deeper than {{ resultWindow | number }} results means asking the database to sort
+        and skip past a large part of the corpus on every request, which it cannot do reliably at
+        this scale. At {{ pageSize }} results a page, that is {{ lastPage | number }} pages.
       </p>
       <p>
         It is a limit on <em>browsing</em>, not on access. To go past it, narrow the filters, take

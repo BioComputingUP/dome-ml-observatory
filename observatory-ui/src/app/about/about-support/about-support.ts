@@ -5,6 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { RecordsService } from '../../core/records.service';
 import { FALLBACK_SCHEMA_VERSION, versionNumber, schemaReleaseUrl } from '../../core/schema-links';
+import { DEFAULT_PAGE_SIZE, MAX_RESULT_WINDOW } from '../../core/search-params';
 
 /** Where issues are filed. `?template=` opens the form directly rather than the chooser, so a
  *  card that says "report a wrong record" lands on the record-correction form and not a menu. */
@@ -82,7 +83,13 @@ export class AboutSupport {
     initialValue: null,
   });
 
-  readonly corpus = computed(() => this.stats()?.corpus ?? this.records.getStats());
+  readonly corpus = computed(() => this.stats()?.corpus ?? null);
+
+  /** The browsing limit the page-400 answer explains, from the constants search itself enforces, so
+   *  the answer cannot drift from the behaviour. */
+  readonly resultWindow = MAX_RESULT_WINDOW;
+  readonly pageSize = DEFAULT_PAGE_SIZE;
+  readonly lastPage = MAX_RESULT_WINDOW / DEFAULT_PAGE_SIZE;
 
   // versionNumber, not the raw value: /api/stats reports the version WITH a `v` (it reads
   // schema/CURRENT verbatim), and templates here add their own, which rendered `vv1.1.0`.

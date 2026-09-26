@@ -173,13 +173,14 @@ export class Home {
     { initialValue: null },
   );
 
-  /** Real corpus figures, not fixture-derived -- see schema/generate_facet_stats.py. */
-  readonly corpus = computed(() => this.stats()?.corpus ?? this.records.getStats());
+  /** Live corpus figures from GET /api/stats; null until it answers (the metric row shows '—'),
+   *  never a remembered snapshot. */
+  readonly corpus = computed(() => this.stats()?.corpus ?? null);
 
   /** Positives-scoped figures (classification: positive) -- used for metrics that should describe
    *  the actual AI/ML methods set rather than the whole screened corpus, e.g. "enriched with AI/ML
    *  detail". */
-  readonly searchSpace = computed(() => this.stats()?.search_space ?? this.records.getSearchSpaceStats());
+  readonly searchSpace = computed(() => this.stats()?.search_space ?? null);
 
   readonly query = signal('');
 

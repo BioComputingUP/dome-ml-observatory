@@ -195,20 +195,23 @@
               <i class="icon icon-common icon-classification" aria-hidden="true"></i>
               <div>
                 <span class="stat-pill-value">{{ c.positive | number }}</span>
-                <span class="stat-pill-label">AI/ML methods papers</span>
+                <span class="stat-pill-label">AI/ML papers with a journal</span>
               </div>
             </div>
             <div class="stat-pill">
               <i class="icon icon-common icon-search" aria-hidden="true"></i>
               <div>
                 <span class="stat-pill-value">{{ c.screened | number }}</span>
-                <span class="stat-pill-label">Papers screened</span>
+                <span class="stat-pill-label">Journal papers screened</span>
               </div>
             </div>
           </div>
           <p class="muted footnote footnote-wide">
-            Counted across the {{ c.journalsScreened | number }} journals Observatory has screened
-            anything from. Records with no journal name recorded are not included here.
+            {{ c.positive | number }} of Observatory's
+            {{ c.positive + c.withoutJournal.positive | number }} AI/ML methods papers carry a
+            journal name. The other {{ c.withoutJournal.positive | number }} have none, almost all of
+            them preprints, so they appear in search but not here. Counted across the
+            {{ c.journalsScreened | number }} journals Observatory has screened anything from.
           </p>
         }
       </div>

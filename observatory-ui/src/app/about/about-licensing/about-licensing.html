@@ -21,8 +21,8 @@
       <li>the AI/ML screening decisions and their rationales,</li>
       <li>the enrichment tags — domain, learning paradigm, model family and model type,</li>
       <li>the
-        <a [href]="vocabUrl" target="_blank" rel="noopener">controlled vocabularies</a> and
-        <a [href]="schemaUrl" target="_blank" rel="noopener">record schema</a>,</li>
+        <a [href]="vocabUrl()" target="_blank" rel="noopener">controlled vocabularies</a> and
+        <a [href]="schemaUrl()" target="_blank" rel="noopener">record schema</a>,</li>
       <li>and the aggregate statistics, journal rankings and facet counts.</li>
     </ul>
     <p>
@@ -45,8 +45,12 @@
     </div>
     <p>
       Each record also carries bibliographic metadata and an abstract that this project did not
-      create and does not own — CC BY 4.0 does not extend to it. Roughly 93.5% of the abstracts in
-      the corpus are retrieved from
+      create and does not own — CC BY 4.0 does not extend to it.
+      @if (europePmcAbstractShare(); as share) {
+        {{ share | number: '1.1-1' }}% of the abstracts in the corpus are retrieved from
+      } @else {
+        Most of the abstracts in the corpus are retrieved from
+      }
       <a href="https://europepmc.org/" target="_blank" rel="noopener">Europe PMC</a> through their
       public APIs, with the remainder from Crossref and PubMed, and a small share of records
       carrying no abstract at all. Each record's open-access flag and licence string also come from

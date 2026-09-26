@@ -11,14 +11,14 @@
       <div class="stat-pill">
         <i class="icon icon-common icon-database" aria-hidden="true"></i>
         <div>
-          <span class="stat-pill-value">{{ corpus().total | number }}</span>
+          <span class="stat-pill-value">{{ (corpus()?.total | number) ?? '—' }}</span>
           <span class="stat-pill-label">Publications screened</span>
         </div>
       </div>
       <div class="stat-pill">
         <i class="icon icon-common icon-check-circle" aria-hidden="true"></i>
         <div>
-          <span class="stat-pill-value">{{ corpus().positive | number }}</span>
+          <span class="stat-pill-value">{{ (corpus()?.positive | number) ?? '—' }}</span>
           <span class="stat-pill-label">AI/ML methods papers</span>
         </div>
       </div>

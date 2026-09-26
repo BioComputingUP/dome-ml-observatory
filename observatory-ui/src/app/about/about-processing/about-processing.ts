@@ -40,7 +40,7 @@ export class AboutProcessing {
   readonly promptUrl = promptUrl;
   readonly criteriaUrl = criteriaUrl(CURRENT_CRITERIA_SHA256);
 
-  readonly corpus = computed(() => this.stats()?.corpus ?? this.records.getStats());
+  readonly corpus = computed(() => this.stats()?.corpus ?? null);
   readonly lastClassifiedAt = computed(() => this.stats()?.last_classification?.timestamp ?? null);
   readonly lastEnrichedAt = computed(() => this.stats()?.last_classification?.enriched_timestamp ?? null);
 
@@ -49,7 +49,8 @@ export class AboutProcessing {
   );
 
   readonly enrichedPercent = computed(() => {
-    const { enriched, positive } = this.corpus();
-    return positive > 0 ? Math.round((enriched / positive) * 100) : 0;
+    const corpus = this.corpus();
+    if (!corpus) return null;
+    return corpus.positive > 0 ? Math.round((corpus.enriched / corpus.positive) * 100) : 0;
   });
 }

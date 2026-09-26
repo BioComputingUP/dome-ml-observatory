@@ -39,7 +39,7 @@
 <div class="band">
   <div class="band-inner">
     <h2><i class="icon icon-common icon-cogs" aria-hidden="true"></i>Endpoints</h2>
-    @for (endpoint of endpoints; track endpoint.path) {
+    @for (endpoint of endpoints(); track endpoint.path) {
       <section class="endpoint info-panel">
         <h3>
           <span class="method">{{ endpoint.method }}</span>
@@ -84,7 +84,7 @@
       These limits are enforced server-side and apply to every client.
     </p>
     <div class="limits-grid">
-      @for (limit of limits; track limit.title) {
+      @for (limit of limits(); track limit.title) {
         <div class="limit-card info-panel">
           <span class="icon-badge"><i class="icon icon-common {{ limit.icon }}" aria-hidden="true"></i></span>
           <h3>{{ limit.title }}</h3>
