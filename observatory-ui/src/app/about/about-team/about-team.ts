@@ -23,9 +23,10 @@ interface Size {
 }
 
 const CLICKS_TO_TRIGGER = 5;
-/** CSS pixels per sprite cell, per sprite: the crocodile is a 41x49 grid, so 3 puts it at 123x147
- *  against a 220px card; the robot is a coarser 20x34 grid and draws at 4. */
-const SPRITE_SCALE: Record<Surprise, number> = { croc: 3, mecha: 4 };
+/** CSS pixels per sprite cell, per sprite. The crocodile is a 41x49 grid and the robot 28x48, so 3
+ *  puts them at 123x147 and 84x144 against a 220px card. Kept per sprite so a coarser grid could
+ *  still draw at 4. */
+const SPRITE_SCALE: Record<Surprise, number> = { croc: 3, mecha: 3 };
 /** How long the sprite simply sits on the card when motion is reduced or unavailable. */
 const STATIC_SHOW_MS = 2500;
 
