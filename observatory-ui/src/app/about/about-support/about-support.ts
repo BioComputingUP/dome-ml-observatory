@@ -35,8 +35,8 @@ export class AboutSupport {
   private readonly route = inject(ActivatedRoute);
 
   constructor() {
-    // Deep link support for /about/support#faq (and anyone who bookmarked it). The router is
-    // provided bare in app.config.ts -- no withInMemoryScrolling -- so nothing scrolls to a
+    // Deep link support for /about/support#faq (and anyone who bookmarked it). The router in
+    // app.config.ts has no withInMemoryScrolling (only chunk preloading), so nothing scrolls to a
     // fragment on its own, and afterNextRender is the earliest point the FAQ band exists in the
     // DOM. Read once from the snapshot rather than subscribing: the app is zoneless, and the
     // fragment cannot change without leaving the page. Same approach as news.ts.
