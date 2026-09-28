@@ -14,9 +14,7 @@
 
   @if (selected(); as journal) {
     <!-- ===================== Single-journal lens ===================== -->
-    @if (detailLoading()) {
-      <div class="band"><div class="band-inner"><p class="muted">Loading {{ journal }}…</p></div></div>
-    } @else if (notFound()) {
+    @if (notFound()) {
       <div class="band">
         <div class="band-inner">
           <h2>No journal by that name</h2>
@@ -29,16 +27,39 @@
           </button>
         </div>
       </div>
-    } @else if (result(); as detail) {
+    } @else if (detailError()) {
+      <!-- A distinct state from notFound: the journal may well exist, the database just
+           couldn't be reached. The service evicted the failed request, so Try again is real. -->
+      <div class="band">
+        <div class="band-inner">
+          <div role="alert">
+            <h2>Temporarily unavailable</h2>
+            <p class="muted">
+              The figures for “{{ journal }}” couldn't be loaded just now — the database may be
+              briefly unreachable. Please try again shortly.
+            </p>
+            <button type="button" class="cta-pill cta-pill-accent" (click)="retry()">
+              Try again
+            </button>
+            <button type="button" class="cta-pill cta-pill-primary" (click)="clearJournal()">
+              All journals
+            </button>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <!-- Loading or loaded: the frame renders at once from the URL's journal name, and every
+           figure shows '—' until the response fills it in (AGENTS.md: no page waits blank on a
+           number). -->
       <div class="band">
         <div class="band-inner">
           <div class="journal-head">
             <div>
-              <h2 class="journal-name">{{ detail.journal.journal }}</h2>
+              <h2 class="journal-name">{{ journal }}</h2>
               <p class="muted journal-rank">
-                Ranked <strong>#{{ detail.rank | number }}</strong> of
-                {{ detail.rankOf | number }} journals by AI/ML methods papers —
-                {{ detail.shareOfCorpusPositive * 100 | number: '1.0-2' }}% of every AI/ML methods
+                Ranked <strong>#{{ (result()?.rank | number) ?? '—' }}</strong> of
+                {{ (result()?.rankOf | number) ?? '—' }} journals by AI/ML methods papers —
+                {{ (detailSharePct() | number: '1.0-2') ?? '—' }}% of every AI/ML methods
                 paper Observatory holds.
               </p>
             </div>
@@ -52,39 +73,39 @@
             </div>
           </div>
 
-          <div class="stat-pills">
+          <div class="stat-pills" [attr.aria-busy]="result() ? null : 'true'">
             <div class="stat-pill">
               <i class="icon icon-common icon-classification" aria-hidden="true"></i>
               <div>
-                <span class="stat-pill-value">{{ detail.journal.positive | number }}</span>
+                <span class="stat-pill-value">{{ (result()?.journal?.positive | number) ?? '—' }}</span>
                 <span class="stat-pill-label">AI/ML methods papers</span>
               </div>
             </div>
             <div class="stat-pill">
               <i class="icon icon-common icon-search" aria-hidden="true"></i>
               <div>
-                <span class="stat-pill-value">{{ detail.journal.screened | number }}</span>
+                <span class="stat-pill-value">{{ (result()?.journal?.screened | number) ?? '—' }}</span>
                 <span class="stat-pill-label">Screened from this journal</span>
               </div>
             </div>
             <div class="stat-pill">
               <i class="icon icon-common icon-filter" aria-hidden="true"></i>
               <div>
-                <span class="stat-pill-value">{{ detail.journal.negative | number }}</span>
+                <span class="stat-pill-value">{{ (result()?.journal?.negative | number) ?? '—' }}</span>
                 <span class="stat-pill-label">Screened out</span>
               </div>
             </div>
             <div class="stat-pill">
               <i class="icon icon-common icon-pie-chart" aria-hidden="true"></i>
               <div>
-                <span class="stat-pill-value">{{ detail.journal.positiveRate * 100 | number: '1.0-1' }}%</span>
+                <span class="stat-pill-value">{{ (detailRatePct() | number: '1.0-1') ?? '—' }}%</span>
                 <span class="stat-pill-label">AI/ML share of screened</span>
               </div>
             </div>
             <div class="stat-pill">
               <i class="icon icon-common icon-text-mining" aria-hidden="true"></i>
               <div>
-                <span class="stat-pill-value">{{ detail.journal.enriched | number }}</span>
+                <span class="stat-pill-value">{{ (result()?.journal?.enriched | number) ?? '—' }}</span>
                 <span class="stat-pill-label">Entries enriched</span>
               </div>
             </div>
@@ -99,41 +120,46 @@
             <h2>Temporal trend</h2>
           </div>
 
-          @if (hasTrend()) {
-            <div class="chart-card info-panel">
-              <app-line-chart
-                [series]="trendSeries()"
-                [labels]="years()"
-                caption="Papers per year from this journal, and how many of them are AI/ML methods papers."
-                tableLabel="Year"
-              />
-            </div>
+          @if (result(); as detail) {
+            @if (hasTrend()) {
+              <div class="chart-card info-panel">
+                <app-line-chart
+                  [series]="trendSeries()"
+                  [labels]="years()"
+                  caption="Papers per year from this journal, and how many of them are AI/ML methods papers."
+                  tableLabel="Year"
+                />
+              </div>
 
-            <!-- A second panel, deliberately not a second axis on the chart above: a percentage
-                 and a count share no scale. -->
-            <div class="chart-card info-panel">
-              <app-line-chart
-                [series]="shareSeries()"
-                [labels]="years()"
-                unit="%"
-                [maxOverride]="100"
-                caption="Share of that year's screened output classified as AI/ML methods papers."
-                tableLabel="Year"
-              />
-            </div>
+              <!-- A second panel, deliberately not a second axis on the chart above: a percentage
+                   and a count share no scale. -->
+              <div class="chart-card info-panel">
+                <app-line-chart
+                  [series]="shareSeries()"
+                  [labels]="years()"
+                  unit="%"
+                  [maxOverride]="100"
+                  caption="Share of that year's screened output classified as AI/ML methods papers."
+                  tableLabel="Year"
+                />
+              </div>
 
-            @if (detail.journal.pre.screened) {
-              <p class="muted footnote">
-                The chart starts at 2000. Before that, Observatory screened
-                {{ detail.journal.pre.screened | number }} more papers from this journal, of which
-                {{ detail.journal.pre.positive | number }} are AI/ML methods papers. They are
-                included in the totals above but cannot be placed on the axis.
+              @if (detail.journal.pre.screened) {
+                <p class="muted footnote">
+                  The chart starts at 2000. Before that, Observatory screened
+                  {{ detail.journal.pre.screened | number }} more papers from this journal, of which
+                  {{ detail.journal.pre.positive | number }} are AI/ML methods papers. They are
+                  included in the totals above but cannot be placed on the axis.
+                </p>
+              }
+            } @else {
+              <p class="muted">
+                Too few years of data to plot a trend — this journal has records in a single year.
               </p>
             }
           } @else {
-            <p class="muted">
-              Too few years of data to plot a trend — this journal has records in a single year.
-            </p>
+            <div class="skeleton-card" aria-hidden="true"></div>
+            <p class="visually-hidden">Loading the trend</p>
           }
         </div>
       </div>
@@ -147,32 +173,32 @@
           <dl class="context-grid">
             <div>
               <dt>Busiest year</dt>
-              <dd>{{ detail.journal.peakYear ?? '—' }}</dd>
+              <dd>{{ result()?.journal?.peakYear ?? '—' }}</dd>
             </div>
             <div>
               <dt>First year seen</dt>
-              <dd>{{ detail.journal.firstYear ?? '—' }}</dd>
+              <dd>{{ result()?.journal?.firstYear ?? '—' }}</dd>
             </div>
             <div>
               <dt>Most recent year</dt>
-              <dd>{{ detail.journal.lastYear ?? '—' }}</dd>
+              <dd>{{ result()?.journal?.lastYear ?? '—' }}</dd>
             </div>
             <div>
               <dt>Open access</dt>
               <dd>
-                {{ detail.journal.openAccessPositive | number }}
+                {{ (result()?.journal?.openAccessPositive | number) ?? '—' }}
                 <span class="context-sub">
-                  of its {{ detail.journal.positive | number }} AI/ML methods papers
+                  of its {{ (result()?.journal?.positive | number) ?? '—' }} AI/ML methods papers
                 </span>
               </dd>
             </div>
             <div>
               <dt>Undeterminable</dt>
-              <dd>{{ detail.journal.undeterminable | number }}</dd>
+              <dd>{{ (result()?.journal?.undeterminable | number) ?? '—' }}</dd>
             </div>
             <div>
               <dt>Rank by AI/ML papers</dt>
-              <dd>#{{ detail.rank | number }} <span class="context-sub">of {{ detail.rankOf | number }}</span></dd>
+              <dd>#{{ (result()?.rank | number) ?? '—' }} <span class="context-sub">of {{ (result()?.rankOf | number) ?? '—' }}</span></dd>
             </div>
           </dl>
         </div>
@@ -182,30 +208,33 @@
     <!-- ===================== Overview (the landing view) ===================== -->
     <div class="band">
       <div class="band-inner">
-        @if (corpus(); as c) {
-          <div class="stat-pills">
-            <div class="stat-pill">
-              <i class="icon icon-common icon-book" aria-hidden="true"></i>
-              <div>
-                <span class="stat-pill-value">{{ c.journals | number }}</span>
-                <span class="stat-pill-label">Journals with AI/ML papers</span>
-              </div>
-            </div>
-            <div class="stat-pill">
-              <i class="icon icon-common icon-classification" aria-hidden="true"></i>
-              <div>
-                <span class="stat-pill-value">{{ c.positive | number }}</span>
-                <span class="stat-pill-label">AI/ML papers with a journal</span>
-              </div>
-            </div>
-            <div class="stat-pill">
-              <i class="icon icon-common icon-search" aria-hidden="true"></i>
-              <div>
-                <span class="stat-pill-value">{{ c.screened | number }}</span>
-                <span class="stat-pill-label">Journal papers screened</span>
-              </div>
+        <!-- The pills render at once and show '—' until /api/journals answers (AGENTS.md: a
+             figure comes from the API and a page shows '—' until it does). The prose footnote
+             stays conditional: a sentence of dashes reads worse than a sentence arriving. -->
+        <div class="stat-pills" [attr.aria-busy]="corpus() ? null : 'true'">
+          <div class="stat-pill">
+            <i class="icon icon-common icon-book" aria-hidden="true"></i>
+            <div>
+              <span class="stat-pill-value">{{ (corpus()?.journals | number) ?? '—' }}</span>
+              <span class="stat-pill-label">Journals with AI/ML papers</span>
             </div>
           </div>
+          <div class="stat-pill">
+            <i class="icon icon-common icon-classification" aria-hidden="true"></i>
+            <div>
+              <span class="stat-pill-value">{{ (corpus()?.positive | number) ?? '—' }}</span>
+              <span class="stat-pill-label">AI/ML papers with a journal</span>
+            </div>
+          </div>
+          <div class="stat-pill">
+            <i class="icon icon-common icon-search" aria-hidden="true"></i>
+            <div>
+              <span class="stat-pill-value">{{ (corpus()?.screened | number) ?? '—' }}</span>
+              <span class="stat-pill-label">Journal papers screened</span>
+            </div>
+          </div>
+        </div>
+        @if (corpus(); as c) {
           <p class="muted footnote footnote-wide">
             {{ c.positive | number }} of Observatory's
             {{ c.positive + c.withoutJournal.positive | number }} AI/ML methods papers carry a
@@ -268,12 +297,35 @@
           </p>
         }
 
-        @if (listLoading() && !rows().length) {
-          <p class="muted">Loading…</p>
+        @if (listError() && !rows().length) {
+          <!-- Nothing to show and the request failed: say so, distinctly from an empty corpus.
+               The service evicted the failed request, so Try again is a real request. -->
+          <div role="alert">
+            <h3 class="h5">Temporarily unavailable</h3>
+            <p class="muted">
+              The ranking couldn't be loaded just now — the database may be briefly unreachable.
+            </p>
+            <button type="button" class="cta-pill cta-pill-accent" (click)="retry()">
+              Try again
+            </button>
+          </div>
+        } @else if (listBusy() && !rows().length) {
+          <div aria-hidden="true">
+            @for (i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track i) {
+              <div class="skeleton-row"></div>
+            }
+          </div>
+          <p class="visually-hidden">Loading journals</p>
         } @else if (!rows().length) {
           <p class="muted">No journals to rank.</p>
         } @else {
-          <div class="table-wrap">
+          @if (listError()) {
+            <p class="muted refresh-note" role="alert">
+              Couldn't refresh just now — showing the previous ranking.
+              <button type="button" class="link-button" (click)="retry()">Try again</button>
+            </p>
+          }
+          <div class="table-wrap" [attr.aria-busy]="listBusy() ? 'true' : null">
             <table class="journal-table">
               <thead>
                 <tr>

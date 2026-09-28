@@ -1,0 +1,48 @@
+// Shimmer placeholders for content that is on its way -- used by the search results
+// (.skeleton-card) and the journals ranking (.skeleton-row). Shared here rather than living in
+// one page's stylesheet so every loading state looks like the same app; pair them with a
+// .visually-hidden line naming what is loading, since the shimmer itself is aria-hidden.
+
+%skeleton-base {
+  background: linear-gradient(
+    90deg,
+    var(--surface-sunken) 25%,
+    var(--border-default) 37%,
+    var(--surface-sunken) 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.skeleton-card {
+  @extend %skeleton-base;
+
+  height: 150px;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-4);
+}
+
+.skeleton-row {
+  @extend %skeleton-base;
+
+  height: 44px;
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-2);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-card,
+  .skeleton-row {
+    animation: none;
+  }
+}

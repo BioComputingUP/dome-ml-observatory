@@ -1,8 +1,19 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { catchError, distinctUntilChanged, filter, map, of, switchMap, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  combineLatest,
+  distinctUntilChanged,
+  filter,
+  map,
+  of,
+  scan,
+  startWith,
+  switchMap,
+} from 'rxjs';
 import { JournalsService } from '../core/journals.service';
 import { JournalDetailResult, JournalListResult, JournalSort } from '../core/journal.model';
 import { ChartSeries, LineChart } from '../shared/line-chart/line-chart';
@@ -18,6 +29,17 @@ interface JournalsQuery {
   journal: string | null;
   sort: JournalSort;
   minScreened: number;
+}
+
+/**
+ * One request's lifecycle, kept distinct so the template can be honest about each state: a 503
+ * or a timeout is "temporarily unavailable, retry", never "no journals" -- conflating them made
+ * a backend outage read as an empty corpus. `data` is carried through `loading` and `error` by
+ * the list stream's scan, so a lens change dims the table it has instead of blanking it.
+ */
+interface Remote<T> {
+  status: 'loading' | 'ok' | 'notFound' | 'error';
+  data?: T;
 }
 
 function parseParams(params: Record<string, unknown>): JournalsQuery {
@@ -66,53 +88,91 @@ export class Journals {
   readonly sort = computed(() => this.query().sort);
   readonly minScreened = computed(() => this.query().minScreened);
 
-  readonly listLoading = signal(false);
-  readonly detailLoading = signal(false);
+  /** Bumped by the retry buttons. The service evicts an errored request from its session cache,
+   *  so re-running the stream is a real request for whatever failed -- and a free cache replay
+   *  for whatever didn't. */
+  private readonly retry$ = new BehaviorSubject(0);
 
   /** The ranking. Fetched only while the overview is showing (the detail view never displays
-   *  it -- its corpus figures come from the detail response), and only refetched when the lens
-   *  or floor changes: returning from a journal with the same lens keeps the rows as they are. */
-  private readonly list = toSignal(
-    this.route.queryParams.pipe(
-      map((params) => parseParams(params)),
-      filter((q) => q.journal === null),
-      map((q) => ({ sort: q.sort, minScreened: q.minScreened })),
-      distinctUntilChanged((a, b) => a.sort === b.sort && a.minScreened === b.minScreened),
-      tap(() => this.listLoading.set(true)),
+   *  it -- its corpus figures come from the detail response), and only refetched when the lens,
+   *  floor or retry counter changes: returning from a journal with the same lens keeps the rows
+   *  as they are. */
+  private readonly listState = toSignal(
+    combineLatest([this.route.queryParams.pipe(map(parseParams)), this.retry$]).pipe(
+      filter(([q]) => q.journal === null),
+      map(([q, attempt]) => ({ sort: q.sort, minScreened: q.minScreened, attempt })),
+      distinctUntilChanged(
+        (a, b) => a.sort === b.sort && a.minScreened === b.minScreened && a.attempt === b.attempt,
+      ),
       switchMap((q) =>
-        this.journals
-          .list({ sort: q.sort, minScreened: q.minScreened, limit: TOP_N })
-          .pipe(catchError(() => of(null))),
+        this.journals.list({ sort: q.sort, minScreened: q.minScreened, limit: TOP_N }).pipe(
+          map((data): Remote<JournalListResult> => ({ status: 'ok', data })),
+          catchError(() => of<Remote<JournalListResult>>({ status: 'error' })),
+          startWith<Remote<JournalListResult>>({ status: 'loading' }),
+        ),
       ),
-      tap(() => this.listLoading.set(false)),
+      // Carry the last good rows through a reload or a failed refresh: the table dims rather
+      // than blanking, and an error over old data is a note, not an empty page.
+      scan(
+        (prev: Remote<JournalListResult>, next: Remote<JournalListResult>) =>
+          next.status === 'ok' ? next : { ...next, data: prev.data },
+        { status: 'loading' } as Remote<JournalListResult>,
+      ),
     ),
-    { initialValue: null as JournalListResult | null },
+    { initialValue: { status: 'loading' } as Remote<JournalListResult> },
   );
 
-  private readonly detail = toSignal(
-    this.route.queryParams.pipe(
-      map((params) => parseParams(params).journal),
-      distinctUntilChanged(),
-      tap((journal) => this.detailLoading.set(journal !== null)),
-      switchMap((journal) =>
+  /** No scan here on purpose: switching journal A -> B must not show A's figures under B's
+   *  heading. The heading itself comes from `selected()`, so it never waits on this. */
+  private readonly detailState = toSignal(
+    combineLatest([
+      this.route.queryParams.pipe(map((params) => parseParams(params).journal)),
+      this.retry$,
+    ]).pipe(
+      distinctUntilChanged(([aj, aa], [bj, ba]) => aj === bj && aa === ba),
+      switchMap(([journal]) =>
         journal === null
-          ? of(undefined)
-          : this.journals.detail(journal).pipe(catchError(() => of(undefined))),
+          ? of<Remote<JournalDetailResult>>({ status: 'loading' })
+          : this.journals.detail(journal).pipe(
+              map(
+                (data): Remote<JournalDetailResult> =>
+                  data === undefined ? { status: 'notFound' } : { status: 'ok', data },
+              ),
+              catchError(() => of<Remote<JournalDetailResult>>({ status: 'error' })),
+              startWith<Remote<JournalDetailResult>>({ status: 'loading' }),
+            ),
       ),
-      tap(() => this.detailLoading.set(false)),
     ),
-    { initialValue: undefined as JournalDetailResult | undefined },
+    { initialValue: { status: 'loading' } as Remote<JournalDetailResult> },
   );
 
-  readonly rows = computed(() => this.list()?.rows ?? []);
-  readonly corpus = computed(() => this.list()?.corpus ?? this.detail()?.corpus ?? null);
-  readonly rankedTotal = computed(() => this.list()?.total ?? 0);
+  readonly rows = computed(() => this.listState().data?.rows ?? []);
+  readonly corpus = computed(
+    () => this.listState().data?.corpus ?? this.detailState().data?.corpus ?? null,
+  );
+  readonly rankedTotal = computed(() => this.listState().data?.total ?? 0);
+  readonly listBusy = computed(() => this.listState().status === 'loading');
+  readonly listError = computed(() => this.listState().status === 'error');
 
-  readonly result = computed(() => this.detail());
+  readonly result = computed(() => this.detailState().data);
   /** True once a lookup has finished and found nothing -- a stale link or a hand-edited ?j=. */
-  readonly notFound = computed(
-    () => this.selected() !== null && !this.detailLoading() && this.detail() === undefined,
-  );
+  readonly notFound = computed(() => this.detailState().status === 'notFound');
+  readonly detailError = computed(() => this.detailState().status === 'error');
+
+  /** Percentages precomputed so the template can fall back to '—' without arithmetic on a
+   *  value that may not have arrived yet. */
+  readonly detailRatePct = computed(() => {
+    const r = this.result();
+    return r ? r.journal.positiveRate * 100 : null;
+  });
+  readonly detailSharePct = computed(() => {
+    const r = this.result();
+    return r ? r.shareOfCorpusPositive * 100 : null;
+  });
+
+  retry(): void {
+    this.retry$.next(this.retry$.value + 1);
+  }
 
   // ---- Single-journal lens ---------------------------------------------------------------------
 

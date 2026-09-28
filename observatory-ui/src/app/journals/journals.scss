@@ -203,6 +203,28 @@ h2 {
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
+  transition: opacity 0.15s ease;
+
+  // While the lens or floor changes, the old ranking stays on screen, dimmed, rather than
+  // being torn down for a spinner -- the rows barely change and a blank flash reads as broken.
+  &[aria-busy='true'] {
+    opacity: 0.55;
+    pointer-events: none;
+  }
+}
+
+// "Couldn't refresh, showing the previous ranking" -- an error over data that is still good.
+.refresh-note {
+  margin-bottom: var(--space-2);
+}
+
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--observatory-primary);
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .journal-table {
