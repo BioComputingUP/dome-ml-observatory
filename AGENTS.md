@@ -49,8 +49,10 @@ must stay aligned, in both directions:
   classification field: `positives_text` is partial on it and `canUseTextIndex` gates on it.
 - **Every load there needs a restart here.** `FacetsService` is boot-loaded with no TTL, so new
   journals, MeSH terms, licences and enrichment values are invisible until `observatory-ws`
-  restarts; `StatsService`, `CountService` and `JournalsService` are 24h TTL. Its post-load
-  checklist ends with that restart and a `generate_facet_stats.py --from-api` reconciliation.
+  restarts; `CountService` is 24h TTL, and `StatsService`/`JournalsService` serve their last
+  table stale past 24h while one background rebuild runs (`StaleWhileRevalidate`) -- fresher,
+  but still restart-bounded. Its post-load checklist ends with that restart and a
+  `generate_facet_stats.py --from-api` reconciliation.
 - **The corpus description is built there and published here.** Its `build_release_metadata.py`
   writes `metadata/releases/<YYYY-MM>/dataset.jsonld` and `metadata/CURRENT` at each
   release; this repo serves the file at `/api/catalog` and never edits a committed release. The
@@ -276,10 +278,15 @@ host are not.
     gets slow rather than broken; recreating both indexes is part of that reload runbook.
 - `observatory-ws/src/journals/journals.service.ts` — per-journal figures and year-by-year
   trends. Runs **one aggregation over the whole collection at boot** (~27s, measured 2026-09-26) and serves
-  every request from the resulting in-memory table with a 24h TTL, exactly like `StatsService`.
-  Needs no index and writes nothing. Don't move this to a per-request aggregation: grouping the
-  whole collection (876k documents in 2026-09) by journal-and-year on a page view is precisely what
-  the cache exists to avoid on a shared database host. Its rows, ranks and `corpus.screened` /
+  every request from the resulting in-memory table, exactly like `StatsService`. Past the 24h
+  TTL the table is served **stale while ONE background rebuild runs**
+  (`common/stale-while-revalidate.ts`): after boot no request ever waits on the aggregation, a
+  failed rebuild keeps the stale table (logged, 60s retry floor), and every build logs one
+  `Journal table built` line. Before that class, the first request after expiry waited the whole
+  aggregation out inline and every concurrent request started another -- don't put the plain
+  delete-on-expiry `TtlCache` back here, and don't move this to a per-request aggregation:
+  grouping the whole collection (876k documents in 2026-09) by journal-and-year on a page view
+  is precisely what the cache exists to avoid on a shared database host. Its rows, ranks and `corpus.screened` /
   `corpus.positive` cover only the records carrying a journal name (819,129 of 876,324 on
   2026-09-25; preprints have none) — anything displaying them has to say so. The rest are counted
   into `corpus.withoutJournal` by the same pass, so the two sum to `/api/stats`' corpus totals and a
@@ -296,9 +303,12 @@ host are not.
   `StatsService` and `JournalsService` each `await` real Mongo work in `onModuleInit` *before*
   Nest calls `app.listen()` — the distinct facet values (~36k when measured on 2026-09-01), one
   `$facet` aggregation, and the ~27s journals aggregation respectively (boot measured at 40s on
-  2026-09-26). That's why the service takes ~40-50s to answer its first
+  2026-09-26; ~14s on the production host itself, whose Mongo round trips are local --
+  `corpus-figures`). That's why the service can take ~40-50s to answer its first
   request on a cold start, and why `observatory-ws/Dockerfile`'s `HEALTHCHECK --start-period` has
-  to stay comfortably above it. **If you add another serial warm-up step, re-measure boot time and
+  to stay comfortably above it. The warm-up is also the LAST time a request-path aggregation
+  runs in the foreground: after boot, `StatsService` and `JournalsService` refresh in the
+  background off a stale-serving cache (see the journals bullet above). **If you add another serial warm-up step, re-measure boot time and
   raise `--start-period` to match** — the Dockerfile's own comment says the same thing.
 
 ## Things that have gone wrong before — don't reintroduce these

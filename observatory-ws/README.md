@@ -180,7 +180,11 @@ every OAI-PMH and sitemap response against the protocols' XSDs, offline (`test-f
 
 The service warms in-memory caches against the database before it calls `listen()` — facet values,
 the corpus stats aggregation, and the journals table. So `/api/*` returns 502 behind the frontend
-proxy for roughly the first 40–50 seconds after start, and the caches then hold for 24 h.
+proxy for roughly the first 40–50 seconds after start. The stats and journals tables then refresh
+at most once every 24 h **in the background**: past the TTL the last table keeps answering while
+one rebuild runs (each logs a `... built` line), so no request after boot ever waits on an
+aggregation. The other caches (counts, term frequencies, OAI, sitemaps) hold for 24 h and refill
+on the request.
 
 The container healthcheck is liveness only: a database blip makes individual requests fail rather
 than restart-looping the container. With the database unreachable the process still starts and
