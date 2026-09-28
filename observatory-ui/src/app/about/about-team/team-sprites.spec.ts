@@ -1,11 +1,12 @@
 import { TRANSPARENT } from '../../shared/pixel-sprite/pixel-sprite';
-import { CROC_FRAME, FIRE_CROC, MECHA, MECHA_FRAME } from './team-sprites';
+import { CROC_FRAME, FIRE_CROC, MECHA, MECHA_FRAME, SHIP_FRAME, STARSHIP } from './team-sprites';
 
 /** The art is hand-typed text, so the cheap mistakes -- a row one cell short, a letter that is not
  *  in the palette -- are caught here rather than as a hole in the picture. */
 describe.each([
   ['fire crocodile', FIRE_CROC, CROC_FRAME],
   ['giant robot', MECHA, MECHA_FRAME],
+  ['starship', STARSHIP, SHIP_FRAME],
 ])('%s sprite', (_name, art, frameIndex) => {
   it('has one frame per named pose', () => {
     expect(art.frames).toHaveLength(Object.keys(frameIndex).length);

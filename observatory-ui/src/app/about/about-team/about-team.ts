@@ -2,11 +2,10 @@ import { Component, DestroyRef, ElementRef, computed, inject, signal, viewChild,
 import { RouterLink } from '@angular/router';
 import { PixelSprite } from '../../shared/pixel-sprite/pixel-sprite';
 import { Point, arcPoints, bobPoints, keyframes, translate } from '../../shared/pixel-sprite/sprite-motion';
-import { CROC_FRAME, FIRE_CROC, MECHA, MECHA_FRAME } from './team-sprites';
+import { CROC_FRAME, FIRE_CROC, MECHA, MECHA_FRAME, SHIP_FRAME, STARSHIP } from './team-sprites';
 
-type Sprite = 'croc' | 'mecha';
-/** A pixel-art character, or `holo`: a skin the card itself wears for a moment. */
-type Surprise = Sprite | 'holo';
+/** The pixel-art characters a card can set off. */
+type Surprise = 'croc' | 'starship' | 'mecha';
 
 interface Member {
   name: string;
@@ -15,7 +14,7 @@ interface Member {
   photo: string;
   orcid?: string;
   github?: string;
-  /** Which surprise five consecutive clicks on this card set off, if any. */
+  /** Which surprise a click on this card sets off, if any. */
   surprise?: Surprise;
 }
 
@@ -24,17 +23,13 @@ interface Size {
   readonly height: number;
 }
 
-const CLICKS_TO_TRIGGER = 5;
-/** CSS pixels per sprite cell. 0.6 puts the 41x49 crocodile at about 25x29 and the 28x48 robot at
- *  about 17x29: small enough to perch on a card's corner, and roughly a third of the 2 they were
- *  drawn at before. Deliberately fractional -- PixelSprite anti-aliases a fractional scale rather
+/** CSS pixels per sprite cell. 0.6 puts the 41x49 crocodile at about 25x29, the 28x48 robot at
+ *  about 17x29 and the 60x30 starship at about 36x18: small enough to perch on a card's corner,
+ *  and roughly a third of the 2 the first two were drawn at before. Deliberately fractional -- PixelSprite anti-aliases a fractional scale rather
  *  than snapping it, so the cost is crisp pixels, not missing rows. */
 const SPRITE_SCALE = 0.6;
 /** How long the sprite simply sits on the card when motion is reduced or unavailable. */
 const STATIC_SHOW_MS = 2500;
-/** How long the hologram skin holds. The stylesheet fades it in and out over half a second each
- *  way, so it is on screen about as long as the robot's scene. */
-const SKIN_SHOW_MS = 2500;
 
 /** Tucked behind the card's bottom-right corner, where the card hides it completely (the host
  *  paints under the cards). 10px in from both edges clears the card's 8px corner radius. */
@@ -79,7 +74,7 @@ export class AboutTeam {
       photo: 'assets/img/ivan.webp',
       orcid: '0000-0003-1691-8425',
       github: 'ivanmicetic',
-      surprise: 'holo',
+      surprise: 'starship',
     },
     {
       name: 'Silvio Tosatto',
@@ -92,31 +87,26 @@ export class AboutTeam {
   ];
 
   // ---- the surprises ------------------------------------------------------------------------
-  // Five consecutive clicks on a card that has one play a short scene: a pixel-art character
-  // peeks out from behind that card's bottom-right corner and leaves the page, or the card itself
-  // wears a skin for a moment. Purely decorative -- the sprite host is aria-hidden and takes no
-  // pointer events, the skin is one class the stylesheet fades, and nothing on the page depends on
-  // either. Motion is the Web Animations API (element.animate) rather than CSS keyframes because
-  // every waypoint is a card's measured position; the reduced-motion preference is honoured here
-  // for the same reason (the skin's own animations are gated in the stylesheet).
+  // One click on a card that has one plays a short scene: a pixel-art character peeks out from
+  // behind that card's bottom-right corner and leaves the page. Purely decorative -- the sprite
+  // host is aria-hidden and takes no pointer events, and nothing on the page depends on it. Motion
+  // is the Web Animations API (element.animate) rather than CSS keyframes because every waypoint
+  // is a card's measured position; the reduced-motion preference is honoured here for the same
+  // reason.
 
   private readonly cards = viewChildren<ElementRef<HTMLElement>>('memberCard');
   private readonly spriteHost = viewChild.required<ElementRef<HTMLElement>>('spriteHost');
 
   readonly activeSurprise = signal<Surprise | null>(null);
-  /** Index of the card wearing the hologram skin, while one does. */
-  readonly skinnedCard = signal<number | null>(null);
   /** Whether the sprite host paints over the cards (true) or under them (false). */
   readonly inFront = signal(false);
   readonly frame = signal(0);
   readonly art = computed(() => {
     const surprise = this.activeSurprise();
-    return surprise === 'croc' ? FIRE_CROC : surprise === 'mecha' ? MECHA : null;
+    return surprise === 'croc' ? FIRE_CROC : surprise === 'starship' ? STARSHIP : surprise === 'mecha' ? MECHA : null;
   });
   readonly spriteScale = SPRITE_SCALE;
 
-  private clickedCard: HTMLElement | null = null;
-  private clicks = 0;
   private playing = false;
   private current: Animation | null = null;
   private staticTimer: ReturnType<typeof setTimeout> | undefined;
@@ -135,22 +125,11 @@ export class AboutTeam {
     if (!card || target?.closest('a') || this.playing) {
       return;
     }
-    if (card !== this.clickedCard) {
-      this.clickedCard = card;
-      this.clicks = 0;
-    }
-    this.clicks++;
-    if (this.clicks < CLICKS_TO_TRIGGER) {
-      return;
-    }
-    this.clicks = 0;
     const index = this.cards().findIndex((c) => c.nativeElement === card);
     const surprise = this.core[index]?.surprise;
     if (!surprise) {
       return;
     }
-    // Five quick clicks select the card's text; clear that so it isn't sitting under the sprite.
-    document.getSelection?.()?.removeAllRanges();
     void this.play(surprise, index);
   }
 
@@ -162,13 +141,12 @@ export class AboutTeam {
     this.inFront.set(false);
     this.activeSurprise.set(surprise);
     try {
-      if (surprise === 'holo') {
-        this.skinnedCard.set(index);
-        await this.wait(SKIN_SHOW_MS);
-      } else if (this.prefersReducedMotion() || typeof host.animate !== 'function') {
+      if (this.prefersReducedMotion() || typeof host.animate !== 'function') {
         await this.showStatic(host, cards[index]);
       } else if (surprise === 'croc') {
         await this.playCroc(host, cards, index);
+      } else if (surprise === 'starship') {
+        await this.playStarship(host, cards[index]);
       } else {
         await this.playMecha(host, cards[index]);
       }
@@ -181,8 +159,6 @@ export class AboutTeam {
     } finally {
       this.current = null;
       this.activeSurprise.set(null);
-      // The class comes off here; the stylesheet's transition fades the skin out.
-      this.skinnedCard.set(null);
       this.inFront.set(false);
       this.frame.set(0);
       host.style.transform = '';
@@ -231,6 +207,39 @@ export class AboutTeam {
     this.frame.set(CROC_FRAME.jump);
     const exit: Point = { x: window.innerWidth + size.width + 40, y: at.y - 60 };
     await this.run(host, keyframes(arcPoints(at, exit, 60)), { duration: 750, easing: 'linear' });
+  }
+
+  /** The starship: cruises out from behind its card's bottom-right corner saucer first, lights its
+   *  nacelles, holds over the corner, then stretches into a streak and is gone off the right. */
+  private async playStarship(host: HTMLElement, card: DOMRect): Promise<void> {
+    const size = this.spriteSize();
+    const behind = hiddenBehind(card, size);
+    const out: Point = { x: card.right + 4, y: behind.y };
+    const hover: Point = { x: card.right - size.width * 0.5, y: card.bottom - size.height - 14 };
+    host.style.transform = translate(behind);
+
+    // 1. Out at impulse: slower and more level than the robot, a ship under way.
+    await this.run(host, keyframes([behind, out]), { duration: 900, easing: 'ease-out' });
+    this.inFront.set(true);
+    this.frame.set(SHIP_FRAME.lit);
+    await this.run(host, keyframes([out, hover]), { duration: 400, easing: 'ease-out' });
+    await this.run(host, keyframes(bobPoints(hover, 2, 2)), { duration: 1800, easing: 'linear' });
+
+    // 2. Nacelles up, a short pull back, then the jump: the ship stretches along its heading and
+    //    fades as it goes, the streak that a jump to warp leaves. The scale rides on the same
+    //    transform as the translate so the two keyframes interpolate as one.
+    this.frame.set(SHIP_FRAME.warp);
+    const wind: Point = { x: hover.x - 8, y: hover.y };
+    await this.run(host, keyframes([hover, wind]), { duration: 220, easing: 'ease-in' });
+    const exit: Point = { x: window.innerWidth + size.width * 6 + 60, y: hover.y - 20 };
+    await this.run(
+      host,
+      [
+        { transform: `${translate(wind)} scaleX(1)`, opacity: 1 },
+        { transform: `${translate(exit)} scaleX(6)`, opacity: 0 },
+      ],
+      { duration: 320, easing: 'cubic-bezier(0.7, 0, 1, 0.4)' },
+    );
   }
 
   /** The robot: slides out from behind its card's bottom-right corner, lights its thrusters,

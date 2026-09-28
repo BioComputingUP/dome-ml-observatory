@@ -1,6 +1,6 @@
 import { PixelArt } from '../../shared/pixel-sprite/pixel-sprite';
 
-/** The Team page's two pixel-art surprises (see AboutTeam). Each is a few frames of a character
+/** The Team page's three pixel-art surprises (see AboutTeam). Each is a few frames of a character
  *  grid: one letter per cell, `.` transparent, palette below. Kept as text on purpose -- diffs are
  *  readable, there are no binary assets, and a fix to the art is a one-letter edit. */
 
@@ -355,6 +355,128 @@ export const MECHA: PixelArt = {
   ],
 };
 
+/** A starship in right-facing side profile, seen a little from above: a saucer forward with a bridge dome, a
+ *  slanted neck down to the engineering hull with its amber deflector dish, and twin warp nacelles with
+ *  red front caps on swept pylons (60x30 cells). Proportions follow the real thing scaled to 60 cells of length. */
+export const STARSHIP: PixelArt = {
+  palette: {
+    K: '#232A24',
+    L: '#D3DCCB',
+    W: '#C4CFBA',
+    M: '#93A28B',
+    S: '#5F6E5B',
+    N: '#3A443A',
+    R: '#C9372C',
+    D: '#7A1E17',
+    A: '#D98B2B',
+    Y: '#F6D36B',
+    B: '#8FDCFF',
+    C: '#2F86C9',
+  },
+  frames: [
+    // idle
+    [
+      '..NNKKKKKKKKKKKKKKKKKKKKKKKKKKKKRRD.........................',
+      '..NNLLLLLLLLLLLLLLLLLLLLLLLLLLLLRRR.........................',
+      '..NNSSSSSSSSSSSSSSSSSSSSSSSSSSSSRRR.........................',
+      '..NNKKKKKKKMMMMKKKKKKKKKKKKKKKKKDDD.........................',
+      '...........KMMK.............................................',
+      'NNKKKKKKKKKMMMMKKKKKKKKKKKKKKKRRD...........................',
+      'NNLLLLLLLLLLLLLLLLLLLLLLLLLLLLRRR..........KKKKK............',
+      'NNWWWWWWWWWWWWWWWWWWWWWWWWWWWWRRR.........KLLLLLK...........',
+      'NNSSSSSSSSSSSSSSSSSSSSSSSSSSSSDDD.....KKKKLLLLLLLKKKK.......',
+      'NNKKKKKKKMMMMMMMKKKKKKKKKKKKKKDDD.KKKKLLLLLLLLLLLLLLLKKKK...',
+      '.........KMMMMMK................KKLLLLLLLLLLLLLLLLLLLLLLLKK.',
+      '.........KMMMMMK...............KWWWWWWWWWWWWWWWWWWWWWWWWWWWK',
+      '..........KMMMMK...............KWWWWWWWWWWWWWWWWWWWWWWWWWWWK',
+      '..........KMMMMK..............KMMMMMMMMMMMMMMMMMMMMMMMMMMMMK',
+      '..........KMMMMMK............KWWMMMMKMMMKMMMMMMMMMKMMMKMMKK.',
+      '..........KMMMMMK...........KWWWWKKKKKSSSSSSSSSSSSSSSKKKK...',
+      '..........KMMMMMK..........KWWWWK.....KKKKKSSSSSKKKKK.......',
+      '...........KMMMMK..........KWWWWK..........KSSSK............',
+      '...........KMMMMK.........KWWWWK............KKK.............',
+      '...........KMMMMMK.......KWWWWK.............................',
+      '............KMMMMK......KWWWWK..............................',
+      '............KMMMMK.....KWWWWK...............................',
+      '........KKKKMMMMMMKKKKKMMMMMK...............................',
+      '.......KLLLLLLLLLLLLLLLLLLLLK...............................',
+      '......KNNWWWWWWWWWWWWWWWWWWWAA..............................',
+      '......KNNWWWWWWWWWWWWWWWWWWWAAA.............................',
+      '......KNNWWWWWWWWWWWWWWWWWWWAAA.............................',
+      '......KNNWWWWWWWWWWWWWWWWWWWAA..............................',
+      '.......KSSSSSSSSSSSSSSSSSSSSK...............................',
+      '........KKKKKKKKKKKKKKKKKKKKK...............................',
+    ],
+    // lit
+    [
+      '..NNKKKKKKKKKKKKKKKKKKKKKKKKKKKKRRD.........................',
+      '..NNLLLLLLLLLLLLLLLLLLLLLLLLLLLLRYR.........................',
+      '..NNSSSSSSSSSSSSSSSSSSSSSSSSSSSSRYR.........................',
+      '..NNKKKKKKKMMMMKKKKKKKKKKKKKKKKKDDD.........................',
+      '...........KMMK.............................................',
+      'NNKKKKKKKKKMMMMKKKKKKKKKKKKKKKRRD...........................',
+      'NNLLLLLLLLLLLLLLLLLLLLLLLLLLLLRYR..........KKKKK............',
+      'NNWWWWWWWWWWWWWWWWWWWWWWWWWWWWRYR.........KLLLLLK...........',
+      'NNSSSSSSSSSSSSSSSSSSSSSSSSSSSSDDD.....KKKKLLLLLLLKKKK.......',
+      'NNKKKKKKKMMMMMMMKKKKKKKKKKKKKKDDD.KKKKLLLLLLLLLLLLLLLKKKK...',
+      '.........KMMMMMK................KKLLLLLLLLLLLLLLLLLLLLLLLKK.',
+      '.........KMMMMMK...............KWWWWWWWWWWWWWWWWWWWWWWWWWWWK',
+      '..........KMMMMK...............KWWWWWWWWWWWWWWWWWWWWWWWWWWWK',
+      '..........KMMMMK..............KMMMMMMMMMMMMMMMMMMMMMMMMMMMMK',
+      '..........KMMMMMK............KWWMMMMKMMMKMMMMMMMMMKMMMKMMKK.',
+      '..........KMMMMMK...........KWWWWKKKKKSSSSSSSSSSSSSSSKKKK...',
+      '..........KMMMMMK..........KWWWWK.....KKKKKSSSSSKKKKK.......',
+      '...........KMMMMK..........KWWWWK..........KSSSK............',
+      '...........KMMMMK.........KWWWWK............KKK.............',
+      '...........KMMMMMK.......KWWWWK.............................',
+      '............KMMMMK......KWWWWK..............................',
+      '............KMMMMK.....KWWWWK...............................',
+      '........KKKKMMMMMMKKKKKMMMMMK...............................',
+      '.......KLLLLLLLLLLLLLLLLLLLLK...............................',
+      '......KNNWWWWWWWWWWWWWWWWWWWAA..............................',
+      '......KNNWWWWWWWWWWWWWWWWWWWAYA.............................',
+      '......KNNWWWWWWWWWWWWWWWWWWWAYA.............................',
+      '......KNNWWWWWWWWWWWWWWWWWWWAA..............................',
+      '.......KSSSSSSSSSSSSSSSSSSSSK...............................',
+      '........KKKKKKKKKKKKKKKKKKKKK...............................',
+    ],
+    // warp
+    [
+      '..CCKKKKKKKKKKKKKKKKKKKKKKKKKKKKRRD.........................',
+      'BBCCBBBBBBBBBBBBBLLLLLLLLLLLLLLLRYR.........................',
+      'BBCCBBBBBBBBBBBBBSSSSSSSSSSSSSSSRYR.........................',
+      '..CCKKKKKKKMMMMKKKKKKKKKKKKKKKKKDDD.........................',
+      '...........KMMK.............................................',
+      'CCKKKKKKKKKMMMMKKKKKKKKKKKKKKKRRD...........................',
+      'CCBBBBBBBBBBBBBLLLLLLLLLLLLLLLRYR..........KKKKK............',
+      'CCBBBBBBBBBBBBBWWWWWWWWWWWWWWWRYR.........KLLLLLK...........',
+      'CCBBBBBBBBBBBBBSSSSSSSSSSSSSSSDDD.....KKKKLLLLLLLKKKK.......',
+      'CCKKKKKKKMMMMMMMKKKKKKKKKKKKKKDDD.KKKKLLLLLLLLLLLLLLLKKKK...',
+      '.........KMMMMMK................KKLLLLLLLLLLLLLLLLLLLLLLLKK.',
+      '.........KMMMMMK...............KWWWWWWWWWWWWWWWWWWWWWWWWWWWK',
+      '..........KMMMMK...............KWWWWWWWWWWWWWWWWWWWWWWWWWWWK',
+      '..........KMMMMK..............KMMMMMMMMMMMMMMMMMMMMMMMMMMMMK',
+      '..........KMMMMMK............KWWMMMMKMMMKMMMMMMMMMKMMMKMMKK.',
+      '..........KMMMMMK...........KWWWWKKKKKSSSSSSSSSSSSSSSKKKK...',
+      '..........KMMMMMK..........KWWWWK.....KKKKKSSSSSKKKKK.......',
+      '...........KMMMMK..........KWWWWK..........KSSSK............',
+      '...........KMMMMK.........KWWWWK............KKK.............',
+      '...........KMMMMMK.......KWWWWK.............................',
+      '............KMMMMK......KWWWWK..............................',
+      '............KMMMMK.....KWWWWK...............................',
+      '........KKKKMMMMMMKKKKKMMMMMK...............................',
+      '.......KLLLLLLLLLLLLLLLLLLLLK...............................',
+      '......KNNWWWWWWWWWWWWWWWWWWWAA..............................',
+      '......KNNWWWWWWWWWWWWWWWWWWWAYA.............................',
+      '......KNNWWWWWWWWWWWWWWWWWWWAYA.............................',
+      '......KNNWWWWWWWWWWWWWWWWWWWAA..............................',
+      '.......KSSSSSSSSSSSSSSSSSSSSK...............................',
+      '........KKKKKKKKKKKKKKKKKKKKK...............................',
+    ],
+  ],
+};
+
 /** Frame indices, so the scene code reads as poses rather than numbers. */
 export const CROC_FRAME = { idle: 0, blink: 1, jump: 2 } as const;
 export const MECHA_FRAME = { idle: 0, lit: 1, flight: 2 } as const;
+export const SHIP_FRAME = { idle: 0, lit: 1, warp: 2 } as const;

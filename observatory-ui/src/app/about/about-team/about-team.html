@@ -13,7 +13,7 @@
     </div>
     <div class="member-grid">
       @for (m of core; track m.name) {
-        <article #memberCard class="member-card info-panel" [class.holo]="skinnedCard() === $index">
+        <article #memberCard class="member-card info-panel">
           <img [src]="m.photo" [alt]="m.name" class="member-photo" width="120" height="120" decoding="async" />
           <h3>{{ m.name }}</h3>
           <p class="member-role">{{ m.role }}</p>
