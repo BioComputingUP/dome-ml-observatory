@@ -2,12 +2,14 @@
   >Skip to main content</a
 >
 
+<div class="nav-progress" [class.active]="navigating()" aria-hidden="true"></div>
+
 <div class="d-flex flex-column min-vh-100">
   <section class="page-header">
     <app-navbar></app-navbar>
   </section>
 
-  <main id="main-content" class="flex-grow-1">
+  <main id="main-content" class="flex-grow-1" [attr.aria-busy]="navigating() ? 'true' : null">
     <router-outlet></router-outlet>
   </main>
 

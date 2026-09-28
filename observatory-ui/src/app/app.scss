@@ -1,0 +1,51 @@
+// Indeterminate progress bar pinned to the top of the viewport while a navigation is in
+// flight (see App.navigating). Pure CSS, no third-party anything -- the CSP stays as it is.
+// The opacity transition is DELAYED: an instant (preloaded) navigation adds and removes
+// .active before the delay elapses, so the bar never flickers on the common case.
+.nav-progress {
+  position: fixed;
+  inset: 0 0 auto;
+  height: 3px;
+  z-index: 2000;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease 0.15s;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 40%;
+    border-radius: 0 2px 2px 0;
+    background: var(--observatory-accent);
+    transform: translateX(-100%);
+  }
+
+  &.active {
+    opacity: 1;
+
+    &::before {
+      animation: nav-progress-slide 1.2s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes nav-progress-slide {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    // Own-width percentages: 350% of the 40% bar carries it fully off the right edge.
+    transform: translateX(350%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-progress.active::before {
+    animation: none;
+    width: 100%;
+    transform: none;
+  }
+}

@@ -1,5 +1,15 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import {
+  NavigationCancel,
+  NavigationEnd,
+  NavigationError,
+  NavigationSkipped,
+  NavigationStart,
+  Router,
+  RouterOutlet,
+} from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map } from 'rxjs';
 import { Navbar } from './navbar/navbar';
 import { Footer } from './footer/footer';
 
@@ -10,6 +20,30 @@ import { Footer } from './footer/footer';
   styleUrl: './app.scss',
 })
 export class App {
+  private readonly router = inject(Router);
+
+  /**
+   * True from NavigationStart until the navigation settles, driving the progress bar at the top
+   * of the shell and aria-busy on <main>. Chunks are preloaded after the first navigation, so
+   * this mostly never shows -- it exists for the first click landing before preload finishes,
+   * for slow connections, and for any future resolver. The bar's own CSS delays its appearance
+   * so an instant navigation never flickers it.
+   */
+  readonly navigating = toSignal(
+    this.router.events.pipe(
+      filter(
+        (event) =>
+          event instanceof NavigationStart ||
+          event instanceof NavigationEnd ||
+          event instanceof NavigationCancel ||
+          event instanceof NavigationError ||
+          event instanceof NavigationSkipped,
+      ),
+      map((event) => event instanceof NavigationStart),
+    ),
+    { initialValue: false },
+  );
+
   /**
    * Moves focus and the viewport to the main content, for the skip link.
    *
