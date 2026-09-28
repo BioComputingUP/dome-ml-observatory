@@ -1,8 +1,12 @@
 /**
  * Minimal in-process TTL cache -- deliberately dependency-free (no redis/cache-manager) since
  * this app runs as a single container with no shared state requirement: cache misses just cost
- * one more Mongo round trip, they're never wrong. Used by CountService (24h TTL on exact counts)
- * and StatsService (the boot-warmed facet aggregation).
+ * one more Mongo round trip, they're never wrong. Used by the keyed, many-entry caches:
+ * CountService (24h TTL on exact counts), TermFrequencyService, OaiService, SitemapService and
+ * RecordsService's ranked heads. The single-value boot-warmed tables (JournalsService,
+ * StatsService) use StaleWhileRevalidate instead: get() here DELETES on expiry, so the first
+ * caller after the TTL would wait a full rebuild out inline -- fine for a 15ms count, wrong for
+ * a 24s aggregation.
  */
 export class TtlCache<V> {
   private readonly store = new Map<string, { value: V; expiresAt: number }>();

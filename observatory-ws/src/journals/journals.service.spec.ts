@@ -237,3 +237,63 @@ describe('buildJournalPipeline', () => {
     });
   });
 });
+
+describe('JournalsService table lifecycle', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  /** Model whose aggregate().option().exec() resolves with `first`, then returns each promise
+   *  from `then` in turn -- so a test controls when a rebuild settles. */
+  function serviceWithExecs(
+    first: ReturnType<typeof group>[],
+    then: Promise<ReturnType<typeof group>[]>[],
+  ): { service: JournalsService; aggregate: jest.Mock } {
+    const exec = jest.fn<() => Promise<ReturnType<typeof group>[]>>();
+    exec.mockResolvedValueOnce(first);
+    for (const p of then) exec.mockReturnValueOnce(p);
+    const aggregate = jest.fn().mockReturnValue({ option: jest.fn().mockReturnValue({ exec }) });
+    const model = { aggregate } as unknown as Model<RecordDocument>;
+    return { service: new JournalsService(model), aggregate };
+  }
+
+  it('shares ONE aggregation across concurrent cold requests', async () => {
+    // The UI fires the list and the detail in parallel on landing; before StaleWhileRevalidate
+    // each started its own full-collection aggregation on a cold table.
+    const { service, aggregate } = serviceWithExecs([group('Nature', [[2020, 'positive', 5]])], []);
+    const [list, detail] = await Promise.all([
+      service.list(undefined, 'count', 50, 0),
+      service.detail('Nature'),
+    ]);
+    expect(list.rows[0].journal).toBe('Nature');
+    expect(detail.journal.positive).toBe(5);
+    expect(aggregate).toHaveBeenCalledTimes(1);
+  });
+
+  it('past the TTL, serves the stale table immediately while one rebuild is still pending', async () => {
+    jest.useFakeTimers();
+    let resolveRebuild!: (v: ReturnType<typeof group>[]) => void;
+    const pending = new Promise<ReturnType<typeof group>[]>((res) => {
+      resolveRebuild = res;
+    });
+    const { service, aggregate } = serviceWithExecs(
+      [group('Nature', [[2020, 'positive', 5]])],
+      [pending],
+    );
+
+    await service.list(undefined, 'count', 50, 0);
+    jest.advanceTimersByTime(24 * 60 * 60 * 1000 + 1);
+
+    // Stale answer, no waiting on the pending aggregation; exactly one rebuild started.
+    const stale = await service.list(undefined, 'count', 50, 0);
+    expect(stale.rows[0].positive).toBe(5);
+    await service.detail('Nature');
+    expect(aggregate).toHaveBeenCalledTimes(2);
+
+    resolveRebuild([group('Nature', [[2020, 'positive', 9]])]);
+    await Promise.resolve();
+    await Promise.resolve();
+    const fresh = await service.list(undefined, 'count', 50, 0);
+    expect(fresh.rows[0].positive).toBe(9);
+  });
+});

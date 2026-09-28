@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { TtlCache } from '../common/ttl-cache';
+import { StaleWhileRevalidate } from '../common/stale-while-revalidate';
 import { RecordDocument } from '../records/schemas/record.schema';
 import { rankFacetMatches } from '../facets/facets.service';
 
@@ -109,7 +109,6 @@ interface JournalTable {
   corpus: JournalCorpusTotals;
 }
 
-const CACHE_KEY = 'journal-table';
 /** Same 24h as StatsService/CountService, and for the same reason: the corpus is rebuilt every
  *  two months, not continuously. */
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
@@ -136,11 +135,16 @@ interface RawJournalGroup {
  * do on a page view. It also needs no new index -- the cost is one sequential pass per restart,
  * bounded by the 24h TTL, with no writes and nothing outside dome_observatory.Content touched.
  *
- * Warm-up is fire-and-forget and non-fatal, matching StatsService: a cold cache costs the first
- * caller one aggregation, it is never wrong.
+ * Warm-up is awaited in onModuleInit and non-fatal, matching StatsService -- it is part of why
+ * boot takes as long as it does (AGENTS.md, "Boot-time warm-up is a contract"). After boot, no
+ * request ever waits on the aggregation again: at the 24h expiry the stale table keeps answering
+ * while StaleWhileRevalidate runs ONE background rebuild, logged below. Before that class, the
+ * first request after expiry waited the whole aggregation out inline, and every request landing
+ * during it started another -- one visitor could fire three concurrent full-collection scans.
  *
- * Measured against the MongoDB server, 2026-09-03: the aggregation takes ~24s. Requests off the
- * warm cache are 12-16ms.
+ * Measured against the MongoDB server, 2026-09-03: the aggregation takes ~24s over the VPN
+ * (4.75s on the production host itself, container log 2026-09-26). Requests off the warm table
+ * are 12-16ms.
  *
  * The rows, ranks and `corpus.screened`/`corpus.positive` cover only the records that carry a
  * journal name -- 819,129 of 876,324 on 2026-09-25; preprints have none -- so they are
@@ -151,18 +155,22 @@ interface RawJournalGroup {
 @Injectable()
 export class JournalsService implements OnModuleInit {
   private readonly logger = new Logger(JournalsService.name);
-  private readonly cache = new TtlCache<JournalTable>(CACHE_TTL_MS);
+  private readonly table = new StaleWhileRevalidate<JournalTable>(
+    CACHE_TTL_MS,
+    () => this.buildTable(),
+    {
+      onError: (err) =>
+        this.logger.warn(
+          `Background journal-table rebuild failed (stale table still served): ${String(err)}`,
+        ),
+    },
+  );
 
   constructor(@InjectModel('Content') private readonly model: Model<RecordDocument>) {}
 
   async onModuleInit(): Promise<void> {
     try {
-      const started = Date.now();
-      const table = await this.getTable();
-      this.logger.log(
-        `Loaded ${table.rows.length} journals (${table.corpus.journals} with at least one ` +
-          `AI/ML methods paper) in ${Date.now() - started}ms`,
-      );
+      await this.table.get();
     } catch (err) {
       this.logger.warn(
         `Journal table warm-up failed (non-fatal, will retry lazily): ${String(err)}`,
@@ -238,24 +246,31 @@ export class JournalsService implements OnModuleInit {
     };
   }
 
-  private async getTable(): Promise<JournalTable> {
-    const cached = this.cache.get(CACHE_KEY);
-    if (cached) return cached;
+  /** The one greppable line per build, boot and lazy alike -- the lazy rebuild used to be
+   *  invisible in production logs. */
+  private async buildTable(): Promise<JournalTable> {
+    const started = Date.now();
+    const raw = await this.model
+      .aggregate<RawJournalGroup>(buildJournalPipeline())
+      .option({ maxTimeMS: AGGREGATION_MAX_TIME_MS, allowDiskUse: true })
+      .exec();
+    const table = shapeJournalTable(raw);
+    this.logger.log(
+      `Journal table built: ${table.rows.length} journals (${table.corpus.journals} with at ` +
+        `least one AI/ML methods paper) in ${Date.now() - started}ms`,
+    );
+    return table;
+  }
 
-    let raw: RawJournalGroup[];
+  /** Only a first fill can throw here (no table yet, and the shared build failed); once a table
+   *  exists this resolves immediately, stale or not. */
+  private async getTable(): Promise<JournalTable> {
     try {
-      raw = await this.model
-        .aggregate<RawJournalGroup>(buildJournalPipeline())
-        .option({ maxTimeMS: AGGREGATION_MAX_TIME_MS, allowDiskUse: true })
-        .exec();
+      return await this.table.get();
     } catch (err) {
       this.logger.warn(`Journal aggregation failed: ${String(err)}`);
       throw new ServiceUnavailableException('Journal statistics are temporarily unavailable');
     }
-
-    const table = shapeJournalTable(raw);
-    this.cache.set(CACHE_KEY, table);
-    return table;
   }
 }
 

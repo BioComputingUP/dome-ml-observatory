@@ -2,7 +2,7 @@ import { Injectable, Logger, OnModuleInit, ServiceUnavailableException } from '@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
-import { TtlCache } from '../common/ttl-cache';
+import { StaleWhileRevalidate } from '../common/stale-while-revalidate';
 import { RecordDocument } from '../records/schemas/record.schema';
 import { AppConfig } from '../config/configuration';
 import { CURRENT_SCHEMA_VERSION } from '../common/schema-version';
@@ -74,7 +74,6 @@ export interface FacetStats {
   };
 }
 
-const CACHE_KEY = 'facet-stats';
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // same reasoning as CountService: corpus refreshes every two months
 /** $facet has a 16MB-per-sub-pipeline output cap. The high-cardinality fields (journal 12,753,
  *  mesh 23,222, keywords_author 694,411 -- measured against the MongoDB server 2026-09-01) are deliberately
@@ -100,7 +99,18 @@ const POSITIVE_MATCH = { $match: { 'llm_classification.classification': 'positiv
 @Injectable()
 export class StatsService implements OnModuleInit {
   private readonly logger = new Logger(StatsService.name);
-  private readonly cache = new TtlCache<FacetStats>(CACHE_TTL_MS);
+  /** Same shape as JournalsService's table: after boot no request waits on the ~2.8s
+   *  aggregation pair again -- expiry serves stale while one background rebuild runs. */
+  private readonly stats = new StaleWhileRevalidate<FacetStats>(
+    CACHE_TTL_MS,
+    () => this.buildStats(),
+    {
+      onError: (err) =>
+        this.logger.warn(
+          `Background facet-stats rebuild failed (stale stats still served): ${String(err)}`,
+        ),
+    },
+  );
 
   constructor(
     @InjectModel('Content') private readonly model: Model<RecordDocument>,
@@ -109,37 +119,33 @@ export class StatsService implements OnModuleInit {
 
   async onModuleInit(): Promise<void> {
     try {
-      await this.getStats();
-      this.logger.log('Warmed facet-stats cache');
+      await this.stats.get();
     } catch (err) {
       this.logger.warn(`Facet-stats warm-up failed (non-fatal, will retry lazily): ${String(err)}`);
     }
   }
 
   async getStats(): Promise<FacetStats> {
-    const cached = this.cache.get(CACHE_KEY);
-    if (cached) return cached;
-
-    const maxTimeMs = Math.max(this.config.get('mongo.maxTimeMs', { infer: true }), 15_000);
-    const options = { maxTimeMS: maxTimeMs, allowDiskUse: true };
-
-    let corpusRows: RawCorpusResult[];
-    let searchSpaceRows: RawSearchSpaceResult[];
     try {
-      [corpusRows, searchSpaceRows] = await Promise.all([
-        this.model.aggregate<RawCorpusResult>(buildCorpusPipeline()).option(options).exec(),
-        this.model
-          .aggregate<RawSearchSpaceResult>(buildSearchSpacePipeline())
-          .option(options)
-          .exec(),
-      ]);
+      return await this.stats.get();
     } catch (err) {
       this.logger.warn(`Facet-stats aggregation failed: ${String(err)}`);
       throw new ServiceUnavailableException('Corpus statistics are temporarily unavailable');
     }
+  }
+
+  private async buildStats(): Promise<FacetStats> {
+    const started = Date.now();
+    const maxTimeMs = Math.max(this.config.get('mongo.maxTimeMs', { infer: true }), 15_000);
+    const options = { maxTimeMS: maxTimeMs, allowDiskUse: true };
+
+    const [corpusRows, searchSpaceRows] = await Promise.all([
+      this.model.aggregate<RawCorpusResult>(buildCorpusPipeline()).option(options).exec(),
+      this.model.aggregate<RawSearchSpaceResult>(buildSearchSpacePipeline()).option(options).exec(),
+    ]);
 
     const stats = shapeFacetStats(corpusRows[0], searchSpaceRows[0]);
-    this.cache.set(CACHE_KEY, stats);
+    this.logger.log(`Facet stats built in ${Date.now() - started}ms`);
     return stats;
   }
 }
