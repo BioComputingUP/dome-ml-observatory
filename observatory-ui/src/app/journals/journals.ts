@@ -2,7 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { catchError, distinctUntilChanged, map, of, switchMap, tap } from 'rxjs';
+import { catchError, distinctUntilChanged, filter, map, of, switchMap, tap } from 'rxjs';
 import { JournalsService } from '../core/journals.service';
 import { JournalDetailResult, JournalListResult, JournalSort } from '../core/journal.model';
 import { ChartSeries, LineChart } from '../shared/line-chart/line-chart';
@@ -69,10 +69,13 @@ export class Journals {
   readonly listLoading = signal(false);
   readonly detailLoading = signal(false);
 
-  /** The ranking. Refetched when the lens or floor changes, not when a journal is selected. */
+  /** The ranking. Fetched only while the overview is showing (the detail view never displays
+   *  it -- its corpus figures come from the detail response), and only refetched when the lens
+   *  or floor changes: returning from a journal with the same lens keeps the rows as they are. */
   private readonly list = toSignal(
     this.route.queryParams.pipe(
       map((params) => parseParams(params)),
+      filter((q) => q.journal === null),
       map((q) => ({ sort: q.sort, minScreened: q.minScreened })),
       distinctUntilChanged((a, b) => a.sort === b.sort && a.minScreened === b.minScreened),
       tap(() => this.listLoading.set(true)),
