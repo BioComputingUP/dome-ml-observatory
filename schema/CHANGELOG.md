@@ -14,6 +14,62 @@ updated except the two published releases below: `v1.2.0/` and `v1.3.0/` still n
 published (see `README.md`) and is never edited in place. GitHub redirects the old name, so those
 strings still resolve. The next release will carry the new name.
 
+## v1.7.0 — 2026-11-17
+
+How a paper obtains its models, and the life-science model types the seed vocabulary lacked: the
+vocabularies of enrichment prompt e3, the production enrichment prompt from this release.
+
+**Added:** `content_filters.model_use` (array of strings, at most 2, a closed vocabulary). It records
+how the paper obtains the model(s) it uses: `trained in this study`, `fine-tuned or adapted`,
+`pretrained, applied as-is` or `prompted (zero/few-shot)`. It is defined in `vocab/modelling-branch.json`,
+and enrichment prompts e2 and e3 fill it. With it, `learning_paradigm` describes only learning done in the
+paper itself. It is empty until such an enrichment runs, and it stays empty on records enriched with
+prompt e1, which never asked; `llm_enrichment.prompt_version` tells the two apart.
+
+**Changed (vocabularies, additive):** `vocab/modelling-branch.json` and `vocab/model-type-seed.json` are
+now prompt e3's, copied verbatim from dome-ml-observatory-triage `curation_criteria/e3/`. They are a strict
+superset of v1.6.0's, so every value stored under an earlier release stays valid.
+- **learning_paradigm** gains `self-supervised`.
+- **model_family** gains `active learning`, `multimodal learning` and `physics-informed machine learning`.
+- **The new `model_use` field** is added to this file (see Added).
+- **The model-type seed** goes from 76 to 99 canonical terms:
+  - three terms added by prompt e2;
+  - 20 life-science types added by e3: protein, genomic and chemical language models, pathology foundation
+    model, graph embedding, AlphaFold, Segment Anything Model, DenseNet, VGG, EfficientNet, MobileNet,
+    Inception, Faster and Mask R-CNN, Cox proportional hazards model, random survival forest, multiple
+    instance learning, physics-informed neural network, Kolmogorov-Arnold network and ARIMA;
+  - aliases on six existing terms (ResNet, U-Net, graph neural network, vision transformer, LSTM, linear regression).
+
+  Each new e3 term was mentioned by at least 100 positives in the corpus. The evidence and every change
+  are in dome-ml-observatory-triage `curation_criteria/e2/PROVENANCE.md` and `curation_criteria/e3/PROVENANCE.md`.
+
+**Changed (descriptions):**
+- `llm_enrichment.provider` names its values: `deepseek` (prompt e1), `zai` (e2) and `embl-ebi` (e3, GLM-5.3-Flash
+  on the EMBL-EBI LLM gateway).
+- `llm_enrichment.model_id` is the id the provider reports, e.g. `zai-org/GLM-5.3-Flash`.
+- `llm_enrichment.prompt_version` is `e1`, `e2` or `e3`.
+
+**The corpus becomes mixed.** Records enriched before this release keep their e1 tags and an empty
+`model_use`. New enrichments use e3.
+
+**Validation status of e3.** e3 differs from e2 by added seed lines only, so it carries e2's validation.
+- On heldout250, all three modelling fields are correct in 87% of papers, against 48% for e1.
+- An Opus 5.5 judge passes every pre-registered primary unit on 250 untouched papers.
+- On EMBL-EBI's gateway, e3 reproduces the Z.ai e2 run on those 250 papers about as closely as Z.ai
+  reproduces itself.
+- The human-rater half of the pre-registered validation is pending.
+
+**Migration note:** additive for consumers; a reader that ignores unknown fields needs nothing. In
+dome-ml-observatory-triage, `migrate_v1_7_0.py` moves `schema_version` from 1.6.0 to 1.7.0 and sets
+`content_filters.model_use` to `[]` on every document, in one `updateMany`. It does not move
+`record_modified`. `load_enrichment.py` refuses e2 and e3 events until that has run. The example is
+v1.6.0's record as the migration leaves it: no record carries e3 tags yet.
+
+**Pending at release:**
+- the migration on moros;
+- the first e3 load: 13,042 papers in 27 core bioinformatics journals, enriched 2026-11-16/17;
+- this repository's apps showing `model_use` (`record.model.ts`, `vocab.model.ts`, the facet stats).
+
 ## v1.6.0 — 2026-09-15
 
 A record-level datestamp, so the corpus can be harvested incrementally.
