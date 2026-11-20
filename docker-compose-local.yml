@@ -115,3 +115,9 @@ networks:
   # here just makes the requirement obvious to whoever reads this file next.)
   observatory:
     driver: bridge
+    # Pinned, 2026-11-20: Docker hands out 172.17-172.31/16 in turn, and when this network drew
+    # 172.21.0.0/16 it captured moros's own address (172.21.2.81), so observatory-ws failed with
+    # EHOSTUNREACH while every other container reached moros over the VPN. A /24 far from both.
+    ipam:
+      config:
+        - subnet: 192.168.237.0/24
