@@ -66,8 +66,11 @@ From the repo root:
 docker -c <production context> compose -f docker-compose-prod.yml up -d --pull always
 ```
 
-- `<production context>` is the Docker context that points at the production host
-  (`docker context ls`). Its name is in the maintainer's private notes, not in this public repo.
+- `<production context>` is the Docker context that points at the production host. This repository
+  is public, so its name is not written here: read it from `.claude/skills/deploy/production-context.local.md`
+  (gitignored by `*.local.md`; create it on a new machine from the maintainer's notes). Before
+  deploying, confirm it with `docker -c <context> ps`: it must list `observatory-ws` and
+  `observatory-ui`. Another context on the same machine may reach a different host.
 - The compose file reads the **root `.env`** on this machine and sends it as `observatory-ws`'s
   environment. That file is the production configuration: gitignored, never committed, never
   printed. A deploy from a machine without it would start the API without its configuration.
@@ -88,6 +91,9 @@ Then check whatever the change touched: `curl` the endpoint, or load the page in
 ## Restart only (after a corpus load)
 
 Every load in `dome-ml-observatory-triage` needs this: `FacetsService` loads at boot with no TTL.
+A load is not finished until production shows it: on 2026-11-20 an enrichment load reached moros
+while production still served a four-week-old build and the old enriched count. If the load came
+with a schema release or app changes, deploy (step 3) rather than only restarting.
 
 ```bash
 docker -c <production context> compose -f docker-compose-prod.yml restart observatory-ws
