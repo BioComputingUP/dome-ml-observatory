@@ -38,11 +38,15 @@ change is appended to `llm_enrichment.vocab_violations` as `cleaned:c1:<field>:<
 **Migration:** additive. `migrate_v1_8_0.py` sets `enrichment_history: []` and the version on every
 record (after `migrate_v1_7_0.py`). Consumers that ignore unknown fields need no change.
 
-**Pending at release:**
-- the 1.7.0 and 1.8.0 migrations of moros;
-- the first e3 load: 100,073 records (cohorts `core_bioinformatics` and `batch2_high_impact`, GLM-5.3-Flash on
-  the EMBL-EBI gateway), beside the 3,532 records enriched with e1, which keep their e1 tags;
-- the human-rater half of e3's pre-registered validation.
+**Ran on 2026-11-20:**
+- moros migrated 1.6.0 -> 1.7.0 -> 1.8.0 (876,324 records; `migrate_v1_7_0.py`, `migrate_v1_8_0.py`).
+- The first e3 load: 100,073 records (cohorts `core_bioinformatics` and `batch2_high_impact`, GLM-5.3-Flash on
+  the EMBL-EBI gateway); ingestion cleaning changed 277 of them. No record was superseded, so every
+  `enrichment_history` is still empty. 151 records truncated at the length limit were not loaded.
+- The same cleaning applied to the 140 records already enriched with e1, which keep their e1 tags.
+- Enriched records: 3,532 -> 103,605. `verify_corpus.py` and `check_alignment.py --live` pass.
+
+**Still pending:** the human-rater half of e3's pre-registered validation.
 
 ## v1.7.0 — 2026-11-17
 
