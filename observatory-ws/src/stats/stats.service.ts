@@ -65,6 +65,10 @@ export interface FacetStats {
     domainTier1: FacetCount[];
     learningParadigm: FacetCount[];
     modelFamily: FacetCount[];
+    /** How the positives obtain their models (schema v1.7.0, content_filters.model_use). Counts
+     *  only records enriched with prompt e2 or later: e1-enriched and unenriched records hold [],
+     *  which $unwind drops, so they add no bucket. */
+    modelUse: FacetCount[];
     /** Linked data resources (schema v1.4.0, data_links.resources[].resource), counted per
      *  positive record carrying each. Empty until the data-links backfill lands. */
     dataResources: FacetCount[];
@@ -175,6 +179,7 @@ interface RawSearchSpaceResult {
   domainTier1: { _id: string | null; count: number }[];
   learningParadigm: { _id: string | null; count: number }[];
   modelFamily: { _id: string | null; count: number }[];
+  modelUse: { _id: string | null; count: number }[];
   dataResources: { _id: string | null; count: number }[];
   yearRange: { min: number | null; max: number | null }[];
 }
@@ -283,6 +288,7 @@ function buildSearchSpacePipeline() {
         domainTier1: countBy('content_filters.domain_tier1'),
         learningParadigm: countByArrayElement('content_filters.learning_paradigm'),
         modelFamily: countByArrayElement('content_filters.model_family'),
+        modelUse: countByArrayElement('content_filters.model_use'),
         // An array of subdocuments, not strings: unwind the array, group on the slug inside.
         // One entry per resource per record (the pipeline dedupes), so the count is records.
         dataResources: [
@@ -373,6 +379,7 @@ function shapeFacetStats(
       domainTier1: toFacetCounts(rawSearchSpace?.domainTier1 ?? []),
       learningParadigm: toFacetCounts(rawSearchSpace?.learningParadigm ?? []),
       modelFamily: toFacetCounts(rawSearchSpace?.modelFamily ?? []),
+      modelUse: toFacetCounts(rawSearchSpace?.modelUse ?? []),
       dataResources: toFacetCounts(rawSearchSpace?.dataResources ?? []),
       yearRange,
     },

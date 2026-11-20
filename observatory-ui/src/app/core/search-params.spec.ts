@@ -123,6 +123,12 @@ describe('search-params', () => {
       expect(params['fam']).toEqual(['deep learning', 'ensemble learning']);
     });
 
+    it('serialises model use under `use`, keeping the comma inside a vocabulary label', () => {
+      const params = queryToParams({ ...base, filters: { ...base.filters, modelUse: ['pretrained, applied as-is'] } });
+      expect(params['use']).toEqual(['pretrained, applied as-is']);
+      expect(paramsToQuery({ use: 'pretrained, applied as-is' }).filters.modelUse).toEqual(['pretrained, applied as-is']);
+    });
+
     it('serialises page and sort only when non-default', () => {
       expect(queryToParams({ ...base, page: 3 })['page']).toBe('3');
       expect(queryToParams({ ...base, sort: 'year_desc' })['sort']).toBe('year_desc');
@@ -149,6 +155,7 @@ describe('search-params', () => {
           domainTier3: ['Tomography'],
           learningParadigm: ['supervised'],
           modelFamily: ['deep learning'],
+          modelUse: ['trained in this study', 'prompted (zero/few-shot)'],
           modelType: ['random forest'],
           enrichedOnly: true,
         },
@@ -245,7 +252,7 @@ describe('search-params', () => {
 
     it('drops every param queryToParams reports as null (at-default)', () => {
       const params = queryToHttpParams(base);
-      const dropped = ['q', 'oa', 'ft', 'year', 'lic', 'jrnl', 'mesh', 'kw', 'ptype', 'd1', 'd2', 'd3', 'para', 'fam', 'mt', 'enriched', 'sort', 'page', 'class'];
+      const dropped = ['q', 'oa', 'ft', 'year', 'lic', 'jrnl', 'mesh', 'kw', 'ptype', 'd1', 'd2', 'd3', 'para', 'fam', 'use', 'mt', 'enriched', 'sort', 'page', 'class'];
       expect(dropped.filter((key) => params.has(key))).toEqual([]);
     });
 

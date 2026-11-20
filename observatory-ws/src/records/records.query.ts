@@ -34,6 +34,7 @@ export interface RawSearchParams {
   d3?: string | string[];
   para?: string | string[];
   fam?: string | string[];
+  use?: string | string[];
   mt?: string | string[];
   dl?: string | string[];
   enriched?: string;
@@ -59,6 +60,9 @@ export interface ParsedFilters {
   domainTier3?: string[];
   learningParadigm?: string[];
   modelFamily?: string[];
+  /** How the paper obtains its model(s): content_filters.model_use, a closed vocabulary (schema
+   *  v1.7.0). Empty on every record enriched before prompt e2, so it matches only e2/e3 records. */
+  modelUse?: string[];
   modelType?: string[];
   /** Resource slugs from data_links.resources[].resource (schema v1.4.0): pdb, geo, zenodo, ... */
   dataResources?: string[];
@@ -531,6 +535,7 @@ export function parseSearchParams(
     domainTier3: readList(raw.d3),
     learningParadigm: readList(raw.para),
     modelFamily: readList(raw.fam),
+    modelUse: readList(raw.use),
     modelType: readList(raw.mt),
     dataResources: readList(raw.dl),
     enrichedOnly: parseBool(raw.enriched),
@@ -756,6 +761,8 @@ function structuredClauses(filters: ParsedFilters): FilterQuery<RecordDocument>[
     clauses.push({
       'content_filters.model_family': { $in: filters.modelFamily },
     });
+  if (filters.modelUse?.length)
+    clauses.push({ 'content_filters.model_use': { $in: filters.modelUse } });
   if (filters.modelType?.length)
     clauses.push({ 'content_filters.model_type': { $in: filters.modelType } });
   // Dot notation into the array of subdocuments: a record matches when ANY of its linked
@@ -1289,6 +1296,7 @@ export function canonicalCacheKey(filters: ParsedFilters): string {
     domainTier3: sortedArray(filters.domainTier3),
     learningParadigm: sortedArray(filters.learningParadigm),
     modelFamily: sortedArray(filters.modelFamily),
+    modelUse: sortedArray(filters.modelUse),
     modelType: sortedArray(filters.modelType),
     dataResources: sortedArray(filters.dataResources),
     enrichedOnly: filters.enrichedOnly ?? null,

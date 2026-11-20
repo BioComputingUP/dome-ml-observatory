@@ -24,6 +24,8 @@ export interface ModellingBranchVocab {
   fields: {
     learning_paradigm: VocabField;
     model_family: VocabField;
+    /** From schema v1.7.0: how the paper obtains its model(s). */
+    model_use: VocabField;
   };
 }
 

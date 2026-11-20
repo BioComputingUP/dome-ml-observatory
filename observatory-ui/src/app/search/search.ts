@@ -26,6 +26,7 @@ const CHIP_VALUE_DISPLAY: Partial<Record<keyof SearchFilters, (v: string) => str
   pubTypes: pubTypeLabel,
   learningParadigm: sentenceCase,
   modelFamily: sentenceCase,
+  modelUse: sentenceCase,
   modelType: modelTypeLabel,
   dataResources: resourceLabel,
 };
@@ -229,6 +230,7 @@ export class Search {
       { key: 'domainTier3', label: 'Domain 3' },
       { key: 'learningParadigm', label: 'Paradigm' },
       { key: 'modelFamily', label: 'Family' },
+      { key: 'modelUse', label: 'Use' },
       { key: 'modelType', label: 'Method' },
       { key: 'dataResources', label: 'Linked data' },
     ];

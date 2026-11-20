@@ -80,6 +80,10 @@ export interface ContentFilters {
   learning_paradigm: string[];
   /** What kind of system/method family. Multi-select -- max_tags: 3. */
   model_family: string[];
+  /** How the paper obtains its model(s) -- trained, fine-tuned, applied as-is or prompted.
+   *  Multi-select -- max_tags: 2. From schema v1.7.0: empty on records enriched with prompt e1 and
+   *  on unenriched ones, and absent from the dev fixture, which predates it -- hence optional. */
+  model_use?: string[];
   /** Deliberately open free text, normalized against a seed vocab where possible. */
   model_type: string[];
 }

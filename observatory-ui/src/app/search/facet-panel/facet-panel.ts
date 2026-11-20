@@ -70,6 +70,8 @@ export class FacetPanel {
   readonly domainTier3 = computed(() => this.terms('domain', 'domain_tier3'));
   readonly paradigms = computed(() => this.terms('modellingBranch', 'learning_paradigm'));
   readonly modelFamilies = computed(() => this.terms('modellingBranch', 'model_family'));
+  /** Empty, and the group hidden, under a vocabulary older than schema v1.7.0. */
+  readonly modelUses = computed(() => this.terms('modellingBranch', 'model_use'));
   readonly modelTypes = computed(() => this.vocab()?.modelTypeSeed.terms.map((t) => t.canonical) ?? []);
 
   readonly caps = computed(() => ({
@@ -77,6 +79,7 @@ export class FacetPanel {
     domainTier3: this.cap('domain', 'domain_tier3'),
     learningParadigm: this.cap('modellingBranch', 'learning_paradigm'),
     modelFamily: this.cap('modellingBranch', 'model_family'),
+    modelUse: this.cap('modellingBranch', 'model_use'),
   }));
 
   /** How many of the positive set have been enriched -- drives the honest coverage banner. Null

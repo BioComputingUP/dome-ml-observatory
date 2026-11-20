@@ -41,6 +41,8 @@ export function currentSchema(): JsonSchemaNode {
 }
 
 export const RATIONALE_MARKER = 'INTERNAL-RATIONALE-MUST-NOT-BE-PUBLISHED';
+/** Carried only inside `enrichment_history` (schema v1.8.0), which nothing may publish. */
+export const HISTORY_MARKER = 'SUPERSEDED-ENRICHMENT-MUST-NOT-BE-PUBLISHED';
 
 /**
  * The current example with every projected feature populated: enrichment with real vocabulary
@@ -64,6 +66,7 @@ export function enrichedRecord(): RecordDocument {
       domain_tier2: ['Agricultural science'],
       learning_paradigm: ['supervised', 'semi-supervised'],
       model_family: ['classical machine learning'],
+      model_use: ['trained in this study', 'prompted (zero/few-shot)'],
       model_type: ['OLS', 'bespoke graph thing'],
     },
     llm_classification: {
@@ -71,6 +74,12 @@ export function enrichedRecord(): RecordDocument {
       classification: 'positive',
       rationale: RATIONALE_MARKER,
     },
+    enrichment_history: [
+      {
+        content_filters: { model_family: [HISTORY_MARKER], model_use: [] },
+        llm_enrichment: { provider: 'deepseek', prompt_version: 'e1', rationale: HISTORY_MARKER },
+      },
+    ],
     llm_enrichment: {
       ...base.llm_enrichment,
       provider: 'deepseek',

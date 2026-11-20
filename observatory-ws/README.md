@@ -160,7 +160,10 @@ What the projections hold to:
   The article node carries Europe PMC's metadata under the article's own licence. `oai_dc` cannot
   keep them apart, so its `rights` says so and it leaves the abstract out.
 - **Internal processing fields are never published**: the model's rationale, token counts, parse
-  status.
+  status, and `enrichment_history` (schema v1.8.0, the superseded enrichment snapshots). The last is
+  also withheld from `/api/records`, `/api/records/:pid` and `/api/export`, which otherwise serve the
+  stored document as it is: every query that returns whole documents passes
+  `PUBLIC_RECORD_PROJECTION` (`src/records/schemas/record.schema.ts`).
 - **Only positives are advertised.** The sitemap and OAI-PMH list them; every other record page still
   resolves and serves JSON-LD but carries `noindex`. OAI-PMH declares `deletedRecord=transient`: a
   record reclassified out of the positives simply leaves.

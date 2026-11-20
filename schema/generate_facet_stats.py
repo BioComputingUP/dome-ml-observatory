@@ -166,6 +166,7 @@ def main() -> int:
             "domainTier1": as_facet(count_values(records, ["content_filters", "domain_tier1"])),
             "learningParadigm": as_facet(count_list_values(records, ["content_filters", "learning_paradigm"])),
             "modelFamily": as_facet(count_list_values(records, ["content_filters", "model_family"])),
+            "modelUse": as_facet(count_list_values(records, ["content_filters", "model_use"])),
             "dataResources": as_facet(count_object_array_values(records, ["data_links", "resources"], "resource")),
             "yearRange": {"min": min(years), "max": max(years)} if years else None,
         },

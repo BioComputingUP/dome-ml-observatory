@@ -274,6 +274,8 @@ export class RecordPage {
         param: 'para',
       },
       { label: 'Model family', values: cf.model_family.map((v) => tag(v)), param: 'fam' },
+      // Empty on records enriched before schema v1.7.0 (prompt e1), so the group drops out there.
+      { label: 'Model use', values: (cf.model_use ?? []).map((v) => tag(v)), param: 'use' },
       // Display-only title-casing (facet-labels.ts) -- the query param below still routes on
       // the raw value, matching the search page's own Method chips and model_type facet.
       {
@@ -292,6 +294,7 @@ export class RecordPage {
     'Domain (tier 2)',
     'Learning paradigm',
     'Model family',
+    'Model use',
     'Model type',
   ];
 

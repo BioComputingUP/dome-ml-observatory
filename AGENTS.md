@@ -156,7 +156,7 @@ host are not.
   token (`$GITHUB_TOKEN` → `$GH_TOKEN` → `gh auth token`). Deliberately manual, never wired to a
   `pre*` hook — don't automate it.
 - `schema/` — the versioned record schema and its controlled vocabularies (EDAM domain tiers,
-  learning paradigm, model family, model type seed). Source of truth for `observatory-ui`'s
+  learning paradigm, model family, model use, model type seed). Source of truth for `observatory-ui`'s
   search filters/record model and for `observatory-ws`'s Mongoose schema. **Never hand-edit a
   published `schema/releases/vX.Y.Z/` folder** — use the `schema-version` skill, which also
   re-syncs `observatory-ui/src/assets/vocab/` (generated, gitignored — don't hand-edit that
@@ -186,6 +186,12 @@ host are not.
   cost the same at chunk 500 as at chunk 1, and what keeps it clear of MongoDB 4.2's 32MB sort
   buffer. Free text is rejected (400) rather than supported: `$text` cannot be served under the
   `_id` hint, and the regex fallback would rescan the corpus for every chunk.
+- **`/api/records`, `/api/records/:pid` and `/api/export` serve the stored documents as they are**
+  (`.lean()`, no DTO in between), so a top-level field the write side adds is public unless it is
+  withheld. `PUBLIC_RECORD_PROJECTION` in `observatory-ws/src/records/schemas/record.schema.ts` is
+  that list -- `enrichment_history` (schema v1.8.0, superseded enrichment snapshots) -- and every
+  query returning whole documents passes it, OAI-PMH's included; `records.service.spec.ts` drives
+  each search path and fails on a fetch without it. Add a field there, not to one query.
 - `observatory-ws/src/metadata/` and `src/oai/` — the FAIR metadata: per-record JSON-LD and
   Signposting linkset, sitemaps, the corpus catalogue, and OAI-PMH 2.0 in `oai_dc`. Pure mappers
   (`record-jsonld.mapper.ts`, `oai-dc.ts`, `oai.query.ts`) under thin services, read-only like

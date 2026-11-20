@@ -32,7 +32,9 @@ describe('oaiDcElements', () => {
     expect(values('description')).toEqual([
       'DOME Observatory screening verdict: AI/ML methods paper.',
     ]);
-    expect(values('subject')).toEqual(expect.arrayContaining(['Biology', 'supervised', 'OLS']));
+    expect(values('subject')).toEqual(
+      expect.arrayContaining(['Biology', 'supervised', 'trained in this study', 'OLS']),
+    );
     expect(values('relation')).toEqual([
       'https://doi.org/10.5281/zenodo.1',
       'https://bio.tools/mytool',

@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
-import { RecordDocument } from '../records/schemas/record.schema';
+import { PUBLIC_RECORD_PROJECTION, RecordDocument } from '../records/schemas/record.schema';
 import { AppConfig } from '../config/configuration';
 import { buildMongoFilter, parseSearchParams } from '../records/records.query';
 import { ExportRecordsDto } from './dto/export-records.dto';
@@ -52,7 +52,7 @@ export class ExportService {
     const maxTimeMs = this.config.get('mongo.exportMaxTimeMs', { infer: true });
 
     const items = await this.model
-      .find(keyed)
+      .find(keyed, PUBLIC_RECORD_PROJECTION)
       .sort({ _id: 1 })
       // Pin the plan to the _id index. Without the hint, a filtered export (say class=positive)
       // gives the planner a choice between _id_ and class_year_id -- and class_year_id is

@@ -81,6 +81,9 @@ export interface FacetStats {
     domainTier1: FacetCount[];
     learningParadigm: FacetCount[];
     modelFamily: FacetCount[];
+    /** content_filters.model_use (schema v1.7.0). Counts only records enriched with prompt e2 or
+     *  later; optional because an API older than v1.7.0 sends no such key. */
+    modelUse?: FacetCount[];
     /** Linked data resources (schema v1.4.0): slugs from data_links.resources[].resource with
      *  the number of positive records carrying each. core/data-links.ts names them. */
     dataResources: FacetCount[];

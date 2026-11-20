@@ -250,6 +250,25 @@
       </fieldset>
     }
 
+    @if (modelUses().length) {
+      <fieldset class="facet-block">
+        <legend>Model use <span class="facet-cap">max {{ caps().modelUse }}</span></legend>
+        @for (u of modelUses(); track u) {
+          <label class="check">
+            <input
+              type="checkbox"
+              [checked]="isChecked(filters().modelUse, u)"
+              (change)="toggleInList('modelUse', u, $any($event.target).checked)"
+            />
+            <span>{{ sentenceCase(u) }}</span>
+            @if (countFor('modelUse', u); as n) {
+              <span class="count">{{ n | number }}</span>
+            }
+          </label>
+        }
+      </fieldset>
+    }
+
     <app-facet-typeahead
       label="Model type"
       placeholder="Search methods…"

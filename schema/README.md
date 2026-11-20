@@ -25,7 +25,7 @@ schema/
         ├── ai-ml-landscape.example.json  # one real record from the corpus (not fabricated)
         └── vocab/
             ├── domain.json               # EDAM topic branch: domain_tier1/2/3 + max_tags
-            ├── modelling-branch.json     # learning_paradigm, model_family + max_tags; ontology_mappings per term
+            ├── modelling-branch.json     # learning_paradigm, model_family (+ model_use from v1.7.0) + max_tags; ontology_mappings per term
             └── model-type-seed.json      # 76 canonical model_type terms + aliases (open vocab); ontology_mappings per term
 ```
 

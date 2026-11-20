@@ -86,6 +86,7 @@ export class DownloadApi {
           { name: 'd1, d2, d3', type: 'string(s)', note: 'EDAM domain tiers 1–3 — see the published vocabularies.' },
           { name: 'para', type: 'string(s)', note: 'Learning paradigm.' },
           { name: 'fam', type: 'string(s)', note: 'Model family.' },
+          { name: 'use', type: 'string(s)', note: 'Model use: how the paper obtains its model(s). Only records enriched since schema v1.7.0 carry it.' },
           { name: 'mt', type: 'string(s)', note: 'Model type.' },
           { name: 'dl', type: 'string(s)', note: 'Linked data resource slugs (pdb, geo, zenodo, …); a record matches when any of its resources is listed.' },
           { name: 'enriched', type: 'boolean', note: 'Only records the enrichment pass has touched.' },
@@ -109,7 +110,7 @@ export class DownloadApi {
         params: [
           { name: 'cursor', type: 'string', note: 'The _id to resume after, from the previous response’s X-Next-Cursor header. Omit for the first chunk.' },
           { name: 'limit', type: 'integer', note: 'Records per chunk, up to 1000. Defaults to 1000.' },
-          { name: '(all /api/records filters)', type: '—', note: 'class, year, jrnl, mesh, lic, ptype, d1–d3, para, fam, mt, oa, ft, enriched. Export a slice, not just the whole thing.' },
+          { name: '(all /api/records filters)', type: '—', note: 'class, year, jrnl, mesh, lic, ptype, d1–d3, para, fam, use, mt, dl, oa, ft, enriched. Export a slice, not just the whole thing.' },
         ],
         example:
           'curl -sD headers.txt \'/api/export?class=positive&limit=1000\' >> corpus.ndjson\n' +

@@ -6,6 +6,7 @@ import { RecordDocument } from '../records/schemas/record.schema';
 import {
   currentSchema,
   enrichedRecord,
+  HISTORY_MARKER,
   JsonSchemaNode,
   RATIONALE_MARKER,
   releaseExamples,
@@ -84,6 +85,18 @@ describe('recordJsonLd', () => {
     }
   });
 
+  it('publishes nothing from enrichment_history, in JSON-LD or in Dublin Core', () => {
+    const doc = enrichedRecord();
+    expect(JSON.stringify(doc)).toContain(HISTORY_MARKER);
+    for (const text of [
+      JSON.stringify(recordJsonLd(doc, ctx)),
+      JSON.stringify(oaiDcElements(doc, ORIGIN)),
+    ]) {
+      expect(text).not.toContain(HISTORY_MARKER);
+      expect(text).not.toContain('enrichment_history');
+    }
+  });
+
   it('turns vocabulary labels into ontology IRIs, and leaves an open-vocabulary term a keyword', () => {
     const keywords = graph(enrichedRecord())[0].keywords as JsonValue[];
     const byName = new Map(asNodes(keywords).map((k) => [k.name, k]));
@@ -100,6 +113,14 @@ describe('recordJsonLd', () => {
     // A project extension with no ontology term: named, placed in its vocabulary, no IRI.
     expect(byName.get('semi-supervised')?.['@id']).toBeUndefined();
     expect(byName.get('semi-supervised')?.inDefinedTermSet).toMatch(
+      /vocab\/modelling-branch\.json$/,
+    );
+    // model_use (v1.7.0): one term maps to AIO, the others are named in their vocabulary only.
+    expect(byName.get('prompted (zero/few-shot)')?.['@id']).toBe(
+      'https://w3id.org/aio/ZeroshotLearning',
+    );
+    expect(byName.get('trained in this study')?.['@id']).toBeUndefined();
+    expect(byName.get('trained in this study')?.inDefinedTermSet).toMatch(
       /vocab\/modelling-branch\.json$/,
     );
     // An alias in the model-type seed list resolves to its canonical term's ontology id.

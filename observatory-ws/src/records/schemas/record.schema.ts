@@ -25,6 +25,21 @@ export const RECORD_SCHEMA_DEFINITION = new Schema(
   },
 );
 
+/**
+ * Every query that returns whole documents to a client passes this projection: the stored fields
+ * the API never serves. Responses are the `.lean()` documents themselves (records.service.ts,
+ * export.service.ts), so a top-level field the write side adds reaches /api/records,
+ * /api/records/:pid and /api/export unless it is withheld here.
+ *
+ * - `enrichment_history` (schema v1.8.0): the superseded enrichment snapshots kept when a record is
+ *   re-enriched. Write-side provenance, not part of the published record: the current tags are in
+ *   `content_filters` and `llm_enrichment`.
+ *
+ * Exclusion only, so it can be combined with another exclusion projection (oai.service.ts) but
+ * never with an inclusion one -- an inclusion projection already leaves these fields out.
+ */
+export const PUBLIC_RECORD_PROJECTION = { enrichment_history: 0 } as const;
+
 /** Loose type for a raw record document as read with `.lean()` -- deliberately not the full
  *  AiMlRecord shape (that lives in observatory-ui and isn't duplicated here per the "no shared
  *  -core package" decision). `_id` and the handful of fields this service actually branches on

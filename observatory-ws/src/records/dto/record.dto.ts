@@ -123,6 +123,14 @@ class ContentFiltersDto {
   learning_paradigm!: string[];
   @ApiProperty({ type: [String], description: 'max_tags 3.' })
   model_family!: string[];
+  @ApiProperty({
+    type: [String],
+    description:
+      'Schema v1.7.0: how the paper obtains the model(s) it reports, from the closed vocabulary ' +
+      'in vocab/modelling-branch.json. max_tags 2. Empty on records enriched with prompt e1 ' +
+      '(llm_enrichment.prompt_version) and on unenriched records.',
+  })
+  model_use!: string[];
   @ApiProperty({ type: [String] }) model_type!: string[];
 }
 

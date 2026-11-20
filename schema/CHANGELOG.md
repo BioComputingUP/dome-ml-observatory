@@ -14,6 +14,36 @@ updated except the two published releases below: `v1.2.0/` and `v1.3.0/` still n
 published (see `README.md`) and is never edited in place. GitHub redirects the old name, so those
 strings still resolve. The next release will carry the new name.
 
+## v1.8.0 — 2026-11-20
+
+Re-enriching a record no longer loses its earlier enrichment.
+
+**Added:** `enrichment_history` (top-level array, oldest first). When dome-ml-observatory-triage's
+`load_enrichment.py` sets an enrichment from a different prompt or batch over an existing one, it first
+appends the existing `llm_enrichment` group and its `content_filters` enrichment values
+(`domain_tier1`-`3`, `learning_paradigm`, `model_family`, `model_type`, `model_use`), with
+`superseded_at` and `superseded_by` {`prompt_version`, `batch_id`}. Re-loading the batch a record already
+holds adds nothing. The current enrichment stays where it was, in `llm_enrichment` and `content_filters`,
+and is the only one the Observatory shows: the API, record pages, JSON-LD and OAI-PMH withhold
+`enrichment_history` (`PUBLIC_RECORD_PROJECTION` in `observatory-ws/src/records/schemas/record.schema.ts`).
+
+**Vocabularies:** unchanged from v1.7.0 (byte-identical).
+
+**Ingestion cleaning (no schema change, recorded here because it changes stored values).** From this
+release every enrichment load runs dome-ml-observatory-triage `moros_pipeline/scripts/enrichment_clean.py`
+(rule set `c1`). A closed-vocabulary value the parser flagged but kept is moved to the field it belongs to,
+trimmed to the field's cap or dropped, so no record holds a value these vocabularies do not define. Each
+change is appended to `llm_enrichment.vocab_violations` as `cleaned:c1:<field>:<action>:<value>`.
+
+**Migration:** additive. `migrate_v1_8_0.py` sets `enrichment_history: []` and the version on every
+record (after `migrate_v1_7_0.py`). Consumers that ignore unknown fields need no change.
+
+**Pending at release:**
+- the 1.7.0 and 1.8.0 migrations of moros;
+- the first e3 load: 100,073 records (cohorts `core_bioinformatics` and `batch2_high_impact`, GLM-5.3-Flash on
+  the EMBL-EBI gateway), beside the 3,532 records enriched with e1, which keep their e1 tags;
+- the human-rater half of e3's pre-registered validation.
+
 ## v1.7.0 — 2026-11-17
 
 How a paper obtains its models, and the life-science model types the seed vocabulary lacked: the

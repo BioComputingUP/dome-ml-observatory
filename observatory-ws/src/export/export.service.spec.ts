@@ -24,7 +24,7 @@ function fakeModel(docs: RecordDocument[]) {
   // Typed on its argument, not bare jest.fn(), so `find.mock.calls[0][0]` below is the filter
   // object rather than `any` -- the assertions on it are the point of these tests.
   const find = jest
-    .fn<Record<string, jest.Mock>, [Record<string, unknown>]>()
+    .fn<Record<string, jest.Mock>, [Record<string, unknown>, Record<string, unknown>?]>()
     .mockReturnValue(query);
   return { model: { find } as unknown as Model<RecordDocument>, find, query, exec };
 }
@@ -43,6 +43,12 @@ function service(returned: RecordDocument[]) {
 }
 
 describe('ExportService.chunk', () => {
+  it('withholds enrichment_history: the chunk is the lean documents themselves', async () => {
+    const { svc, find } = service(docs(2));
+    await svc.chunk({});
+    expect(find.mock.calls[0][1]).toEqual({ enrichment_history: 0 });
+  });
+
   it('sorts by _id ascending and pins the plan to the _id index', async () => {
     const { svc, query } = service(docs(3));
     await svc.chunk({});

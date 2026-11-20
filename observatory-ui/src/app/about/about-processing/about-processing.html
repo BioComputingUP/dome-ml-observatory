@@ -141,7 +141,7 @@
     @if (enrichmentRounds.length > 0) {
       <p class="round-intro">
         A separate pass tags positively-classified records with EDAM domain, learning paradigm,
-        model family and model type — the fields and their permitted terms are defined in
+        model family, model use and model type — the fields and their permitted terms are defined in
         <a [href]="schemaUrl()" target="_blank" rel="noopener">the current schema release</a>. It
         runs in batches, one cohort of records at a time, and each batch is logged below, newest
         first.
@@ -221,7 +221,7 @@
 
         <p class="round-intro">
           A separate pass tags each positively-classified record with EDAM domain, learning
-          paradigm, model family and model type — the fields and their permitted terms are defined in
+          paradigm, model family, model use and model type — the fields and their permitted terms are defined in
           <a [href]="schemaUrl()" target="_blank" rel="noopener">the current schema release</a>,
           reserved on every record and empty until this runs. This section gains its own dated
           fields — model, prompt version and batch size — once the first enrichment batch completes.

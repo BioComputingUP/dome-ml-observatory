@@ -59,6 +59,7 @@ export interface RecordView {
     domain_tier3?: Texts;
     learning_paradigm?: Texts;
     model_family?: Texts;
+    model_use?: Texts;
     model_type?: Texts;
   } | null;
   data_links?: {
@@ -114,6 +115,7 @@ export const PROJECTED_PATHS: readonly string[] = [
   'content_filters.domain_tier3',
   'content_filters.learning_paradigm',
   'content_filters.model_family',
+  'content_filters.model_use',
   'content_filters.model_type',
   'data_links.truncated',
   'data_links.link_count',
@@ -169,6 +171,7 @@ export type SubjectField =
   | 'domain_tier3'
   | 'learning_paradigm'
   | 'model_family'
+  | 'model_use'
   | 'model_type';
 
 export interface Subject {
@@ -188,6 +191,7 @@ export function subjects(r: RecordView): Subject[] {
   add('domain_tier3', cf.domain_tier3 ?? []);
   add('learning_paradigm', cf.learning_paradigm ?? []);
   add('model_family', cf.model_family ?? []);
+  add('model_use', cf.model_use ?? []);
   add('model_type', cf.model_type ?? []);
   return out;
 }

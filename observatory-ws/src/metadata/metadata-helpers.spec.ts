@@ -121,6 +121,17 @@ describe('VocabIndex', () => {
     expect(index.lookup('domain_tier1', 'Alchemy')).toBeUndefined();
   });
 
+  it('indexes model_use (v1.7.0), with an IRI only where the vocabulary maps one', () => {
+    expect(index.lookup('model_use', 'pretrained, applied as-is')).toEqual({
+      iri: undefined,
+      code: undefined,
+      exactMatches: [],
+    });
+    expect(index.lookup('model_use', 'prompted (zero/few-shot)')?.iri).toBe(
+      'https://w3id.org/aio/ZeroshotLearning',
+    );
+  });
+
   it('is empty, not fatal, when no release can be found', () => {
     expect(VocabIndex.load(join(tmpdir(), 'no-such-release')).size).toBe(0);
   });

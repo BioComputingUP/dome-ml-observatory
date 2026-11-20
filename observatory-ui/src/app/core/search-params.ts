@@ -53,6 +53,7 @@ const PARAM = {
   domainTier3: 'd3',
   learningParadigm: 'para',
   modelFamily: 'fam',
+  modelUse: 'use',
   modelType: 'mt',
   dataResources: 'dl',
   enrichedOnly: 'enriched',
@@ -173,6 +174,7 @@ export function paramsToQuery(params: RawParams): SearchQuery {
     domainTier3: readList(params[PARAM.domainTier3]),
     learningParadigm: readList(params[PARAM.learningParadigm]),
     modelFamily: readList(params[PARAM.modelFamily]),
+    modelUse: readList(params[PARAM.modelUse]),
     modelType: readList(params[PARAM.modelType]),
     dataResources: readList(params[PARAM.dataResources]),
     enrichedOnly: parseBool(readScalar(params[PARAM.enrichedOnly])),
@@ -207,6 +209,7 @@ export function queryToParams(query: SearchQuery): Record<string, string | strin
     [PARAM.domainTier3]: listOrNull(f.domainTier3),
     [PARAM.learningParadigm]: listOrNull(f.learningParadigm),
     [PARAM.modelFamily]: listOrNull(f.modelFamily),
+    [PARAM.modelUse]: listOrNull(f.modelUse),
     [PARAM.modelType]: listOrNull(f.modelType),
     [PARAM.dataResources]: listOrNull(f.dataResources),
     [PARAM.enrichedOnly]: f.enrichedOnly ? 'true' : null,
@@ -289,7 +292,7 @@ export function activeFilterCount(filters: SearchFilters): number {
   if (filters.enrichedOnly) count++;
   for (const key of [
     'license', 'journal', 'meshHeadings', 'keywordsAuthor', 'pubTypes',
-    'domainTier1', 'domainTier2', 'domainTier3', 'learningParadigm', 'modelFamily', 'modelType',
+    'domainTier1', 'domainTier2', 'domainTier3', 'learningParadigm', 'modelFamily', 'modelUse', 'modelType',
     'dataResources',
   ] as const) {
     if (filters[key]?.length) count++;

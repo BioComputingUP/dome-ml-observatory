@@ -22,6 +22,9 @@ export interface SearchFilters {
   domainTier3?: string[];
   learningParadigm?: string[];
   modelFamily?: string[];
+  /** content_filters.model_use (schema v1.7.0). Matches only records enriched with prompt e2 or
+   *  later: earlier enrichments carry none. */
+  modelUse?: string[];
   modelType?: string[];
   /** Linked data resources (data_links.resources[].resource slugs: pdb, geo, zenodo, ...). A
    *  record matches when any of its resources is selected. Schema v1.4.0. */

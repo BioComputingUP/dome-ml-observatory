@@ -130,6 +130,13 @@ export class SearchRecordsDto {
   @RepeatableParam('Model family.')
   fam?: string | string[];
 
+  @RepeatableParam(
+    'Model use: how the paper obtains its model(s), e.g. "trained in this study" or ' +
+      '"pretrained, applied as-is". Records enriched before schema v1.7.0 carry none, so this ' +
+      'matches only records enriched since.',
+  )
+  use?: string | string[];
+
   @RepeatableParam('Model type.')
   mt?: string | string[];
 

@@ -3,6 +3,7 @@ import { vi } from 'vitest';
 import { FacetPanel } from './facet-panel';
 import { SearchFilters } from '../../core/records.service';
 import { FacetStats } from '../../core/facet-stats.model';
+import { Vocabularies } from '../../core/vocab.model';
 
 /** A complete, valid FacetStats -- the template reads several of its fields (license, pubTypes,
  *  corpus.*) even though these tests only exercise the year logic, and Angular's zoneless change
@@ -205,6 +206,76 @@ describe('FacetPanel', () => {
       fixture.detectChanges();
       expect(bannerText(fixture)).not.toMatch(/\d+ of \d+/);
       expect(bannerText(fixture)).toContain('These filters only match enriched records.');
+    });
+  });
+
+  describe('model use (schema v1.7.0)', () => {
+    const field = (labels: string[], max_tags: number) => ({ max_tags, terms: labels.map((label) => ({ label })) });
+    const USES = ['trained in this study', 'fine-tuned or adapted', 'pretrained, applied as-is', 'prompted (zero/few-shot)'];
+    const vocab = (modelUse?: string[]): Vocabularies => ({
+      domain: { source: 't', fields: { domain_tier1: field([], 1), domain_tier2: field([], 2), domain_tier3: field([], 3) } },
+      modellingBranch: {
+        source: 't',
+        fields: {
+          learning_paradigm: field(['supervised'], 2),
+          model_family: field(['deep learning'], 3),
+          ...(modelUse ? { model_use: field(modelUse, 2) } : {}),
+        } as Vocabularies['modellingBranch']['fields'],
+      },
+      modelTypeSeed: { n_seed_entries: 0, terms: [] },
+    });
+    const group = (fixture: ReturnType<typeof setup>['fixture']): HTMLFieldSetElement | undefined =>
+      [...(fixture.nativeElement as HTMLElement).querySelectorAll('fieldset')].find((f) =>
+        f.querySelector('legend')?.textContent?.startsWith('Model use'),
+      );
+
+    it('lists the vocabulary terms in the vocabulary order, with the cap and the live counts', () => {
+      const { fixture } = setup();
+      fixture.componentRef.setInput('vocab', vocab(USES));
+      // Counts arrive in descending-count order; the list keeps the vocabulary's.
+      fixture.componentRef.setInput('stats', {
+        ...STATS_WITH_YEAR_RANGE,
+        facets: {
+          ...STATS_WITH_YEAR_RANGE.facets,
+          modelUse: [
+            { value: 'pretrained, applied as-is', count: 900 },
+            { value: 'trained in this study', count: 40 },
+          ],
+        },
+      } satisfies FacetStats);
+      fixture.detectChanges();
+
+      const fieldset = group(fixture);
+      expect(fieldset?.querySelector('legend')?.textContent).toContain('max 2');
+      const rows = [...(fieldset?.querySelectorAll('label.check') ?? [])].map((l) =>
+        [...l.querySelectorAll('span')].map((span) => span.textContent?.trim()),
+      );
+      expect(rows).toEqual([
+        ['Trained in this study', '40'],
+        ['Fine-tuned or adapted'],
+        ['Pretrained, applied as-is', '900'],
+        ['Prompted (zero/few-shot)'],
+      ]);
+    });
+
+    it('toggles a term into the modelUse filter verbatim', () => {
+      const { fixture, component, emitted } = setup();
+      fixture.componentRef.setInput('vocab', vocab(USES));
+      fixture.componentRef.setInput('filters', { modelUse: ['trained in this study'] } satisfies SearchFilters);
+      component.toggleInList('modelUse', 'pretrained, applied as-is', true);
+      component.toggleInList('modelUse', 'trained in this study', false);
+      expect(emitted).toEqual([
+        { modelUse: ['trained in this study', 'pretrained, applied as-is'] },
+        { modelUse: undefined },
+      ]);
+    });
+
+    it('hides the group under a vocabulary without the field, and counts nothing from an older API', () => {
+      const { fixture, component } = setup();
+      fixture.componentRef.setInput('vocab', vocab());
+      fixture.detectChanges();
+      expect(group(fixture)).toBeUndefined();
+      expect(component.countFor('modelUse', 'trained in this study')).toBeUndefined();
     });
   });
 });

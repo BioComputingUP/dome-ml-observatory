@@ -54,6 +54,7 @@ const VOCAB_FILE: Record<SubjectField, string> = {
   domain_tier3: 'domain.json',
   learning_paradigm: 'modelling-branch.json',
   model_family: 'modelling-branch.json',
+  model_use: 'modelling-branch.json',
   model_type: 'model-type-seed.json',
 };
 

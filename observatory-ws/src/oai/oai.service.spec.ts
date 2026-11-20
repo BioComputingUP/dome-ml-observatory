@@ -132,6 +132,21 @@ describe('OaiService', () => {
     expect(errorCode(formats)).toBe('idDoesNotExist');
   });
 
+  it('serves nothing from enrichment_history in a record', async () => {
+    const marker = 'SUPERSEDED-ENRICHMENT-MUST-NOT-BE-PUBLISHED';
+    const withHistory = {
+      ...doc(1, MIGRATION),
+      enrichment_history: [{ llm_enrichment: { rationale: marker, model_id: marker } }],
+    } as RecordDocument;
+    const oai = new OaiService(fakeContentModel([withHistory]).model, config);
+    const xml = await oai.respond(
+      { verb: 'GetRecord', metadataPrefix: 'oai_dc', identifier: oaiId(1) },
+      NOW,
+    );
+    expect(identifiers(xml)).toEqual([oaiId(1)]);
+    expect(xml).not.toContain(marker);
+  });
+
   it('identifies itself with the earliest datestamp in the repository', async () => {
     const xml = await service().respond({ verb: 'Identify' }, NOW);
     expect(xml).toContain(`<earliestDatestamp>${MIGRATION}</earliestDatestamp>`);

@@ -7,7 +7,7 @@ import { AppConfig } from '../config/configuration';
 import { oaiBaseUrl, oaiIdentifier, OAI_REPOSITORY_ID } from '../metadata/metadata-urls';
 import { oaiDcElements } from '../metadata/oai-dc';
 import { DATESTAMP_SORT, datestampFilter, toDatestamp } from '../metadata/record-keyset';
-import { RecordDocument } from '../records/schemas/record.schema';
+import { PUBLIC_RECORD_PROJECTION, RecordDocument } from '../records/schemas/record.schema';
 import {
   encodeResumptionToken,
   idDoesNotExist,
@@ -32,8 +32,10 @@ export const LIST_IDENTIFIERS_PAGE = 1000;
 
 const EARLIEST_TTL_MS = 24 * 60 * 60 * 1000;
 const KEY_PROJECTION = { _id: 1, record_modified: 1 } as const;
-/** Everything oai_dc reads; the long free-text fields it never uses stay on the server. */
+/** Everything oai_dc reads; the long free-text fields it never uses stay on the server, and so does
+ *  everything the API withholds from every response. */
 const RECORD_PROJECTION = {
+  ...PUBLIC_RECORD_PROJECTION,
   'publication_metadata.abstract': 0,
   'llm_classification.rationale': 0,
   'llm_enrichment.rationale': 0,

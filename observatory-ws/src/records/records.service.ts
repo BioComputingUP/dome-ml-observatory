@@ -11,7 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { CountService } from './count.service';
 import { TermFrequencyService } from './term-frequency.service';
 import { TtlCache } from '../common/ttl-cache';
-import { RecordDocument } from './schemas/record.schema';
+import { PUBLIC_RECORD_PROJECTION, RecordDocument } from './schemas/record.schema';
 import { AppConfig } from '../config/configuration';
 import {
   buildAuthorProbeFilter,
@@ -447,7 +447,7 @@ export class RecordsService implements OnModuleInit {
       // No sort on the query: ordering by _id made the planner walk the whole collection on the
       // _id index (4.2s measured) instead of the positives on class_year_id (~1s). Ordered here.
       const docs = await this.model
-        .find(filter)
+        .find(filter, PUBLIC_RECORD_PROJECTION)
         .limit(IDENTIFIER_LIMIT)
         .lean<RecordDocument[]>()
         .maxTimeMS(this.filterBudgetMs)
@@ -467,7 +467,7 @@ export class RecordsService implements OnModuleInit {
       throw new BadRequestException('Invalid record id: expected a UUID');
     }
     const doc = await this.model
-      .findById(pid)
+      .findById(pid, PUBLIC_RECORD_PROJECTION)
       .lean<RecordDocument>()
       .maxTimeMS(this.filterBudgetMs)
       .exec();
@@ -515,7 +515,7 @@ export class RecordsService implements OnModuleInit {
         return this.runPromotedFetch(filter, promoted, skip, limit, maxTimeMs);
       }
       return this.model
-        .find(filter)
+        .find(filter, PUBLIC_RECORD_PROJECTION)
         .sort(buildSortSpec(sort))
         .skip(skip)
         .limit(limit)
@@ -597,7 +597,7 @@ export class RecordsService implements OnModuleInit {
     // promoted rows precede it.
     if (skip >= promotedIds.length) {
       return this.model
-        .find(rest)
+        .find(rest, PUBLIC_RECORD_PROJECTION)
         .sort({ _id: 1 })
         .skip(skip - promotedIds.length)
         .limit(limit)
@@ -612,7 +612,7 @@ export class RecordsService implements OnModuleInit {
     // The promoted tier ran out mid-page. Everything before this point in the sequence is promoted,
     // so the remainder starts from its own beginning -- no skip.
     const tail = await this.model
-      .find(rest)
+      .find(rest, PUBLIC_RECORD_PROJECTION)
       .sort({ _id: 1 })
       .limit(limit - head.length)
       .lean<RecordDocument[]>()
@@ -627,7 +627,7 @@ export class RecordsService implements OnModuleInit {
   private async fetchByIds(ids: string[], maxTimeMs: number): Promise<RecordDocument[]> {
     if (ids.length === 0) return [];
     const docs = await this.model
-      .find({ _id: { $in: ids } })
+      .find({ _id: { $in: ids } }, PUBLIC_RECORD_PROJECTION)
       .lean<RecordDocument[]>()
       .maxTimeMS(maxTimeMs)
       .exec();

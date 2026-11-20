@@ -150,6 +150,7 @@ describe('parseSearchParams', () => {
       d3: 'variant-calling',
       para: 'supervised',
       fam: 'transformer',
+      use: 'trained in this study',
       mt: 'llm',
     });
     expect(filters).toMatchObject({
@@ -162,6 +163,7 @@ describe('parseSearchParams', () => {
       domainTier3: ['variant-calling'],
       learningParadigm: ['supervised'],
       modelFamily: ['transformer'],
+      modelUse: ['trained in this study'],
       modelType: ['llm'],
     });
   });
@@ -979,6 +981,55 @@ describe('data resources filter (schema v1.4.0)', () => {
     const filter = buildMongoFilter({ ...emptyFilters, dataResources: ['pdb', 'zenodo'] });
     expect(JSON.stringify(filter)).toContain(
       JSON.stringify({ 'data_links.resources.resource': { $in: ['pdb', 'zenodo'] } }),
+    );
+  });
+});
+
+describe('model use filter (schema v1.7.0)', () => {
+  it('reads use as a repeatable, verbatim list -- the comma in a vocabulary label stays', () => {
+    expect(parseSearchParams({ use: 'pretrained, applied as-is' }).filters.modelUse).toEqual([
+      'pretrained, applied as-is',
+    ]);
+    expect(
+      parseSearchParams({ use: ['trained in this study', 'prompted (zero/few-shot)'] }).filters
+        .modelUse,
+    ).toEqual(['trained in this study', 'prompted (zero/few-shot)']);
+    expect(parseSearchParams({}).filters.modelUse).toBeUndefined();
+  });
+
+  it('matches any of the selected uses on content_filters.model_use, and adds nothing when none is', () => {
+    const filter = buildMongoFilter({
+      ...emptyFilters,
+      modelUse: ['fine-tuned or adapted', 'pretrained, applied as-is'],
+    });
+    expect(filter).toEqual({
+      $and: [
+        {
+          'content_filters.model_use': {
+            $in: ['fine-tuned or adapted', 'pretrained, applied as-is'],
+          },
+        },
+      ],
+    });
+    expect(JSON.stringify(buildMongoFilter({ ...emptyFilters, modelUse: [] }))).not.toContain(
+      'model_use',
+    );
+  });
+
+  it('keys a use-filtered count separately from the unfiltered one, order-insensitively', () => {
+    expect(canonicalCacheKey({ ...emptyFilters, modelUse: ['trained in this study'] })).not.toBe(
+      canonicalCacheKey(emptyFilters),
+    );
+    expect(
+      canonicalCacheKey({
+        ...emptyFilters,
+        modelUse: ['trained in this study', 'fine-tuned or adapted'],
+      }),
+    ).toBe(
+      canonicalCacheKey({
+        ...emptyFilters,
+        modelUse: ['fine-tuned or adapted', 'trained in this study'],
+      }),
     );
   });
 });

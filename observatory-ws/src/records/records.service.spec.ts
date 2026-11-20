@@ -4,7 +4,7 @@ import { RecordsService } from './records.service';
 import { CountService } from './count.service';
 import { TermFrequencyService } from './term-frequency.service';
 import { AppConfig } from '../config/configuration';
-import { RecordDocument } from './schemas/record.schema';
+import { PUBLIC_RECORD_PROJECTION, RecordDocument } from './schemas/record.schema';
 
 /** Fluent Mongoose Query stub -- every chain method returns itself except `exec`, which is a
  *  plain jest.fn() so tests can configure resolve/reject behaviour directly (never an
@@ -36,6 +36,7 @@ function fakeModel(opts: {
   const aggregateExec = opts.aggregateExec ?? jest.fn<Promise<unknown>, []>().mockResolvedValue([]);
   return {
     find: jest.fn(() => fakeQuery(opts.findExec)),
+    findById: jest.fn(() => fakeQuery(opts.findExec)),
     aggregate: jest.fn(() => fakeAggregate(aggregateExec)),
     listIndexes: jest.fn().mockResolvedValue(opts.indexes ?? []),
   };
@@ -377,5 +378,55 @@ describe('RecordsService.search / routing', () => {
 
     expect(result.search?.matched).toBe('prefix');
     expect(model.find.mock.calls.length).toBeGreaterThan(1);
+  });
+});
+
+/**
+ * The responses are the lean documents themselves, so a stored field reaches the client unless the
+ * query withholds it. `enrichment_history` (schema v1.8.0) is write-side provenance and must never
+ * be served. Every path that fetches whole documents is driven here, and every find/findById it
+ * makes must either carry the exclusion or be an inclusion projection (an _id/title candidate
+ * fetch), which leaves the field out by construction.
+ */
+describe('RecordsService / withheld fields', () => {
+  const withholds = (projection: unknown): boolean => {
+    if (typeof projection !== 'object' || projection === null) return false;
+    const values = Object.values(projection);
+    const inclusion = values.length > 0 && values.every((v) => v === 1);
+    return inclusion || (projection as Record<string, unknown>).enrichment_history === 0;
+  };
+
+  it('withholds enrichment_history on every whole-document fetch', async () => {
+    const findExec = jest.fn<Promise<unknown>, []>().mockResolvedValue(SOME_DOCS);
+    const model = fakeModel({
+      findExec,
+      aggregateExec: jest
+        .fn<Promise<unknown>, []>()
+        .mockResolvedValue([{ _id: 'a', score: 1, publication_metadata: { title: 'x' } }]),
+      indexes: [{ name: 'positives_text' }],
+    });
+    const service = new RecordsService(
+      model as never,
+      fakeCountService({ total: 2, totalRelation: 'eq' }),
+      fakeConfig(),
+      fakeTermFrequency(),
+    );
+    await service.onModuleInit();
+
+    await service.search({}); // filter-only, _id order
+    await service.search({ sort: 'year_desc' }); // sorted ids, then fetchByIds
+    await service.search({ q: 'dome*' }); // scan path, the promoted tier then the rest
+    await service.search({ q: 'dome*', page: '3' }); // scan path, past the promoted tier
+    await service.search({ q: 'dome' }); // index path
+    await service.search({ q: 'https://doi.org/10.1016/j.synbio.2026.06.002' }); // identifier
+    await service.findByPid('04fc0915-fded-5146-8847-4da33cf3a059');
+
+    const calls = [...model.find.mock.calls, ...model.findById.mock.calls] as unknown[][];
+    expect(calls.length).toBeGreaterThan(5);
+    for (const call of calls) expect(withholds(call[1])).toBe(true);
+    expect(model.findById).toHaveBeenCalledWith(
+      '04fc0915-fded-5146-8847-4da33cf3a059',
+      PUBLIC_RECORD_PROJECTION,
+    );
   });
 });
