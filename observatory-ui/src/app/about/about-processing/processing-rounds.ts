@@ -127,6 +127,19 @@ export const ENRICHMENT_ROUNDS: readonly EnrichmentRound[] = [
     model: 'DeepSeek V4.1 Flash',
     promptVersion: 'e1',
     records: 200,
+  },  {
+    number: 3,
+    title: 'Bioinformatics and high-impact journals',
+    started: '2026-11-16',
+    finished: '2026-11-20',
+    cohort:
+      'Positive records not yet enriched under 27 bioinformatics and computational biology journal titles ' +
+      '(13,042 records) and 59 general science, medicine, imaging and AI journal titles (87,031 records), ' +
+      'taken from the corpus release of 25 September 2026. 151 records whose answer was cut off at ' +
+      'the length limit were not added.',
+    model: 'GLM-5.3 Flash, served by EMBL-EBI',
+    promptVersion: 'e3',
+    records: 100_073,
   },
 ];
 
@@ -168,6 +181,18 @@ export const CORRECTIONS: readonly Correction[] = [
       'hand-annotated benchmark records merged on 3 September had never been checked, and papers ' +
       'under a PubMed Central embargo when first fetched have since been released. 11,433 records ' +
       'now show full text, AlphaFold 2 among them. No record was removed.',
+  },  {
+    number: 3,
+    kind: 'corrected',
+    title: 'Enrichment tags outside the vocabularies removed',
+    date: '2026-11-20',
+    documents: 140,
+    why:
+      'Records enriched in rounds 1 and 2 held a few tags their field does not define, most often a ' +
+      'second-level domain listed among the third-level ones. From 20 November every enrichment is ' +
+      'checked against the published vocabularies as it is loaded: such a tag moves to the field it ' +
+      'belongs to when that field has room, and is removed otherwise. The same rule was applied to ' +
+      'the 140 records already enriched. Each change is recorded on the record. No record was removed.',
   },
 ];
 
