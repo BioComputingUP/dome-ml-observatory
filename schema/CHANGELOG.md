@@ -14,6 +14,18 @@ updated except the two published releases below: `v1.2.0/` and `v1.3.0/` still n
 published (see `README.md`) and is never edited in place. GitHub redirects the old name, so those
 strings still resolve. The next release will carry the new name.
 
+## v1.9.2 — 2026-11-25
+
+**Changed (vocabulary, `vocab/data-resources.json` only):** adds `modelarchive` (ModelArchive,
+run by SIB Swiss Institute of Bioinformatics and the Biozentrum, University of Basel; an ELIXIR
+Deposition Database; Node CH). It is one of three depositors whose links Europe PMC's `/datalinks`
+route lists as external links; the data-links merge now keeps those three (Dryad, EMDB,
+ModelArchive) and refuses the rest of that route's external links, mostly curated databases'
+reference pages for the paper, metrics and reviews. See dome-ml-observatory-triage
+`docs/data_links_sources.md` §3. 91 resources. The schema differs from v1.9.1 only in `$id`.
+
+**Migration note:** nothing for consumers. `migrate_v1_9_2.py` moves the stamp from 1.9.1.
+
 ## v1.9.1 — 2026-11-25
 
 The data-resources vocabulary is complete: every designation list is sourced, and every resource
