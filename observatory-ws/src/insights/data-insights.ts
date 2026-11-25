@@ -23,9 +23,11 @@ import {
   yearAxis,
 } from './series';
 
-/** Routes that mean the resource holds a record deposited for the paper (EBI Search found the
- *  paper cited by the entry), against routes that found an accession written in the paper. */
-export const DEPOSIT_ROUTES = ['ebisearch_xref', 'ebisearch_domain'];
+/** Routes that mean the resource holds a record deposited for the paper, against routes that found
+ *  an accession written in the paper: EBI Search found the entry citing the paper; Europe PMC's
+ *  /datalinks lists it as a curated submission (`submission`), or as one of the three depositors
+ *  the merge keeps among its external links (`ext_links`: Dryad, EMDB, ModelArchive, schema v1.9.2). */
+export const DEPOSIT_ROUTES = ['ebisearch_xref', 'ebisearch_domain', 'submission', 'ext_links'];
 export const MENTION_ROUTES = ['tm_accession', 'tm_supplementary'];
 /** Routes that, alone, found nothing but the derived BioStudies entry. */
 export const DERIVED_ROUTES = ['derived'];

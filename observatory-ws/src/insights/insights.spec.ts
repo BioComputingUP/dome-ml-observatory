@@ -139,6 +139,9 @@ describe('pipelines', () => {
     expect(json).toContain(`"${AUTOMATIC_BIOSTUDIES_PREFIX}"`);
     // The derived-only test must require a non-empty route list.
     expect(json).toContain('{"$gt":[{"$size":"$$rt"},0]}');
+    // Curated submissions and the kept /datalinks external links count as deposits.
+    expect(json).toContain('"submission"');
+    expect(json).toContain('"ext_links"');
   });
 
   it('runs the open-vocabulary groups as their own pipelines, not inside the $facet', () => {
