@@ -29,6 +29,8 @@ service serves the same reference as Swagger UI at
 | `GET /api/facets/:field` | Typeahead for `journal`, `mesh_headings`, `pub_types`, `license`. Served from an in-memory cache — no database round trip. |
 | `GET /api/journals` | Journals ranked by AI/ML methods-paper count or share. |
 | `GET /api/journals/detail?journal=` | One journal: totals, year series, rank. |
+| `GET /api/insights/models[?journal=]` | Model families, paradigms, model use and model types by year; journal and domain profiles by family. Enriched papers only. |
+| `GET /api/insights/data[?resource=]` | Data resources linked by AI/ML methods papers, by year and link route, with designations (vocab/data-resources.json); one resource's detail. |
 | `GET /api/docs` | Swagger UI. `/api/docs-json` for the raw OpenAPI document. |
 
 ### Limits

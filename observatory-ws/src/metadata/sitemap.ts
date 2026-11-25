@@ -9,6 +9,8 @@ export const STATIC_PAGES: readonly string[] = [
   '/',
   '/search',
   '/journals',
+  '/data',
+  '/models',
   '/news',
   '/download',
   '/download/bulk',

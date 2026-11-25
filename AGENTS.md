@@ -20,7 +20,7 @@ are *not* curator-reviewed; don't describe them as such). **Monorepo, two indepe
   `observatory-ui/nginx.conf`.
 - **`observatory-ws/`** — NestJS backend, read-only API over the record dataset (`GET /api/health`,
   `/api/health/ready`, `/api/records`, `/api/records/:pid`, `/api/stats`, `/api/facets/:field`,
-  `/api/journals`, `/api/journals/detail`, `/api/export`, the FAIR metadata routes
+  `/api/journals`, `/api/journals/detail`, `/api/insights/models`, `/api/insights/data`, `/api/export`, the FAIR metadata routes
   `/api/records/:pid/jsonld`, `/api/records/:pid/linkset`, `/api/catalog` and `/api/sitemap*`,
   OAI-PMH at `/api/oai`, Swagger at `/api/docs`). The only thing in this repo
   that ever opens a connection to Mongo.
@@ -49,8 +49,8 @@ must stay aligned, in both directions:
   classification field: `positives_text` is partial on it and `canUseTextIndex` gates on it.
 - **Every load there needs a restart here.** `FacetsService` is boot-loaded with no TTL, so new
   journals, MeSH terms, licences and enrichment values are invisible until `observatory-ws`
-  restarts; `CountService` is 24h TTL, and `StatsService`/`JournalsService` serve their last
-  table stale past 24h while one background rebuild runs (`StaleWhileRevalidate`) -- fresher,
+  restarts; `CountService` is 24h TTL, and `StatsService`/`JournalsService`/`InsightsService` serve
+  their last table stale past 24h while one background rebuild runs (`StaleWhileRevalidate`) -- fresher,
   but still restart-bounded. Its post-load checklist ends with that restart and a
   `generate_facet_stats.py --from-api` reconciliation.
 - **The corpus description is built there and published here.** Its `build_release_metadata.py`
@@ -144,9 +144,15 @@ host are not.
 
 - `observatory-ui/src/app/` — one folder per route/feature: `home`, `search`, `record`,
   `journals`, `news`, `navbar`, `footer`, `not-found`, plus `about/` and `download/`, which are
-  each a side-nav layout wrapping several child-route pages. Two non-route folders alongside them:
+  each a side-nav layout wrapping several child-route pages, and `insights/`, the Data & Models
+  pages (`/data`, `/models`) under one navbar entry and a two-tab header (`InsightsLayout`). Two non-route folders alongside them:
   `core/` (models, services, the URL<->query parsing in `search-params.ts`, outbound-link and
-  citation helpers) and `shared/` (`line-chart`, `copy-button`, `side-nav`, `status-badge`).
+  citation helpers) and `shared/` (`line-chart`, `copy-button`, `side-nav`, `status-badge`, and
+  the Data & Models charts: `small-multiples`, `stacked-bars`, `heatmap`, `bump-chart`,
+  `ranked-bars`, with `viz.ts` and the global `src/_viz.scss`). The charts are hand-drawn SVG or
+  HTML like `line-chart`: no chart library, because the CSP allows nothing third-party. Colours
+  come from the `--viz-*` tokens in `styles.scss`, which were checked with the dataviz palette
+  validator; add a series colour there, validated, never inline.
 - `observatory-ui/src/assets/data/content-items.json` — hand-maintained news/event feed consumed
   by the `news` feature. Entries are plain objects (`type`, `date`, `title`, `description`,
   `link`, `linkText`, `linkIcon`, `tags`); follow the existing shape and keep `date` as a
@@ -300,6 +306,27 @@ host are not.
   journal-scoped total instead overstated every journal's share by about 12% until 2026-09-26.
   `toListRow` is an explicit whitelist, not a spread: a field added to `JournalRow` and not copied
   there reaches the detail view and silently never reaches the table.
+- `observatory-ws/src/insights/` — `GET /api/insights/models` and `/api/insights/data`, the Data &
+  Models pages' figures. Two in-memory tables built like the journals one (`StaleWhileRevalidate`,
+  24h), from a few aggregations over the positives, each a pure exported pipeline plus a pure
+  shaper (`models-insights.ts`, `data-insights.ts`). Four rules:
+  - **Its warm-up runs after the app listens, on purpose** (`onApplicationBootstrap`, not
+    awaited): models then data, about 32 s and 18 s over the VPN on 2026-11-25. Boot time and the
+    Dockerfile's `--start-period` did not change. A request before the first build waits for that
+    build; only a failed first build answers 503.
+  - **The open-vocabulary groups run as their own pipelines, never inside the `$facet`**: model
+    types (31,768 distinct on 2026-11-25, corpus-figures) and the journal grids grow with the
+    corpus, and a `$facet` result is one document capped at 16 MB.
+  - **The Data page classifies resources only through the published
+    `vocab/data-resources.json`** (schema v1.9.0, `resource-vocab.ts`): `kind`, host, EMBL-EBI,
+    Global Core Biodata Resource, the ELIXIR designations and Nodes. Only `kind: data` is ranked.
+    A designation whose list is `pending` (the three ELIXIR ones, until elixir-europe.org's lists
+    are added) shows as pending in the UI rather than as "none". A slug the merge emits without an
+    entry is dropped from the page; the triage repository's tests stop that before a load.
+  - **BioStudies counts only through a study other than the paper's own `S-EPMC` record.** Every
+    PMC article with supplementary files has one, and EBI Search returns it too, so a route-based
+    test cannot tell it apart: about 90 of 129,381 positives with a BioStudies entry link anything
+    else (2026-11-25, corpus-figures). The rest are counted in `scope.derivedBioStudies`.
 - `observatory-ws/src/database/content-model.module.ts` — the **only** place the `'Content'`
   Mongoose model is registered (`records`, `facets`, `stats` and `journals` modules all import
   this rather than each calling `MongooseModule.forFeatureAsync` themselves). Registering the same
@@ -316,6 +343,8 @@ host are not.
   runs in the foreground: after boot, `StatsService` and `JournalsService` refresh in the
   background off a stale-serving cache (see the journals bullet above). **If you add another serial warm-up step, re-measure boot time and
   raise `--start-period` to match** — the Dockerfile's own comment says the same thing.
+  `InsightsService` is the deliberate exception: it builds after `listen()` (see the insights
+  bullet above), so it adds nothing to boot.
 
 ## Things that have gone wrong before — don't reintroduce these
 

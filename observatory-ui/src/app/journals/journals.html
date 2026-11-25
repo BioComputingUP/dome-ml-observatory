@@ -67,6 +67,11 @@
               <a routerLink="/search" [queryParams]="recordsLink()" class="cta-pill cta-pill-accent">
                 Browse its records <span aria-hidden="true">→</span>
               </a>
+              @if ((result()?.journal?.enriched ?? 0) > 0) {
+                <a routerLink="/models" [queryParams]="{ j: journal }" class="cta-pill cta-pill-primary">
+                  Model profile
+                </a>
+              }
               <button type="button" class="cta-pill cta-pill-primary" (click)="clearJournal()">
                 All journals
               </button>

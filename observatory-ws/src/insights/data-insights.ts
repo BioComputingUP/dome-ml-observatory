@@ -34,7 +34,7 @@ export const DERIVED_ROUTES = ['derived'];
  * Every PMC article with supplementary files has a BioStudies record of them, `S-EPMC<digits>`,
  * which the pipeline derives (route `derived`) and EBI Search also returns (`ebisearch_xref`). It
  * says nothing about the paper's data: on 2026-11-25, 129,381 positives carried a BioStudies entry
- * and about 90 of them linked any study other than their own S-EPMC record. So BioStudies counts
+ * and about 90 of them linked any study other than their own S-EPMC record (corpus-figures). So BioStudies counts
  * for a paper only through a linked identifier that is not one, with that link's own routes; the
  * papers carrying only the automatic record are counted in `scope.derivedBioStudies`.
  */
