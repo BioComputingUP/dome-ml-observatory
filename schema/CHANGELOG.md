@@ -14,6 +14,34 @@ updated except the two published releases below: `v1.2.0/` and `v1.3.0/` still n
 published (see `README.md`) and is never edited in place. GitHub redirects the old name, so those
 strings still resolve. The next release will carry the new name.
 
+## v1.9.1 — 2026-11-25
+
+The data-resources vocabulary is complete: every designation list is sourced, and every resource
+names its host and ELIXIR Nodes with the page they were read from.
+
+**Changed (vocabulary, `vocab/data-resources.json` only):**
+- `elixir_cdr`: the 41-entry ELIXIR Core Data Resource list, from a copy of the ELIXIR page supplied
+  by the project owner (the site refuses automated requests). 28 catalogue resources carry it;
+  member databases of an umbrella entry carry the umbrella (IntAct and MINT: IMEx; Pfam: InterPro;
+  UniParc: UniProt; ENA assemblies: ENA).
+- `elixir_edd`: the 18-entry ELIXIR Deposition Database list, read from the Internet Archive's copy
+  of the ELIXIR page dated 2026-08-31, which includes the January 2026 additions. ELIXIR's own
+  announcement of that round says 17; the page lists 18 and is followed. 16 catalogue resources
+  carry it; DisProt, LIPID MAPS and ModelArchive have no slug yet.
+- `elixir_nodes` (top level): all 25 ELIXIR Nodes, EMBL-EBI included.
+- Per resource: `host`, the new `host_source` (the page the host was read from), and
+  `elixir_nodes`, one per institution that runs the resource in an ELIXIR member country. Joint
+  resources keep every partner: EGA is EMBL-EBI and Spain (CRG), UniProt EMBL-EBI and Switzerland
+  (SIB), MINT EMBL-EBI and Italy. Resources run by intergovernmental bodies (CERN's Zenodo, the
+  EMA's register, GBIF) or by commercial platforms carry no Node.
+- `embl_ebi` now follows the Node list: MINT and ProteomeXchange gain it (their data are released
+  through IntAct and PRIDE at EMBL-EBI). 38 resources.
+
+The schema differs from v1.9.0 only in `$id`; the other three vocabularies are byte-identical.
+
+**Migration note:** nothing for consumers. In dome-ml-observatory-triage, `migrate_v1_9_1.py`
+stamps 1.9.1 on every document, from 1.8.0 (v1.9.0 was never stamped on moros) or 1.9.0.
+
 ## v1.9.0 — 2026-11-25
 
 A vocabulary describing every data-link resource: what kind of resource it is, who runs it, and how

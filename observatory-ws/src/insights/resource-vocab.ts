@@ -22,6 +22,8 @@ export interface ResourceEntry {
   category: string;
   kind: ResourceKind;
   host: string | null;
+  /** The page the host was read from (schema v1.9.1). */
+  host_source?: string | null;
   embl_ebi: boolean;
   /** The Global Core Biodata Resource the resource is, or belongs to; null when none. */
   gcbr: string | null;

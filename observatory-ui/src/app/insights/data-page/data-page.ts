@@ -320,6 +320,12 @@ export class DataPage {
     return out;
   }
 
+  /** The resource's ELIXIR Nodes by name, in the vocabulary's order. */
+  nodeNames(r: ResourceRow): string[] {
+    const names = new Map((this.data()?.nodes ?? []).map((n) => [n.code, n.name]));
+    return r.elixir_nodes.map((code) => names.get(code) ?? code);
+  }
+
   share(value: number): string {
     return formatShare(value);
   }

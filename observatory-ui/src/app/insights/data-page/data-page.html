@@ -122,7 +122,15 @@
               <p class="ins-kicker">{{ det.resource.category }}</p>
               <h2 id="detail-h">{{ det.resource.label }}</h2>
               @if (det.resource.host) {
-                <p class="ins-lead">Run by {{ det.resource.host }}.</p>
+                <p class="ins-lead">
+                  Run by {{ det.resource.host }}.
+                  @if (det.resource.host_source) {
+                    <a [href]="det.resource.host_source" target="_blank" rel="noopener">Source</a>
+                  }
+                </p>
+              }
+              @if (nodeNames(det.resource).length) {
+                <p class="ins-lead">ELIXIR: {{ nodeNames(det.resource).join(', ') }}.</p>
               }
               <ul class="ins-tags">
                 @for (t of detailDesignations(det.resource); track t) {

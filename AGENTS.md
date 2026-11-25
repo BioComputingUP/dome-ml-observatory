@@ -318,10 +318,12 @@ host are not.
     types (31,768 distinct on 2026-11-25, corpus-figures) and the journal grids grow with the
     corpus, and a `$facet` result is one document capped at 16 MB.
   - **The Data page classifies resources only through the published
-    `vocab/data-resources.json`** (schema v1.9.0, `resource-vocab.ts`): `kind`, host, EMBL-EBI,
-    Global Core Biodata Resource, the ELIXIR designations and Nodes. Only `kind: data` is ranked.
-    A designation whose list is `pending` (the three ELIXIR ones, until elixir-europe.org's lists
-    are added) shows as pending in the UI rather than as "none". A slug the merge emits without an
+    `vocab/data-resources.json`** (schema v1.9.0, completed in v1.9.1; `resource-vocab.ts`):
+    `kind`, host and the page it was read from, EMBL-EBI, Global Core Biodata Resource, the ELIXIR
+    designations and Nodes. Only `kind: data` is ranked. A designation whose list is `pending`
+    shows as pending in the UI rather than as "none". elixir-europe.org refuses scripts, so the
+    ELIXIR lists come from a copy of the page or the Internet Archive; the file's `designations`
+    block says which, and the lists are re-checked at each release. A slug the merge emits without an
     entry is dropped from the page; the triage repository's tests stop that before a load.
   - **BioStudies counts only through a study other than the paper's own `S-EPMC` record.** Every
     PMC article with supplementary files has one, and EBI Search returns it too, so a route-based
