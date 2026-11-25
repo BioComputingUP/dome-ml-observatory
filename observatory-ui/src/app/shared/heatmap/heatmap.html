@@ -1,0 +1,72 @@
+<figure class="heat">
+  <ul class="viz-legend heat-legend" aria-label="Colour key">
+    @for (step of legend; track step.label) {
+      <li><span class="viz-key" [style.background-color]="step.color" aria-hidden="true"></span>{{ step.label }}</li>
+    }
+  </ul>
+
+  <div class="heat-scroll" tabindex="0" role="region" [attr.aria-label]="caption() + ' (scrolls sideways)'">
+    <table class="heat-table">
+      <caption class="visually-hidden">{{ caption() }}</caption>
+      <thead>
+        <tr>
+          <th scope="col" class="heat-corner"></th>
+          @for (col of columns(); track col.key) {
+            <th scope="col" class="heat-col"><span>{{ col.label }}</span></th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (line of grid(); track line.row.key) {
+          <tr [class.highlight]="line.row.highlight">
+            <th scope="row" class="heat-row">
+              @if (line.row.link; as link) {
+                <a [routerLink]="link.path" [queryParams]="link.queryParams">{{ line.row.label }}</a>
+              } @else {
+                {{ line.row.label }}
+              }
+              <span class="heat-row-total">{{ count(line.row.total) }}</span>
+            </th>
+            @for (c of line.cells; track c.column.key) {
+              <td [style.background-color]="c.color" [class.dark]="c.dark" [class.faint]="c.faint">
+                @if (c.link && c.cell.count) {
+                  <a
+                    class="heat-cell"
+                    [routerLink]="c.link.path"
+                    [queryParams]="c.link.queryParams"
+                    [attr.aria-label]="describe(line.row, c.column, c.cell)"
+                    (pointerenter)="active.set({ row: line.row, column: c.column, cell: c.cell })"
+                    (focus)="active.set({ row: line.row, column: c.column, cell: c.cell })"
+                    (pointerleave)="active.set(null)"
+                    (blur)="active.set(null)"
+                    >{{ c.text }}</a
+                  >
+                } @else {
+                  <span
+                    class="heat-cell"
+                    [attr.aria-label]="describe(line.row, c.column, c.cell)"
+                    (pointerenter)="active.set({ row: line.row, column: c.column, cell: c.cell })"
+                    (pointerleave)="active.set(null)"
+                    >{{ c.text }}</span
+                  >
+                }
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <p class="heat-readout" aria-live="polite">
+    @if (active(); as a) {
+      {{ describe(a.row, a.column, a.cell) }}
+    } @else {
+      <span class="viz-muted-text">Point at or tab to a cell for its figures; each opens those papers in Search. Cells with fewer than {{ minCount() }} papers are left uncoloured.</span>
+    }
+  </p>
+
+  @if (caption()) {
+    <figcaption class="viz-caption">{{ caption() }}</figcaption>
+  }
+</figure>

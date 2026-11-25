@@ -1,0 +1,104 @@
+<figure class="bump">
+  <div class="bump-body">
+    <div class="bump-plot">
+      <svg
+        class="bump-svg"
+        [attr.viewBox]="'0 0 ' + W + ' ' + height()"
+        preserveAspectRatio="none"
+        [style.height.px]="height()"
+        role="img"
+        [attr.aria-label]="caption()"
+        (pointerleave)="picked.set(null)"
+      >
+        @for (row of names(); track row.key; let r = $index) {
+          <line class="bump-guide" x1="0" [attr.x2]="W" [attr.y1]="(r + 0.5) * ROW" [attr.y2]="(r + 0.5) * ROW" />
+        }
+        @for (line of lines(); track line.key) {
+          @if (line.key !== picked()) {
+            <path class="bump-line" [attr.d]="line.d" (pointerenter)="picked.set(line.key)" />
+          }
+        }
+        @for (line of lines(); track line.key) {
+          @if (line.key === picked()) {
+            <path class="bump-line picked" [attr.d]="line.d" />
+          }
+        }
+      </svg>
+      <!-- Rank dots for the picked line, in HTML so they stay round however the plot stretches. -->
+      @for (line of lines(); track line.key) {
+        @if (line.key === picked()) {
+          @for (p of line.points; track p.x) {
+            <span class="bump-dot" [style.left.%]="(p.x / W) * 100" [style.top.px]="p.y">{{ p.r }}</span>
+          }
+        }
+      }
+      <div class="bump-axis viz-muted-text" aria-hidden="true">
+        @for (t of xTicks(); track t.i) {
+          <span [style.left.%]="t.left">{{ t.label }}</span>
+        }
+      </div>
+    </div>
+
+    <ol class="bump-names" [attr.aria-label]="'Ranked in ' + labels()[labels().length - 1]">
+      @for (n of names(); track n.key) {
+        <li [style.height.px]="ROW">
+          <span class="bump-rank viz-muted-text">{{ n.rank ?? '–' }}</span>
+          @if (n.link; as link) {
+            <a
+              class="bump-name"
+              [class.picked]="picked() === n.key"
+              [routerLink]="link.path"
+              [queryParams]="link.queryParams"
+              (pointerenter)="picked.set(n.key)"
+              (focus)="picked.set(n.key)"
+              (blur)="picked.set(null)"
+              >{{ n.label }}</a
+            >
+          } @else {
+            <button type="button" class="bump-name" [class.picked]="picked() === n.key" (click)="picked.set(n.key)" (focus)="picked.set(n.key)">
+              {{ n.label }}
+            </button>
+          }
+        </li>
+      }
+    </ol>
+  </div>
+
+  <p class="bump-readout" aria-live="polite">
+    @if (readout(); as text) {
+      {{ text }}
+    } @else {
+      <span class="viz-muted-text">Point at or tab to a name to follow its line.</span>
+    }
+  </p>
+
+  @if (caption()) {
+    <figcaption class="viz-caption">{{ caption() }}</figcaption>
+  }
+  <button type="button" class="viz-table-toggle" (click)="showTable.set(!showTable())" [attr.aria-expanded]="showTable()">
+    {{ showTable() ? 'Hide the table' : 'Show as a table' }}
+  </button>
+  <div class="viz-table-wrap" [class.visually-hidden]="!showTable()">
+    <table class="viz-table">
+      <caption>{{ caption() }} Rank, with papers in brackets.</caption>
+      <thead>
+        <tr>
+          <th scope="col">Model type</th>
+          @for (year of labels(); track year) {
+            <th scope="col">{{ year }}</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (s of series(); track s.key; let k = $index) {
+          <tr>
+            <th scope="row">{{ s.label }}</th>
+            @for (year of labels(); track year; let i = $index) {
+              <td>{{ ranks()[k][i] ?? '–' }} ({{ count(s.values[i] ?? 0) }})</td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</figure>

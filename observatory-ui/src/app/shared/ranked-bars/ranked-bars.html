@@ -1,0 +1,42 @@
+<figure class="ranked">
+  <ul class="viz-legend">
+    @for (k of segmentLegend(); track k.key) {
+      <li><span class="viz-key" [style.background-color]="k.color" aria-hidden="true"></span>{{ k.label }}</li>
+    }
+  </ul>
+
+  <ol class="ranked-list">
+    @for (row of drawn(); track row.key; let i = $index) {
+      <li class="ranked-row" [class.selected]="row.selected">
+        <span class="ranked-pos viz-muted-text">{{ i + 1 }}</span>
+        <div class="ranked-main">
+          <div class="ranked-label">
+            @if (row.link; as link) {
+              <a [routerLink]="link.path" [queryParams]="link.queryParams" [attr.aria-label]="row.description" [attr.aria-current]="row.selected ? 'true' : null">{{ row.label }}</a>
+            } @else {
+              <span [attr.aria-label]="row.description">{{ row.label }}</span>
+            }
+            @for (b of row.badges ?? []; track b) {
+              <span class="ranked-badge">{{ b }}</span>
+            }
+          </div>
+          <div class="ranked-track" aria-hidden="true">
+            @for (seg of row.segments; track seg.key) {
+              <span class="ranked-seg" [style.width.%]="seg.width" [style.background-color]="seg.color" [attr.title]="seg.label + ': ' + count(seg.value)"></span>
+            }
+          </div>
+        </div>
+        <span class="ranked-total viz-value">{{ count(row.total) }}</span>
+        @if (row.searchLink; as link) {
+          <a class="ranked-search" [routerLink]="link.path" [queryParams]="link.queryParams" [attr.aria-label]="'Search the ' + count(row.total) + ' ' + unitLabel() + ' linking ' + row.label">
+            <i class="icon icon-common icon-search" aria-hidden="true"></i>
+          </a>
+        }
+      </li>
+    }
+  </ol>
+
+  @if (caption()) {
+    <figcaption class="viz-caption">{{ caption() }}</figcaption>
+  }
+</figure>

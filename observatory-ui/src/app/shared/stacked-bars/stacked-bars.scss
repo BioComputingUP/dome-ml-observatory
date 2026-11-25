@@ -1,0 +1,73 @@
+.stack {
+  margin: 0;
+}
+
+.stack-plot {
+  position: relative;
+}
+
+.stack-bars {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  height: 220px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid var(--border-default);
+}
+
+// Segments sit on the baseline with a 2px surface gap between them; the column's top corners are
+// rounded, the baseline end is square.
+.stack-col {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 2px;
+  cursor: pointer;
+  border-radius: 3px 3px 0 0;
+  overflow: hidden;
+
+  &.thin {
+    opacity: 0.35;
+  }
+
+  &.partial {
+    opacity: 0.6;
+  }
+
+  &.active {
+    outline: 2px solid var(--observatory-primary);
+    outline-offset: 1px;
+  }
+}
+
+.stack-seg {
+  display: block;
+  flex-shrink: 0;
+  min-height: 1px;
+}
+
+.stack-labels {
+  display: flex;
+  gap: 2px;
+  margin-top: var(--space-1);
+  font-size: var(--font-size-xs);
+  color: var(--status-neutral);
+
+  span {
+    flex: 1 1 0;
+    min-width: 0;
+    text-align: center;
+    white-space: nowrap;
+    overflow: visible;
+  }
+}
+
+.stack-tooltip {
+  top: var(--space-2);
+  transform: translateX(10px);
+
+  &.flip {
+    transform: translateX(calc(-100% - 10px));
+  }
+}

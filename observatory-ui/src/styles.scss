@@ -9,6 +9,8 @@
 @use 'fonts';
 @use 'ebi-icons';
 @use 'skeleton';
+@use 'viz';
+@use 'insights';
 
 // Design tokens. Brand colours carried over from the original OSAI-site build, kept for visual
 // continuity with the rest of the DOME-ML family. Everything else here is new: a spacing/type
@@ -73,6 +75,25 @@
   // legend and a direct label as well as by hue, never by hue alone.
   --viz-series-1: #e35c1c; // primary series -- reads as the brand orange
   --viz-series-2: #1c6ea8; // secondary/context series -- reads as a brighter DOME blue
+  // Slots 3-6, for the stacked charts on the Data & Models pages, in this fixed order after the
+  // two above. The six together pass the validator (2026-11-25): worst adjacent colour-blind dE
+  // 9.1 protan, normal-vision 22.8. Slots 3, 4 and 6 sit under 3:1 on white, so every chart using
+  // them carries a visible legend and a data table.
+  --viz-series-3: #1baf7a; // aqua
+  --viz-series-4: #eda100; // yellow
+  --viz-series-5: #6250d6; // violet
+  --viz-series-6: #e87ba4; // magenta
+  // Everything not highlighted: the other lines of a bump chart, the "Other" segment.
+  --viz-muted: #b6c0c6;
+  // Diverging scale for "more or less than the corpus" (lift): blue for less, orange for more,
+  // a grey midpoint for "about the same". Three steps per arm, built from the two series hues.
+  --viz-less-3: #1c5f91;
+  --viz-less-2: #5b9bcc;
+  --viz-less-1: #b3d2ea;
+  --viz-even: #eef0f2;
+  --viz-more-1: #f6c7ad;
+  --viz-more-2: #ec8d5c;
+  --viz-more-3: #c44c14;
 
   // Radius / shadow
   --radius-sm: 4px;

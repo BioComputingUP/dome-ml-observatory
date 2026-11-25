@@ -1,0 +1,85 @@
+<figure class="multiples">
+  <ul class="multiples-grid">
+    @for (p of drawn(); track p.key) {
+      <li class="panel">
+        <div class="panel-head">
+          @if (p.link; as link) {
+            <a class="panel-title" [routerLink]="link.path" [queryParams]="link.queryParams">{{ p.label }}</a>
+          } @else {
+            <span class="panel-title">{{ p.label }}</span>
+          }
+          <span class="panel-readout viz-value" aria-hidden="true">{{ readout(p) }}</span>
+        </div>
+        @if (p.note) {
+          <p class="panel-note">{{ p.note }}</p>
+        }
+        <div class="panel-plot">
+        @if (!shared()) {
+          <span class="panel-top" aria-hidden="true">{{ p.top }}</span>
+        }
+        <svg
+          #host
+          class="panel-svg viz-plot"
+          [attr.viewBox]="'0 0 ' + W + ' ' + H"
+          preserveAspectRatio="none"
+          role="img"
+          [attr.aria-label]="p.label + ', ' + readout(p)"
+          tabindex="0"
+          (pointermove)="onPointerMove($event, p.key, host)"
+          (pointerleave)="clear()"
+          (keydown)="onKeydown($event, p.key)"
+          (blur)="clear()"
+        >
+          <line class="panel-base" [attr.x1]="0" [attr.x2]="W" [attr.y1]="H - 4" [attr.y2]="H - 4" />
+          <path class="panel-area" [attr.d]="p.area" [attr.fill]="color()" />
+          <path class="panel-line" [attr.d]="p.line" [attr.stroke]="color()" />
+          @if (p.tail) {
+            <path class="panel-line panel-tail" [attr.d]="p.tail" [attr.stroke]="color()" />
+          }
+          @if (activeX(p); as ax) {
+            <line class="panel-cross" [attr.x1]="ax" [attr.x2]="ax" y1="0" [attr.y2]="H" />
+          }
+        </svg>
+        </div>
+      </li>
+    }
+  </ul>
+  <div class="multiples-axis viz-muted-text">
+    <span aria-hidden="true">{{ labels()[0] }}</span>
+    <span class="multiples-scale" role="group" aria-label="Vertical scale">
+      <button type="button" [class.active]="!shared()" [attr.aria-pressed]="!shared()" (click)="shared.set(false)">Each its own</button>
+      <button type="button" [class.active]="shared()" [attr.aria-pressed]="shared()" (click)="shared.set(true)">Same scale, 0 to {{ format(max()) }}</button>
+    </span>
+    <span aria-hidden="true">{{ labels()[labels().length - 1] }}@if (lastPartial()) {<span> (so far)</span>}</span>
+  </div>
+
+  @if (caption()) {
+    <figcaption class="viz-caption">{{ caption() }}</figcaption>
+  }
+  <button type="button" class="viz-table-toggle" (click)="showTable.set(!showTable())" [attr.aria-expanded]="showTable()">
+    {{ showTable() ? 'Hide the table' : 'Show as a table' }}
+  </button>
+  <div class="viz-table-wrap" [class.visually-hidden]="!showTable()">
+    <table class="viz-table">
+      <caption>{{ caption() }}</caption>
+      <thead>
+        <tr>
+          <th scope="col">Year</th>
+          @for (p of panels(); track p.key) {
+            <th scope="col">{{ p.label }}</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (year of labels(); track year; let i = $index) {
+          <tr>
+            <th scope="row">{{ year }}</th>
+            @for (p of panels(); track p.key) {
+              <td>{{ format(p.values[i] ?? 0) }}</td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</figure>

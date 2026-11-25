@@ -1,0 +1,87 @@
+<figure class="stack">
+  <ul class="viz-legend">
+    @for (s of colored(); track s.key) {
+      <li><span class="viz-key" [style.background-color]="s.color" aria-hidden="true"></span>{{ s.label }}</li>
+    }
+  </ul>
+
+  <div
+    class="stack-plot viz-plot"
+    role="img"
+    [attr.aria-label]="caption()"
+    tabindex="0"
+    (keydown)="onKeydown($event)"
+    (focus)="activeIndex.set(activeIndex() ?? labels().length - 1)"
+    (blur)="activeIndex.set(null)"
+    (pointerleave)="activeIndex.set(null)"
+  >
+    <div class="stack-bars">
+      @for (col of columns(); track col.label) {
+        <div
+          class="stack-col"
+          [class.thin]="col.thin"
+          [class.partial]="col.partial"
+          [class.active]="activeIndex() === col.i"
+          (pointerenter)="activeIndex.set(col.i)"
+          (pointerdown)="activeIndex.set(col.i)"
+        >
+          @for (seg of col.segments; track seg.key) {
+            <span class="stack-seg" [style.height.%]="seg.share * 100" [style.background-color]="seg.color"></span>
+          }
+        </div>
+      }
+    </div>
+    <div class="stack-labels" aria-hidden="true">
+      @for (col of columns(); track col.label) {
+        <span>{{ showLabel(col.i) ? col.label : '' }}</span>
+      }
+    </div>
+
+    @if (active(); as a) {
+      <div class="viz-tooltip stack-tooltip" [class.flip]="(tooltipLeft() ?? 0) > 55" [style.left.%]="tooltipLeft()">
+        <p class="viz-tooltip-title">{{ a.label }}@if (a.partial) { (so far)} · {{ count(a.total) }} papers</p>
+        <ul>
+          @for (seg of a.segments.slice().reverse(); track seg.key) {
+            <li>
+              <span class="viz-key" [style.background-color]="seg.color" aria-hidden="true"></span>
+              <span class="viz-value">{{ share(seg.share) }}</span>
+              <span class="viz-muted-text">{{ seg.label }} ({{ count(seg.value) }})</span>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </div>
+
+  @if (caption()) {
+    <figcaption class="viz-caption">{{ caption() }}</figcaption>
+  }
+  <button type="button" class="viz-table-toggle" (click)="showTable.set(!showTable())" [attr.aria-expanded]="showTable()">
+    {{ showTable() ? 'Hide the table' : 'Show as a table' }}
+  </button>
+  <div class="viz-table-wrap" [class.visually-hidden]="!showTable()">
+    <table class="viz-table">
+      <caption>{{ caption() }} Papers per year.</caption>
+      <thead>
+        <tr>
+          <th scope="col">Year</th>
+          @for (s of series(); track s.key) {
+            <th scope="col">{{ s.label }}</th>
+          }
+          <th scope="col">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (col of columns(); track col.label) {
+          <tr>
+            <th scope="row">{{ col.label }}</th>
+            @for (s of series(); track s.key) {
+              <td>{{ count(s.values[col.i] ?? 0) }}</td>
+            }
+            <td>{{ count(col.total) }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</figure>
