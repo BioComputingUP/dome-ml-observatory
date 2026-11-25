@@ -2,8 +2,8 @@
   <div class="band-inner">
     <h1>Bulk download</h1>
     <p class="lead">
-      The whole dataset in one file. This is the recommended way to take the corpus at scale —
-      it's faster for you than paging an API, and it keeps load off the service for everyone else.
+      The whole dataset in one file. For the full corpus this is the best route: it is quicker than
+      paging through the API, and it puts no load on the service.
     </p>
   </div>
 </div>
@@ -50,7 +50,7 @@
         <div class="spec-row">
           <dt><i class="icon icon-common icon-file-signature" aria-hidden="true"></i>Format</dt>
           <dd>
-            JSON Lines, gzipped — one complete record per line, UTF-8, the same records the API's
+            JSON Lines, gzipped: one complete record per line, UTF-8, the same records the API's
             export serves. Streamable: <code>gunzip -c</code> into <code>mongoimport</code> loads it
             without holding the whole file in memory. Beside it on Zenodo,
             <code>archive-metadata.json</code> gives the counts and the sha256 of every file, and
@@ -73,8 +73,8 @@
           <dt><i class="icon icon-common icon-code-branch" aria-hidden="true"></i>Schema</dt>
           <dd>
             Version {{ schemaVersion() }}. Every record conforms to the
-            <a [href]="schemaFile()" target="_blank" rel="noopener">published schema</a> — read the
-            field definitions rather than take them on trust. Each release is immutable, so a link
+            <a [href]="schemaFile()" target="_blank" rel="noopener">published schema</a>, which
+            defines every field. Each release is immutable, so a link
             to it keeps meaning the same thing.
             <span class="schema-links">
               <a [href]="schemaExample()" target="_blank" rel="noopener">
@@ -97,7 +97,7 @@
           <dd>
             CC BY 4.0 on Observatory's own classification and enrichment layer. The bibliographic
             metadata and abstracts come largely from Europe PMC and keep their own terms, and each
-            paper's licence governs that paper — see
+            paper's licence governs that paper. See
             <a routerLink="/about/licensing">Licensing &amp; citation</a>.
           </dd>
         </div>
@@ -118,8 +118,8 @@
     <h2>Citing the corpus</h2>
     <p class="citation-intro">
       Please cite the DOME Observatory preprint, which describes the corpus and the methodology
-      behind it, and cite Europe PMC alongside it — see
-      <a routerLink="/about/licensing">Licensing &amp; citation</a>. The preprint will be posted on
+      behind it, and cite Europe PMC alongside it (see
+      <a routerLink="/about/licensing">Licensing &amp; citation</a>). The preprint will be posted on
       arXiv but is still in preparation, so check back here for the full citation before submitting
       your work. The corpus grows with each update, so also note which release you used, to keep
       the analysis reproducible.
@@ -130,7 +130,7 @@
         <span class="badge-chip tone-positive">Preferred citation</span>
         <span class="citation-title">The arXiv preprint</span>
       </div>
-      <pre class="code-block">In preparation — the full citation will appear here once the preprint is posted on arXiv. Please check back before submitting.</pre>
+      <pre class="code-block">In preparation. The full citation will appear here once the preprint is posted on arXiv. Please check back before submitting.</pre>
     </div>
   </div>
 </div>

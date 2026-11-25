@@ -227,7 +227,7 @@
         page does not reach them. They are kept, and reachable two ways: as one file from
         <a routerLink="/download/bulk">bulk download</a>, or through the
         <a routerLink="/download/api">API</a>’s <code>/api/export</code>, which will hand you the
-        whole screened corpus — or any filtered slice of it — a chunk at a time.
+        whole screened corpus, or any filtered part of it, a chunk at a time.
       </p>
       <p>
         The corpus comes from a Europe PMC search for "artificial intelligence" and "machine
@@ -240,7 +240,7 @@
       <summary>Why is a word-beginning search slower?</summary>
       <p>
         Every ordinary search is answered from the text index, in about a second. The index knows
-        whole words, so <code>neuro*</code> — every word that begins with neuro — cannot use it
+        whole words, so <code>neuro*</code> (every word that begins with neuro) cannot use it
         and has to scan the corpus instead, which takes a few seconds. The same is true of a
         search with the classification filter cleared through the API, which the index does not
         cover.
@@ -255,10 +255,10 @@
         this scale. At {{ pageSize }} results a page, that is {{ lastPage | number }} pages.
       </p>
       <p>
-        It is a limit on <em>browsing</em>, not on access. To go past it, narrow the filters, take
-        the whole corpus in one file from <a routerLink="/download">Download</a>, or use the
-        <a routerLink="/download/api">API</a>’s <code>/api/export</code> — it pages on a cursor
-        rather than an offset, so it has no such ceiling and accepts the same filters as this
+        The limit applies to browsing only. To go further, narrow the filters, download the whole
+        corpus in one file from <a routerLink="/download">Download</a>, or use the
+        <a routerLink="/download/api">API</a>’s <code>/api/export</code>. It pages on a cursor
+        rather than an offset, so it has no such ceiling, and it accepts the same filters as this
         search page.
       </p>
     </details>
@@ -268,29 +268,29 @@
     <details class="faq-item" id="faq-curation">
       <summary>Are the classifications checked by a human?</summary>
       <p>
-        Not record by record. Every classification and enrichment in the corpus is LLM-generated.
-        The method behind them was validated against a hand-annotated expert benchmark before being
-        run at scale, so the figures are high-confidence across the corpus as a whole, but no
-        individual record has been reviewed by a curator.
+        Not record by record. Every classification and enrichment in the corpus comes from a
+        language model. The method was validated against a hand-annotated expert benchmark before
+        it was run on the whole corpus, so figures across the corpus are reliable, but no
+        individual record has been checked by a curator.
       </p>
       <p>
-        Treat any single record's labels as a strong starting point rather than a verified fact, and
-        cite the paper itself rather than our classification of it. If one is wrong, please tell us.
+        Treat a single record's labels as a starting point, not a verified fact, and cite the paper
+        itself rather than our classification of it. If one is wrong, please tell us.
       </p>
     </details>
 
     <details class="faq-item" id="faq-not-enriched">
       <summary>What does "not yet enriched" mean on a record?</summary>
       <p>
-        Enrichment is the second pass: domain, learning paradigm, model family, model use and model type, drawn
-        from controlled vocabularies. Those fields are defined in
-        <a [href]="schemaUrl()" target="_blank" rel="noopener">schema release v{{ schemaVersion() }}</a>
-        and reserved on every record, but the pass has not been run yet, so they are empty for now.
+        Enrichment is the second pass: domain, learning paradigm, model family, model use and model
+        type, drawn from controlled vocabularies defined in
+        <a [href]="schemaUrl()" target="_blank" rel="noopener">schema release v{{ schemaVersion() }}</a>.
+        It has run on part of the corpus so far, and a record outside those rounds has these fields
+        empty.
       </p>
       <p>
-        Nothing is missing or broken. Coverage is reported live on the
-        <a routerLink="/about/processing">processing history</a> page and will start climbing once
-        the first batch lands.
+        The <a routerLink="/about/processing">processing history</a> page reports how many records
+        are enriched and which rounds have run.
       </p>
     </details>
 
@@ -315,7 +315,7 @@
         Please cite the DOME Observatory preprint, with Europe PMC alongside it. The preprint will be
         posted on arXiv but is still in preparation, so check
         <a routerLink="/about/licensing">licensing &amp; citation</a> for the full reference before
-        you submit — it also sets out what the licence covers. Note which release you analysed, too,
+        you submit. That page also sets out what the licence covers. Note which release you analysed, too,
         so your work stays reproducible as the corpus grows;
         <a routerLink="/download/bulk">Bulk download</a> describes the releases.
       </p>

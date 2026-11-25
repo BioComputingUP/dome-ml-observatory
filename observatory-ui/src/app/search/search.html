@@ -90,7 +90,7 @@
             @if (loading()) {
               Searching…
               @if (searchingByPrefix()) {
-                <span class="search-hint">Matching word beginnings means scanning the corpus — this can take a few seconds.</span>
+                <span class="search-hint">Matching word beginnings means scanning the corpus, which can take a few seconds.</span>
               }
             } @else if (total() === 0) {
               No results
@@ -149,7 +149,7 @@
         } @else if (timedOut()) {
           <div class="state timeout" role="alert">
             <h2>That search took too long to complete</h2>
-            <p>Try adding another word, or narrowing with a filter — the database itself is fine, this specific search was just too broad to finish in time.</p>
+            <p>Try adding another word or narrowing with a filter. The database is working; this search was too broad to finish in time.</p>
             <button type="button" class="cta-button" (click)="clearFilters()">Clear the filters, keep the search</button>
           </div>
         } @else if (total() === 0) {
@@ -180,7 +180,7 @@
             @if (cappedByResultWindow() && page() >= totalPages()) {
               <p class="window-cap-note">
                 Browsing is capped at {{ totalPages() | number }} pages to keep results fast on an
-                unindexed corpus. The full result set is still available — take it as one file from
+                unindexed corpus. The full result set is still available: take it as one file from
                 <a routerLink="/download/bulk">Download</a>, or walk it with the
                 <a routerLink="/download/api">API</a>’s <code>/api/export</code>, which has no such
                 cap and accepts these same filters.

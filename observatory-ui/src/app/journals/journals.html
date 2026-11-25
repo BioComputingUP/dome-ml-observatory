@@ -20,7 +20,7 @@
           <h2>No journal by that name</h2>
           <p class="muted">
             Nothing in the corpus is published under “{{ journal }}”. Journal names are matched
-            exactly — search above to find the exact spelling.
+            exactly; search above to find the exact spelling.
           </p>
           <button type="button" class="cta-pill cta-pill-accent" (click)="clearJournal()">
             Back to all journals
@@ -35,8 +35,8 @@
           <div role="alert">
             <h2>Temporarily unavailable</h2>
             <p class="muted">
-              The figures for “{{ journal }}” couldn't be loaded just now — the database may be
-              briefly unreachable. Please try again shortly.
+              The figures for “{{ journal }}” couldn't be loaded just now. The database may be
+              briefly unreachable; please try again shortly.
             </p>
             <button type="button" class="cta-pill cta-pill-accent" (click)="retry()">
               Try again
@@ -159,7 +159,7 @@
               }
             } @else {
               <p class="muted">
-                Too few years of data to plot a trend — this journal has records in a single year.
+                Too few years of data to plot a trend: this journal has records in a single year.
               </p>
             }
           } @else {
@@ -295,9 +295,9 @@
 
         @if (sort() === 'density') {
           <p class="muted caveat">
-            Share is measured against what Observatory screened from a journal — its
-            life-sciences-scoped Europe PMC intake — not the journal's total published output,
-            which the corpus does not hold. The minimum keeps two-paper journals off the top of the
+            Share is measured against what Observatory screened from a journal, which is its
+            life-sciences intake from Europe PMC. The corpus does not hold a journal's total
+            published output. The minimum keeps two-paper journals off the top of the
             list; {{ rankedTotal() | number }} journals clear it.
           </p>
         }
@@ -308,7 +308,7 @@
           <div role="alert">
             <h3 class="h5">Temporarily unavailable</h3>
             <p class="muted">
-              The ranking couldn't be loaded just now — the database may be briefly unreachable.
+              The ranking couldn't be loaded just now. The database may be briefly unreachable.
             </p>
             <button type="button" class="cta-pill cta-pill-accent" (click)="retry()">
               Try again
@@ -326,7 +326,7 @@
         } @else {
           @if (listError()) {
             <p class="muted refresh-note" role="alert">
-              Couldn't refresh just now — showing the previous ranking.
+              Couldn't refresh just now, so this is the previous ranking.
               <button type="button" class="link-button" (click)="retry()">Try again</button>
             </p>
           }

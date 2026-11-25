@@ -4,8 +4,8 @@
       <h1>About DOME Observatory</h1>
 
       <p class="lead">
-        A searchable database of AI/ML methods-paper metadata, mapping the AI/ML landscape in the
-        life sciences at scale.
+        A searchable database of AI/ML methods papers in the life sciences, with what each one
+        reports about its data and models.
       </p>
 
       <p>
@@ -139,9 +139,9 @@
         </div>
         <p>
           A separate pass tags positively-classified records with EDAM domain, learning paradigm,
-          model family, model use and model type, drawn from published controlled vocabularies. This step is
-          still in progress across the corpus — the
-          <a routerLink="/search">search page</a> shows live coverage.
+          model family, model use and model type, drawn from published controlled vocabularies. It
+          has run on part of the corpus so far. The <a routerLink="/search">search page</a> shows
+          the current coverage, and the <a routerLink="/models">Models page</a> what it has found.
         </p>
       </li>
     </ol>
@@ -156,17 +156,17 @@
     </div>
     <ul class="limitations">
       <li><strong>Machine-generated throughout:</strong> every classification and enrichment in the
-        corpus is LLM-generated. The method behind them was validated against a hand-annotated
-        expert benchmark before being scaled (see <em>Method validation</em> above), so accuracy is
-        high-confidence at corpus scale — but no individual record has been reviewed by a curator,
-        and any single record's tags are a strong starting point rather than a guarantee.</li>
-      <li><strong>Enrichment coverage is partial:</strong> that pass is still running across the
-        corpus, so most records currently show "not yet enriched" rather than a full tag set.</li>
-      <li><strong>Cross-links are not yet populated:</strong> the DOME Registry, Hugging Face,
-        Kaggle and Zenodo fields are reserved in
-        <a [href]="schemaUrl()" target="_blank" rel="noopener">the schema</a> but empty for every
-        record — see <a routerLink="/about/integrations">Integrations</a> for what's live versus
-        planned.</li>
+        corpus comes from a language model. The method was validated against a hand-annotated
+        expert benchmark before it was run on the whole corpus (see <em>Method validation</em>
+        above), so figures across the corpus are reliable. No individual record has been checked
+        by a curator, though, so treat a single record's tags as a starting point.</li>
+      <li><strong>Enrichment coverage is partial:</strong> the pass has run on part of the corpus,
+        so most records still show "not yet enriched".</li>
+      <li><strong>Cross-links are partly filled:</strong> data links from Europe PMC and EBI Search,
+        and DOME Registry entries, are on the records. The Hugging Face, Kaggle and Zenodo fields
+        are reserved in <a [href]="schemaUrl()" target="_blank" rel="noopener">the schema</a> but
+        still empty. <a routerLink="/about/integrations">Integrations</a> lists what is live and
+        what is planned.</li>
     </ul>
   </div>
 </div>
@@ -216,8 +216,8 @@
     </ul>
 
     <p class="pub-note">
-      The corpus itself is derived from Europe PMC, which has its own citation —
-      see <a routerLink="/about/licensing">Licensing &amp; Citation</a> for the full attribution.
+      The corpus itself is derived from Europe PMC, which has its own citation.
+      <a routerLink="/about/licensing">Licensing &amp; Citation</a> gives the full attribution.
     </p>
   </div>
 </div>
