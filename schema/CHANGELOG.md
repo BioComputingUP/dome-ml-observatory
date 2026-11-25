@@ -26,6 +26,14 @@ reference pages for the paper, metrics and reviews. See dome-ml-observatory-tria
 
 **Migration note:** nothing for consumers. `migrate_v1_9_2.py` moves the stamp from 1.9.1.
 
+**Ran on 2026-11-25:** `migrate_v1_9_2.py --confirm` stamped all 876,324 documents. The data-links
+refresh then loaded (`load_fields.py --mode data_links`): 367,938 documents changed, 0 errors. It
+added Europe PMC's `/datalinks` route (curated submissions on 6,724 records, kept external-link
+deposits on 1,286), refreshed EBI Search for every positive (13,197 positives gain a link no Europe
+PMC route had), and covered the 40,176 records added since September. 41,508 AI/ML methods papers
+now link a data resource (40,730 before). The `preprints` and `identifiers` loads changed nothing.
+`verify_corpus.py` passes and `check_alignment.py --live` reports `aligned`.
+
 ## v1.9.1 — 2026-11-25
 
 The data-resources vocabulary is complete: every designation list is sourced, and every resource

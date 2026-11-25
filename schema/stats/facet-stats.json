@@ -1,6 +1,6 @@
 {
-  "generated": "2026-11-20T23:13:16.307Z",
-  "schema_version": "v1.8.0",
+  "generated": "2026-11-25T18:30:07.264Z",
+  "schema_version": "v1.9.2",
   "source": "full-corpus",
   "records_counted": 876324,
   "corpus": {
@@ -295,11 +295,11 @@
         "count": 25
       },
       {
-        "value": "Scoping Review",
+        "value": "meeting-report",
         "count": 22
       },
       {
-        "value": "meeting-report",
+        "value": "Scoping Review",
         "count": 22
       },
       {
@@ -363,11 +363,15 @@
         "count": 4
       },
       {
+        "value": "Clinical Trial, Veterinary",
+        "count": 3
+      },
+      {
         "value": "Observational Study, Veterinary",
         "count": 3
       },
       {
-        "value": "Clinical Trial, Veterinary",
+        "value": "Adaptive Clinical Trial",
         "count": 3
       },
       {
@@ -375,8 +379,8 @@
         "count": 3
       },
       {
-        "value": "Adaptive Clinical Trial",
-        "count": 3
+        "value": "Technical Report",
+        "count": 2
       },
       {
         "value": "Conference Proceedings",
@@ -387,12 +391,12 @@
         "count": 2
       },
       {
-        "value": "Technical Report",
+        "value": "Guideline",
         "count": 2
       },
       {
-        "value": "Guideline",
-        "count": 2
+        "value": "addendum",
+        "count": 1
       },
       {
         "value": "Book",
@@ -400,10 +404,6 @@
       },
       {
         "value": "calendar",
-        "count": 1
-      },
-      {
-        "value": "Introduction",
         "count": 1
       },
       {
@@ -415,11 +415,11 @@
         "count": 1
       },
       {
-        "value": "addendum",
+        "value": "Introduction",
         "count": 1
       },
       {
-        "value": "Interview",
+        "value": "Evidence Synthesis",
         "count": 1
       },
       {
@@ -427,7 +427,7 @@
         "count": 1
       },
       {
-        "value": "Evidence Synthesis",
+        "value": "Interview",
         "count": 1
       }
     ],
@@ -594,55 +594,55 @@
     "dataResources": [
       {
         "value": "biostudies",
-        "count": 129381
+        "count": 129927
       },
       {
         "value": "geo",
-        "count": 14489
+        "count": 14552
       },
       {
         "value": "ena",
-        "count": 6519
+        "count": 7305
       },
       {
         "value": "pdb",
-        "count": 6478
+        "count": 6498
       },
       {
         "value": "clinicaltrials",
-        "count": 5809
+        "count": 5821
       },
       {
         "value": "biotools",
-        "count": 4054
+        "count": 4604
       },
       {
         "value": "zenodo",
-        "count": 3388
+        "count": 3488
       },
       {
         "value": "bioproject",
-        "count": 3304
+        "count": 3370
       },
       {
         "value": "uniprot",
-        "count": 2783
+        "count": 2820
       },
       {
         "value": "refsnp",
         "count": 2097
       },
       {
-        "value": "go",
-        "count": 1634
+        "value": "rrid",
+        "count": 1724
       },
       {
-        "value": "rrid",
-        "count": 1625
+        "value": "go",
+        "count": 1635
       },
       {
         "value": "figshare",
-        "count": 1274
+        "count": 1286
       },
       {
         "value": "dome_registry",
@@ -650,15 +650,19 @@
       },
       {
         "value": "omim",
-        "count": 882
+        "count": 902
       },
       {
         "value": "refseq",
-        "count": 746
+        "count": 747
+      },
+      {
+        "value": "dryad",
+        "count": 705
       },
       {
         "value": "pride",
-        "count": 567
+        "count": 636
       },
       {
         "value": "arrayexpress",
@@ -670,11 +674,15 @@
       },
       {
         "value": "mendeley_data",
-        "count": 470
+        "count": 473
       },
       {
         "value": "dbgap",
         "count": 387
+      },
+      {
+        "value": "chembl",
+        "count": 376
       },
       {
         "value": "ensembl",
@@ -685,24 +693,16 @@
         "count": 314
       },
       {
-        "value": "dryad",
-        "count": 311
-      },
-      {
         "value": "ega",
-        "count": 309
+        "count": 310
       },
       {
         "value": "cellosaurus",
-        "count": 268
-      },
-      {
-        "value": "chembl",
-        "count": 261
+        "count": 269
       },
       {
         "value": "gwas",
-        "count": 242
+        "count": 244
       },
       {
         "value": "ena_assembly",
@@ -710,35 +710,35 @@
       },
       {
         "value": "hpa",
-        "count": 204
+        "count": 205
       },
       {
         "value": "osf",
-        "count": 173
+        "count": 175
       },
       {
         "value": "dataverse",
-        "count": 167
+        "count": 169
+      },
+      {
+        "value": "interpro",
+        "count": 152
       },
       {
         "value": "reactome",
         "count": 131
       },
       {
-        "value": "interpro",
-        "count": 115
+        "value": "iprox",
+        "count": 110
       },
       {
         "value": "tcia",
-        "count": 107
-      },
-      {
-        "value": "iprox",
-        "count": 104
+        "count": 109
       },
       {
         "value": "emdb",
-        "count": 101
+        "count": 107
       },
       {
         "value": "eudract",
@@ -746,23 +746,27 @@
       },
       {
         "value": "gisaid",
-        "count": 85
+        "count": 86
       },
       {
         "value": "metabolights",
-        "count": 83
+        "count": 86
       },
       {
         "value": "empiar",
-        "count": 76
+        "count": 77
+      },
+      {
+        "value": "gbif",
+        "count": 67
       },
       {
         "value": "brenda",
         "count": 63
       },
       {
-        "value": "gbif",
-        "count": 62
+        "value": "proteomexchange",
+        "count": 55
       },
       {
         "value": "rfam",
@@ -773,12 +777,16 @@
         "count": 51
       },
       {
+        "value": "chebi",
+        "count": 47
+      },
+      {
         "value": "ieee_dataport",
         "count": 43
       },
       {
         "value": "kaggle",
-        "count": 40
+        "count": 41
       },
       {
         "value": "massive",
@@ -801,31 +809,31 @@
         "count": 24
       },
       {
-        "value": "biosample",
-        "count": 23
-      },
-      {
         "value": "hgnc",
         "count": 23
       },
       {
-        "value": "chebi",
-        "count": 21
+        "value": "biosample",
+        "count": 23
+      },
+      {
+        "value": "pangaea",
+        "count": 22
+      },
+      {
+        "value": "modelarchive",
+        "count": 19
       },
       {
         "value": "4tu",
         "count": 19
       },
       {
+        "value": "hpscreg",
+        "count": 18
+      },
+      {
         "value": "alphafold",
-        "count": 18
-      },
-      {
-        "value": "pangaea",
-        "count": 18
-      },
-      {
-        "value": "proteomexchange",
         "count": 18
       },
       {
@@ -833,15 +841,15 @@
         "count": 17
       },
       {
-        "value": "hpscreg",
-        "count": 17
+        "value": "doi",
+        "count": 14
+      },
+      {
+        "value": "intact",
+        "count": 14
       },
       {
         "value": "huggingface",
-        "count": 13
-      },
-      {
-        "value": "doi",
         "count": 13
       },
       {
@@ -850,6 +858,10 @@
       },
       {
         "value": "jpost",
+        "count": 13
+      },
+      {
+        "value": "gigadb",
         "count": 12
       },
       {
@@ -857,19 +869,15 @@
         "count": 11
       },
       {
-        "value": "edinburgh_datashare",
-        "count": 8
-      },
-      {
         "value": "node",
         "count": 8
       },
       {
-        "value": "uniparc",
-        "count": 7
+        "value": "edinburgh_datashare",
+        "count": 8
       },
       {
-        "value": "gigadb",
+        "value": "uniparc",
         "count": 7
       },
       {
@@ -887,10 +895,6 @@
       {
         "value": "cath",
         "count": 3
-      },
-      {
-        "value": "intact",
-        "count": 1
       },
       {
         "value": "morphosource",
