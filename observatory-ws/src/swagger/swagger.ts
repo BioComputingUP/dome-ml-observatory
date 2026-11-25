@@ -57,6 +57,11 @@ export function setupSwagger(app: INestApplication): void {
     .addTag('facets', 'Typeahead suggestions for the high-cardinality search facets.')
     .addTag('stats', 'Corpus-wide headline figures and facet counts, cached server-side.')
     .addTag(
+      'insights',
+      'Corpus-level trends behind the Data and Models pages: model families and types by year, ' +
+        'journal and domain profiles, and the data resources papers link to. Cached server-side.',
+    )
+    .addTag(
       'metadata',
       'FAIR metadata computed from the records: schema.org / Bioschemas JSON-LD and FAIR ' +
         'Signposting per record, the sitemaps, and the corpus catalogue as DCAT / schema.org.',

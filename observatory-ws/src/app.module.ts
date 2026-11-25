@@ -11,6 +11,7 @@ import { RecordsModule } from './records/records.module';
 import { FacetsModule } from './facets/facets.module';
 import { StatsModule } from './stats/stats.module';
 import { JournalsModule } from './journals/journals.module';
+import { InsightsModule } from './insights/insights.module';
 import { ExportModule } from './export/export.module';
 import { MetadataModule } from './metadata/metadata.module';
 import { OaiModule } from './oai/oai.module';
@@ -117,6 +118,7 @@ import { MatomoInterceptor } from './analytics/matomo.interceptor';
     FacetsModule,
     StatsModule,
     JournalsModule,
+    InsightsModule,
     ExportModule,
     MetadataModule,
     OaiModule,
