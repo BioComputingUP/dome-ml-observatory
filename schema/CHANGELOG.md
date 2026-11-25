@@ -42,6 +42,9 @@ The schema differs from v1.9.0 only in `$id`; the other three vocabularies are b
 **Migration note:** nothing for consumers. In dome-ml-observatory-triage, `migrate_v1_9_1.py`
 stamps 1.9.1 on every document, from 1.8.0 (v1.9.0 was never stamped on moros) or 1.9.0.
 
+**Ran on 2026-11-25:** `migrate_v1_9_1.py --confirm` stamped all 876,324 documents 1.8.0 -> 1.9.1;
+`check_alignment.py --live` reports `aligned` and `verify_corpus.py` passes.
+
 ## v1.9.0 — 2026-11-25
 
 A vocabulary describing every data-link resource: what kind of resource it is, who runs it, and how
@@ -75,7 +78,8 @@ to v1.8.0.
 dome-ml-observatory-triage, `migrate_v1_9_0.py` moves `schema_version` from 1.8.0 to 1.9.0 in one
 `updateMany`. The example is the v1.8.0 example restamped, as for v1.5.1.
 
-**Pending at release:** the moros stamp migration, and the ELIXIR designations.
+**Superseded the same day by v1.9.1**, which completed the vocabulary; moros went from 1.8.0
+straight to 1.9.1 and was never stamped 1.9.0.
 
 ## v1.8.0 — 2026-11-20
 
