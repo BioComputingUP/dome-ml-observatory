@@ -14,6 +14,41 @@ updated except the two published releases below: `v1.2.0/` and `v1.3.0/` still n
 published (see `README.md`) and is never edited in place. GitHub redirects the old name, so those
 strings still resolve. The next release will carry the new name.
 
+## v1.9.0 — 2026-11-25
+
+A vocabulary describing every data-link resource: what kind of resource it is, who runs it, and how
+it is designated.
+
+**Added (vocabulary):** `vocab/data-resources.json`, copied verbatim from dome-ml-observatory-triage
+`curation_criteria/data_resources_vocab.json`. One entry per resource slug the data-links merge can
+emit (90, the whole of `datalinks_resources.RESOURCES`), each with the slug's `label` and `category`
+as stored in documents, plus:
+- `kind`: `data`, `ontology`, `identifier`, `code`, `model_hub`, `software_registry` or
+  `transparency_report`. Only `data` resources are ranked on the Observatory's Data page.
+- `host`: who runs the resource, where known.
+- `embl_ebi`: hosted at EMBL-EBI, or EMBL-EBI is a named operating partner (36 resources).
+- `gcbr`: the Global Core Biodata Resource the resource is, or belongs to, named as the GBC list
+  names it (29 resources; PRIDE, for one, carries "ProteomeXchange Consortium").
+- `elixir_cdr`, `elixir_edd`, `elixir_nodes`: ELIXIR Core Data Resource, ELIXIR Deposition Database
+  and the ELIXIR Nodes that run it. The top-level `elixir_nodes` lists every Node, including Nodes
+  with no resource in this table, so a filter can offer all of them.
+
+The top-level `designations` block gives each designation's source URL, retrieval date and `status`.
+**The three ELIXIR designations are `pending` in this release**: elixir-europe.org refused automated
+requests on 2026-11-25, so their values are null (unknown, not "no") until they are filled from a
+copy of the pages in a patch release.
+
+**Changed (descriptions only):** `content_filters.learning_paradigm` now lists all five terms
+(self-supervised was added in v1.7.0), and `data_links.resources[].resource` points at the new
+vocabulary. No field was added, removed or retyped. The other three vocabularies are byte-identical
+to v1.8.0.
+
+**Migration note:** nothing for consumers; documents store only the slug. In
+dome-ml-observatory-triage, `migrate_v1_9_0.py` moves `schema_version` from 1.8.0 to 1.9.0 in one
+`updateMany`. The example is the v1.8.0 example restamped, as for v1.5.1.
+
+**Pending at release:** the moros stamp migration, and the ELIXIR designations.
+
 ## v1.8.0 — 2026-11-20
 
 Re-enriching a record no longer loses its earlier enrichment.
