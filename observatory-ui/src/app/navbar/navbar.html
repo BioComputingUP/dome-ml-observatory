@@ -53,6 +53,19 @@
         >
       </li>
       <li class="nav-item">
+        <!-- One entry for two pages (/data and /models, switched by tabs on the page), so it is lit
+             on either: routerLinkActive on /data alone would go dark on /models. -->
+        <a
+          class="nav-item nav-link btn-navbar"
+          routerLink="data"
+          [class.active]="insightsActive()"
+          [attr.aria-current]="insightsActive() ? 'page' : null"
+          title="Data resources and models over time"
+          (click)="collapseNav()"
+          >Data &amp; Models</a
+        >
+      </li>
+      <li class="nav-item">
         <a
           class="nav-item nav-link btn-navbar"
           routerLinkActive="active"

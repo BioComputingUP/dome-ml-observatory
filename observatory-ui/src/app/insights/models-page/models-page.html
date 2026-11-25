@@ -1,0 +1,217 @@
+<div class="band">
+  <div class="band-inner">
+    <div class="stat-pills" [attr.aria-busy]="data() ? null : 'true'">
+      <div class="stat-pill">
+        <i class="icon icon-common icon-microchip" aria-hidden="true"></i>
+        <div>
+          <span class="stat-pill-value">{{ (data()?.coverage?.enriched | number) ?? '—' }}</span>
+          <span class="stat-pill-label">Papers with model details</span>
+        </div>
+      </div>
+      <div class="stat-pill">
+        <i class="icon icon-common icon-classification" aria-hidden="true"></i>
+        <div>
+          <span class="stat-pill-value">{{ coveragePct() !== null ? (coveragePct() | number: '1.0-0') + '%' : '—' }}</span>
+          <span class="stat-pill-label">Of all AI/ML methods papers</span>
+        </div>
+      </div>
+      <div class="stat-pill">
+        <i class="icon icon-common icon-tags" aria-hidden="true"></i>
+        <div>
+          <span class="stat-pill-value">{{ (data()?.modelTypes?.distinct | number) ?? '—' }}</span>
+          <span class="stat-pill-label">Model types named</span>
+        </div>
+      </div>
+    </div>
+
+    @if (data(); as d) {
+      <p class="ins-note">
+        Model details are read from each paper's title and abstract by a language model, using the
+        Observatory's published vocabularies. They cover {{ d.coverage.enriched | number }} of the
+        {{ d.coverage.positive | number }} AI/ML methods papers so far. The first rounds went to
+        selected journals, so the figures below describe those journals more than the corpus as a
+        whole. <a routerLink="/about/processing">How the corpus is processed</a>
+      </p>
+    }
+  </div>
+</div>
+
+@if (failed() && !data()) {
+  <div class="band">
+    <div class="band-inner ins-state">
+      <p>The model figures could not be loaded.</p>
+      <button type="button" class="cta-pill cta-pill-primary" (click)="retry()">Try again</button>
+    </div>
+  </div>
+} @else if (loading() && !data()) {
+  <div class="band">
+    <div class="band-inner">
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+    </div>
+  </div>
+} @else if (data(); as d) {
+  <section class="band band-tint" aria-labelledby="families-h">
+    <div class="band-inner">
+      <div class="ins-head">
+        <div>
+          <h2 id="families-h">Model families</h2>
+          <p class="ins-lead">
+            Each panel follows one family across the years. A paper can belong to up to three
+            families, so the shares in a year add up to more than 100%.
+          </p>
+        </div>
+        <div class="viz-toggle" role="group" aria-label="Measure">
+          <button type="button" [class.active]="view() === 'share'" [attr.aria-pressed]="view() === 'share'" (click)="setView('share')">Share of papers</button>
+          <button type="button" [class.active]="view() === 'count'" [attr.aria-pressed]="view() === 'count'" (click)="setView('count')">Number of papers</button>
+        </div>
+      </div>
+      <app-small-multiples
+        [panels]="familyPanels()"
+        [labels]="years()"
+        [unit]="unit()"
+        [lastPartial]="lastPartial()"
+        [caption]="'Model families, ' + (view() === 'share' ? 'share of the year\'s papers with model details' : 'papers per year') + ', from ' + firstYear() + '. Years with fewer than 50 such papers are left out.'"
+      />
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="use-h">
+    <div class="band-inner ins-two">
+      <div>
+        <h2 id="use-h">How models are used</h2>
+        <p class="ins-lead">
+          Whether a paper trains its own model, adapts a pretrained one, applies one as it comes, or
+          prompts a language model. Only the later enrichment rounds record this, so the chart
+          covers {{ d.coverage.withModelUse | number }} papers.
+        </p>
+        <app-stacked-bars
+          [series]="useStack().series"
+          [labels]="useStack().years"
+          [lastPartial]="lastPartial()"
+          caption="How each year's papers obtain their models."
+        />
+      </div>
+      <div>
+        <h2 id="para-h">Learning paradigms</h2>
+        <p class="ins-lead">How the models learn. A paper can use two, such as unsupervised clustering feeding a supervised classifier.</p>
+        <app-small-multiples
+          [panels]="paradigmPanels()"
+          [labels]="years()"
+          [unit]="unit()"
+          [lastPartial]="lastPartial()"
+          caption="Learning paradigms by year."
+        />
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-tint" aria-labelledby="types-h">
+    <div class="band-inner">
+      <h2 id="types-h">Specific methods</h2>
+      <p class="ins-lead">
+        The {{ bump().series.length }} model types papers name most often, ranked within each year.
+        {{ d.modelTypes.distinct | number }} types are named in all; the rest are named
+        {{ d.modelTypes.tail.total | number }} times between them.
+      </p>
+      <div class="ins-methods">
+        <app-bump-chart [series]="bump().series" [labels]="bump().years" caption="Rank of the most named model types by year. 1 is the most named." />
+
+        @if (movers(); as m) {
+          <div class="ins-movers">
+            <p class="ins-movers-intro">
+              Share of papers naming each type in {{ m.recentYears[0] }}–{{ m.recentYears[1] }},
+              against {{ m.previousYears[0] }}–{{ m.previousYears[1] }}. Types named in fewer than
+              {{ m.minPapers }} papers across both are left out.
+            </p>
+            <div class="ins-movers-cols">
+              <div>
+                <h3><i class="icon icon-common icon-arrow-up" aria-hidden="true"></i> Gaining ground</h3>
+                <ol>
+                  @for (x of m.rising; track x.value) {
+                    <li>
+                      <a [routerLink]="moverLink(x).path" [queryParams]="moverLink(x).queryParams">{{ moverLabel(x) }}</a>
+                      <span class="ins-change up">{{ change(x) }}</span>
+                      <span class="ins-from">{{ share(x.previousShare) }} to {{ share(x.recentShare) }}</span>
+                    </li>
+                  }
+                </ol>
+              </div>
+              <div>
+                <h3><i class="icon icon-common icon-arrow-down" aria-hidden="true"></i> Losing ground</h3>
+                <ol>
+                  @for (x of m.falling; track x.value) {
+                    <li>
+                      <a [routerLink]="moverLink(x).path" [queryParams]="moverLink(x).queryParams">{{ moverLabel(x) }}</a>
+                      <span class="ins-change down">{{ change(x) }}</span>
+                      <span class="ins-from">{{ share(x.previousShare) }} to {{ share(x.recentShare) }}</span>
+                    </li>
+                  }
+                </ol>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="journals-h">
+    <div class="band-inner">
+      <h2 id="journals-h">Journals and the models they publish</h2>
+      <p class="ins-lead">
+        Each row is a journal and each column a model family. The number is the share of the
+        journal's papers using that family; the colour compares it with all papers that have model
+        details, so orange marks a family the journal publishes more of than most. Journals need
+        {{ d.journals.minEnriched }} papers with model details to be listed; the largest
+        {{ journalRows().length - (journal() ? 1 : 0) }} of {{ d.journals.qualifying }} are shown.
+      </p>
+
+      <div class="ins-picker">
+        <app-journal-search placeholder="Add a journal to the grid…" (selectionChange)="pickJournal($event)" />
+        @if (journalName(); as name) {
+          @if (journalSummary(); as s) {
+            <p class="ins-picked">
+              <strong>{{ s.profile.name }}</strong> has {{ s.profile.enriched | number }} papers with
+              model details, {{ s.rank | number }} of {{ s.rankOf | number }} journals.
+              @if (s.top && s.top.lift && s.top.lift >= 1.15) {
+                It publishes {{ label(s.top.value) | lowercase }} {{ s.top.lift | number: '1.1-1' }} times as often as the corpus does.
+              }
+              @if (s.small) {
+                With so few papers, read its shares loosely.
+              }
+              <button type="button" class="ins-clear" (click)="clearJournal()">Remove</button>
+            </p>
+          } @else if (journalMissing()) {
+            <p class="ins-picked">
+              No paper from <strong>{{ name }}</strong> has model details yet.
+              <button type="button" class="ins-clear" (click)="clearJournal()">Remove</button>
+            </p>
+          }
+        }
+      </div>
+
+      <app-heatmap
+        [rows]="journalRows()"
+        [columns]="familyColumns()"
+        [cellLink]="journalCell"
+        unitLabel="papers with model details"
+        caption="Share of each journal's papers in each model family, coloured by how it compares with all papers that have model details."
+      />
+    </div>
+  </section>
+
+  <section class="band band-tint" aria-labelledby="domains-h">
+    <div class="band-inner">
+      <h2 id="domains-h">Research domains and the models they use</h2>
+      <p class="ins-lead">The same comparison for the broad research domain each paper is filed under.</p>
+      <app-heatmap
+        [rows]="domainRows()"
+        [columns]="familyColumns()"
+        [cellLink]="domainCell"
+        unitLabel="papers with model details"
+        caption="Share of each research domain's papers in each model family, coloured by how it compares with all papers that have model details."
+      />
+    </div>
+  </section>
+}

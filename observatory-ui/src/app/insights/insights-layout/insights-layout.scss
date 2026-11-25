@@ -1,0 +1,67 @@
+// Outside .section-layout, so the variable .band's full-bleed breakout reads is declared zero here,
+// as on the Journals page.
+.insights-page {
+  --rail-total: 0px;
+  background-color: var(--surface-page);
+  min-height: 60vh;
+}
+
+// The same header band as Search and Journals.
+.insights-header {
+  background-color: var(--observatory-primary);
+  padding: var(--space-6) 0 var(--space-5);
+}
+
+.page-title {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--space-2);
+  text-align: center;
+}
+
+.page-lead {
+  color: rgba(255, 255, 255, 0.78);
+  text-align: center;
+  margin: 0 auto var(--space-4);
+  font-size: var(--font-size-sm);
+}
+
+// The pill-bar look the About and Download pages use on a phone, here at every width.
+.insights-tabs {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+  max-width: 26rem;
+  margin: 0 auto;
+  padding: var(--space-1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-pill);
+
+  a {
+    flex: 1 1 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-pill);
+    color: #ffffff;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+
+    &.active {
+      background-color: var(--observatory-accent);
+    }
+
+    &:hover:not(.active) {
+      background-color: rgba(246, 103, 41, 0.2);
+    }
+
+    &:focus-visible {
+      outline: 3px solid #ffffff;
+      outline-offset: 2px;
+    }
+  }
+}

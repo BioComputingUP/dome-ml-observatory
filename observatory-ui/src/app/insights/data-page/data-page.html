@@ -1,0 +1,276 @@
+<div class="band">
+  <div class="band-inner">
+    <div class="stat-pills" [attr.aria-busy]="data() ? null : 'true'">
+      <div class="stat-pill">
+        <i class="icon icon-common icon-database" aria-hidden="true"></i>
+        <div>
+          <span class="stat-pill-value">{{ (data()?.scope?.linking | number) ?? '—' }}</span>
+          <span class="stat-pill-label">Papers linking a data resource</span>
+        </div>
+      </div>
+      <div class="stat-pill">
+        <i class="icon icon-common icon-classification" aria-hidden="true"></i>
+        <div>
+          <span class="stat-pill-value">{{ linkingPct() !== null ? (linkingPct() | number: '1.0-1') + '%' : '—' }}</span>
+          <span class="stat-pill-label">Of all AI/ML methods papers</span>
+        </div>
+      </div>
+      <div class="stat-pill">
+        <i class="icon icon-common icon-sitemap" aria-hidden="true"></i>
+        <div>
+          <span class="stat-pill-value">{{ (data()?.resources?.length | number) ?? '—' }}</span>
+          <span class="stat-pill-label">Data resources linked</span>
+        </div>
+      </div>
+      <div class="stat-pill">
+        <i class="icon icon-common icon-globe" aria-hidden="true"></i>
+        <div>
+          <span class="stat-pill-value">{{ ebiPct() !== null ? (ebiPct() | number: '1.0-0') + '%' : '—' }}</span>
+          <span class="stat-pill-label">Of those papers use an EMBL-EBI resource</span>
+        </div>
+      </div>
+    </div>
+
+    @if (data(); as d) {
+      <p class="ins-note">
+        A paper counts here when it links at least one data resource: an accession number Europe
+        PMC found in its text, or an entry in an EMBL-EBI database that cites it. Links to
+        {{ excludedText() }} are left out. So is the BioStudies record Europe PMC keeps of every PMC
+        article's supplementary files, which {{ d.scope.derivedBioStudies | number }} AI/ML methods
+        papers have. A BioStudies study a paper links to in its own right still counts.
+      </p>
+    }
+  </div>
+</div>
+
+@if (failed() && !data()) {
+  <div class="band">
+    <div class="band-inner ins-state">
+      <p>The data figures could not be loaded.</p>
+      <button type="button" class="cta-pill cta-pill-primary" (click)="retry()">Try again</button>
+    </div>
+  </div>
+} @else if (loading() && !data()) {
+  <div class="band">
+    <div class="band-inner">
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+    </div>
+  </div>
+} @else if (data(); as d) {
+  <!-- One row of filters above everything they apply to. -->
+  <div class="band band-sunken ins-filters-band">
+    <div class="band-inner">
+      <div class="ins-filters" role="group" aria-label="Filter resources">
+        <div class="ins-chips">
+          <button type="button" class="ins-chip" [class.active]="!tag()" [attr.aria-pressed]="!tag()" (click)="setTag(null)">All resources</button>
+          @for (des of designations(); track des.key) {
+            <button
+              type="button"
+              class="ins-chip"
+              [class.active]="tag() === des.key"
+              [attr.aria-pressed]="tag() === des.key"
+              [disabled]="des.pending"
+              [attr.title]="des.pending ? 'This list has not been added yet' : null"
+              (click)="setTag(des.key)"
+            >
+              {{ des.label }}@if (des.pending) {<span class="ins-chip-note"> (list pending)</span>}
+            </button>
+          }
+        </div>
+        <div class="ins-selects">
+          <label>
+            <span>ELIXIR Node</span>
+            <select [disabled]="nodesPending()" (change)="setNode($any($event.target).value)">
+              <option value="" [selected]="!node()">{{ nodesPending() ? 'List pending' : 'Any Node' }}</option>
+              @for (n of d.nodes; track n.code) {
+                <option [value]="n.code" [selected]="node() === n.code" [disabled]="!n.resources">
+                  {{ n.name }} ({{ n.resources }})
+                </option>
+              }
+            </select>
+          </label>
+          <label>
+            <span>Kind of data</span>
+            <select (change)="setCategory($any($event.target).value)">
+              <option value="" [selected]="!category()">Any kind</option>
+              @for (c of categories(); track c) {
+                <option [value]="c" [selected]="category() === c">{{ c }}</option>
+              }
+            </select>
+          </label>
+        </div>
+      </div>
+      @if (filterActive()) {
+        <p class="ins-filter-status" aria-live="polite">
+          {{ filterSummary().resources }} resources match.
+          @if (filterSummary().papers !== null) {
+            {{ filterSummary().papers | number }} papers link at least one of them.
+          }
+          <button type="button" class="ins-clear" (click)="clearFilters()">Clear filters</button>
+        </p>
+      }
+    </div>
+  </div>
+
+  @if (selectedSlug(); as slug) {
+    <section class="band band-tint ins-detail" aria-labelledby="detail-h" aria-live="polite">
+      <div class="band-inner">
+        @if (detail(); as det) {
+          <div class="ins-detail-head">
+            <div>
+              <p class="ins-kicker">{{ det.resource.category }}</p>
+              <h2 id="detail-h">{{ det.resource.label }}</h2>
+              @if (det.resource.host) {
+                <p class="ins-lead">Run by {{ det.resource.host }}.</p>
+              }
+              <ul class="ins-tags">
+                @for (t of detailDesignations(det.resource); track t) {
+                  <li>{{ t }}</li>
+                }
+              </ul>
+            </div>
+            <div class="ins-detail-actions">
+              <a class="cta-pill cta-pill-primary" routerLink="/search" [queryParams]="{ dl: det.resource.slug }">
+                Browse its {{ det.resource.papers | number }} papers
+              </a>
+              <button type="button" class="ins-clear" (click)="closeDetail()">Close</button>
+            </div>
+          </div>
+
+          <div class="ins-detail-grid">
+            <div>
+              <h3>Papers per year</h3>
+              <app-line-chart [series]="detailSeries()" [labels]="det.years" [caption]="'AI/ML methods papers linking ' + det.resource.label + ', by year.' + (det.lastYearPartial ? ' ' + det.years[det.years.length - 1] + ' is still filling.' : '')" />
+              <p class="ins-note">
+                {{ det.resource.deposited | number }} deposited a record in it and
+                {{ det.resource.mentioned | number }} mention an accession number in the text.
+              </p>
+            </div>
+            <div>
+              <h3>Journals publishing them</h3>
+              <ol class="ins-list">
+                @for (j of det.topJournals; track j.journal) {
+                  <li>
+                    <a routerLink="/journals" [queryParams]="{ j: j.journal }">{{ j.journal }}</a>
+                    <span class="viz-value">{{ j.papers | number }}</span>
+                  </li>
+                }
+              </ol>
+              @if (detailFamilies().length) {
+                <h3>Model families used with it</h3>
+                <p class="ins-note ins-note-tight">Of the {{ det.resource.enriched | number }} papers with model details.</p>
+                <ol class="ins-list">
+                  @for (f of detailFamilies(); track f.value) {
+                    <li>
+                      <a routerLink="/search" [queryParams]="{ dl: det.resource.slug, fam: f.value, enriched: 'true' }">{{ family(f.value) }}</a>
+                      <span class="viz-value">{{ share(f.share) }}</span>
+                    </li>
+                  }
+                </ol>
+              }
+            </div>
+          </div>
+        } @else if (detailMissing()) {
+          <p>No AI/ML methods paper links a data resource called “{{ slug }}”.</p>
+          <button type="button" class="ins-clear" (click)="closeDetail()">Close</button>
+        } @else if (detailFailed()) {
+          <p>This resource's figures could not be loaded.</p>
+          <button type="button" class="ins-clear" (click)="retry()">Try again</button>
+        } @else {
+          <div class="skeleton-card"></div>
+        }
+      </div>
+    </section>
+  }
+
+  <section class="band" aria-labelledby="top-h">
+    <div class="band-inner">
+      <h2 id="top-h">Most linked resources</h2>
+      <p class="ins-lead">
+        Papers linking each resource, split by how the link was found. Deposited means the resource
+        holds a record that cites the paper; mentioned means an accession number appears in the
+        paper's text. Pick a resource for its own figures.
+      </p>
+      @if (bars().length) {
+        <app-ranked-bars [rows]="bars()" [segmentLegend]="linkKinds" caption="AI/ML methods papers linking each data resource." />
+        @if (filtered().length > 20) {
+          <button type="button" class="viz-table-toggle" (click)="toggleAll()">
+            {{ showAll() ? 'Show the top 20' : 'Show all ' + filtered().length }}
+          </button>
+        }
+      } @else {
+        <p>No linked resource matches these filters.</p>
+      }
+    </div>
+  </section>
+
+  @if (trendPanels().length) {
+    <section class="band band-tint" aria-labelledby="trend-h">
+      <div class="band-inner">
+        <div class="ins-head">
+          <div>
+            <h2 id="trend-h">Resources over time</h2>
+            <p class="ins-lead">
+              The {{ trendPanels().length }} most linked resources under the current filters, from
+              {{ firstYear() }}.
+            </p>
+          </div>
+          <div class="viz-toggle" role="group" aria-label="Measure">
+            <button type="button" [class.active]="view() === 'share'" [attr.aria-pressed]="view() === 'share'" (click)="setView('share')">Share of papers</button>
+            <button type="button" [class.active]="view() === 'count'" [attr.aria-pressed]="view() === 'count'" (click)="setView('count')">Number of papers</button>
+          </div>
+        </div>
+        <app-small-multiples
+          [panels]="trendPanels()"
+          [labels]="years()"
+          [unit]="unit()"
+          [lastPartial]="lastPartial()"
+          [caption]="view() === 'share' ? 'Share of each year\'s AI/ML methods papers linking the resource.' : 'AI/ML methods papers linking the resource, by year.'"
+        />
+      </div>
+    </section>
+  }
+
+  <section class="band" aria-labelledby="kinds-h">
+    <div class="band-inner">
+      <div>
+        <h2 id="kinds-h">Kinds of data</h2>
+        <p class="ins-lead">
+          What the linked resources hold, year by year. A paper counts once for each kind of data it
+          links. This chart ignores the filters above.
+        </p>
+        <app-stacked-bars
+          [series]="categoryStack().series"
+          [labels]="categoryStack().years"
+          [lastPartial]="lastPartial()"
+          caption="Kinds of data linked by AI/ML methods papers, by year."
+        />
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-tint" aria-labelledby="res-models-h">
+    <div class="band-inner">
+      <div>
+        <h2 id="res-models-h">Resources and models</h2>
+        <p class="ins-lead">
+          Which kinds of model are built on which resources. Covers the
+          {{ d.scope.enrichedLinking | number }} linking papers that have model details; the colour
+          compares each resource with all of them.
+        </p>
+        @if (resourceFamilyRows().length) {
+          <app-heatmap
+            [rows]="resourceFamilyRows()"
+            [columns]="familyColumns()"
+            [cellLink]="resourceFamilyCell"
+            unitLabel="papers with model details"
+            caption="Share of each resource's papers in each model family."
+          />
+        } @else {
+          <p>No paper linking these resources has model details yet.</p>
+        }
+      </div>
+    </div>
+  </section>
+}

@@ -14,6 +14,25 @@ export const routes: Routes = [
     path: 'journals',
     loadComponent: () => import('./journals/journals').then((m) => m.Journals),
   },
+  // Data & Models: two pages under one navbar entry, switched by the tabs in InsightsLayout. A
+  // pathless parent, so the URLs stay /data and /models.
+  {
+    path: '',
+    loadComponent: () =>
+      import('./insights/insights-layout/insights-layout').then((m) => m.InsightsLayout),
+    children: [
+      {
+        path: 'data',
+        loadComponent: () => import('./insights/data-page/data-page').then((m) => m.DataPage),
+      },
+      {
+        path: 'models',
+        loadComponent: () =>
+          import('./insights/models-page/models-page').then((m) => m.ModelsPage),
+      },
+    ],
+  },
+  { path: 'data-models', redirectTo: 'data', pathMatch: 'full' },
   {
     path: 'record/:pid',
     loadComponent: () => import('./record/record').then((m) => m.RecordPage),
